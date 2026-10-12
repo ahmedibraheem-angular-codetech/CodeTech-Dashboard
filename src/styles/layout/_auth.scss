@@ -38,8 +38,8 @@
 
 .auth-brand {
   gap: 10px;
-  padding: clamp(20px, 2.2vw, 32px) clamp(8px, 0.85vw, 12px) clamp(20px, 2.2vw, 32px)
-    clamp(20px, 2.2vw, 32px);
+  padding: clamp(20px, 2.4vw, 35px) clamp(8px, 0.85vw, 12px) clamp(20px, 2.2vw, 32px)
+    clamp(20px, 2.4vw, 35px);
 }
 
 .auth-panel {
@@ -108,14 +108,38 @@
   padding-inline-end: var(--p-inputtext-padding-x);
 }
 
+// Brand panel, matched to the design: the dark-blue streaked artwork (a diagonal gradient plus a
+// bottom shade, the design's image with its 20% navy overlay already blended in), the language
+// pill, the logo and the translucent mark flush with the bottom edge.
 .auth-brand {
   position: relative;
   display: flex;
   flex-direction: column;
   overflow: hidden;
   background:
-    radial-gradient(circle at 20% 20%, rgba(96, 165, 250, 0.35), transparent 30%),
-    linear-gradient(160deg, var(--app-brand-start), var(--app-brand-mid) 55%, var(--app-brand-end));
+    linear-gradient(to top, rgb(1 10 32 / 55%), transparent 38%),
+    linear-gradient(
+      62deg,
+      #010b17 17%,
+      #010b20 25%,
+      #000d2f 28.8%,
+      #000e3e 32.7%,
+      #00114b 36.5%,
+      #001355 40.4%,
+      #00155d 44.2%,
+      #001765 48.1%,
+      #011a6f 51.9%,
+      #001b73 55.8%,
+      #00196d 59.6%,
+      #01155f 63.5%,
+      #00114d 67.3%,
+      #001149 71.2%,
+      #001e6c 75%,
+      #002581 78.8%,
+      #01288c 82.7%,
+      #002a92 86.5%,
+      #002993 100%
+    );
 }
 
 .auth-brand__top {
@@ -124,37 +148,52 @@
   align-items: center;
 }
 
+// The logo sits further in from the edge than the pill does, as in the design.
+.auth-brand__top .brand {
+  margin-inline-end: clamp(12px, 2.5vw, 36px);
+}
+
 .lang-pill {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  min-height: 38px;
-  padding: 4px 4px 4px 12px;
+  gap: 10px;
+  height: clamp(40px, 3.5vw, 51px);
+  padding: 0 clamp(16px, 1.8vw, 26px);
   border: 0;
-  border-radius: 999px;
+  border-radius: 16px;
   background: #fff;
-  color: #16324f;
-  font-weight: 700;
+  color: #7087a7;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.lang-pill__flag {
+  display: block;
+  width: 24px;
+  height: 24px;
 }
 
 .lang-pill__badge {
   display: grid;
   place-items: center;
-  width: 28px;
-  height: 28px;
+  width: 24px;
+  height: 24px;
   border-radius: 50%;
-  background: #22c55e;
+  background: #699635;
   color: #fff;
-  font-size: 11px;
+  font-size: 10px;
+  font-weight: 700;
 }
 
+// 70% of the panel wide, centred, flush with the bottom edge (the artwork is cropped by its own
+// viewBox, like in the design). `brand.svg` already carries its own 0.1 white opacity.
 .auth-mark {
   position: absolute;
-  inset-inline-start: 4%;
-  bottom: 6%;
-  width: 58%;
+  inset-inline-start: 15%;
+  bottom: 0;
+  width: 70%;
   height: auto;
-  opacity: 0.22;
+  pointer-events: none;
 }
 
 .demo-hint {
