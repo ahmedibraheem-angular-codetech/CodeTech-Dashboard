@@ -9,8 +9,11 @@
   <form [formGroup]="form" (ngSubmit)="save()" novalidate>
     <div class="profile-fields">
       @for (field of fields; track field.name) {
-        <label class="field">
-          <span class="field__label">{{ lang.t(field.labelKey) }}</span>
+        @let key = errorKey(field.name);
+        <div class="field">
+          <label class="field__label" [for]="'profile-' + field.name">{{
+            lang.t(field.labelKey)
+          }}</label>
           <p-iconfield>
             <input
               pInputText
@@ -21,26 +24,25 @@
               [attr.autocomplete]="field.autocomplete"
               [attr.dir]="field.ltr ? 'ltr' : null"
               [class.profile-field--ltr]="field.ltr"
-              [invalid]="!!errorKey(field.name)"
-              [attr.aria-invalid]="!!errorKey(field.name)"
-              [attr.aria-describedby]="
-                errorKey(field.name) ? 'profile-' + field.name + '-error' : null
-              "
+              [invalid]="!!key"
+              [attr.aria-invalid]="!!key"
+              [attr.aria-describedby]="key ? 'profile-' + field.name + '-error' : null"
             />
             <p-inputicon [class]="field.icon" />
           </p-iconfield>
-          @if (errorKey(field.name); as key) {
+          @if (key) {
             <app-field-error [id]="'profile-' + field.name + '-error'">{{
               lang.t(key)
             }}</app-field-error>
           }
-        </label>
+        </div>
       }
     </div>
 
     <div class="profile-actions">
       <p-button
         type="submit"
+        class="profile-actions__save"
         styleClass="profile-btn"
         icon="pi pi-save"
         iconPos="right"
@@ -56,6 +58,7 @@
         [text]="true"
         [fluid]="true"
         [label]="lang.t('profile.cancel')"
+        [disabled]="pristine()"
         (onClick)="cancel()"
       />
     </div>

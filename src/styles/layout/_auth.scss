@@ -102,6 +102,12 @@
   height: 56px;
 }
 
+// Cancels PrimeNG's `.p-iconfield .p-inputtext:not(:last-child)` end padding (icon room), so the
+// inline-end padding stays the spec's 20px. Same selector plus `.auth-card` to win on specificity.
+.auth-card .p-iconfield .p-inputtext:not(:last-child) {
+  padding-inline-end: var(--p-inputtext-padding-x);
+}
+
 .auth-brand {
   position: relative;
   display: flex;

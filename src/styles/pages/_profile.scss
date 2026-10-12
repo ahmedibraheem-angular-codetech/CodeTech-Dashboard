@@ -184,13 +184,26 @@
   flex: 1;
 }
 
-.profile-actions > :first-child {
-  flex: 1.4;
+// Primary action in the design's blue, same tokens in every state.
+.profile-actions__save {
+  --p-button-primary-background: #1c81d3;
+  --p-button-primary-border-color: #1c81d3;
+  --p-button-primary-hover-background: #1a73bd;
+  --p-button-primary-hover-border-color: #1a73bd;
+  --p-button-primary-active-background: #1767a9;
+  --p-button-primary-active-border-color: #1767a9;
 }
 
+// The host carries the fill and outline so the PrimeNG text button keeps its hover state.
 .profile-actions__cancel {
+  border: 1px solid var(--app-border);
   border-radius: 14px;
   background: var(--app-surface-muted);
+}
+
+.profile-actions__cancel .profile-btn {
+  height: 46px;
+  color: var(--app-muted);
 }
 
 // Picture card.
@@ -238,6 +251,9 @@
   margin: 0;
 }
 
+::ng-deep .p-iconfield .p-inputtext:not(:last-child) {
+ padding-inline-end: unset !important;
+}
 @media (max-width: 640px) {
   .profile-head {
     flex-wrap: wrap;
@@ -249,9 +265,5 @@
 
   .profile-actions {
     flex-direction: column-reverse;
-  }
-
-  .profile-actions > :first-child {
-    flex: 1;
   }
 }
