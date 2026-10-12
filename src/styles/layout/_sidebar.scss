@@ -1,0 +1,206 @@
+// Sidebar: navigation, tree connectors, user card.
+@use 'abstracts/functions' as *;
+@use 'abstracts/mixins' as *;
+
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  align-self: stretch;
+  width: var(--app-sidebar-width);
+  flex: 0 0 var(--app-sidebar-width);
+  min-height: calc(100vh - #{space(6)});
+  height: auto;
+  padding: 22px 16px 16px;
+  background: var(--app-sidebar-bg);
+  color: var(--app-sidebar-text);
+  border-radius: 28px;
+  box-shadow: none;
+  transition:
+    width var(--app-transition),
+    flex-basis var(--app-transition);
+}
+
+.shell.is-collapsed .sidebar {
+  width: var(--app-sidebar-collapsed);
+  flex-basis: var(--app-sidebar-collapsed);
+}
+
+.shell.is-collapsed .sidebar__label,
+.shell.is-collapsed .sidebar__chevron,
+.shell.is-collapsed .brand__name,
+.shell.is-collapsed .sidebar__user-copy,
+.shell.is-collapsed .sidebar__children {
+  display: none;
+}
+
+.sidebar .brand {
+  padding: 4px 8px 18px;
+}
+
+.sidebar .brand__img {
+  height: 34px;
+}
+
+.shell.is-collapsed .brand__img {
+  width: 36px;
+  height: 36px;
+  object-fit: cover;
+  object-position: left center;
+}
+
+.sidebar__nav {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-top: 4px;
+  overflow: visible;
+}
+
+.sidebar__link,
+.sidebar__child {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 50px;
+  padding: 6px 8px;
+  border: 0;
+  border-radius: 14px;
+  background: transparent;
+  color: var(--app-sidebar-link);
+  text-align: start;
+  font-weight: 700;
+}
+
+.sidebar__link > i:not(.sidebar__chevron),
+.sidebar__child > i {
+  display: grid;
+  place-items: center;
+  flex: 0 0 38px;
+  width: 38px;
+  height: 38px;
+  border-radius: 14px;
+  background: var(--app-sidebar-icon-bg);
+  color: var(--app-sidebar-icon-color);
+  font-size: 16px;
+}
+
+.sidebar__child {
+  min-height: 40px;
+  padding: 0;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.sidebar__child > i {
+  flex-basis: 30px;
+  width: 30px;
+  height: 30px;
+  border-radius: 11px;
+  font-size: 13px;
+}
+
+.sidebar__link.is-active,
+.sidebar__child.is-active {
+  color: var(--app-sidebar-link-active);
+}
+
+.sidebar__link.is-active > i:not(.sidebar__chevron),
+.sidebar__child.is-active > i {
+  background: var(--app-sidebar-icon-active-bg);
+  color: var(--app-sidebar-icon-active-color);
+}
+
+.sidebar__chevron {
+  margin-inline-start: auto;
+  color: var(--app-sidebar-muted);
+  font-size: 12px;
+  transition: transform var(--app-transition-fast);
+}
+
+.sidebar__group.is-open .sidebar__chevron {
+  transform: rotate(180deg);
+}
+
+// Tree connector: the vertical line sits under the parent icon centre (27px
+// from the group edge); each child draws its own elbow from the previous
+// child's centre down to its own centre.
+.sidebar__children {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  margin: 10px 0 12px;
+  padding-inline-start: 40px;
+}
+
+.sidebar__child::before {
+  content: '';
+  position: absolute;
+  inset-inline-start: -13px;
+  top: -29px;
+  width: 9px;
+  height: 49px;
+  border-inline-start: 1.5px solid var(--app-sidebar-line);
+  border-bottom: 1.5px solid var(--app-sidebar-line);
+  border-end-start-radius: 9px;
+  pointer-events: none;
+}
+
+.sidebar__child:first-child::before {
+  top: -1px;
+  height: 21px;
+}
+
+.sidebar__user {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 18px;
+  padding: 8px 8px 4px;
+  border-top: 0;
+}
+
+.sidebar__user .avatar {
+  display: grid;
+  place-items: center;
+  flex: 0 0 42px;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: var(--app-sidebar-avatar-bg);
+  color: var(--app-sidebar-link-active);
+  font-weight: 800;
+}
+
+.sidebar__user-copy {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  line-height: 1.3;
+}
+
+.sidebar__user-copy strong,
+.sidebar__user-copy small {
+  @include truncate;
+}
+
+.sidebar__user-copy strong {
+  color: var(--app-sidebar-user-name);
+  font-size: 14px;
+}
+
+.sidebar__user-copy small {
+  color: var(--app-sidebar-muted);
+  font-size: 12px;
+}
+
+.sidebar__logout {
+  margin-inline-start: auto;
+  width: 38px;
+  height: 38px;
+  border: 0;
+  border-radius: 50%;
+  background: var(--app-sidebar-logout-bg);
+  color: #f43f5e;
+}

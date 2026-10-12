@@ -8,17 +8,33 @@
         <strong>{{ lang.t('settings.sidebar') }}</strong>
         <p class="muted">{{ lang.t('settings.sidebarHint') }}</p>
       </div>
-      <p-toggleswitch [ngModel]="layout.collapsed()" (ngModelChange)="layout.setCollapsed($event)" inputId="sidebar-collapsed" />
+      <p-toggleswitch
+        [ngModel]="layout.collapsed()"
+        (ngModelChange)="layout.setCollapsed($event)"
+        inputId="sidebar-collapsed"
+      />
     </div>
     <div class="setting-row">
       <div>
         <strong>{{ lang.t('settings.density') }}</strong>
       </div>
       <div class="page-header__actions">
-        <button type="button" class="btn" [class.btn-primary]="layout.density() === 'comfortable'" [class.btn-ghost]="layout.density() !== 'comfortable'" (click)="layout.setDensity('comfortable')">
+        <button
+          type="button"
+          class="btn"
+          [class.btn-primary]="layout.density() === 'comfortable'"
+          [class.btn-ghost]="layout.density() !== 'comfortable'"
+          (click)="layout.setDensity('comfortable')"
+        >
           {{ lang.t('settings.comfortable') }}
         </button>
-        <button type="button" class="btn" [class.btn-primary]="layout.density() === 'compact'" [class.btn-ghost]="layout.density() !== 'compact'" (click)="layout.setDensity('compact')">
+        <button
+          type="button"
+          class="btn"
+          [class.btn-primary]="layout.density() === 'compact'"
+          [class.btn-ghost]="layout.density() !== 'compact'"
+          (click)="layout.setDensity('compact')"
+        >
           {{ lang.t('settings.compact') }}
         </button>
       </div>
@@ -30,10 +46,22 @@
     <div class="setting-row">
       <strong>{{ lang.t('settings.theme') }}</strong>
       <div class="page-header__actions">
-        <button type="button" class="btn" [class.btn-primary]="theme.theme() === 'light'" [class.btn-ghost]="theme.theme() !== 'light'" (click)="theme.set('light')">
+        <button
+          type="button"
+          class="btn"
+          [class.btn-primary]="theme.theme() === 'light'"
+          [class.btn-ghost]="theme.theme() !== 'light'"
+          (click)="theme.set('light')"
+        >
           {{ lang.t('settings.themeLight') }}
         </button>
-        <button type="button" class="btn" [class.btn-primary]="theme.theme() === 'dark'" [class.btn-ghost]="theme.theme() !== 'dark'" (click)="theme.set('dark')">
+        <button
+          type="button"
+          class="btn"
+          [class.btn-primary]="theme.theme() === 'dark'"
+          [class.btn-ghost]="theme.theme() !== 'dark'"
+          (click)="theme.set('dark')"
+        >
           {{ lang.t('settings.themeDark') }}
         </button>
       </div>
@@ -41,10 +69,22 @@
     <div class="setting-row">
       <strong>{{ lang.t('settings.language') }}</strong>
       <div class="page-header__actions">
-        <button type="button" class="btn" [class.btn-primary]="lang.language() === 'ar'" [class.btn-ghost]="lang.language() !== 'ar'" (click)="lang.set('ar')">
+        <button
+          type="button"
+          class="btn"
+          [class.btn-primary]="lang.language() === 'ar'"
+          [class.btn-ghost]="lang.language() !== 'ar'"
+          (click)="lang.set('ar')"
+        >
           {{ lang.t('settings.languageAr') }}
         </button>
-        <button type="button" class="btn" [class.btn-primary]="lang.language() === 'en'" [class.btn-ghost]="lang.language() !== 'en'" (click)="lang.set('en')">
+        <button
+          type="button"
+          class="btn"
+          [class.btn-primary]="lang.language() === 'en'"
+          [class.btn-ghost]="lang.language() !== 'en'"
+          (click)="lang.set('en')"
+        >
           {{ lang.t('settings.languageEn') }}
         </button>
       </div>

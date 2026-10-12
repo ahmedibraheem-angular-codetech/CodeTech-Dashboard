@@ -12,12 +12,21 @@
         [integerOnly]="true"
         [styleClass]="invalid() ? 'otp-invalid' : ''"
         [attr.aria-label]="lang.t('auth.verifyLabel')"
+        [attr.aria-describedby]="
+          invalid() || (form.controls.code.touched && form.controls.code.invalid)
+            ? 'otp-error'
+            : null
+        "
         (onChange)="clearInvalid()"
       />
       @if (invalid()) {
-        <span class="field__error otp-error" id="otp-error"><i class="pi pi-times-circle" aria-hidden="true"></i>{{ lang.t('auth.invalidOtp') }}</span>
+        <app-field-error class="otp-error" id="otp-error" [icon]="true">{{
+          lang.t('auth.invalidOtp')
+        }}</app-field-error>
       } @else if (form.controls.code.touched && form.controls.code.invalid) {
-        <span class="field__error otp-error">{{ lang.t('auth.otpRequired') }}</span>
+        <app-field-error class="otp-error" id="otp-error">{{
+          lang.t('auth.otpRequired')
+        }}</app-field-error>
       }
     </div>
     <button class="btn btn-auth" type="submit" [disabled]="submitting()">
@@ -26,7 +35,9 @@
     </button>
     <div class="otp-footer">
       <span>{{ lang.t('auth.notReceived') }} {{ clock() }}</span>
-      <button type="button" class="field__link" (click)="resend()" [disabled]="remaining() > 0">{{ lang.t('auth.resend') }}</button>
+      <button type="button" class="field__link" (click)="resend()" [disabled]="remaining() > 0">
+        {{ lang.t('auth.resend') }}
+      </button>
     </div>
   </form>
 </app-auth-shell>

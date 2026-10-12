@@ -1,4 +1,9 @@
-import { ApplicationConfig, provideBrowserGlobalErrorListeners } from '@angular/core';
+import {
+  ApplicationConfig,
+  inject,
+  provideAppInitializer,
+  provideBrowserGlobalErrorListeners,
+} from '@angular/core';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { provideRouter, TitleStrategy, withComponentInputBinding } from '@angular/router';
 import { definePreset } from '@primeuix/themes';
@@ -8,6 +13,9 @@ import { providePrimeNG } from 'primeng/config';
 
 import { routes } from './app.routes';
 import { authInterceptor } from './core/interceptors/auth.interceptor';
+import { LanguageService } from './core/services/language.service';
+import { LayoutService } from './core/services/layout.service';
+import { ThemeService } from './core/services/theme.service';
 import { AppTitleStrategy } from './core/services/title.strategy';
 
 const CodeTech = definePreset(Aura, {
@@ -43,5 +51,12 @@ export const appConfig: ApplicationConfig = {
     }),
     MessageService,
     { provide: TitleStrategy, useClass: AppTitleStrategy },
+    // These services apply <html> attributes (lang, dir, theme, density) from their
+    // constructors, so create them up front instead of relying on a component to do it.
+    provideAppInitializer(() => {
+      inject(LanguageService);
+      inject(ThemeService);
+      inject(LayoutService);
+    }),
   ],
 };

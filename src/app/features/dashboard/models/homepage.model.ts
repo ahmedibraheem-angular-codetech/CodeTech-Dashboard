@@ -14,6 +14,7 @@ export interface HomepageContent {
   partners: Partner[];
   videoEnabled: boolean;
   videoName: string | null;
+  contactRequests: number;
   about: ContentBlock;
   vision: ContentBlock;
 }

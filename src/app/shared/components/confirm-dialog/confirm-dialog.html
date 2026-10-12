@@ -9,7 +9,13 @@
   <p>{{ message() }}</p>
   <ng-template #footer>
     <button type="button" class="btn btn-ghost" (click)="cancel()">{{ cancelLabel() }}</button>
-    <button type="button" class="btn" [class.btn-danger]="danger()" [class.btn-primary]="!danger()" (click)="confirm()">
+    <button
+      type="button"
+      class="btn"
+      [class.btn-danger]="danger()"
+      [class.btn-primary]="!danger()"
+      (click)="confirm()"
+    >
       {{ confirmLabel() }}
     </button>
   </ng-template>

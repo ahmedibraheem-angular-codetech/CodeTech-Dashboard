@@ -1,0 +1,42 @@
+<article class="section-card">
+  <div class="section-head">
+    <div class="section-head__title">
+      <h2>{{ lang.t('home.video') }}</h2>
+      <p-toggleswitch
+        [ngModel]="enabled()"
+        (ngModelChange)="toggle($event)"
+        [attr.aria-label]="lang.t('home.video')"
+      />
+    </div>
+    <div class="page-header__actions">
+      <label class="btn btn-primary">
+        {{ lang.t('home.reupload') }}
+        <input class="visually-hidden" type="file" accept="video/*" (change)="onSelected($event)" />
+      </label>
+      <button
+        type="button"
+        class="btn btn-danger btn-icon"
+        (click)="remove()"
+        [attr.aria-label]="lang.t('home.deleteVideo')"
+      >
+        <i class="pi pi-trash" aria-hidden="true"></i>
+      </button>
+    </div>
+  </div>
+  @if (name(); as videoName) {
+    <div class="video-frame" [class.is-off]="!enabled()">
+      <div class="video-mosaic">
+        @for (tile of tiles; track tile) {
+          <div class="video-tile"></div>
+        }
+      </div>
+      <button type="button" class="video-play" [attr.aria-label]="videoName">
+        <i class="pi pi-play" aria-hidden="true"></i>
+      </button>
+    </div>
+  } @else {
+    <app-state-view mode="empty" [message]="lang.t('home.videoEmpty')" />
+  }
+</article>
+
+<app-confirm-dialog />

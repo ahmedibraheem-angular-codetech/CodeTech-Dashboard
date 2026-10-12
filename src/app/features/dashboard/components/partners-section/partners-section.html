@@ -1,0 +1,59 @@
+<article class="section-card">
+  <div class="section-head">
+    <div class="section-head__title">
+      <h2>{{ lang.t('home.partners') }} ({{ partners().length }})</h2>
+    </div>
+    <button type="button" class="btn btn-soft" (click)="open()">
+      <i class="pi pi-plus" aria-hidden="true"></i>
+      {{ lang.t('home.addPartner') }}
+    </button>
+  </div>
+  @if (partners().length === 0) {
+    <app-state-view mode="empty" />
+  } @else {
+    <div class="partner-grid">
+      @for (partner of partners(); track partner.id) {
+        <article class="partner-card" [attr.aria-label]="partner.name">
+          <div class="partner-card__tools">
+            <button type="button" (click)="open(partner)" [attr.aria-label]="lang.t('home.edit')">
+              <i class="pi pi-pencil" aria-hidden="true"></i>
+            </button>
+            <button
+              type="button"
+              (click)="remove(partner)"
+              [attr.aria-label]="lang.t('users.delete')"
+            >
+              <i class="pi pi-trash" aria-hidden="true"></i>
+            </button>
+          </div>
+          <span>{{ partner.monogram }}</span>
+        </article>
+      }
+    </div>
+  }
+</article>
+
+<p-dialog
+  [header]="lang.t(editingId() ? 'home.editPartner' : 'home.addPartner')"
+  [visible]="editorOpen()"
+  (visibleChange)="!$event && editorOpen.set(false)"
+  [modal]="true"
+  [draggable]="false"
+  [style]="{ width: 'min(32rem, 94vw)' }"
+>
+  <form class="form-grid" [formGroup]="form" (ngSubmit)="save()">
+    <label class="field">
+      <span class="field__label">{{ lang.t('home.partnerName') }}</span>
+      <span class="field__control"><input formControlName="name" /></span>
+    </label>
+    <label class="field">
+      <span class="field__label">{{ lang.t('home.monogram') }}</span>
+      <span class="field__control"><input formControlName="monogram" maxlength="2" /></span>
+    </label>
+    <button class="btn btn-primary" type="submit" [disabled]="saving()">
+      {{ lang.t('common.save') }}
+    </button>
+  </form>
+</p-dialog>
+
+<app-confirm-dialog />

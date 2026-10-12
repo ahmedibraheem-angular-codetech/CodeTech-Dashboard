@@ -1,8 +1,10 @@
 import { Injectable, computed, inject, signal } from '@angular/core';
-import { Observable, map, timer } from 'rxjs';
+import { Observable, map, tap, timer } from 'rxjs';
 
-import { environment } from '../../../environments/environment';
+import type { DemoCredentials } from '../../../environments/environment.model';
+import { DEMO_CREDENTIALS } from '../config/demo-credentials';
 import { API_LATENCY_MS } from '../config/latency';
+import { AuthError } from './auth.error';
 import { AuthSession } from './auth.model';
 
 const SESSION_KEY = 'codetech.session';
@@ -11,6 +13,7 @@ const PENDING_KEY = 'codetech.pending';
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private readonly latency = inject(API_LATENCY_MS);
+  private readonly demo = inject(DEMO_CREDENTIALS);
   readonly session = signal<AuthSession | null>(this.readSession());
   readonly pendingEmail = signal<string | null>(this.readPending());
   readonly isAuthenticated = computed(() => this.session() !== null);
@@ -18,26 +21,29 @@ export class AuthService {
 
   login(email: string, password: string): Observable<void> {
     return timer(this.latency).pipe(
-      map(() => {
-        if (password !== environment.demoPassword) {
-          throw new Error('invalid-password');
+      tap(() => {
+        const demo = this.requireDemo();
+        if (password !== demo.password) {
+          throw new AuthError('invalid-password');
         }
         const normalized = email.trim();
         this.pendingEmail.set(normalized);
         this.writePending(normalized);
       }),
+      map(() => undefined),
     );
   }
 
   verify(code: string): Observable<void> {
     return timer(this.latency).pipe(
-      map(() => {
+      tap(() => {
+        const demo = this.requireDemo();
         const email = this.pendingEmail();
         if (!email) {
-          throw new Error('missing-pending');
+          throw new AuthError('missing-pending');
         }
-        if (code !== environment.demoOtp) {
-          throw new Error('invalid-otp');
+        if (code !== demo.otp) {
+          throw new AuthError('invalid-otp');
         }
         const session: AuthSession = {
           token: crypto.randomUUID(),
@@ -50,6 +56,7 @@ export class AuthService {
         this.writeSession(session);
         this.writePending(null);
       }),
+      map(() => undefined),
     );
   }
 
@@ -70,6 +77,13 @@ export class AuthService {
 
   hasPendingLogin(): boolean {
     return this.pendingEmail() !== null;
+  }
+
+  private requireDemo(): DemoCredentials {
+    if (!this.demo) {
+      throw new AuthError('unavailable');
+    }
+    return this.demo;
   }
 
   private readSession(): AuthSession | null {

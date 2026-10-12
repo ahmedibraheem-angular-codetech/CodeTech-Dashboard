@@ -1,5 +1,9 @@
 <a class="skip-link" href="#main-content">{{ lang.t('a11y.skip') }}</a>
-<div class="shell" [class.is-collapsed]="layout.collapsed() && !layout.isMobile()" [class.is-drawer-open]="layout.mobileOpen()">
+<div
+  class="shell"
+  [class.is-collapsed]="layout.collapsed() && !layout.isMobile()"
+  [class.is-drawer-open]="layout.mobileOpen()"
+>
   <app-sidebar />
   <div class="shell__main">
     <app-header />
@@ -9,6 +13,11 @@
     </div>
   </div>
   @if (layout.mobileOpen()) {
-    <button type="button" class="backdrop" (click)="layout.closeMobile()" [attr.aria-label]="lang.t('common.close')"></button>
+    <button
+      type="button"
+      class="backdrop"
+      (click)="layout.closeMobile()"
+      [attr.aria-label]="lang.t('common.close')"
+    ></button>
   }
 </div>

@@ -1,6 +1,12 @@
 import { ChangeDetectionStrategy, Component, DestroyRef, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { NavigationEnd, Router, RouterLink, RouterLinkActive } from '@angular/router';
+import {
+  IsActiveMatchOptions,
+  NavigationEnd,
+  Router,
+  RouterLink,
+  RouterLinkActive,
+} from '@angular/router';
 import { filter } from 'rxjs';
 
 import { AuthService } from '../../../core/auth/auth.service';
@@ -18,6 +24,13 @@ import { BrandLogo } from '../../../shared/components/brand-logo/brand-logo';
 })
 export class Sidebar {
   readonly items = NAV_ITEMS;
+  /** Exact path match: `/products` must not stay highlighted on `/products/page`. */
+  readonly childMatch: IsActiveMatchOptions = {
+    paths: 'exact',
+    queryParams: 'ignored',
+    fragment: 'ignored',
+    matrixParams: 'ignored',
+  };
   readonly lang = inject(LanguageService);
   readonly layout = inject(LayoutService);
   readonly auth = inject(AuthService);

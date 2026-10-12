@@ -1,6 +1,6 @@
-export const environment = {
+import type { Environment } from './environment.model';
+
+export const environment: Environment = {
   production: true,
   apiUrl: '/api',
-  demoPassword: '12345678',
-  demoOtp: '1111',
 };

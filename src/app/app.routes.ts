@@ -4,7 +4,8 @@ import { authGuard, guestGuard, verifyGuard } from './core/guards/auth.guard';
 
 const section = (path: string, titleKey: string): Routes[number] => ({
   path,
-  loadComponent: () => import('./features/sections/pages/section/section').then((m) => m.SectionPage),
+  loadComponent: () =>
+    import('./features/sections/pages/section/section').then((m) => m.SectionPage),
   data: { breadcrumb: titleKey, titleKey },
 });
 
@@ -38,7 +39,8 @@ export const routes: Routes = [
       },
       {
         path: 'settings',
-        loadComponent: () => import('./features/settings/pages/settings/settings').then((m) => m.SettingsPage),
+        loadComponent: () =>
+          import('./features/settings/pages/settings/settings').then((m) => m.SettingsPage),
         data: { breadcrumb: 'settings.title', titleKey: 'settings.title' },
       },
       section('about', 'nav.about'),

@@ -5,6 +5,7 @@ const point = 'نص قصير تعريفي عن كود التقنية يتم كت
 export const HOMEPAGE_SEED: HomepageContent = {
   videoEnabled: true,
   videoName: 'intro-video.mp4',
+  contactRequests: 12,
   partners: [
     { id: 'p1', name: 'شريك التقنية', monogram: 'ك' },
     { id: 'p2', name: 'شريك التحول', monogram: 'ت' },

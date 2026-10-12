@@ -1,0 +1,116 @@
+// Topbar: header actions, breadcrumbs, search and notifications.
+@use 'abstracts/functions' as *;
+@use 'abstracts/mixins' as *;
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: space(3);
+  min-height: var(--app-header-height);
+  padding: 10px 14px;
+  background: var(--app-header-bg);
+  border-radius: 22px;
+  box-shadow: var(--app-shadow-sm);
+}
+
+.topbar__trail,
+.topbar__tools,
+.user-chip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.topbar__icon,
+.user-chip {
+  position: relative;
+  border: 0;
+  background: transparent;
+  color: var(--app-text);
+}
+
+.topbar__icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+}
+
+.topbar__icon:hover,
+.user-chip:hover {
+  background: var(--app-surface-muted);
+}
+
+.topbar__icon .dot {
+  position: absolute;
+  top: 8px;
+  inset-inline-end: 8px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--app-danger);
+}
+
+.user-chip {
+  padding: 4px 8px;
+  border-radius: 999px;
+}
+
+.user-chip__name {
+  font-weight: 700;
+}
+
+.crumbs {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 40px;
+  padding: 0 12px;
+  border: 1px solid var(--app-border);
+  border-radius: 999px;
+  background: var(--app-surface);
+  color: var(--app-muted);
+  font-size: var(--app-font-sm);
+}
+
+.crumbs a {
+  color: var(--app-text);
+  font-weight: 700;
+}
+
+.search-pop {
+  display: flex;
+  gap: 8px;
+}
+
+.search-pop input {
+  min-width: 220px;
+  min-height: 40px;
+  padding-inline: 12px;
+  border-radius: 12px;
+  border: 1px solid var(--app-border);
+  background: var(--app-surface);
+}
+
+.note-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: min(320px, 80vw);
+}
+
+.note {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  width: 100%;
+  padding: 8px;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  text-align: start;
+}
+
+.note.is-unread {
+  background: color-mix(in srgb, var(--app-primary) 8%, transparent);
+}

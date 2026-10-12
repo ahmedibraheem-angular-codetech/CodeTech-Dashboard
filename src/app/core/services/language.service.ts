@@ -1,11 +1,16 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable, inject, signal } from '@angular/core';
+import { PrimeNG } from 'primeng/config';
 
+import { PRIMENG_AR } from '../i18n/primeng-locale';
 import { TRANSLATIONS, type AppLanguage } from '../i18n/translations';
 
 const STORAGE_KEY = 'codetech.language';
 
 @Injectable({ providedIn: 'root' })
 export class LanguageService {
+  private readonly primeng = inject(PrimeNG);
+  // PrimeNG ships English; keep its defaults so switching back restores them exactly.
+  private readonly primengEnglish = { ...this.primeng.translation };
   readonly language = signal<AppLanguage>(this.read());
 
   constructor() {
@@ -31,6 +36,7 @@ export class LanguageService {
     const language = this.language();
     document.documentElement.lang = language;
     document.documentElement.dir = language === 'ar' ? 'rtl' : 'ltr';
+    this.primeng.setTranslation(language === 'ar' ? PRIMENG_AR : this.primengEnglish);
   }
 
   private read(): AppLanguage {

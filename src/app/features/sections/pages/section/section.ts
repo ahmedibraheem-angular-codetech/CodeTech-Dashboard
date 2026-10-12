@@ -16,7 +16,10 @@ import { StateView } from '../../../../shared/components/state-view/state-view';
 export class SectionPage {
   readonly lang = inject(LanguageService);
   private readonly route = inject(ActivatedRoute);
-  readonly titleKey = toSignal(this.route.data.pipe(map((data) => String(data['titleKey'] ?? 'sections.ready'))), {
-    initialValue: 'sections.ready',
-  });
+  readonly titleKey = toSignal(
+    this.route.data.pipe(map((data) => String(data['titleKey'] ?? 'sections.ready'))),
+    {
+      initialValue: 'sections.ready',
+    },
+  );
 }

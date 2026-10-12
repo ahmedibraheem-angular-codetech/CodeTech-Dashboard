@@ -1,0 +1,93 @@
+// Shared UI bits: state view, spinner, status badge, backdrop, brand logo.
+@use 'abstracts/functions' as *;
+@use 'abstracts/mixins' as *;
+
+.state {
+  display: grid;
+  place-items: center;
+  gap: 8px;
+  min-height: 180px;
+  text-align: center;
+  color: var(--app-muted);
+}
+
+.spinner {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 3px solid var(--app-border);
+  border-top-color: var(--app-primary);
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 26px;
+  padding: 0 10px;
+  border-radius: 999px;
+  font-size: var(--app-font-xs);
+  font-weight: 800;
+  background: #dcfce7;
+  color: #166534;
+}
+
+.status-badge[data-status='suspended'] {
+  background: #fee2e2;
+  color: #9f1239;
+}
+
+.settings-card {
+  @include card-surface;
+  padding: space(5);
+  display: flex;
+  flex-direction: column;
+  gap: space(4);
+}
+
+.backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: var(--app-z-overlay);
+  border: 0;
+  background: rgba(15, 23, 42, 0.45);
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #2f6fed;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+}
+
+.brand__img {
+  display: block;
+  height: 34px;
+  width: auto;
+}
+
+.brand__img--light {
+  height: 30px;
+  filter: brightness(0) invert(1);
+}
+
+.brand--light {
+  color: #fff;
+}
+
+.brand--light svg rect {
+  fill: transparent;
+  stroke: #fff;
+}
+
+.sidebar .brand {
+  padding-inline: 8px;
+}

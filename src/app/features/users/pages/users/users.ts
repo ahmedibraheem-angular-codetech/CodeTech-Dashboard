@@ -1,4 +1,14 @@
-import { ChangeDetectionStrategy, Component, computed, DestroyRef, effect, inject, input, signal, viewChild } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  DestroyRef,
+  effect,
+  inject,
+  input,
+  signal,
+  viewChild,
+} from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule, FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MessageService } from 'primeng/api';
@@ -12,6 +22,8 @@ import { PageHeader } from '../../../../shared/components/page-header/page-heade
 import { StateView } from '../../../../shared/components/state-view/state-view';
 import { StatusBadge } from '../../../../shared/components/status-badge/status-badge';
 import { ConfirmDialog } from '../../../../shared/components/confirm-dialog/confirm-dialog';
+import { FieldError } from '../../../../shared/components/field-error/field-error';
+import { formatIsoDate, fromIsoDate, toIsoDate } from '../../../../shared/utils/date';
 import { User, UserDraft, UserRole, UserStatus } from '../../models/user.model';
 import { UsersService } from '../../services/users.service';
 
@@ -30,6 +42,7 @@ type LoadState = 'loading' | 'ready' | 'error';
     StateView,
     StatusBadge,
     ConfirmDialog,
+    FieldError,
   ],
   templateUrl: './users.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -44,6 +57,7 @@ export class UsersPage {
   readonly q = input<string>();
 
   readonly state = signal<LoadState>('loading');
+  readonly saving = signal(false);
   readonly rows = signal<User[]>([]);
   readonly query = signal('');
   readonly role = signal<UserRole | 'all'>('all');
@@ -80,8 +94,12 @@ export class UsersPage {
     ];
   });
 
-  readonly formRoles = computed(() => this.roleOptions().filter((option) => option.value !== 'all'));
-  readonly formStatuses = computed(() => this.statusOptions().filter((option) => option.value !== 'all'));
+  readonly formRoles = computed(() =>
+    this.roleOptions().filter((option) => option.value !== 'all'),
+  );
+  readonly formStatuses = computed(() =>
+    this.statusOptions().filter((option) => option.value !== 'all'),
+  );
 
   readonly filtered = computed(() => {
     const query = this.query().trim().toLowerCase();
@@ -92,7 +110,8 @@ export class UsersPage {
       const matchesQuery = !query || `${user.name} ${user.email}`.toLowerCase().includes(query);
       const matchesRole = role === 'all' || user.role === role;
       const matchesStatus = status === 'all' || user.status === status;
-      const matchesDate = !from || new Date(user.joinedAt) >= this.startOfDay(from);
+      // Both sides are local midnight: `new Date('YYYY-MM-DD')` would parse as UTC and shift the day.
+      const matchesDate = !from || fromIsoDate(user.joinedAt) >= this.startOfDay(from);
       return matchesQuery && matchesRole && matchesStatus && matchesDate;
     });
   });
@@ -126,6 +145,10 @@ export class UsersPage {
       });
   }
 
+  formatDate(isoDate: string): string {
+    return formatIsoDate(isoDate, this.lang.language());
+  }
+
   roleLabel(role: UserRole): string {
     if (role === 'super-admin') {
       return this.lang.t('roles.superAdmin');
@@ -141,7 +164,7 @@ export class UsersPage {
       phone: '',
       role: 'editor',
       status: 'active',
-      joinedAt: new Date().toISOString().slice(0, 10),
+      joinedAt: toIsoDate(new Date()),
     });
     this.editor.set('create');
   }
@@ -162,19 +185,30 @@ export class UsersPage {
       this.form.markAllAsTouched();
       return;
     }
+    if (this.saving()) {
+      return;
+    }
     const draft = this.form.getRawValue() satisfies UserDraft;
     const current = this.selected();
     const request = current ? this.usersApi.update(current.id, draft) : this.usersApi.create(draft);
-    request.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((user) => {
-      this.rows.update((list) => {
-        const exists = list.some((item) => item.id === user.id);
-        return exists ? list.map((item) => (item.id === user.id ? user : item)) : [user, ...list];
-      });
-      this.editor.set(null);
-      this.messages.add({
-        severity: 'success',
-        summary: this.lang.t(current ? 'users.updated' : 'users.created'),
-      });
+    this.saving.set(true);
+    request.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: (user) => {
+        this.saving.set(false);
+        this.rows.update((list) => {
+          const exists = list.some((item) => item.id === user.id);
+          return exists ? list.map((item) => (item.id === user.id ? user : item)) : [user, ...list];
+        });
+        this.editor.set(null);
+        this.messages.add({
+          severity: 'success',
+          summary: this.lang.t(current ? 'users.updated' : 'users.created'),
+        });
+      },
+      error: () => {
+        this.saving.set(false);
+        this.notifyFailure();
+      },
     });
   }
 
@@ -192,10 +226,17 @@ export class UsersPage {
     this.usersApi
       .remove(user.id)
       .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(() => {
-        this.rows.update((list) => list.filter((item) => item.id !== user.id));
-        this.messages.add({ severity: 'success', summary: this.lang.t('users.deleted') });
+      .subscribe({
+        next: () => {
+          this.rows.update((list) => list.filter((item) => item.id !== user.id));
+          this.messages.add({ severity: 'success', summary: this.lang.t('users.deleted') });
+        },
+        error: () => this.notifyFailure(),
       });
+  }
+
+  private notifyFailure(): void {
+    this.messages.add({ severity: 'error', summary: this.lang.t('common.error') });
   }
 
   private startOfDay(date: Date): Date {

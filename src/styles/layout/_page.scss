@@ -1,0 +1,49 @@
+// Page scaffolding: footer, page header and section cards.
+@use 'abstracts/functions' as *;
+@use 'abstracts/mixins' as *;
+
+.footer-bar {
+  margin-top: space(6);
+  color: var(--app-muted);
+  font-size: var(--app-font-sm);
+}
+
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: space(4);
+}
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: space(4);
+}
+
+.page-header__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.section-card {
+  @include card-surface;
+  padding: space(4);
+  display: flex;
+  flex-direction: column;
+  gap: space(4);
+}
+
+.section-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: space(3);
+}
+
+.section-head__title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}

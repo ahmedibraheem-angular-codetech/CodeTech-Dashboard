@@ -1,0 +1,92 @@
+// All breakpoints. Kept last so the cascade matches the original single file.
+
+@media (max-width: 1100px) {
+  .partner-grid,
+  .video-mosaic,
+  .story {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .story {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 991px) {
+  .shell {
+    padding: 0;
+  }
+
+  .sidebar {
+    position: fixed;
+    z-index: var(--app-z-drawer);
+    inset-block: 8px;
+    inset-inline-start: 8px;
+    transform: translateX(-110%);
+  }
+
+  [dir='rtl'] .sidebar {
+    transform: translateX(110%);
+  }
+
+  .shell.is-drawer-open .sidebar {
+    transform: translateX(0);
+  }
+
+  .shell.is-collapsed .sidebar {
+    width: var(--app-sidebar-width);
+    flex-basis: var(--app-sidebar-width);
+  }
+
+  .shell.is-collapsed .sidebar__label,
+  .shell.is-collapsed .sidebar__chevron,
+  .shell.is-collapsed .brand__name,
+  .shell.is-collapsed .sidebar__user-copy {
+    display: initial;
+  }
+
+  .shell__content,
+  .topbar {
+    border-radius: 0;
+  }
+
+  .auth-shell {
+    height: auto;
+    min-height: 100vh;
+    padding: 12px;
+  }
+
+  .auth-frame {
+    grid-template-columns: 1fr;
+    height: auto;
+    min-height: calc(100vh - 24px);
+  }
+
+  .auth-panel,
+  .auth-brand {
+    height: auto;
+    min-height: calc(100vh - 24px);
+    padding: 24px 16px;
+  }
+
+  .auth-brand {
+    display: none;
+  }
+}
+
+@media (max-width: 640px) {
+  .partner-grid,
+  .video-mosaic {
+    grid-template-columns: 1fr;
+  }
+
+  .page-header,
+  .section-head,
+  .topbar {
+    flex-wrap: wrap;
+  }
+
+  .user-chip__name {
+    display: none;
+  }
+}

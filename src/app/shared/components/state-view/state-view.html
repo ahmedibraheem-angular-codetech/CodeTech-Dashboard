@@ -11,7 +11,9 @@
     @case ('error') {
       <i class="pi pi-exclamation-circle" aria-hidden="true"></i>
       <p>{{ message() || lang.t('common.error') }}</p>
-      <button type="button" class="btn btn-ghost" (click)="retry.emit()">{{ lang.t('users.retry') }}</button>
+      <button type="button" class="btn btn-ghost" (click)="retry.emit()">
+        {{ lang.t('users.retry') }}
+      </button>
     }
   }
 </div>

@@ -9,8 +9,11 @@
   border: 1px solid transparent;
   background: transparent;
   font-weight: 700;
-  transition: background var(--app-transition-fast), color var(--app-transition-fast),
-    border-color var(--app-transition-fast), opacity var(--app-transition-fast);
+  transition:
+    background var(--app-transition-fast),
+    color var(--app-transition-fast),
+    border-color var(--app-transition-fast),
+    opacity var(--app-transition-fast);
 }
 
 .btn:disabled {

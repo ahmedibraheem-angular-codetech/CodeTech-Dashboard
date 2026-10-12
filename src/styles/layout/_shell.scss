@@ -1,0 +1,32 @@
+// App shell: page frame, main column and content canvas.
+@use 'abstracts/functions' as *;
+@use 'abstracts/mixins' as *;
+
+.shell {
+  display: flex;
+  min-height: 100vh;
+  gap: space(3);
+  padding: space(3);
+  background: var(--app-background);
+}
+
+.shell__main {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+  gap: space(3);
+}
+
+.shell__content {
+  flex: 1;
+  min-width: 0;
+  padding: space(5);
+  background: var(--app-canvas);
+  border-radius: var(--app-radius-xl);
+  box-shadow: var(--app-shadow-sm);
+}
+
+[data-density='compact'] .shell__content {
+  padding: space(3);
+}

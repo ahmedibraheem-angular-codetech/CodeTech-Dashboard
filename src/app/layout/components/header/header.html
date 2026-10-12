@@ -1,12 +1,22 @@
 <header class="topbar">
   <div class="topbar__trail">
-    <button type="button" class="topbar__icon" (click)="layout.toggleSidebar()" [attr.aria-label]="lang.t('header.toggleSidebar')">
+    <button
+      type="button"
+      class="topbar__icon"
+      (click)="layout.toggleSidebar()"
+      [attr.aria-label]="lang.t('header.toggleSidebar')"
+    >
       <i class="pi pi-bars" aria-hidden="true"></i>
     </button>
     <app-breadcrumbs />
   </div>
   <div class="topbar__tools">
-    <button type="button" class="topbar__icon" (click)="theme.toggle()" [attr.aria-label]="lang.t('header.toggleTheme')">
+    <button
+      type="button"
+      class="topbar__icon"
+      (click)="theme.toggle()"
+      [attr.aria-label]="lang.t('header.toggleTheme')"
+    >
       <i [class]="theme.theme() === 'dark' ? 'pi pi-sun' : 'pi pi-moon'" aria-hidden="true"></i>
     </button>
     <button
@@ -18,13 +28,24 @@
     >
       <i class="pi pi-search" aria-hidden="true"></i>
     </button>
-    <button type="button" class="topbar__icon" (click)="openNotifications($event)" [attr.aria-label]="lang.t('header.notifications')">
+    <button
+      type="button"
+      class="topbar__icon"
+      (click)="openNotifications($event)"
+      [attr.aria-label]="lang.t('header.notifications')"
+    >
       <i class="pi pi-bell" aria-hidden="true"></i>
       @if (unread()) {
         <span class="dot"></span>
       }
     </button>
-    <button type="button" class="user-chip" (click)="openUserMenu($event)">
+    <button
+      type="button"
+      class="user-chip"
+      aria-haspopup="menu"
+      [attr.aria-label]="auth.session()?.name || lang.t('header.profile')"
+      (click)="openUserMenu($event)"
+    >
       <span class="avatar" aria-hidden="true">{{ initials() }}</span>
       <span class="user-chip__name">{{ shortName() }}</span>
       <span class="presence" aria-hidden="true"></span>
@@ -35,7 +56,13 @@
 @if (searchOpen()) {
   <form class="search-pop" (ngSubmit)="search()">
     <label class="visually-hidden" for="global-search">{{ lang.t('header.search') }}</label>
-    <input id="global-search" [placeholder]="lang.t('header.searchPlaceholder')" [ngModel]="query()" (ngModelChange)="query.set($event)" name="q" />
+    <input
+      id="global-search"
+      [placeholder]="lang.t('header.searchPlaceholder')"
+      [ngModel]="query()"
+      (ngModelChange)="query.set($event)"
+      name="q"
+    />
     <button type="submit" class="btn btn-primary">{{ lang.t('header.search') }}</button>
   </form>
 }
@@ -43,7 +70,12 @@
 <p-popover #notifications>
   <div class="note-list">
     @for (notice of notices(); track notice.id) {
-      <button type="button" class="note" [class.is-unread]="!notice.read" (click)="markRead(notice.id)">
+      <button
+        type="button"
+        class="note"
+        [class.is-unread]="!notice.read"
+        (click)="markRead(notice.id)"
+      >
         <strong>{{ lang.t(notice.titleKey) }}</strong>
         <span class="muted">{{ lang.t(notice.timeKey) }}</span>
       </button>

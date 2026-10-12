@@ -1,4 +1,11 @@
-import { ChangeDetectionStrategy, Component, computed, inject, signal, viewChild } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  inject,
+  signal,
+  viewChild,
+} from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { MenuItem } from 'primeng/api';
@@ -71,7 +78,9 @@ export class Header {
   }
 
   markRead(id: string): void {
-    this.notices.update((items) => items.map((item) => (item.id === id ? { ...item, read: true } : item)));
+    this.notices.update((items) =>
+      items.map((item) => (item.id === id ? { ...item, read: true } : item)),
+    );
   }
 
   search(): void {

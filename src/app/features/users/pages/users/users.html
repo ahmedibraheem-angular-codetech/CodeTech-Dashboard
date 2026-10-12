@@ -11,20 +11,42 @@
       <span class="field__label">{{ lang.t('users.search') }}</span>
       <span class="field__control">
         <i class="pi pi-search" aria-hidden="true"></i>
-        <input [value]="query()" (input)="onSearch($event)" [placeholder]="lang.t('users.search')" />
+        <input
+          [value]="query()"
+          (input)="onSearch($event)"
+          [placeholder]="lang.t('users.search')"
+        />
       </span>
     </label>
     <label class="field">
       <span class="field__label">{{ lang.t('users.role') }}</span>
-      <p-select [options]="roleOptions()" optionLabel="label" optionValue="value" [ngModel]="role()" (ngModelChange)="role.set($event)" />
+      <p-select
+        [options]="roleOptions()"
+        optionLabel="label"
+        optionValue="value"
+        [ngModel]="role()"
+        (ngModelChange)="role.set($event)"
+      />
     </label>
     <label class="field">
       <span class="field__label">{{ lang.t('users.status') }}</span>
-      <p-select [options]="statusOptions()" optionLabel="label" optionValue="value" [ngModel]="status()" (ngModelChange)="status.set($event)" />
+      <p-select
+        [options]="statusOptions()"
+        optionLabel="label"
+        optionValue="value"
+        [ngModel]="status()"
+        (ngModelChange)="status.set($event)"
+      />
     </label>
     <label class="field">
       <span class="field__label">{{ lang.t('users.from') }}</span>
-      <p-datepicker [ngModel]="from()" (ngModelChange)="from.set($event)" [showIcon]="true" dateFormat="yy-mm-dd" [showButtonBar]="true" />
+      <p-datepicker
+        [ngModel]="from()"
+        (ngModelChange)="from.set($event)"
+        [showIcon]="true"
+        dateFormat="yy-mm-dd"
+        [showButtonBar]="true"
+      />
     </label>
   </div>
 
@@ -49,7 +71,9 @@
           <th pSortableColumn="email">{{ lang.t('users.email') }} <p-sortIcon field="email" /></th>
           <th>{{ lang.t('users.role') }}</th>
           <th>{{ lang.t('users.status') }}</th>
-          <th pSortableColumn="joinedAt">{{ lang.t('users.joined') }} <p-sortIcon field="joinedAt" /></th>
+          <th pSortableColumn="joinedAt">
+            {{ lang.t('users.joined') }} <p-sortIcon field="joinedAt" />
+          </th>
           <th>{{ lang.t('users.actions') }}</th>
         </tr>
       </ng-template>
@@ -59,16 +83,31 @@
           <td>{{ user.email }}</td>
           <td>{{ roleLabel(user.role) }}</td>
           <td><app-status-badge [status]="user.status" /></td>
-          <td>{{ user.joinedAt }}</td>
+          <td>{{ formatDate(user.joinedAt) }}</td>
           <td>
             <div class="table-actions">
-              <button type="button" class="btn btn-ghost btn-icon" (click)="openView(user)" [attr.aria-label]="lang.t('users.view')">
+              <button
+                type="button"
+                class="btn btn-ghost btn-icon"
+                (click)="openView(user)"
+                [attr.aria-label]="lang.t('users.view')"
+              >
                 <i class="pi pi-eye" aria-hidden="true"></i>
               </button>
-              <button type="button" class="btn btn-ghost btn-icon" (click)="openEdit(user)" [attr.aria-label]="lang.t('users.edit')">
+              <button
+                type="button"
+                class="btn btn-ghost btn-icon"
+                (click)="openEdit(user)"
+                [attr.aria-label]="lang.t('users.edit')"
+              >
                 <i class="pi pi-pencil" aria-hidden="true"></i>
               </button>
-              <button type="button" class="btn btn-danger btn-icon" (click)="remove(user)" [attr.aria-label]="lang.t('users.delete')">
+              <button
+                type="button"
+                class="btn btn-danger btn-icon"
+                (click)="remove(user)"
+                [attr.aria-label]="lang.t('users.delete')"
+              >
                 <i class="pi pi-trash" aria-hidden="true"></i>
               </button>
             </div>
@@ -95,31 +134,84 @@
   <form class="form-grid" [formGroup]="form" (ngSubmit)="save()">
     <label class="field">
       <span class="field__label">{{ lang.t('users.name') }}</span>
-      <span class="field__control" [class.is-invalid]="form.controls.name.touched && form.controls.name.invalid">
-        <input formControlName="name" />
+      <span
+        class="field__control"
+        [class.is-invalid]="form.controls.name.touched && form.controls.name.invalid"
+      >
+        <input
+          formControlName="name"
+          [attr.aria-invalid]="form.controls.name.touched && form.controls.name.invalid"
+          [attr.aria-describedby]="
+            form.controls.name.touched && form.controls.name.invalid ? 'user-name-error' : null
+          "
+        />
       </span>
+      @if (form.controls.name.touched && form.controls.name.invalid) {
+        <app-field-error id="user-name-error">{{ lang.t('users.required') }}</app-field-error>
+      }
     </label>
     <label class="field">
       <span class="field__label">{{ lang.t('users.email') }}</span>
-      <span class="field__control" [class.is-invalid]="form.controls.email.touched && form.controls.email.invalid">
-        <input type="email" formControlName="email" />
+      <span
+        class="field__control"
+        [class.is-invalid]="form.controls.email.touched && form.controls.email.invalid"
+      >
+        <input
+          type="email"
+          formControlName="email"
+          [attr.aria-invalid]="form.controls.email.touched && form.controls.email.invalid"
+          [attr.aria-describedby]="
+            form.controls.email.touched && form.controls.email.invalid ? 'user-email-error' : null
+          "
+        />
       </span>
+      @if (form.controls.email.touched && form.controls.email.hasError('required')) {
+        <app-field-error id="user-email-error">{{ lang.t('users.required') }}</app-field-error>
+      } @else if (form.controls.email.touched && form.controls.email.invalid) {
+        <app-field-error id="user-email-error">{{ lang.t('users.invalidEmail') }}</app-field-error>
+      }
     </label>
     <label class="field">
       <span class="field__label">{{ lang.t('users.phone') }}</span>
-      <span class="field__control" [class.is-invalid]="form.controls.phone.touched && form.controls.phone.invalid">
-        <input formControlName="phone" />
+      <span
+        class="field__control"
+        [class.is-invalid]="form.controls.phone.touched && form.controls.phone.invalid"
+      >
+        <input
+          formControlName="phone"
+          [attr.aria-invalid]="form.controls.phone.touched && form.controls.phone.invalid"
+          [attr.aria-describedby]="
+            form.controls.phone.touched && form.controls.phone.invalid ? 'user-phone-error' : null
+          "
+        />
       </span>
+      @if (form.controls.phone.touched && form.controls.phone.hasError('required')) {
+        <app-field-error id="user-phone-error">{{ lang.t('users.required') }}</app-field-error>
+      } @else if (form.controls.phone.touched && form.controls.phone.invalid) {
+        <app-field-error id="user-phone-error">{{ lang.t('users.invalidPhone') }}</app-field-error>
+      }
     </label>
     <label class="field">
       <span class="field__label">{{ lang.t('users.role') }}</span>
-      <p-select formControlName="role" [options]="formRoles()" optionLabel="label" optionValue="value" />
+      <p-select
+        formControlName="role"
+        [options]="formRoles()"
+        optionLabel="label"
+        optionValue="value"
+      />
     </label>
     <label class="field">
       <span class="field__label">{{ lang.t('users.status') }}</span>
-      <p-select formControlName="status" [options]="formStatuses()" optionLabel="label" optionValue="value" />
+      <p-select
+        formControlName="status"
+        [options]="formStatuses()"
+        optionLabel="label"
+        optionValue="value"
+      />
     </label>
-    <button class="btn btn-primary" type="submit">{{ lang.t('common.save') }}</button>
+    <button class="btn btn-primary" type="submit" [disabled]="saving()">
+      {{ lang.t('common.save') }}
+    </button>
   </form>
 </p-dialog>
 
@@ -133,12 +225,30 @@
 >
   @if (selected(); as user) {
     <dl class="detail-list">
-      <div><dt>{{ lang.t('users.name') }}</dt><dd>{{ user.name }}</dd></div>
-      <div><dt>{{ lang.t('users.email') }}</dt><dd>{{ user.email }}</dd></div>
-      <div><dt>{{ lang.t('users.phone') }}</dt><dd>{{ user.phone }}</dd></div>
-      <div><dt>{{ lang.t('users.role') }}</dt><dd>{{ roleLabel(user.role) }}</dd></div>
-      <div><dt>{{ lang.t('users.status') }}</dt><dd><app-status-badge [status]="user.status" /></dd></div>
-      <div><dt>{{ lang.t('users.joined') }}</dt><dd>{{ user.joinedAt }}</dd></div>
+      <div>
+        <dt>{{ lang.t('users.name') }}</dt>
+        <dd>{{ user.name }}</dd>
+      </div>
+      <div>
+        <dt>{{ lang.t('users.email') }}</dt>
+        <dd>{{ user.email }}</dd>
+      </div>
+      <div>
+        <dt>{{ lang.t('users.phone') }}</dt>
+        <dd>{{ user.phone }}</dd>
+      </div>
+      <div>
+        <dt>{{ lang.t('users.role') }}</dt>
+        <dd>{{ roleLabel(user.role) }}</dd>
+      </div>
+      <div>
+        <dt>{{ lang.t('users.status') }}</dt>
+        <dd><app-status-badge [status]="user.status" /></dd>
+      </div>
+      <div>
+        <dt>{{ lang.t('users.joined') }}</dt>
+        <dd>{{ formatDate(user.joinedAt) }}</dd>
+      </div>
     </dl>
   }
 </p-dialog>

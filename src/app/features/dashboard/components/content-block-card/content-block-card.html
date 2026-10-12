@@ -1,0 +1,60 @@
+<article class="section-card">
+  <div class="section-head">
+    <h2>{{ block().title }}</h2>
+    <button type="button" class="btn btn-ghost" (click)="open()">
+      <i class="pi pi-pencil" aria-hidden="true"></i>
+      {{ lang.t('home.edit') }}
+    </button>
+  </div>
+  <div class="story">
+    <div>
+      <p>{{ block().body }}</p>
+      <ul class="check-list">
+        @for (point of block().points; track $index) {
+          <li>
+            <i class="pi pi-check-circle" aria-hidden="true"></i><span>{{ point }}</span>
+          </li>
+        }
+      </ul>
+    </div>
+    <div class="monument" aria-hidden="true">
+      <span class="monument__tower"></span>
+      <span class="monument__glow"></span>
+    </div>
+  </div>
+</article>
+
+<p-dialog
+  [header]="lang.t('home.edit')"
+  [visible]="editorOpen()"
+  (visibleChange)="!$event && editorOpen.set(false)"
+  [modal]="true"
+  [draggable]="false"
+  [style]="{ width: 'min(36rem, 94vw)' }"
+>
+  <form class="form-grid" [formGroup]="form" (ngSubmit)="save()">
+    <label class="field">
+      <span class="field__label">{{ lang.t('users.name') }}</span>
+      <span class="field__control"><input formControlName="title" /></span>
+    </label>
+    <label class="field">
+      <span class="field__label">{{ lang.t('home.body') }}</span>
+      <span class="field__control"><textarea rows="4" formControlName="body"></textarea></span>
+    </label>
+    <label class="field">
+      <span class="field__label">{{ lang.t('home.point') }} 1</span>
+      <span class="field__control"><input formControlName="point1" /></span>
+    </label>
+    <label class="field">
+      <span class="field__label">{{ lang.t('home.point') }} 2</span>
+      <span class="field__control"><input formControlName="point2" /></span>
+    </label>
+    <label class="field">
+      <span class="field__label">{{ lang.t('home.point') }} 3</span>
+      <span class="field__control"><input formControlName="point3" /></span>
+    </label>
+    <button class="btn btn-primary" type="submit" [disabled]="saving()">
+      {{ lang.t('common.save') }}
+    </button>
+  </form>
+</p-dialog>

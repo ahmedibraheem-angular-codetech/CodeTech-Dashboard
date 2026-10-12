@@ -28,7 +28,10 @@ export class BreadcrumbService {
   }
 
   private collect(route: ActivatedRouteSnapshot, acc: Crumb[] = [], url = ''): Crumb[] {
-    const segment = route.url.map((part) => part.path).filter(Boolean).join('/');
+    const segment = route.url
+      .map((part) => part.path)
+      .filter(Boolean)
+      .join('/');
     const next = segment ? `${url}/${segment}` : url;
     const key = route.data['breadcrumb'];
     if (typeof key === 'string') {

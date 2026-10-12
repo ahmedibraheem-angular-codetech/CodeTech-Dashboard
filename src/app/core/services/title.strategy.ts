@@ -1,4 +1,3 @@
-
 import { effect, inject, Injectable } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { RouterStateSnapshot, TitleStrategy } from '@angular/router';
@@ -30,14 +29,10 @@ export class AppTitleStrategy extends TitleStrategy {
     const key = this.deepestKey(snapshot.root);
     const appName = this.language.t('app.name');
 
-    this.title.setTitle(
-      key ? `${this.language.t(key)} | ${appName}` : appName,
-    );
+    this.title.setTitle(key ? `${this.language.t(key)} | ${appName}` : appName);
   }
 
-  private deepestKey(
-    route: RouterStateSnapshot['root'],
-  ): string | null {
+  private deepestKey(route: RouterStateSnapshot['root']): string | null {
     let current: RouterStateSnapshot['root'] | null = route;
     let key: string | null = null;
 
