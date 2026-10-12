@@ -13,16 +13,6 @@
     <app-breadcrumbs />
   </div>
   <div class="topbar__tools">
-    <p-button
-      [icon]="theme.theme() === 'dark' ? 'pi pi-sun' : 'pi pi-moon'"
-      severity="secondary"
-      variant="outlined"
-      styleClass="topbar__btn"
-      [ariaLabel]="lang.t('header.toggleTheme')"
-      [pTooltip]="lang.t('header.toggleTheme')"
-      tooltipPosition="bottom"
-      (onClick)="theme.toggle()"
-    />
     <!-- Directive form: aria-expanded has to sit on the native <button>, not on <p-button>. -->
     <button
       pButton

@@ -16,7 +16,6 @@ import { Tooltip } from 'primeng/tooltip';
 import { Breadcrumbs } from '../breadcrumbs/breadcrumbs';
 import { LanguageService } from '../../../core/services/language.service';
 import { LayoutService } from '../../../core/services/layout.service';
-import { ThemeService } from '../../../core/services/theme.service';
 import { UserAvatar } from '../../../shared/components/user-avatar/user-avatar';
 
 interface Notice {
@@ -47,7 +46,6 @@ interface Notice {
 })
 export class Header {
   readonly lang = inject(LanguageService);
-  readonly theme = inject(ThemeService);
   readonly layout = inject(LayoutService);
   private readonly router = inject(Router);
   readonly searchOpen = signal(false);

@@ -33,18 +33,6 @@
   <article class="section-card" id="appearance">
     <h2>{{ lang.t('settings.appearance') }}</h2>
     <div class="setting-row">
-      <strong id="theme-label">{{ lang.t('settings.theme') }}</strong>
-      <p-selectbutton
-        [options]="themeOptions()"
-        optionLabel="label"
-        optionValue="value"
-        [allowEmpty]="false"
-        ariaLabelledBy="theme-label"
-        [ngModel]="theme.theme()"
-        (ngModelChange)="theme.set($event)"
-      />
-    </div>
-    <div class="setting-row">
       <strong id="language-label">{{ lang.t('settings.language') }}</strong>
       <p-selectbutton
         [options]="languageOptions()"

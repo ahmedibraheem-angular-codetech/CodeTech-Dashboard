@@ -70,8 +70,8 @@
   text-align: start;
 }
 
-// The auth panel is designed to spec and stays light in both themes, so its fields use fixed
-// design tokens instead of the theme-aware ones.
+// The auth panel is designed to spec, so its fields use fixed design tokens instead of the
+// shared ones.
 .auth-card {
   --p-inputtext-background: #fff;
   --p-inputtext-color: #16324f;

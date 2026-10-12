@@ -9,7 +9,7 @@ import Aura from '@primeuix/themes/aura';
  * - `formField`: radius and padding shared by inputs, selects, date pickers and buttons.
  * - `components`: per-component tokens, the official way to tune PrimeNG without overriding its CSS.
  *
- * Dark mode is switched by `[data-theme="dark"]` (see `app.config.ts`).
+ * The app is light only: dark mode is disabled in `app.config.ts`.
  */
 export const AppTheme = definePreset(Aura, {
   semantic: {

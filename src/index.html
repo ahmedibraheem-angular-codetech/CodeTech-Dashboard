@@ -17,10 +17,6 @@
         const lang = localStorage.getItem('codetech.language') === 'en' ? 'en' : 'ar';
         document.documentElement.lang = lang;
         document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
-        if (localStorage.getItem('codetech.theme') === 'dark') {
-          document.documentElement.dataset.theme = 'dark';
-          document.documentElement.classList.add('app-dark');
-        }
       } catch (e) {}
     </script>
   </head>

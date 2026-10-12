@@ -175,9 +175,20 @@
   text-align: right;
 }
 
+// Cancels PrimeNG's `.p-iconfield .p-inputtext:not(:last-child)` icon-room end padding for the
+// left-to-right fields: with `dir="ltr"` its "end" is the right edge, which pushed the text away
+// from it. Same selector plus `.profile-field--ltr` to win on specificity.
+.p-iconfield .p-inputtext.profile-field--ltr:not(:last-child) {
+  padding-inline-end: var(--p-inputtext-padding-x);
+}
+
+// Half of the form width, anchored to the inline start (right in RTL).
 .profile-actions {
   display: flex;
   gap: 8px;
+  width: 50%;
+  min-width: 320px;
+  max-width: 100%;
 }
 
 .profile-actions > * {
@@ -251,8 +262,8 @@
   margin: 0;
 }
 
-::ng-deep .p-iconfield .p-inputtext:not(:last-child) {
- padding-inline-end: unset !important;
+::ng-deep .p-tabs .p-tablist {
+  
 }
 @media (max-width: 640px) {
   .profile-head {
@@ -265,5 +276,7 @@
 
   .profile-actions {
     flex-direction: column-reverse;
+    width: 100%;
+    min-width: 0;
   }
 }

@@ -79,7 +79,7 @@ Rules of thumb:
 
 - **One place to restyle the product:** `src/app/core/theme/app-theme.ts` (a PrimeNG preset on top of Aura). Change the `primary` palette there; `--app-primary` in SCSS is an alias of `--p-primary-500`, so SCSS follows automatically. Shared radius and padding of inputs/buttons are in the same file (`formField`), and per-component tokens go under `components`.
 - Tweak a single instance with scoped design-token CSS variables (for example `.auth-submit { --p-button-primary-background: … }` in `styles/components/_buttons.scss`) instead of overriding PrimeNG selectors. There is no `!important` in component styles.
-- App-level tokens (`--app-*`: spacing, surfaces, sidebar, shadows) live in `src/styles/themes`, with Light and Dark values side by side. Dark mode is toggled by `[data-theme="dark"]` on `<html>`.
+- App-level tokens (`--app-*`: spacing, surfaces, sidebar, shadows) live in `src/styles/themes/_light-theme.scss`. The app is light only; dark mode is disabled (`darkModeSelector: false` in `app.config.ts`).
 - Intentionally still custom: the sidebar navigation tree, the user chip, the notification list and the auth language pill. They are composite widgets with no matching PrimeNG component.
 
 ## Layout
@@ -88,7 +88,7 @@ Rules of thumb:
 - `src/app/layout` — admin shell, sidebar, header, auth split screen
 - `src/app/features/dashboard` — homepage management from the reference screen
 - `src/app/features/users` — searchable, sortable user table with mock CRUD
-- `src/app/features/settings` — theme, language, density, and sidebar preference
-- `src/styles` — tokens, light/dark themes, shared components, and layout/page partials (`layout/*`, `pages/home`)
+- `src/app/features/settings` — language, density, and sidebar preference
+- `src/styles` — tokens, light theme, shared components, and layout/page partials (`layout/*`, `pages/home`)
 
 The sidebar also opens the remaining CodeTech sections as routed placeholders so navigation matches the reference without inventing unfinished CRUD modules.
