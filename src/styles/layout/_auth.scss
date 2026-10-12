@@ -117,7 +117,8 @@
   flex-direction: column;
   overflow: hidden;
   background:
-    linear-gradient(to top, rgb(1 10 32 / 55%), transparent 38%),
+    radial-gradient(ellipse 22% 26% at 0% 100%, rgb(1 28 100 / 45%), transparent),
+    linear-gradient(to top, rgb(1 10 30 / 78%), transparent 42%),
     linear-gradient(
       62deg,
       #010b17 17%,
@@ -149,6 +150,10 @@
 }
 
 // The logo sits further in from the edge than the pill does, as in the design.
+.auth-brand__top app-brand-logo {
+  display: flex;
+}
+
 .auth-brand__top .brand {
   margin-inline-end: clamp(12px, 2.5vw, 36px);
 }
