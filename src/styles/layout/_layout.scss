@@ -535,15 +535,21 @@
   box-sizing: border-box;
   width: 100%;
   min-height: 100vh;
+  min-height: 100dvh;
   height: 100vh;
-  padding: 16px;
+  height: 100dvh;
+  padding: clamp(8px, 1.2vw, 16px);
   // background: #d7d9de;
 }
 
+// Fluid layout: the design sizes (brand 810×870, panel 586×806, gap/padding 52)
+// are the upper bounds of the clamps below, the columns keep the 810:586 ratio
+// and both cards stretch to the full height of the viewport.
 .auth-frame {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 4px;
+  grid-template-columns: minmax(0, 810fr) minmax(0, 586fr);
+  grid-template-rows: minmax(0, 1fr);
+  gap: clamp(8px, 1.2vw, 16px);
   width: 100%;
   height: 100%;
   min-height: 0;
@@ -553,20 +559,27 @@
 .auth-panel,
 .auth-brand {
   box-sizing: border-box;
-  width: 100%;
-  height: 100%;
   min-width: 0;
-  gap: 4px;
+  min-height: 0;
   opacity: 1;
-  padding: 32px 32px 32px 12px;
-  border-radius: 22px;
+  border-radius: clamp(20px, 2.2vw, 32px);
+}
+
+.auth-brand {
+  gap: 10px;
+  padding: clamp(20px, 2.2vw, 32px) clamp(8px, 0.85vw, 12px) clamp(20px, 2.2vw, 32px) clamp(20px, 2.2vw, 32px);
 }
 
 .auth-panel {
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  background: #dce3ed;
+  gap: clamp(24px, 3.6vw, 52px);
+  padding: clamp(24px, 3.6vw, 52px);
+  overflow-y: auto;
+  border: 1px solid #e3e8f2;
+  background: #f7f8fc;
 }
 
 .auth-card,
