@@ -15,7 +15,6 @@ import { InputIcon } from 'primeng/inputicon';
 import { InputText } from 'primeng/inputtext';
 import { Textarea } from 'primeng/textarea';
 
-import { TRANSLATIONS } from '../../../../core/i18n/translations';
 import { LanguageService } from '../../../../core/services/language.service';
 import { DESCRIPTION_MAX, SEO_PAGES, type SeoLocale } from '../../models/seo.model';
 import { SeoService } from '../../services/seo.service';
@@ -73,8 +72,8 @@ export class MetaCard {
 
   text(key: string): string {
     const page = SEO_PAGES.find((item) => item.id === this.pageId());
-    const name = page ? (TRANSLATIONS[page.labelKey]?.[this.locale()] ?? '') : '';
-    return (TRANSLATIONS[key]?.[this.locale()] ?? key).replaceAll('{page}', name);
+    const name = page ? (this.lang.lookup(page.labelKey, this.locale()) ?? '') : '';
+    return (this.lang.lookup(key, this.locale()) ?? key).replaceAll('{page}', name);
   }
 
   count(): number {

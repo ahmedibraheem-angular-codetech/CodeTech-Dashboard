@@ -12,7 +12,6 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { InputText } from 'primeng/inputtext';
 
-import { TRANSLATIONS } from '../../../../core/i18n/translations';
 import { LanguageService } from '../../../../core/services/language.service';
 import { SEO_PAGES, THUMB_MAX_BYTES, THUMB_TYPES, type SeoLocale } from '../../models/seo.model';
 import { SeoService } from '../../services/seo.service';
@@ -63,8 +62,8 @@ export class ThumbnailCard {
   /** Field copy follows the card's language, not the application language. */
   text(key: string): string {
     const page = SEO_PAGES.find((item) => item.id === this.pageId());
-    const name = page ? (TRANSLATIONS[page.labelKey]?.[this.locale()] ?? '') : '';
-    return (TRANSLATIONS[key]?.[this.locale()] ?? key).replaceAll('{page}', name);
+    const name = page ? (this.lang.lookup(page.labelKey, this.locale()) ?? '') : '';
+    return (this.lang.lookup(key, this.locale()) ?? key).replaceAll('{page}', name);
   }
 
   fileName(): string {

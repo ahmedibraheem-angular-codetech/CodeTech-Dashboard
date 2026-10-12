@@ -1,4 +1,4 @@
-import type { AppLanguage } from '../../../core/i18n/translations';
+import type { AppLanguage } from '../../../core/i18n/language';
 
 /** A page whose SEO content is edited in the shared form. */
 export interface SeoPageDef {

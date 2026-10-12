@@ -18,8 +18,12 @@ export class LanguageService {
   }
 
   t(key: string): string {
-    const language = this.language();
-    return TRANSLATIONS[key]?.[language] ?? key;
+    return this.lookup(key, this.language()) ?? key;
+  }
+
+  /** A translation in a chosen language, or undefined when the key is absent. */
+  lookup(key: string, language: AppLanguage): string | undefined {
+    return TRANSLATIONS[key]?.[language];
   }
 
   set(language: AppLanguage): void {

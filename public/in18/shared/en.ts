@@ -1,0 +1,15 @@
+export const en = {
+  'app.name': 'CodeTech',
+  'a11y.skip': 'Skip to content',
+  'roles.superAdmin': 'Super admin',
+  'roles.editor': 'Editor',
+  'roles.viewer': 'Viewer',
+  'status.active': 'Active',
+  'status.suspended': 'Suspended',
+  'common.loading': 'Loading',
+  'common.empty': 'Nothing here yet',
+  'common.error': 'Something went wrong',
+  'common.close': 'Close',
+  'common.save': 'Save',
+  'common.cancel': 'Cancel',
+} as const;
