@@ -1,0 +1,17 @@
+@mixin focus-ring {
+  outline: 2px solid var(--app-primary);
+  outline-offset: 2px;
+}
+
+@mixin card-surface {
+  background: var(--app-surface);
+  border: 1px solid var(--app-border);
+  border-radius: var(--app-radius-lg);
+  box-shadow: var(--app-shadow-sm);
+}
+
+@mixin truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

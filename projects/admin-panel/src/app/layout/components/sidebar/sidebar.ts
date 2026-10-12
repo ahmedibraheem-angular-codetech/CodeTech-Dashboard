@@ -1,0 +1,88 @@
+import { ChangeDetectionStrategy, Component, DestroyRef, inject, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { NavigationEnd, Router, RouterLink, RouterLinkActive } from '@angular/router';
+import { filter } from 'rxjs';
+
+import { AuthService } from '../../../core/auth/auth.service';
+import { NAV_ITEMS, type NavItem } from '../../../core/config/navigation';
+import { LanguageService } from '../../../core/services/language.service';
+import { LayoutService } from '../../../core/services/layout.service';
+import { BrandLogo } from '../../../shared/components/brand-logo/brand-logo';
+
+@Component({
+  selector: 'app-sidebar',
+  imports: [RouterLink, RouterLinkActive, BrandLogo],
+  templateUrl: './sidebar.html',
+  styleUrl: './sidebar.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+})
+export class Sidebar {
+  readonly items = NAV_ITEMS;
+  readonly lang = inject(LanguageService);
+  readonly layout = inject(LayoutService);
+  readonly auth = inject(AuthService);
+  private readonly router = inject(Router);
+  private readonly openIds = signal<ReadonlySet<string>>(new Set());
+
+  constructor() {
+    this.router.events
+      .pipe(
+        filter((event) => event instanceof NavigationEnd),
+        takeUntilDestroyed(inject(DestroyRef)),
+      )
+      .subscribe(() => {
+        this.layout.closeMobile();
+        this.expandActive();
+      });
+    this.expandActive();
+  }
+
+  isOpen(id: string): boolean {
+    return this.openIds().has(id);
+  }
+
+  toggle(id: string): void {
+    this.openIds.update((current) => {
+      const next = new Set(current);
+      if (next.has(id)) {
+        next.delete(id);
+      } else {
+        next.add(id);
+      }
+      return next;
+    });
+  }
+
+  childActive(item: NavItem): boolean {
+    return (item.children ?? []).some((child) => this.isRouteActive(child.route));
+  }
+
+  logout(): void {
+    this.auth.logout();
+    void this.router.navigate(['/login']);
+  }
+
+  initials(): string {
+    return this.auth.session()?.name.slice(0, 1) ?? 'أ';
+  }
+
+  private expandActive(): void {
+    for (const item of this.items) {
+      if (item.children && this.childActive(item)) {
+        this.openIds.update((current) => new Set(current).add(item.id));
+      }
+    }
+  }
+
+  private isRouteActive(route: string | undefined): boolean {
+    if (!route) {
+      return false;
+    }
+    return this.router.isActive(route, {
+      paths: 'subset',
+      queryParams: 'ignored',
+      fragment: 'ignored',
+      matrixParams: 'ignored',
+    });
+  }
+}

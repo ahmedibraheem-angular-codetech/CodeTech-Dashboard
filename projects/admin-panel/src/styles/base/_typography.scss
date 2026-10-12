@@ -1,0 +1,27 @@
+h1,
+h2,
+h3,
+p {
+  margin: 0;
+}
+
+h1 {
+  font-size: var(--app-font-xl);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+h2 {
+  font-size: 1.05rem;
+  font-weight: 800;
+}
+
+h3 {
+  font-size: var(--app-font-md);
+  font-weight: 700;
+}
+
+.muted {
+  color: var(--app-muted);
+  font-size: var(--app-font-sm);
+}

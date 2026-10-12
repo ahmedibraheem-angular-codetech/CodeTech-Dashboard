@@ -1,0 +1,12 @@
+@use 'themes/light-theme';
+@use 'themes/dark-theme';
+@use 'base/reset';
+@use 'base/typography';
+@use 'base/global';
+@use 'components/buttons';
+@use 'components/forms';
+@use 'components/tables';
+@use 'layout/layout';
+@use 'vendors/primeng';
+
+@import 'vendors/bootstrap';

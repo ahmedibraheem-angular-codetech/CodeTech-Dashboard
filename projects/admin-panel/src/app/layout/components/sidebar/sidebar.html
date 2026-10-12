@@ -1,0 +1,58 @@
+<aside class="sidebar">
+  <app-brand-logo tone="color" />
+  <nav class="sidebar__nav" [attr.aria-label]="lang.t('nav.home')">
+    @for (item of items; track item.id) {
+      @if (item.children?.length) {
+        <div class="sidebar__group" [class.is-open]="isOpen(item.id)">
+          <button
+            type="button"
+            class="sidebar__link"
+            [class.is-active]="childActive(item)"
+            (click)="toggle(item.id)"
+            [attr.aria-expanded]="isOpen(item.id)"
+          >
+            <i [class]="item.icon" aria-hidden="true"></i>
+            <span class="sidebar__label">{{ lang.t(item.labelKey) }}</span>
+            <i class="pi pi-angle-down sidebar__chevron" aria-hidden="true"></i>
+          </button>
+          @if (isOpen(item.id)) {
+            <div class="sidebar__children">
+              @for (child of item.children; track child.id) {
+                <a
+                  class="sidebar__child"
+                  [routerLink]="child.route"
+                  [fragment]="child.fragment"
+                  routerLinkActive="is-active"
+                  [routerLinkActiveOptions]="{ exact: child.route === '/settings' && !child.fragment }"
+                >
+                  <i [class]="child.icon" aria-hidden="true"></i>
+                  <span class="sidebar__label">{{ lang.t(child.labelKey) }}</span>
+                </a>
+              }
+            </div>
+          }
+        </div>
+      } @else {
+        <a
+          class="sidebar__link"
+          [routerLink]="item.route"
+          routerLinkActive="is-active"
+          [routerLinkActiveOptions]="{ exact: !!item.exact }"
+        >
+          <i [class]="item.icon" aria-hidden="true"></i>
+          <span class="sidebar__label">{{ lang.t(item.labelKey) }}</span>
+        </a>
+      }
+    }
+  </nav>
+  <div class="sidebar__user">
+    <span class="avatar" aria-hidden="true">{{ initials() }}</span>
+    <div class="sidebar__user-copy">
+      <strong>{{ auth.session()?.name }}</strong>
+      <small>{{ lang.t(auth.session()?.roleKey ?? 'roles.superAdmin') }}</small>
+    </div>
+    <button type="button" class="sidebar__logout" (click)="logout()" [attr.aria-label]="lang.t('header.logout')">
+      <i class="pi pi-sign-out" aria-hidden="true"></i>
+    </button>
+  </div>
+</aside>

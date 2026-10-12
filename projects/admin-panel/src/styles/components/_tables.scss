@@ -1,0 +1,92 @@
+.app-table.p-datatable {
+  border: 1px solid var(--app-border);
+  border-radius: var(--app-radius-lg);
+  overflow: hidden;
+  background: var(--app-surface);
+}
+
+.app-table .p-datatable-thead > tr > th {
+  background: var(--app-surface-muted);
+  color: var(--app-text);
+  font-weight: 800;
+  border-color: var(--app-border);
+}
+
+.app-table .p-datatable-tbody > tr > td {
+  border-color: var(--app-border);
+  color: var(--app-text);
+}
+
+.app-table .p-datatable-tbody > tr:hover {
+  background: color-mix(in srgb, var(--app-primary) 6%, transparent);
+}
+
+.table-actions {
+  display: flex;
+  gap: 6px;
+  justify-content: flex-start;
+}
+
+.activity-list {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.activity-list li {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--app-border);
+}
+
+.filters {
+  display: grid;
+  grid-template-columns: minmax(180px, 1.4fr) repeat(3, minmax(140px, 1fr));
+  gap: 12px;
+}
+
+.detail-list {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+}
+
+.detail-list div {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--app-border);
+}
+
+.detail-list dt {
+  color: var(--app-muted);
+}
+
+.detail-list dd {
+  margin: 0;
+  font-weight: 700;
+}
+
+.setting-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--app-border);
+}
+
+@media (max-width: 991px) {
+  .filters,
+  .setting-row {
+    grid-template-columns: 1fr;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+  }
+}

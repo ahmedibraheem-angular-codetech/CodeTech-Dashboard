@@ -1,0 +1,64 @@
+// Compile-time tokens. Runtime theme values are emitted as CSS custom properties.
+$color-primary: #2f6fed;
+$color-primary-soft: #b9d9fb;
+$color-secondary: #0f2744;
+$color-success: #16a34a;
+$color-warning: #d97706;
+$color-danger: #e11d48;
+$color-info: #0284c7;
+
+$color-background: #e8ebf0;
+$color-canvas: #f4f7fb;
+$color-surface: #ffffff;
+$color-surface-muted: #f8fafc;
+$color-text: #16324f;
+$color-muted: #64748b;
+$color-border: #e6ebf2;
+
+$color-sidebar-bg: #ffffff;
+$color-sidebar-text: #334155;
+$color-sidebar-active: #2f6fed;
+$color-header-bg: #ffffff;
+
+$font-family: 'Cairo', 'Inter', 'Segoe UI', tahoma, sans-serif;
+$font-size-xs: 0.75rem;
+$font-size-sm: 0.8125rem;
+$font-size-md: 0.9375rem;
+$font-size-lg: 1.125rem;
+$font-size-xl: 1.5rem;
+$font-size-2xl: 1.875rem;
+
+$space-1: 0.25rem;
+$space-2: 0.5rem;
+$space-3: 0.75rem;
+$space-4: 1rem;
+$space-5: 1.25rem;
+$space-6: 1.5rem;
+$space-8: 2rem;
+
+$radius-sm: 8px;
+$radius-md: 12px;
+$radius-lg: 18px;
+$radius-xl: 28px;
+
+$shadow-sm: 0 8px 24px rgba(15, 23, 42, 0.05);
+$shadow-md: 0 16px 40px rgba(15, 23, 42, 0.08);
+
+$sidebar-width: 280px;
+$sidebar-collapsed: 88px;
+$header-height: 64px;
+
+$bp-sm: 576px;
+$bp-md: 768px;
+$bp-lg: 992px;
+$bp-xl: 1200px;
+
+$transition-fast: 160ms;
+$transition-base: 240ms;
+
+$z-base: 1;
+$z-header: 20;
+$z-sidebar: 30;
+$z-drawer: 40;
+$z-overlay: 50;
+$z-toast: 70;

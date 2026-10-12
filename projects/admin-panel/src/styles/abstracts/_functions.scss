@@ -1,0 +1,5 @@
+@use 'abstracts/variables' as *;
+
+@function space($step) {
+  @return $step * $space-1;
+}

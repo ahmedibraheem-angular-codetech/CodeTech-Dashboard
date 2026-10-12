@@ -1,0 +1,83 @@
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--app-space-2);
+  min-height: 42px;
+  padding: 0 16px;
+  border-radius: 12px;
+  border: 1px solid transparent;
+  background: transparent;
+  font-weight: 700;
+  transition: background var(--app-transition-fast), color var(--app-transition-fast),
+    border-color var(--app-transition-fast), opacity var(--app-transition-fast);
+}
+
+.btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.65;
+}
+
+.btn-primary {
+  background: var(--app-primary);
+  color: #fff;
+}
+
+.btn-primary:hover:not(:disabled) {
+  filter: brightness(0.96);
+}
+
+.btn-soft {
+  background: #e7f2fd;
+  color: #1e4f93;
+  border-color: #d5e7fa;
+}
+
+[data-theme='dark'] .btn-soft {
+  background: #172554;
+  color: #bfdbfe;
+  border-color: #1e3a8a;
+}
+
+.btn-ghost {
+  background: var(--app-surface);
+  color: var(--app-text);
+  border-color: var(--app-border);
+}
+
+.btn-danger {
+  background: #fff1f2;
+  color: var(--app-danger);
+  border-color: #ffe4e6;
+}
+
+.btn-icon {
+  width: 42px;
+  min-height: 42px;
+  padding: 0;
+}
+
+.btn-auth,
+.btn-auth-solid {
+  position: relative;
+  width: 100%;
+  min-height: 52px;
+  border-radius: 14px;
+  font-size: 1rem;
+}
+
+.btn-auth {
+  background: #9ecff6;
+  color: #16324f;
+}
+
+.btn-auth-solid {
+  background: #2f6fed;
+  color: #fff;
+}
+
+.btn-auth i,
+.btn-auth-solid i {
+  position: absolute;
+  inset-inline-end: 18px;
+}

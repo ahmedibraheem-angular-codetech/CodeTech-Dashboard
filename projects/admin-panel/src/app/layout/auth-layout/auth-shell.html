@@ -1,0 +1,24 @@
+<div class="auth-shell">
+  <div class="auth-frame">
+    <section class="auth-brand">
+      <div class="auth-brand__top">
+        <button type="button" class="lang-pill" (click)="lang.toggle()">
+          <span>{{ lang.language() === 'ar' ? 'العربية' : 'English' }}</span>
+          <span class="lang-pill__badge">{{ lang.language() === 'ar' ? 'EN' : 'ع' }}</span>
+        </button>
+        <app-brand-logo tone="light" />
+      </div>
+      <svg class="auth-mark" viewBox="0 0 250 352" aria-hidden="true">
+        <path
+          fill="#8fb4e8"
+          d="M236.47,0h-98.23c-2.47,0-4.47,2-4.47,4.47v58.68c0,2.46,1.99,4.46,4.45,4.47l95.65.41c2.46.01,4.45,2.01,4.45,4.47v206.87c0,2.47-2,4.47-4.47,4.47H71.4c-2.47,0-4.47-2-4.47-4.47v-98.95c0-2.47,2-4.47,4.47-4.47h57.9c2.47,0,4.47-2,4.47-4.47v-102.03c0-1.18-.46-2.31-1.29-3.15L68.16,1.33c-.84-.85-1.98-1.33-3.18-1.33H4.47C2,0,0,2,0,4.47v58.69c0,2.46,1.98,4.45,4.44,4.47l58.04.39c2.46.02,4.44,2.01,4.44,4.47v98.98c0,2.47-2,4.47-4.47,4.47H4.47c-2.47,0-4.47,2-4.47,4.47v102.7c0,1.19.47,2.32,1.31,3.16l64.31,64.31c.84.84,1.98,1.31,3.16,1.31h167.69c1.19,0,2.32-.47,3.16-1.31l64.31-64.31c.84-.84,1.31-1.98,1.31-3.16V68.78c0-1.19-.47-2.32-1.31-3.16L239.63,1.31c-.84-.84-1.98-1.31-3.16-1.31Z"
+        />
+      </svg>
+    </section>
+    <section class="auth-panel">
+      <div class="auth-card" [attr.dir]="lang.language() === 'ar' ? 'rtl' : 'ltr'">
+        <ng-content />
+      </div>
+    </section>
+  </div>
+</div>

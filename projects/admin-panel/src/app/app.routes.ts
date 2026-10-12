@@ -1,0 +1,67 @@
+import { Routes } from '@angular/router';
+
+import { authGuard, guestGuard, verifyGuard } from './core/guards/auth.guard';
+
+const section = (path: string, titleKey: string): Routes[number] => ({
+  path,
+  loadComponent: () => import('./features/sections/pages/section/section').then((m) => m.SectionPage),
+  data: { breadcrumb: titleKey, titleKey },
+});
+
+export const routes: Routes = [
+  {
+    path: 'login',
+    canActivate: [guestGuard],
+    loadComponent: () => import('./features/auth/pages/login/login').then((m) => m.Login),
+    data: { titleKey: 'auth.loginTitle' },
+  },
+  {
+    path: 'verify',
+    canActivate: [verifyGuard],
+    loadComponent: () => import('./features/auth/pages/verify/verify').then((m) => m.Verify),
+    data: { titleKey: 'auth.verifyTitle' },
+  },
+  {
+    path: '',
+    canActivate: [authGuard],
+    loadComponent: () => import('./layout/admin-layout/admin-layout').then((m) => m.AdminLayout),
+    children: [
+      {
+        path: '',
+        loadComponent: () => import('./features/dashboard/pages/home/home').then((m) => m.Home),
+        data: { breadcrumb: 'home.manage', titleKey: 'home.manage' },
+      },
+      {
+        path: 'users',
+        loadComponent: () => import('./features/users/pages/users/users').then((m) => m.UsersPage),
+        data: { breadcrumb: 'users.title', titleKey: 'users.title' },
+      },
+      {
+        path: 'settings',
+        loadComponent: () => import('./features/settings/pages/settings/settings').then((m) => m.SettingsPage),
+        data: { breadcrumb: 'settings.title', titleKey: 'settings.title' },
+      },
+      section('about', 'nav.about'),
+      section('contact/inquiries', 'nav.inquiries'),
+      section('contact/start', 'nav.startProjects'),
+      section('contact/new', 'nav.contactNew'),
+      section('contact/done', 'nav.contactDone'),
+      section('products/page', 'nav.productsPage'),
+      section('products', 'nav.productsItem'),
+      section('products/categories', 'nav.categories'),
+      section('projects/page', 'nav.projectsPage'),
+      section('projects', 'nav.projectsItem'),
+      section('services', 'nav.services'),
+      section('knowledge', 'nav.knowledge'),
+      section('reviews', 'nav.reviews'),
+      section('settings/permissions', 'nav.permissions'),
+      section('settings/social', 'nav.social'),
+      section('support/terms', 'nav.terms'),
+      section('support/privacy', 'nav.privacy'),
+      section('support/faq', 'nav.faq'),
+      section('support', 'nav.helpCenter'),
+      section('seo', 'nav.seo'),
+    ],
+  },
+  { path: '**', redirectTo: '' },
+];

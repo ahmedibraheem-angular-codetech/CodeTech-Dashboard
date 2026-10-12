@@ -1,0 +1,162 @@
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.field__label {
+  font-size: var(--app-font-sm);
+  font-weight: 600;
+  color: var(--app-muted);
+}
+
+.field__control {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 52px;
+  padding-inline: 14px;
+  background: var(--app-surface);
+  border: 1px solid var(--app-border);
+  border-radius: 14px;
+}
+
+.field__control input,
+.field__control textarea {
+  flex: 1;
+  width: 100%;
+  border: 0;
+  background: transparent;
+  outline: none;
+  text-align: start;
+}
+
+.field__control textarea {
+  min-height: 96px;
+  resize: vertical;
+  padding-block: 12px;
+}
+
+.field__control i,
+.field__toggle {
+  color: #94a3b8;
+}
+
+.field__toggle {
+  border: 0;
+  background: transparent;
+  padding: 0;
+}
+
+.field__control.is-invalid {
+  border-color: var(--app-danger);
+}
+
+.field__meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.field__error {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  color: var(--app-danger);
+  font-size: var(--app-font-sm);
+}
+
+.field__link {
+  border: 0;
+  background: transparent;
+  padding: 0;
+  color: #1e3a5f;
+  font-size: var(--app-font-sm);
+  font-weight: 700;
+}
+
+.login-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.remember {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #64748b;
+  font-size: var(--app-font-sm);
+  font-weight: 600;
+}
+
+.remember__input {
+  appearance: none;
+  width: 36px;
+  height: 20px;
+  margin: 0;
+  border-radius: 999px;
+  background: #e8edf3;
+  position: relative;
+  cursor: pointer;
+}
+
+.remember__input::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  inset-inline-start: 2px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.16);
+}
+
+.remember__input:checked {
+  background: #93c5fd;
+}
+
+.remember__input:checked::after {
+  inset-inline-start: 18px;
+}
+
+.p-inputotp {
+  display: flex;
+  direction: ltr;
+  justify-content: space-between;
+  gap: 14px;
+  width: 100%;
+}
+
+.p-inputotp .p-inputtext {
+  flex: 1;
+  width: 100%;
+  height: 64px;
+  text-align: center;
+  border-radius: 16px;
+  border: 1px solid #e7edf4;
+  background: #fff;
+  color: #16324f;
+  font-size: 1.25rem;
+  font-weight: 700;
+  box-shadow: none;
+}
+
+.p-inputotp .p-inputtext.otp-invalid,
+.p-inputotp .p-inputtext.ng-invalid.ng-touched {
+  border-color: #f43f5e;
+}
+
+.otp-error {
+  justify-content: flex-start;
+  color: #e11d48;
+}
+
+.form-grid {
+  display: grid;
+  gap: 14px;
+}

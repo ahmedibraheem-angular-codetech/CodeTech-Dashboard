@@ -1,0 +1,32 @@
+<app-auth-shell>
+  <form class="verify-form" [formGroup]="form" (ngSubmit)="submit()">
+    <button type="button" class="back-btn" (click)="back()" [attr.aria-label]="lang.t('auth.back')">
+      <i class="pi pi-angle-right" aria-hidden="true"></i>
+    </button>
+    <h1>{{ lang.t('auth.verifyTitle') }}</h1>
+    <div class="field">
+      <span class="field__label">{{ lang.t('auth.verifyLabel') }}</span>
+      <p-inputotp
+        formControlName="code"
+        [length]="4"
+        [integerOnly]="true"
+        [styleClass]="invalid() ? 'otp-invalid' : ''"
+        [attr.aria-label]="lang.t('auth.verifyLabel')"
+        (onChange)="clearInvalid()"
+      />
+      @if (invalid()) {
+        <span class="field__error otp-error" id="otp-error"><i class="pi pi-times-circle" aria-hidden="true"></i>{{ lang.t('auth.invalidOtp') }}</span>
+      } @else if (form.controls.code.touched && form.controls.code.invalid) {
+        <span class="field__error otp-error">{{ lang.t('auth.otpRequired') }}</span>
+      }
+    </div>
+    <button class="btn btn-auth" type="submit" [disabled]="submitting()">
+      <span>{{ lang.t('auth.verifySubmit') }}</span>
+      <i class="pi pi-angle-left" aria-hidden="true"></i>
+    </button>
+    <div class="otp-footer">
+      <span>{{ lang.t('auth.notReceived') }} {{ clock() }}</span>
+      <button type="button" class="field__link" (click)="resend()" [disabled]="remaining() > 0">{{ lang.t('auth.resend') }}</button>
+    </div>
+  </form>
+</app-auth-shell>

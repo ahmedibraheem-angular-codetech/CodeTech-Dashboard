@@ -1,0 +1,17 @@
+<div class="state" [attr.role]="mode() === 'loading' ? 'status' : 'alert'">
+  @switch (mode()) {
+    @case ('loading') {
+      <span class="spinner" aria-hidden="true"></span>
+      <p>{{ message() || lang.t('common.loading') }}</p>
+    }
+    @case ('empty') {
+      <i class="pi pi-inbox" aria-hidden="true"></i>
+      <p>{{ message() || lang.t('common.empty') }}</p>
+    }
+    @case ('error') {
+      <i class="pi pi-exclamation-circle" aria-hidden="true"></i>
+      <p>{{ message() || lang.t('common.error') }}</p>
+      <button type="button" class="btn btn-ghost" (click)="retry.emit()">{{ lang.t('users.retry') }}</button>
+    }
+  }
+</div>

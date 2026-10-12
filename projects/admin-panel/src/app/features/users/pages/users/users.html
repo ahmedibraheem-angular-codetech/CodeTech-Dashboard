@@ -1,0 +1,146 @@
+<section class="page">
+  <app-page-header [title]="lang.t('users.title')" [subtitle]="lang.t('users.subtitle')">
+    <button type="button" class="btn btn-primary" (click)="openCreate()">
+      <i class="pi pi-plus" aria-hidden="true"></i>
+      {{ lang.t('users.add') }}
+    </button>
+  </app-page-header>
+
+  <div class="filters">
+    <label class="field">
+      <span class="field__label">{{ lang.t('users.search') }}</span>
+      <span class="field__control">
+        <i class="pi pi-search" aria-hidden="true"></i>
+        <input [value]="query()" (input)="onSearch($event)" [placeholder]="lang.t('users.search')" />
+      </span>
+    </label>
+    <label class="field">
+      <span class="field__label">{{ lang.t('users.role') }}</span>
+      <p-select [options]="roleOptions()" optionLabel="label" optionValue="value" [ngModel]="role()" (ngModelChange)="role.set($event)" />
+    </label>
+    <label class="field">
+      <span class="field__label">{{ lang.t('users.status') }}</span>
+      <p-select [options]="statusOptions()" optionLabel="label" optionValue="value" [ngModel]="status()" (ngModelChange)="status.set($event)" />
+    </label>
+    <label class="field">
+      <span class="field__label">{{ lang.t('users.from') }}</span>
+      <p-datepicker [ngModel]="from()" (ngModelChange)="from.set($event)" [showIcon]="true" dateFormat="yy-mm-dd" [showButtonBar]="true" />
+    </label>
+  </div>
+
+  @if (state() === 'loading') {
+    <app-state-view mode="loading" />
+  } @else if (state() === 'error') {
+    <app-state-view mode="error" [message]="lang.t('users.loadError')" (retry)="load()" />
+  } @else {
+    <p-table
+      styleClass="app-table"
+      [value]="filtered()"
+      dataKey="id"
+      [paginator]="true"
+      [rows]="5"
+      [rowsPerPageOptions]="[5, 10, 20]"
+      sortMode="single"
+      [rowHover]="true"
+    >
+      <ng-template #header>
+        <tr>
+          <th pSortableColumn="name">{{ lang.t('users.name') }} <p-sortIcon field="name" /></th>
+          <th pSortableColumn="email">{{ lang.t('users.email') }} <p-sortIcon field="email" /></th>
+          <th>{{ lang.t('users.role') }}</th>
+          <th>{{ lang.t('users.status') }}</th>
+          <th pSortableColumn="joinedAt">{{ lang.t('users.joined') }} <p-sortIcon field="joinedAt" /></th>
+          <th>{{ lang.t('users.actions') }}</th>
+        </tr>
+      </ng-template>
+      <ng-template #body let-user>
+        <tr>
+          <td>{{ user.name }}</td>
+          <td>{{ user.email }}</td>
+          <td>{{ roleLabel(user.role) }}</td>
+          <td><app-status-badge [status]="user.status" /></td>
+          <td>{{ user.joinedAt }}</td>
+          <td>
+            <div class="table-actions">
+              <button type="button" class="btn btn-ghost btn-icon" (click)="openView(user)" [attr.aria-label]="lang.t('users.view')">
+                <i class="pi pi-eye" aria-hidden="true"></i>
+              </button>
+              <button type="button" class="btn btn-ghost btn-icon" (click)="openEdit(user)" [attr.aria-label]="lang.t('users.edit')">
+                <i class="pi pi-pencil" aria-hidden="true"></i>
+              </button>
+              <button type="button" class="btn btn-danger btn-icon" (click)="remove(user)" [attr.aria-label]="lang.t('users.delete')">
+                <i class="pi pi-trash" aria-hidden="true"></i>
+              </button>
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+      <ng-template #emptymessage>
+        <tr>
+          <td colspan="6"><app-state-view mode="empty" [message]="lang.t('users.empty')" /></td>
+        </tr>
+      </ng-template>
+    </p-table>
+  }
+</section>
+
+<p-dialog
+  [header]="lang.t(editor() === 'create' ? 'users.createTitle' : 'users.editTitle')"
+  [visible]="editor() === 'create' || editor() === 'edit'"
+  (visibleChange)="!$event && editor.set(null)"
+  [modal]="true"
+  [draggable]="false"
+  [style]="{ width: 'min(34rem, 94vw)' }"
+>
+  <form class="form-grid" [formGroup]="form" (ngSubmit)="save()">
+    <label class="field">
+      <span class="field__label">{{ lang.t('users.name') }}</span>
+      <span class="field__control" [class.is-invalid]="form.controls.name.touched && form.controls.name.invalid">
+        <input formControlName="name" />
+      </span>
+    </label>
+    <label class="field">
+      <span class="field__label">{{ lang.t('users.email') }}</span>
+      <span class="field__control" [class.is-invalid]="form.controls.email.touched && form.controls.email.invalid">
+        <input type="email" formControlName="email" />
+      </span>
+    </label>
+    <label class="field">
+      <span class="field__label">{{ lang.t('users.phone') }}</span>
+      <span class="field__control" [class.is-invalid]="form.controls.phone.touched && form.controls.phone.invalid">
+        <input formControlName="phone" />
+      </span>
+    </label>
+    <label class="field">
+      <span class="field__label">{{ lang.t('users.role') }}</span>
+      <p-select formControlName="role" [options]="formRoles()" optionLabel="label" optionValue="value" />
+    </label>
+    <label class="field">
+      <span class="field__label">{{ lang.t('users.status') }}</span>
+      <p-select formControlName="status" [options]="formStatuses()" optionLabel="label" optionValue="value" />
+    </label>
+    <button class="btn btn-primary" type="submit">{{ lang.t('common.save') }}</button>
+  </form>
+</p-dialog>
+
+<p-dialog
+  [header]="lang.t('users.viewTitle')"
+  [visible]="editor() === 'view'"
+  (visibleChange)="!$event && editor.set(null)"
+  [modal]="true"
+  [draggable]="false"
+  [style]="{ width: 'min(28rem, 94vw)' }"
+>
+  @if (selected(); as user) {
+    <dl class="detail-list">
+      <div><dt>{{ lang.t('users.name') }}</dt><dd>{{ user.name }}</dd></div>
+      <div><dt>{{ lang.t('users.email') }}</dt><dd>{{ user.email }}</dd></div>
+      <div><dt>{{ lang.t('users.phone') }}</dt><dd>{{ user.phone }}</dd></div>
+      <div><dt>{{ lang.t('users.role') }}</dt><dd>{{ roleLabel(user.role) }}</dd></div>
+      <div><dt>{{ lang.t('users.status') }}</dt><dd><app-status-badge [status]="user.status" /></dd></div>
+      <div><dt>{{ lang.t('users.joined') }}</dt><dd>{{ user.joinedAt }}</dd></div>
+    </dl>
+  }
+</p-dialog>
+
+<app-confirm-dialog />
