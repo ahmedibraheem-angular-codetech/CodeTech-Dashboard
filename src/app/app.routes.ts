@@ -68,7 +68,11 @@ export const routes: Routes = [
       section('support/privacy', 'nav.privacy'),
       section('support/faq', 'nav.faq'),
       section('support', 'nav.helpCenter'),
-      section('seo', 'nav.seo'),
+      {
+        path: 'seo',
+        loadComponent: () => import('./features/seo/pages/seo/seo').then((m) => m.SeoPage),
+        data: { breadcrumb: 'nav.seo', titleKey: 'nav.seo' },
+      },
     ],
   },
   { path: '**', redirectTo: '' },

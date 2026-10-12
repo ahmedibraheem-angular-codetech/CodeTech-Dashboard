@@ -1,0 +1,59 @@
+<app-seo-panel title="SEO" icon="pi pi-search" [locale]="locale()" (picked)="locale.set($event)">
+  <form class="seo-fields" [formGroup]="form">
+    <div class="field">
+      <label class="field__label" for="seo-meta-title">{{ text('seo.metaTitle') }}</label>
+      <p-iconfield>
+        <input
+          pInputText
+          id="seo-meta-title"
+          [fluid]="true"
+          formControlName="metaTitle"
+          [placeholder]="text('seo.metaTitlePh')"
+        />
+        <p-inputicon class="pi pi-align-left" />
+      </p-iconfield>
+    </div>
+    <div class="field">
+      <label class="field__label" for="seo-slug">{{ text('seo.slug') }}</label>
+      <p-iconfield>
+        <input
+          pInputText
+          id="seo-slug"
+          [fluid]="true"
+          formControlName="slug"
+          [placeholder]="text('seo.slugPh')"
+          autocomplete="off"
+        />
+        <p-inputicon class="pi pi-link" />
+      </p-iconfield>
+    </div>
+    <div class="field">
+      <label class="field__label" for="seo-keywords">{{ text('seo.keywords') }}</label>
+      <p-iconfield>
+        <input
+          pInputText
+          id="seo-keywords"
+          [fluid]="true"
+          formControlName="keywords"
+          [placeholder]="text('seo.keywordsPh')"
+        />
+        <p-inputicon class="pi pi-circle" />
+      </p-iconfield>
+    </div>
+    <div class="field">
+      <label class="field__label" for="seo-description">{{ text('seo.description') }}</label>
+      <div class="seo-count">
+        <textarea
+          pTextarea
+          id="seo-description"
+          rows="5"
+          [fluid]="true"
+          formControlName="description"
+          [maxlength]="max"
+          [placeholder]="text('seo.descriptionPh')"
+        ></textarea>
+        <span>{{ count() }}/{{ max }}</span>
+      </div>
+    </div>
+  </form>
+</app-seo-panel>

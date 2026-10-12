@@ -41,28 +41,14 @@
       />
     </header>
 
-    <p-tabs class="profile-tabs" [(value)]="tab">
-      <p-tablist>
-        <p-tab value="data">
-          <i class="pi pi-user" aria-hidden="true"></i>
-          <span>{{ lang.t('profile.tabData') }}</span>
-        </p-tab>
-        <p-tab value="password">
-          <i class="pi pi-lock" aria-hidden="true"></i>
-          <span>{{ lang.t('profile.tabPassword') }}</span>
-        </p-tab>
-      </p-tablist>
-      <p-tabpanels>
-        <p-tabpanel value="data">
-          <div class="row g-2">
-            <div class="col-12 col-lg-7"><app-personal-data /></div>
-            <div class="col-12 col-lg-5"><app-avatar-card /></div>
-          </div>
-        </p-tabpanel>
-        <p-tabpanel value="password">
-          <app-password-change />
-        </p-tabpanel>
-      </p-tabpanels>
-    </p-tabs>
+    <app-page-tabs [tabs]="tabs" [value]="tab()" (valueChange)="tab.set($event)" />
+    @if (tab() === 'data') {
+      <div class="row g-2">
+        <div class="col-12 col-lg-7"><app-personal-data /></div>
+        <div class="col-12 col-lg-5"><app-avatar-card /></div>
+      </div>
+    } @else if (tab() === 'password') {
+      <app-password-change />
+    }
   </section>
 }

@@ -1,0 +1,87 @@
+// One tab design for every page. `app-page-tabs` keeps these overrides off PrimeNG
+// tabs that are not this component. The extra class beats PrimeNG's own `.p-tab` rules.
+app-page-tabs {
+  display: block;
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  padding: 8px;
+  border: 1px solid #e6edf5;
+  border-radius: 16px;
+  background: #fff;
+  --p-tabs-tablist-background: transparent;
+  --p-tabs-tablist-border-width: 0;
+  --p-tabs-active-bar-height: 0;
+  --p-tabs-tab-background: #fff;
+  --p-tabs-tab-hover-background: #f7f8fa;
+  --p-tabs-tab-active-background: #f3f5f8;
+  --p-tabs-tab-color: #8b95a5;
+  --p-tabs-tab-hover-color: #1b2a3a;
+  --p-tabs-tab-active-color: #1b2a3a;
+  --p-tabs-tab-padding: 0 16px;
+  --p-tabs-tab-font-weight: 600;
+  --p-tabs-tab-border-width: 1px;
+  --p-tabs-tab-border-color: #e6ebf2;
+  --p-tabs-tab-hover-border-color: #e6ebf2;
+  --p-tabs-tab-active-border-color: #e1e6ee;
+}
+
+app-page-tabs .p-tabs,
+app-page-tabs .p-tablist,
+app-page-tabs .p-tablist-content,
+app-page-tabs .p-tablist-tab-list {
+  width: 100%;
+  background: transparent;
+  border: 0;
+}
+
+app-page-tabs .p-tablist-tab-list {
+  display: flex;
+  min-width: 100%;
+  gap: 8px;
+}
+
+app-page-tabs .p-tab {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1 0 auto;
+  gap: 8px;
+  height: 40px;
+  border: 1px solid #e6ebf2;
+  border-radius: 12px;
+  background: #fff;
+  color: #8b95a5;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1;
+  white-space: nowrap;
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease,
+    border-color 0.15s ease;
+}
+
+app-page-tabs .p-tab .pi {
+  font-size: 14px;
+}
+
+app-page-tabs .p-tab:hover {
+  background: #f7f8fa;
+  color: #1b2a3a;
+}
+
+app-page-tabs .p-tab-active {
+  border-color: #e1e6ee;
+  background: #f3f5f8;
+  color: #1b2a3a;
+}
+
+app-page-tabs .p-tab:focus-visible {
+  outline: 2px solid #1c81d3;
+  outline-offset: 2px;
+}
+
+app-page-tabs .p-tablist-active-bar {
+  display: none;
+}

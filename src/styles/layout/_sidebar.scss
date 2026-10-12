@@ -101,15 +101,33 @@
   font-size: 13px;
 }
 
+// Visiting, hovering or focusing a row turns it into the solid blue pill from the design,
+// with the icon in a darker circle.
+.sidebar__link:hover,
+.sidebar__link:focus-visible,
 .sidebar__link.is-active,
+.sidebar__child:hover,
+.sidebar__child:focus-visible,
 .sidebar__child.is-active {
-  color: var(--app-sidebar-link-active);
+  background: #1c81d3;
+  color: #fff;
 }
 
+.sidebar__link:hover > i:not(.sidebar__chevron),
+.sidebar__link:focus-visible > i:not(.sidebar__chevron),
 .sidebar__link.is-active > i:not(.sidebar__chevron),
+.sidebar__child:hover > i,
+.sidebar__child:focus-visible > i,
 .sidebar__child.is-active > i {
-  background: var(--app-sidebar-icon-active-bg);
-  color: var(--app-sidebar-icon-active-color);
+  border-radius: 50%;
+  background: #0e4f96;
+  color: #fff;
+}
+
+.sidebar__link:hover .sidebar__chevron,
+.sidebar__link:focus-visible .sidebar__chevron,
+.sidebar__link.is-active .sidebar__chevron {
+  color: #fff;
 }
 
 .sidebar__chevron {

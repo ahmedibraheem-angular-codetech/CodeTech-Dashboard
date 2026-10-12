@@ -1,12 +1,12 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { Button } from 'primeng/button';
-import { Tab, TabList, TabPanel, TabPanels, Tabs } from 'primeng/tabs';
 import { Tag } from 'primeng/tag';
 
 import { AuthService } from '../../../../core/auth/auth.service';
 import { ProfileService } from '../../../../core/profile/profile.service';
 import { LanguageService } from '../../../../core/services/language.service';
+import { PageTabs, type PageTab } from '../../../../shared/components/page-tabs/page-tabs';
 import { UserAvatar } from '../../../../shared/components/user-avatar/user-avatar';
 import { AvatarCard } from '../../components/avatar-card/avatar-card';
 import { PasswordChange } from '../../components/password-change/password-change';
@@ -14,19 +14,7 @@ import { PersonalData } from '../../components/personal-data/personal-data';
 
 @Component({
   selector: 'app-profile-page',
-  imports: [
-    Button,
-    Tag,
-    Tabs,
-    TabList,
-    Tab,
-    TabPanels,
-    TabPanel,
-    UserAvatar,
-    PersonalData,
-    AvatarCard,
-    PasswordChange,
-  ],
+  imports: [Button, Tag, PageTabs, UserAvatar, PersonalData, AvatarCard, PasswordChange],
   templateUrl: './profile.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -35,6 +23,10 @@ export class ProfilePage {
   private readonly router = inject(Router);
   readonly lang = inject(LanguageService);
   readonly user = inject(ProfileService).profile;
+  readonly tabs: readonly PageTab[] = [
+    { id: 'data', labelKey: 'profile.tabData', icon: 'pi pi-user' },
+    { id: 'password', labelKey: 'profile.tabPassword', icon: 'pi pi-lock' },
+  ];
   readonly tab = signal<string | number | undefined>('data');
 
   /** Last sign in, split so the date and the time can carry their own icons. */

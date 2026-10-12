@@ -1,0 +1,10 @@
+<article class="seo-panel">
+  <header class="seo-panel__head">
+    <h2>{{ title() }}</h2>
+    <span class="icon-badge" aria-hidden="true"><i [class]="icon()"></i></span>
+  </header>
+  <app-locale-switch [value]="locale()" (picked)="picked.emit($event)" />
+  <div class="seo-panel__body">
+    <ng-content />
+  </div>
+</article>

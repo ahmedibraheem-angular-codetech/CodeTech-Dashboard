@@ -1,0 +1,53 @@
+<app-seo-panel
+  [title]="lang.t('seo.thumbHeading')"
+  icon="pi pi-image"
+  [locale]="locale()"
+  (picked)="locale.set($event)"
+>
+  <form class="seo-fields" [formGroup]="form">
+    <h3 class="seo-fields__title">
+      <i class="pi pi-image" aria-hidden="true"></i> {{ text('seo.uploadHeading') }}
+    </h3>
+    <div class="field">
+      <span class="field__label">{{ text('seo.uploadLabel') }}</span>
+      <label class="seo-drop" (dragover)="$event.preventDefault()" (drop)="onDrop($event)">
+        <input
+          type="file"
+          accept="image/png,image/jpeg"
+          [attr.aria-label]="text('seo.uploadLabel')"
+          (change)="onPick($event)"
+        />
+        @if (previewUrl()) {
+          <img class="seo-drop__preview" [src]="previewUrl()" alt="" />
+        } @else {
+          <i class="pi pi-file" aria-hidden="true"></i>
+        }
+        <strong>{{ fileName() || text('seo.uploadHint') }}</strong>
+        <small>{{ text('seo.uploadTypes') }}</small>
+      </label>
+      @if (errorKey()) {
+        <p class="field__error" role="alert">{{ text(errorKey()) }}</p>
+      }
+    </div>
+    <div class="field">
+      <label class="field__label" for="seo-thumb-title">{{ text('seo.thumbTitleLabel') }}</label>
+      <input
+        pInputText
+        id="seo-thumb-title"
+        [fluid]="true"
+        formControlName="thumbTitle"
+        [placeholder]="text('seo.thumbTitlePh')"
+      />
+    </div>
+    <div class="field">
+      <label class="field__label" for="seo-thumb-alt">{{ text('seo.thumbAltLabel') }}</label>
+      <input
+        pInputText
+        id="seo-thumb-alt"
+        [fluid]="true"
+        formControlName="thumbAlt"
+        [placeholder]="text('seo.thumbAltPh')"
+      />
+    </div>
+  </form>
+</app-seo-panel>

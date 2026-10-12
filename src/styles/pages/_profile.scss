@@ -109,47 +109,6 @@
   border-radius: 12px;
 }
 
-// Tabs: two equal pills inside a white card.
-.profile-tabs {
-  --p-tabs-tablist-background: var(--app-surface);
-  --p-tabs-tablist-border-width: 0;
-  --p-tabs-active-bar-height: 0;
-  --p-tabs-tab-background: transparent;
-  --p-tabs-tab-hover-background: var(--app-surface-muted);
-  --p-tabs-tab-active-background: var(--app-surface-muted);
-  --p-tabs-tab-border-width: 0;
-  --p-tabs-tab-color: var(--app-muted);
-  --p-tabs-tab-hover-color: var(--app-text);
-  --p-tabs-tab-active-color: var(--app-text);
-  --p-tabs-tab-margin: 0;
-  --p-tabs-tab-padding: 0.75rem 1rem;
-  --p-tabs-tabpanel-background: transparent;
-  --p-tabs-tabpanel-padding: 0;
-
-  display: block;
-}
-
-.profile-tabs .p-tablist {
-  padding: 8px;
-  border-radius: 16px;
-}
-
-.profile-tabs .p-tablist-tab-list {
-  gap: 8px;
-}
-
-.profile-tabs .p-tab {
-  display: inline-flex;
-  align-items: center;
-  flex: 1;
-  justify-content: center;
-  border-radius: 12px;
-}
-
-.profile-tabs .p-tabpanels {
-  margin-top: 8px;
-}
-
 // Cards.
 .profile-card .section-head__title h2 {
   font-size: 1.25rem;
@@ -263,7 +222,6 @@
 }
 
 ::ng-deep .p-tabs .p-tablist {
-  
 }
 @media (max-width: 640px) {
   .profile-head {

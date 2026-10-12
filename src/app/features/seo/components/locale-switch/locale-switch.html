@@ -1,0 +1,22 @@
+<div class="locale-switch" role="group" dir="ltr">
+  <button
+    type="button"
+    class="locale-switch__option"
+    [class.is-active]="value() === 'en'"
+    [attr.aria-pressed]="value() === 'en'"
+    (click)="picked.emit('en')"
+  >
+    <span>English</span>
+    <img src="images/flag-gb.svg" alt="" />
+  </button>
+  <button
+    type="button"
+    class="locale-switch__option"
+    [class.is-active]="value() === 'ar'"
+    [attr.aria-pressed]="value() === 'ar'"
+    (click)="picked.emit('ar')"
+  >
+    <span>عربي</span>
+    <img src="images/flag-sa.svg" alt="" />
+  </button>
+</div>
