@@ -1,5 +1,6 @@
 // Compile-time tokens. Runtime theme values are emitted as CSS custom properties.
-$color-primary: #2f6fed;
+// The primary palette lives in `app/core/theme/app-theme.ts` (PrimeNG preset) and is exposed
+// to SCSS as `--app-primary`, so there is intentionally no `$color-primary` here.
 $color-primary-soft: #b9d9fb;
 $color-secondary: #0f2744;
 $color-success: #16a34a;

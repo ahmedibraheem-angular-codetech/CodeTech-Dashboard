@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import { Button } from 'primeng/button';
 import { Dialog } from 'primeng/dialog';
 
 export interface ConfirmOptions {
@@ -11,7 +12,7 @@ export interface ConfirmOptions {
 
 @Component({
   selector: 'app-confirm-dialog',
-  imports: [Dialog],
+  imports: [Button, Dialog],
   templateUrl: './confirm-dialog.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

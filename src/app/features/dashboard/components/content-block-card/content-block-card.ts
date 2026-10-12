@@ -10,7 +10,10 @@ import {
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MessageService } from 'primeng/api';
+import { Button } from 'primeng/button';
 import { Dialog } from 'primeng/dialog';
+import { InputText } from 'primeng/inputtext';
+import { Textarea } from 'primeng/textarea';
 
 import { LanguageService } from '../../../../core/services/language.service';
 import { ContentBlock } from '../../models/homepage.model';
@@ -20,7 +23,7 @@ export type ContentBlockKind = 'about' | 'vision';
 
 @Component({
   selector: 'app-content-block-card',
-  imports: [ReactiveFormsModule, Dialog],
+  imports: [ReactiveFormsModule, Button, Dialog, InputText, Textarea],
   templateUrl: './content-block-card.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

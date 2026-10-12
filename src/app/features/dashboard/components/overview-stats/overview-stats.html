@@ -1,7 +1,9 @@
 <article class="section-card">
   <div class="section-head">
     <h2>{{ lang.t('home.overview') }}</h2>
-    <a class="btn btn-ghost" routerLink="/users">{{ lang.t('home.viewAll') }}</a>
+    <a pButton severity="secondary" variant="outlined" routerLink="/users">
+      <span pButtonLabel>{{ lang.t('home.viewAll') }}</span>
+    </a>
   </div>
   <div class="row g-3">
     <div class="col-6 col-xl-3">

@@ -3,10 +3,12 @@
     <div class="section-head__title">
       <h2>{{ lang.t('home.partners') }} ({{ partners().length }})</h2>
     </div>
-    <button type="button" class="btn btn-soft" (click)="open()">
-      <i class="pi pi-plus" aria-hidden="true"></i>
-      {{ lang.t('home.addPartner') }}
-    </button>
+    <p-button
+      icon="pi pi-plus"
+      [label]="lang.t('home.addPartner')"
+      variant="outlined"
+      (onClick)="open()"
+    />
   </div>
   @if (partners().length === 0) {
     <app-state-view mode="empty" />
@@ -15,16 +17,26 @@
       @for (partner of partners(); track partner.id) {
         <article class="partner-card" [attr.aria-label]="partner.name">
           <div class="partner-card__tools">
-            <button type="button" (click)="open(partner)" [attr.aria-label]="lang.t('home.edit')">
-              <i class="pi pi-pencil" aria-hidden="true"></i>
-            </button>
-            <button
-              type="button"
-              (click)="remove(partner)"
-              [attr.aria-label]="lang.t('users.delete')"
-            >
-              <i class="pi pi-trash" aria-hidden="true"></i>
-            </button>
+            <p-button
+              styleClass="partner-card__tool"
+              icon="pi pi-pencil"
+              severity="secondary"
+              size="small"
+              [ariaLabel]="lang.t('home.edit')"
+              [pTooltip]="lang.t('home.edit')"
+              tooltipPosition="top"
+              (onClick)="open(partner)"
+            />
+            <p-button
+              styleClass="partner-card__tool"
+              icon="pi pi-trash"
+              severity="secondary"
+              size="small"
+              [ariaLabel]="lang.t('users.delete')"
+              [pTooltip]="lang.t('users.delete')"
+              tooltipPosition="top"
+              (onClick)="remove(partner)"
+            />
           </div>
           <span>{{ partner.monogram }}</span>
         </article>
@@ -44,15 +56,13 @@
   <form class="form-grid" [formGroup]="form" (ngSubmit)="save()">
     <label class="field">
       <span class="field__label">{{ lang.t('home.partnerName') }}</span>
-      <span class="field__control"><input formControlName="name" /></span>
+      <input pInputText [fluid]="true" formControlName="name" />
     </label>
     <label class="field">
       <span class="field__label">{{ lang.t('home.monogram') }}</span>
-      <span class="field__control"><input formControlName="monogram" maxlength="2" /></span>
+      <input pInputText [fluid]="true" formControlName="monogram" maxlength="2" />
     </label>
-    <button class="btn btn-primary" type="submit" [disabled]="saving()">
-      {{ lang.t('common.save') }}
-    </button>
+    <p-button type="submit" [label]="lang.t('common.save')" [loading]="saving()" [fluid]="true" />
   </form>
 </p-dialog>
 

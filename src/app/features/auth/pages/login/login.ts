@@ -1,9 +1,14 @@
 import { ChangeDetectionStrategy, Component, DestroyRef, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { MessageService } from 'primeng/api';
+import { Button } from 'primeng/button';
 import { Dialog } from 'primeng/dialog';
+import { IconField } from 'primeng/iconfield';
+import { InputIcon } from 'primeng/inputicon';
+import { InputText } from 'primeng/inputtext';
+import { ToggleSwitch } from 'primeng/toggleswitch';
 
 import { failureMessageKey, isAuthError } from '../../../../core/auth/auth.error';
 import { AuthService } from '../../../../core/auth/auth.service';
@@ -13,7 +18,18 @@ import { FieldError } from '../../../../shared/components/field-error/field-erro
 
 @Component({
   selector: 'app-login',
-  imports: [ReactiveFormsModule, Dialog, AuthShell, FieldError],
+  imports: [
+    ReactiveFormsModule,
+    FormsModule,
+    Button,
+    Dialog,
+    IconField,
+    InputIcon,
+    InputText,
+    ToggleSwitch,
+    AuthShell,
+    FieldError,
+  ],
   templateUrl: './login.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -29,6 +45,12 @@ export class Login {
   readonly showPassword = signal(false);
   readonly resetOpen = signal(false);
   readonly resetSent = signal(false);
+  /**
+   * Cosmetic only for now: the value is not sent to `AuthService` and nothing is persisted.
+   * Real "remember me" needs a server-issued long-lived session (e.g. an HttpOnly, Secure,
+   * SameSite refresh cookie) once the API exists. Never store the password, and do not move
+   * the token to `localStorage` to emulate it. See "Remember me" in the README.
+   */
   readonly remember = signal(false);
 
   readonly form = this.fb.nonNullable.group({
@@ -62,17 +84,6 @@ export class Login {
           this.messages.add({ severity: 'error', summary: this.lang.t(failureMessageKey(error)) });
         },
       });
-  }
-
-  /**
-   * Cosmetic only for now: the value is not sent to `AuthService` and nothing is persisted.
-   * Real "remember me" needs a server-issued long-lived session (e.g. an HttpOnly, Secure,
-   * SameSite refresh cookie) once the API exists. Never store the password, and do not move
-   * the token to `localStorage` to emulate it. See "Remember me" in the README.
-   */
-  onRemember(event: Event): void {
-    const target = event.target;
-    this.remember.set(target instanceof HTMLInputElement && target.checked);
   }
 
   sendReset(): void {

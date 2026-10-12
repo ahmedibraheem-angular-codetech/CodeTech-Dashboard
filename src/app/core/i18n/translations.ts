@@ -40,6 +40,11 @@ export const TRANSLATIONS: Record<string, Record<AppLanguage, string>> = {
   'home.video': { ar: 'الفيديو التعريفي', en: 'Intro video' },
   'home.reupload': { ar: 'اعادة رفع', en: 'Upload again' },
   'home.deleteVideo': { ar: 'حذف الفيديو', en: 'Delete video' },
+  'home.invalidVideoSummary': {
+    ar: '{0}: نوع الملف غير مدعوم.',
+    en: '{0}: Unsupported file type.',
+  },
+  'home.invalidVideoDetail': { ar: 'اختر ملف فيديو.', en: 'Choose a video file.' },
   'home.videoEmpty': { ar: 'لا يوجد فيديو تعريفي حالياً', en: 'No intro video yet' },
   'home.edit': { ar: 'تعديل', en: 'Edit' },
   'home.body': { ar: 'النص', en: 'Body' },

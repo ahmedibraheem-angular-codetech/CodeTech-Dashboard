@@ -3,6 +3,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { MessageService } from 'primeng/api';
+import { Button } from 'primeng/button';
 import { InputOtp } from 'primeng/inputotp';
 
 import { failureMessageKey, isAuthError } from '../../../../core/auth/auth.error';
@@ -13,7 +14,7 @@ import { FieldError } from '../../../../shared/components/field-error/field-erro
 
 @Component({
   selector: 'app-verify',
-  imports: [ReactiveFormsModule, AuthShell, InputOtp, FieldError],
+  imports: [ReactiveFormsModule, Button, AuthShell, InputOtp, FieldError],
   templateUrl: './verify.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

@@ -1,10 +1,13 @@
 <article class="section-card">
   <div class="section-head">
     <h2>{{ block().title }}</h2>
-    <button type="button" class="btn btn-ghost" (click)="open()">
-      <i class="pi pi-pencil" aria-hidden="true"></i>
-      {{ lang.t('home.edit') }}
-    </button>
+    <p-button
+      icon="pi pi-pencil"
+      [label]="lang.t('home.edit')"
+      severity="secondary"
+      variant="outlined"
+      (onClick)="open()"
+    />
   </div>
   <div class="story">
     <div>
@@ -35,26 +38,24 @@
   <form class="form-grid" [formGroup]="form" (ngSubmit)="save()">
     <label class="field">
       <span class="field__label">{{ lang.t('users.name') }}</span>
-      <span class="field__control"><input formControlName="title" /></span>
+      <input pInputText [fluid]="true" formControlName="title" />
     </label>
     <label class="field">
       <span class="field__label">{{ lang.t('home.body') }}</span>
-      <span class="field__control"><textarea rows="4" formControlName="body"></textarea></span>
+      <textarea pTextarea [fluid]="true" rows="4" formControlName="body"></textarea>
     </label>
     <label class="field">
       <span class="field__label">{{ lang.t('home.point') }} 1</span>
-      <span class="field__control"><input formControlName="point1" /></span>
+      <input pInputText [fluid]="true" formControlName="point1" />
     </label>
     <label class="field">
       <span class="field__label">{{ lang.t('home.point') }} 2</span>
-      <span class="field__control"><input formControlName="point2" /></span>
+      <input pInputText [fluid]="true" formControlName="point2" />
     </label>
     <label class="field">
       <span class="field__label">{{ lang.t('home.point') }} 3</span>
-      <span class="field__control"><input formControlName="point3" /></span>
+      <input pInputText [fluid]="true" formControlName="point3" />
     </label>
-    <button class="btn btn-primary" type="submit" [disabled]="saving()">
-      {{ lang.t('common.save') }}
-    </button>
+    <p-button type="submit" [label]="lang.t('common.save')" [loading]="saving()" [fluid]="true" />
   </form>
 </p-dialog>

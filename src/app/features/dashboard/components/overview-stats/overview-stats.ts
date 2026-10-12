@@ -1,11 +1,12 @@
 import { ChangeDetectionStrategy, Component, inject, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { ButtonDirective, ButtonLabel } from 'primeng/button';
 
 import { LanguageService } from '../../../../core/services/language.service';
 
 @Component({
   selector: 'app-overview-stats',
-  imports: [RouterLink],
+  imports: [RouterLink, ButtonDirective, ButtonLabel],
   templateUrl: './overview-stats.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

@@ -1,7 +1,11 @@
 <div class="state" [attr.role]="mode() === 'loading' ? 'status' : 'alert'">
   @switch (mode()) {
     @case ('loading') {
-      <span class="spinner" aria-hidden="true"></span>
+      <p-progress-spinner
+        styleClass="state__spinner"
+        strokeWidth="4"
+        [ariaLabel]="message() || lang.t('common.loading')"
+      />
       <p>{{ message() || lang.t('common.loading') }}</p>
     }
     @case ('empty') {
@@ -11,9 +15,12 @@
     @case ('error') {
       <i class="pi pi-exclamation-circle" aria-hidden="true"></i>
       <p>{{ message() || lang.t('common.error') }}</p>
-      <button type="button" class="btn btn-ghost" (click)="retry.emit()">
-        {{ lang.t('users.retry') }}
-      </button>
+      <p-button
+        [label]="lang.t('users.retry')"
+        severity="secondary"
+        variant="outlined"
+        (onClick)="retry.emit()"
+      />
     }
   }
 </div>

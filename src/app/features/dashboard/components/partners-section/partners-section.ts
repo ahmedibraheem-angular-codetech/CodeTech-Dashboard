@@ -11,7 +11,10 @@ import {
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MessageService } from 'primeng/api';
+import { Button } from 'primeng/button';
 import { Dialog } from 'primeng/dialog';
+import { InputText } from 'primeng/inputtext';
+import { Tooltip } from 'primeng/tooltip';
 
 import { LanguageService } from '../../../../core/services/language.service';
 import { ConfirmDialog } from '../../../../shared/components/confirm-dialog/confirm-dialog';
@@ -21,7 +24,7 @@ import { HomepageService } from '../../services/homepage.service';
 
 @Component({
   selector: 'app-partners-section',
-  imports: [ReactiveFormsModule, Dialog, StateView, ConfirmDialog],
+  imports: [ReactiveFormsModule, Button, Dialog, InputText, Tooltip, StateView, ConfirmDialog],
   templateUrl: './partners-section.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

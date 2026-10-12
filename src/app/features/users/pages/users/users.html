@@ -1,26 +1,26 @@
 <section class="page">
   <app-page-header [title]="lang.t('users.title')" [subtitle]="lang.t('users.subtitle')">
-    <button type="button" class="btn btn-primary" (click)="openCreate()">
-      <i class="pi pi-plus" aria-hidden="true"></i>
-      {{ lang.t('users.add') }}
-    </button>
+    <p-button icon="pi pi-plus" [label]="lang.t('users.add')" (onClick)="openCreate()" />
   </app-page-header>
 
   <div class="filters">
     <label class="field">
       <span class="field__label">{{ lang.t('users.search') }}</span>
-      <span class="field__control">
-        <i class="pi pi-search" aria-hidden="true"></i>
+      <p-iconfield>
         <input
+          pInputText
+          [fluid]="true"
           [value]="query()"
           (input)="onSearch($event)"
           [placeholder]="lang.t('users.search')"
         />
-      </span>
+        <p-inputicon class="pi pi-search" />
+      </p-iconfield>
     </label>
     <label class="field">
       <span class="field__label">{{ lang.t('users.role') }}</span>
       <p-select
+        [fluid]="true"
         [options]="roleOptions()"
         optionLabel="label"
         optionValue="value"
@@ -31,6 +31,7 @@
     <label class="field">
       <span class="field__label">{{ lang.t('users.status') }}</span>
       <p-select
+        [fluid]="true"
         [options]="statusOptions()"
         optionLabel="label"
         optionValue="value"
@@ -41,6 +42,7 @@
     <label class="field">
       <span class="field__label">{{ lang.t('users.from') }}</span>
       <p-datepicker
+        [fluid]="true"
         [ngModel]="from()"
         (ngModelChange)="from.set($event)"
         [showIcon]="true"
@@ -86,30 +88,36 @@
           <td>{{ formatDate(user.joinedAt) }}</td>
           <td>
             <div class="table-actions">
-              <button
-                type="button"
-                class="btn btn-ghost btn-icon"
-                (click)="openView(user)"
-                [attr.aria-label]="lang.t('users.view')"
-              >
-                <i class="pi pi-eye" aria-hidden="true"></i>
-              </button>
-              <button
-                type="button"
-                class="btn btn-ghost btn-icon"
-                (click)="openEdit(user)"
-                [attr.aria-label]="lang.t('users.edit')"
-              >
-                <i class="pi pi-pencil" aria-hidden="true"></i>
-              </button>
-              <button
-                type="button"
-                class="btn btn-danger btn-icon"
-                (click)="remove(user)"
-                [attr.aria-label]="lang.t('users.delete')"
-              >
-                <i class="pi pi-trash" aria-hidden="true"></i>
-              </button>
+              <p-button
+                icon="pi pi-eye"
+                severity="secondary"
+                variant="outlined"
+                size="small"
+                [ariaLabel]="lang.t('users.view')"
+                [pTooltip]="lang.t('users.view')"
+                tooltipPosition="top"
+                (onClick)="openView(user)"
+              />
+              <p-button
+                icon="pi pi-pencil"
+                severity="secondary"
+                variant="outlined"
+                size="small"
+                [ariaLabel]="lang.t('users.edit')"
+                [pTooltip]="lang.t('users.edit')"
+                tooltipPosition="top"
+                (onClick)="openEdit(user)"
+              />
+              <p-button
+                icon="pi pi-trash"
+                severity="danger"
+                variant="outlined"
+                size="small"
+                [ariaLabel]="lang.t('users.delete')"
+                [pTooltip]="lang.t('users.delete')"
+                tooltipPosition="top"
+                (onClick)="remove(user)"
+              />
             </div>
           </td>
         </tr>
@@ -134,37 +142,33 @@
   <form class="form-grid" [formGroup]="form" (ngSubmit)="save()">
     <label class="field">
       <span class="field__label">{{ lang.t('users.name') }}</span>
-      <span
-        class="field__control"
-        [class.is-invalid]="form.controls.name.touched && form.controls.name.invalid"
-      >
-        <input
-          formControlName="name"
-          [attr.aria-invalid]="form.controls.name.touched && form.controls.name.invalid"
-          [attr.aria-describedby]="
-            form.controls.name.touched && form.controls.name.invalid ? 'user-name-error' : null
-          "
-        />
-      </span>
+      <input
+        pInputText
+        [fluid]="true"
+        formControlName="name"
+        [invalid]="form.controls.name.touched && form.controls.name.invalid"
+        [attr.aria-invalid]="form.controls.name.touched && form.controls.name.invalid"
+        [attr.aria-describedby]="
+          form.controls.name.touched && form.controls.name.invalid ? 'user-name-error' : null
+        "
+      />
       @if (form.controls.name.touched && form.controls.name.invalid) {
         <app-field-error id="user-name-error">{{ lang.t('users.required') }}</app-field-error>
       }
     </label>
     <label class="field">
       <span class="field__label">{{ lang.t('users.email') }}</span>
-      <span
-        class="field__control"
-        [class.is-invalid]="form.controls.email.touched && form.controls.email.invalid"
-      >
-        <input
-          type="email"
-          formControlName="email"
-          [attr.aria-invalid]="form.controls.email.touched && form.controls.email.invalid"
-          [attr.aria-describedby]="
-            form.controls.email.touched && form.controls.email.invalid ? 'user-email-error' : null
-          "
-        />
-      </span>
+      <input
+        pInputText
+        [fluid]="true"
+        type="email"
+        formControlName="email"
+        [invalid]="form.controls.email.touched && form.controls.email.invalid"
+        [attr.aria-invalid]="form.controls.email.touched && form.controls.email.invalid"
+        [attr.aria-describedby]="
+          form.controls.email.touched && form.controls.email.invalid ? 'user-email-error' : null
+        "
+      />
       @if (form.controls.email.touched && form.controls.email.hasError('required')) {
         <app-field-error id="user-email-error">{{ lang.t('users.required') }}</app-field-error>
       } @else if (form.controls.email.touched && form.controls.email.invalid) {
@@ -173,18 +177,16 @@
     </label>
     <label class="field">
       <span class="field__label">{{ lang.t('users.phone') }}</span>
-      <span
-        class="field__control"
-        [class.is-invalid]="form.controls.phone.touched && form.controls.phone.invalid"
-      >
-        <input
-          formControlName="phone"
-          [attr.aria-invalid]="form.controls.phone.touched && form.controls.phone.invalid"
-          [attr.aria-describedby]="
-            form.controls.phone.touched && form.controls.phone.invalid ? 'user-phone-error' : null
-          "
-        />
-      </span>
+      <input
+        pInputText
+        [fluid]="true"
+        formControlName="phone"
+        [invalid]="form.controls.phone.touched && form.controls.phone.invalid"
+        [attr.aria-invalid]="form.controls.phone.touched && form.controls.phone.invalid"
+        [attr.aria-describedby]="
+          form.controls.phone.touched && form.controls.phone.invalid ? 'user-phone-error' : null
+        "
+      />
       @if (form.controls.phone.touched && form.controls.phone.hasError('required')) {
         <app-field-error id="user-phone-error">{{ lang.t('users.required') }}</app-field-error>
       } @else if (form.controls.phone.touched && form.controls.phone.invalid) {
@@ -194,6 +196,7 @@
     <label class="field">
       <span class="field__label">{{ lang.t('users.role') }}</span>
       <p-select
+        [fluid]="true"
         formControlName="role"
         [options]="formRoles()"
         optionLabel="label"
@@ -203,15 +206,14 @@
     <label class="field">
       <span class="field__label">{{ lang.t('users.status') }}</span>
       <p-select
+        [fluid]="true"
         formControlName="status"
         [options]="formStatuses()"
         optionLabel="label"
         optionValue="value"
       />
     </label>
-    <button class="btn btn-primary" type="submit" [disabled]="saving()">
-      {{ lang.t('common.save') }}
-    </button>
+    <p-button type="submit" [label]="lang.t('common.save')" [loading]="saving()" [fluid]="true" />
   </form>
 </p-dialog>
 

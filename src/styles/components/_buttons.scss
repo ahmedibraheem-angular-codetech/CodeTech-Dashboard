@@ -1,86 +1,42 @@
-.btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--app-space-2);
-  min-height: 42px;
-  padding: 0 16px;
-  border-radius: 12px;
-  border: 1px solid transparent;
-  background: transparent;
-  font-weight: 700;
-  transition:
-    background var(--app-transition-fast),
-    color var(--app-transition-fast),
-    border-color var(--app-transition-fast),
-    opacity var(--app-transition-fast);
-}
+// Buttons are PrimeNG (`p-button` / `pButton`). Their look comes from the preset in
+// `app/core/theme/app-theme.ts`. This file only holds scoped design-token overrides for
+// the two designed-to-spec auth screens, set as CSS variables (no PrimeNG selectors are overridden).
 
-.btn:disabled {
-  cursor: not-allowed;
-  opacity: 0.65;
-}
+.auth-submit {
+  --p-button-primary-background: #9ecff6;
+  --p-button-primary-hover-background: #8fc4f0;
+  --p-button-primary-active-background: #82b9e8;
+  --p-button-primary-border-color: transparent;
+  --p-button-primary-hover-border-color: transparent;
+  --p-button-primary-active-border-color: transparent;
+  --p-button-primary-color: #16324f;
+  --p-button-primary-hover-color: #16324f;
+  --p-button-primary-active-color: #16324f;
+  --p-button-border-radius: 14px;
 
-.btn-primary {
-  background: var(--app-primary);
-  color: #fff;
-}
-
-.btn-primary:hover:not(:disabled) {
-  filter: brightness(0.96);
-}
-
-.btn-soft {
-  background: #e7f2fd;
-  color: #1e4f93;
-  border-color: #d5e7fa;
-}
-
-[data-theme='dark'] .btn-soft {
-  background: #172554;
-  color: #bfdbfe;
-  border-color: #1e3a8a;
-}
-
-.btn-ghost {
-  background: var(--app-surface);
-  color: var(--app-text);
-  border-color: var(--app-border);
-}
-
-.btn-danger {
-  background: #fff1f2;
-  color: var(--app-danger);
-  border-color: #ffe4e6;
-}
-
-.btn-icon {
-  width: 42px;
-  min-height: 42px;
-  padding: 0;
-}
-
-.btn-auth,
-.btn-auth-solid {
-  position: relative;
-  width: 100%;
   min-height: 52px;
-  border-radius: 14px;
   font-size: 1rem;
 }
 
-.btn-auth {
-  background: #9ecff6;
-  color: #16324f;
-}
-
-.btn-auth-solid {
-  background: #2f6fed;
-  color: #fff;
-}
-
-.btn-auth i,
-.btn-auth-solid i {
+// The arrow sits at the end of the full-width button, the label stays centred.
+.auth-submit .p-button-icon {
   position: absolute;
   inset-inline-end: 18px;
+}
+
+.back-btn {
+  --p-button-icon-only-width: 42px;
+  --p-button-secondary-background: #f4f7fb;
+  --p-button-secondary-hover-background: #e8eef6;
+  --p-button-secondary-active-background: #e8eef6;
+  --p-button-secondary-border-color: transparent;
+  --p-button-secondary-hover-border-color: transparent;
+  --p-button-secondary-active-border-color: transparent;
+  --p-button-secondary-color: #94a3b8;
+  --p-button-secondary-hover-color: #64748b;
+  --p-button-secondary-active-color: #64748b;
+
+  height: 42px;
+  margin-bottom: 28px;
+  font-size: 1.1rem;
 }

@@ -95,14 +95,14 @@ describe('Login', () => {
     const { fixture, root } = await render();
     expect(input(root, '#password').type).toBe('password');
 
-    root.querySelector<HTMLButtonElement>('.field__toggle')?.click();
+    root.querySelector<HTMLButtonElement>('.field__toggle button')?.click();
     fixture.detectChanges();
     expect(input(root, '#password').type).toBe('text');
   });
 
   it('keeps "remember me" cosmetic: ticking it persists nothing', async () => {
     const { fixture, root, auth } = await render();
-    const checkbox = input(root, '.remember__input');
+    const checkbox = input(root, '#remember');
     checkbox.click();
     fixture.detectChanges();
     expect(checkbox.checked).toBe(true);

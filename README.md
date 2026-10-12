@@ -55,6 +55,33 @@ The "Remember me" checkbox on the login page is **cosmetic** today. Its state is
 
 Intended behavior once a real API exists: a ticked box asks the server for a long-lived session, delivered as an `HttpOnly; Secure; SameSite` refresh cookie. The app then restores the short-lived access token from that cookie on startup. An unticked box keeps the current tab-scoped session. This depends on the backend issuing, rotating and revoking that cookie, and on logout clearing it.
 
+## UI conventions (PrimeNG first)
+
+PrimeNG is the primary component library. Reach for a PrimeNG component before writing a custom one:
+
+| Need                                        | Use                                                                                    |
+| ------------------------------------------- | -------------------------------------------------------------------------------------- |
+| Buttons, icon buttons                       | `p-button` (or `pButton` on an `<a>` or when the native element needs ARIA attributes) |
+| Text, search, textarea                      | `pInputText` / `pTextarea`, with `p-iconfield` + `p-inputicon` for icons               |
+| Select, date, OTP, switch, segmented choice | `p-select`, `p-datepicker`, `p-inputotp`, `p-toggleswitch`, `p-selectbutton`           |
+| Table, paging, sorting                      | `p-table` (`[paginator]`, `pSortableColumn`)                                           |
+| Dialogs, menus, popovers, toasts, tooltips  | `p-dialog`, `p-menu`, `p-popover`, `p-toast`, `pTooltip`                               |
+| Status chips, spinners, uploads             | `p-tag`, `p-progress-spinner`, `p-fileupload`                                          |
+
+Rules of thumb:
+
+- Make form controls full width with their `[fluid]="true"` input, not with global CSS.
+- Icon-only buttons need an `ariaLabel` (and usually a `pTooltip`).
+- `p-password` is not used: its show/hide toggle is a click-only SVG without a label or keyboard support. The login form uses a `p-button` inside a `p-iconfield` instead.
+- Bootstrap is limited to the grid and utilities (`vendors/_bootstrap.scss`); it never replaces a PrimeNG component.
+
+### Theming
+
+- **One place to restyle the product:** `src/app/core/theme/app-theme.ts` (a PrimeNG preset on top of Aura). Change the `primary` palette there; `--app-primary` in SCSS is an alias of `--p-primary-500`, so SCSS follows automatically. Shared radius and padding of inputs/buttons are in the same file (`formField`), and per-component tokens go under `components`.
+- Tweak a single instance with scoped design-token CSS variables (for example `.auth-submit { --p-button-primary-background: … }` in `styles/components/_buttons.scss`) instead of overriding PrimeNG selectors. There is no `!important` in component styles.
+- App-level tokens (`--app-*`: spacing, surfaces, sidebar, shadows) live in `src/styles/themes`, with Light and Dark values side by side. Dark mode is toggled by `[data-theme="dark"]` on `<html>`.
+- Intentionally still custom: the sidebar navigation tree, the user chip, the notification list and the auth language pill. They are composite widgets with no matching PrimeNG component.
+
 ## Layout
 
 - `src/app/core` — auth, guards, interceptor, preferences, navigation

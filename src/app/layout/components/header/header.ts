@@ -9,8 +9,11 @@ import {
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { MenuItem } from 'primeng/api';
+import { Button, ButtonDirective, ButtonIcon } from 'primeng/button';
+import { InputText } from 'primeng/inputtext';
 import { Menu } from 'primeng/menu';
 import { Popover } from 'primeng/popover';
+import { Tooltip } from 'primeng/tooltip';
 
 import { AuthService } from '../../../core/auth/auth.service';
 import { Breadcrumbs } from '../breadcrumbs/breadcrumbs';
@@ -27,7 +30,17 @@ interface Notice {
 
 @Component({
   selector: 'app-header',
-  imports: [FormsModule, Menu, Popover, Breadcrumbs],
+  imports: [
+    FormsModule,
+    Button,
+    ButtonDirective,
+    ButtonIcon,
+    InputText,
+    Menu,
+    Popover,
+    Tooltip,
+    Breadcrumbs,
+  ],
   templateUrl: './header.html',
   styleUrl: './header.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

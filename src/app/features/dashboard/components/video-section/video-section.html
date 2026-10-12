@@ -9,18 +9,26 @@
       />
     </div>
     <div class="page-header__actions">
-      <label class="btn btn-primary">
-        {{ lang.t('home.reupload') }}
-        <input class="visually-hidden" type="file" accept="video/*" (change)="onSelected($event)" />
-      </label>
-      <button
-        type="button"
-        class="btn btn-danger btn-icon"
-        (click)="remove()"
-        [attr.aria-label]="lang.t('home.deleteVideo')"
-      >
-        <i class="pi pi-trash" aria-hidden="true"></i>
-      </button>
+      <p-fileupload
+        mode="basic"
+        accept="video/*"
+        chooseIcon="pi pi-upload"
+        [chooseLabel]="lang.t('home.reupload')"
+        [auto]="true"
+        [customUpload]="true"
+        [invalidFileTypeMessageSummary]="lang.t('home.invalidVideoSummary')"
+        [invalidFileTypeMessageDetail]="lang.t('home.invalidVideoDetail')"
+        (onSelect)="onSelected($event)"
+      />
+      <p-button
+        icon="pi pi-trash"
+        severity="danger"
+        variant="outlined"
+        [ariaLabel]="lang.t('home.deleteVideo')"
+        [pTooltip]="lang.t('home.deleteVideo')"
+        tooltipPosition="top"
+        (onClick)="remove()"
+      />
     </div>
   </div>
   @if (name(); as videoName) {

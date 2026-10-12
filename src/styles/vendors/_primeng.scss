@@ -1,17 +1,6 @@
+// Remaining PrimeNG hooks. Visual tokens (palette, radius, paddings) live in the preset
+// (`app/core/theme/app-theme.ts`); components are made full-width with their `[fluid]` input.
+
 .p-toast {
   z-index: var(--app-z-toast);
-}
-
-.p-dialog {
-  border-radius: var(--app-radius-lg);
-}
-
-.p-select,
-.p-datepicker,
-.p-inputtext {
-  width: 100%;
-}
-
-.p-toggleswitch.p-toggleswitch-checked .p-toggleswitch-slider {
-  background: var(--app-primary);
 }

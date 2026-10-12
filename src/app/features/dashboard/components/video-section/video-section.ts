@@ -9,7 +9,10 @@ import {
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { MessageService } from 'primeng/api';
+import { Button } from 'primeng/button';
+import { FileSelectEvent, FileUpload } from 'primeng/fileupload';
 import { ToggleSwitch } from 'primeng/toggleswitch';
+import { Tooltip } from 'primeng/tooltip';
 
 import { LanguageService } from '../../../../core/services/language.service';
 import { ConfirmDialog } from '../../../../shared/components/confirm-dialog/confirm-dialog';
@@ -18,7 +21,7 @@ import { HomepageService } from '../../services/homepage.service';
 
 @Component({
   selector: 'app-video-section',
-  imports: [FormsModule, ToggleSwitch, StateView, ConfirmDialog],
+  imports: [FormsModule, Button, FileUpload, ToggleSwitch, Tooltip, StateView, ConfirmDialog],
   templateUrl: './video-section.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -27,6 +30,7 @@ export class VideoSection {
   private readonly messages = inject(MessageService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly confirm = viewChild.required(ConfirmDialog);
+  private readonly upload = viewChild(FileUpload);
   readonly lang = inject(LanguageService);
 
   /** Two-way bound by the parent: `[(enabled)]="videoEnabled"`. */
@@ -41,13 +45,10 @@ export class VideoSection {
     this.api.setVideoEnabled(enabled);
   }
 
-  onSelected(event: Event): void {
-    const input = event.target;
-    if (!(input instanceof HTMLInputElement)) {
-      return;
-    }
-    const file = input.files?.[0];
-    if (!file) {
+  onSelected(event: FileSelectEvent): void {
+    const file = event.files[0];
+    // `p-fileupload` already shows its own message for rejected files but still emits the event.
+    if (!file?.type.startsWith('video/')) {
       return;
     }
     this.api
@@ -56,7 +57,7 @@ export class VideoSection {
       .subscribe({
         next: () => {
           this.name.set(file.name);
-          input.value = '';
+          this.upload()?.clear();
         },
         error: () => this.notifyFailure(),
       });

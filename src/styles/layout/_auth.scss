@@ -45,7 +45,7 @@
 .auth-panel {
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: end;
   justify-content: center;
   gap: clamp(24px, 3.6vw, 52px);
   padding: clamp(24px, 3.6vw, 52px);
@@ -70,14 +70,28 @@
   text-align: start;
 }
 
-.auth-card .field__control {
-  border-radius: 16px;
-  border-color: #e6ebf2;
-  min-height: 54px;
+// The auth panel is designed to spec and stays light in both themes, so its fields use fixed
+// design tokens instead of the theme-aware ones.
+.auth-card {
+  --p-inputtext-background: #fff;
+  --p-inputtext-color: #16324f;
+  --p-inputtext-border-radius: 16px;
+  --p-inputtext-border-color: #e6ebf2;
+  --p-inputtext-hover-border-color: #c9d8ea;
+  --p-inputtext-focus-border-color: #7eb6f0;
+  --p-inputtext-placeholder-color: #94a3b8;
+  --p-iconfield-icon-color: #94a3b8;
+  --p-button-link-color: #1e3a5f;
+  --p-button-link-hover-color: #2f6fed;
+  --p-button-link-active-color: #2f6fed;
+  --p-toggleswitch-background: #e8edf3;
+  --p-toggleswitch-hover-background: #dbe3ec;
+  --p-toggleswitch-checked-background: #93c5fd;
+  --p-toggleswitch-checked-hover-background: #7fb4f5;
 }
 
-.auth-card .field__control:focus-within {
-  border-color: #7eb6f0;
+.auth-card .p-inputtext {
+  min-height: 54px;
 }
 
 .auth-brand {
@@ -141,20 +155,4 @@
   align-items: center;
   color: #64748b;
   font-size: var(--app-font-sm);
-}
-
-.otp-footer .field__link:disabled {
-  color: #94a3b8;
-}
-
-.back-btn {
-  // align-self: flex-start;
-  width: 42px;
-  height: 42px;
-  margin-bottom: 28px;
-  border: 0;
-  border-radius: 12px;
-  background: #f4f7fb;
-  color: #94a3b8;
-  font-size: 1.1rem;
 }

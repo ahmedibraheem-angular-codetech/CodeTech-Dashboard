@@ -1,44 +1,57 @@
 <header class="topbar">
   <div class="topbar__trail">
-    <button
-      type="button"
-      class="topbar__icon"
-      (click)="layout.toggleSidebar()"
-      [attr.aria-label]="lang.t('header.toggleSidebar')"
-    >
-      <i class="pi pi-bars" aria-hidden="true"></i>
-    </button>
+    <p-button
+      icon="pi pi-bars"
+      severity="secondary"
+      [text]="true"
+      [rounded]="true"
+      [ariaLabel]="lang.t('header.toggleSidebar')"
+      [pTooltip]="lang.t('header.toggleSidebar')"
+      tooltipPosition="bottom"
+      (onClick)="layout.toggleSidebar()"
+    />
     <app-breadcrumbs />
   </div>
   <div class="topbar__tools">
+    <p-button
+      [icon]="theme.theme() === 'dark' ? 'pi pi-sun' : 'pi pi-moon'"
+      severity="secondary"
+      [text]="true"
+      [rounded]="true"
+      [ariaLabel]="lang.t('header.toggleTheme')"
+      [pTooltip]="lang.t('header.toggleTheme')"
+      tooltipPosition="bottom"
+      (onClick)="theme.toggle()"
+    />
+    <!-- Directive form: aria-expanded has to sit on the native <button>, not on <p-button>. -->
     <button
+      pButton
       type="button"
-      class="topbar__icon"
-      (click)="theme.toggle()"
-      [attr.aria-label]="lang.t('header.toggleTheme')"
-    >
-      <i [class]="theme.theme() === 'dark' ? 'pi pi-sun' : 'pi pi-moon'" aria-hidden="true"></i>
-    </button>
-    <button
-      type="button"
-      class="topbar__icon"
-      (click)="searchOpen.set(!searchOpen())"
-      [attr.aria-expanded]="searchOpen()"
+      severity="secondary"
+      [text]="true"
+      [rounded]="true"
       [attr.aria-label]="lang.t('header.search')"
+      [attr.aria-expanded]="searchOpen()"
+      [pTooltip]="lang.t('header.search')"
+      tooltipPosition="bottom"
+      (click)="searchOpen.set(!searchOpen())"
     >
-      <i class="pi pi-search" aria-hidden="true"></i>
+      <span pButtonIcon class="pi pi-search" aria-hidden="true"></span>
     </button>
-    <button
-      type="button"
-      class="topbar__icon"
-      (click)="openNotifications($event)"
-      [attr.aria-label]="lang.t('header.notifications')"
+    <p-button
+      icon="pi pi-bell"
+      severity="secondary"
+      [text]="true"
+      [rounded]="true"
+      [ariaLabel]="lang.t('header.notifications')"
+      [pTooltip]="lang.t('header.notifications')"
+      tooltipPosition="bottom"
+      (onClick)="openNotifications($event)"
     >
-      <i class="pi pi-bell" aria-hidden="true"></i>
       @if (unread()) {
-        <span class="dot"></span>
+        <span class="topbar__dot"></span>
       }
-    </button>
+    </p-button>
     <button
       type="button"
       class="user-chip"
@@ -57,13 +70,14 @@
   <form class="search-pop" (ngSubmit)="search()">
     <label class="visually-hidden" for="global-search">{{ lang.t('header.search') }}</label>
     <input
+      pInputText
       id="global-search"
       [placeholder]="lang.t('header.searchPlaceholder')"
       [ngModel]="query()"
       (ngModelChange)="query.set($event)"
       name="q"
     />
-    <button type="submit" class="btn btn-primary">{{ lang.t('header.search') }}</button>
+    <p-button type="submit" [label]="lang.t('header.search')" />
   </form>
 }
 

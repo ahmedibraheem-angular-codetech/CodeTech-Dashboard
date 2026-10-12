@@ -12,10 +12,15 @@ import {
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule, FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MessageService } from 'primeng/api';
+import { Button } from 'primeng/button';
 import { DatePicker } from 'primeng/datepicker';
 import { Dialog } from 'primeng/dialog';
+import { IconField } from 'primeng/iconfield';
+import { InputIcon } from 'primeng/inputicon';
+import { InputText } from 'primeng/inputtext';
 import { Select } from 'primeng/select';
 import { TableModule } from 'primeng/table';
+import { Tooltip } from 'primeng/tooltip';
 
 import { LanguageService } from '../../../../core/services/language.service';
 import { PageHeader } from '../../../../shared/components/page-header/page-header';
@@ -35,9 +40,14 @@ type LoadState = 'loading' | 'ready' | 'error';
     ReactiveFormsModule,
     FormsModule,
     TableModule,
+    Button,
     Dialog,
+    IconField,
+    InputIcon,
+    InputText,
     Select,
     DatePicker,
+    Tooltip,
     PageHeader,
     StateView,
     StatusBadge,

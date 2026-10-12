@@ -28,14 +28,17 @@
   justify-content: space-between;
 }
 
-.partner-card__tools button,
-.video-toolbar button {
-  width: 28px;
-  height: 28px;
-  border: 0;
-  border-radius: 8px;
-  background: rgba(255, 255, 255, 0.92);
-  color: #1e3a8a;
+// Small `p-button`s sitting on the blue partner card: scoped tokens, light chip on the gradient.
+.partner-card__tool {
+  --p-button-secondary-background: rgba(255, 255, 255, 0.92);
+  --p-button-secondary-hover-background: #fff;
+  --p-button-secondary-active-background: #fff;
+  --p-button-secondary-border-color: transparent;
+  --p-button-secondary-hover-border-color: transparent;
+  --p-button-secondary-active-border-color: transparent;
+  --p-button-secondary-color: #1e3a8a;
+  --p-button-secondary-hover-color: #1e3a8a;
+  --p-button-secondary-active-color: #1e3a8a;
 }
 
 .video-frame {
