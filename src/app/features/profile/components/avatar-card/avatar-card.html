@@ -1,0 +1,54 @@
+<article class="section-card profile-card">
+  <div class="section-head">
+    <div class="section-head__title">
+      <span class="icon-badge" aria-hidden="true"><i class="pi pi-image"></i></span>
+      <h2>{{ lang.t('profile.photoTitle') }}</h2>
+    </div>
+    <p-button
+      class="profile-trash"
+      styleClass="profile-btn profile-btn--icon"
+      icon="pi pi-trash"
+      severity="danger"
+      [text]="true"
+      [disabled]="!user()?.avatarUrl"
+      [ariaLabel]="lang.t('profile.removePhoto')"
+      [pTooltip]="lang.t('profile.removePhoto')"
+      tooltipPosition="bottom"
+      (onClick)="remove()"
+    />
+  </div>
+
+  @if (user(); as profile) {
+    <div class="profile-photo">
+      <div class="profile-photo__frame">
+        <app-user-avatar [size]="128" />
+        <p-button
+          class="profile-photo__edit"
+          icon="pi pi-pencil"
+          size="small"
+          [rounded]="true"
+          [ariaLabel]="lang.t('profile.changePhoto')"
+          [pTooltip]="lang.t('profile.changePhoto')"
+          tooltipPosition="top"
+          (onClick)="picker.click()"
+        />
+        <input
+          #picker
+          class="visually-hidden"
+          type="file"
+          tabindex="-1"
+          aria-hidden="true"
+          [accept]="accept"
+          (change)="onFileChosen($event)"
+        />
+      </div>
+      <h2 class="profile-photo__name">{{ profile.name }}</h2>
+      <p class="muted profile-photo__email">
+        <i class="pi pi-envelope" aria-hidden="true"></i>
+        <span>{{ profile.email }}</span>
+      </p>
+    </div>
+  }
+</article>
+
+<app-confirm-dialog />

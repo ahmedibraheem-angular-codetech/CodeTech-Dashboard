@@ -14,10 +14,11 @@ import { NAV_ITEMS, type NavItem } from '../../../core/config/navigation';
 import { LanguageService } from '../../../core/services/language.service';
 import { LayoutService } from '../../../core/services/layout.service';
 import { BrandLogo } from '../../../shared/components/brand-logo/brand-logo';
+import { UserAvatar } from '../../../shared/components/user-avatar/user-avatar';
 
 @Component({
   selector: 'app-sidebar',
-  imports: [RouterLink, RouterLinkActive, BrandLogo],
+  imports: [RouterLink, RouterLinkActive, BrandLogo, UserAvatar],
   templateUrl: './sidebar.html',
   styleUrl: './sidebar.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -73,10 +74,6 @@ export class Sidebar {
   logout(): void {
     this.auth.logout();
     void this.router.navigate(['/login']);
-  }
-
-  initials(): string {
-    return this.auth.session()?.name.slice(0, 1) ?? 'أ';
   }
 
   private expandActive(): void {

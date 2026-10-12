@@ -3,8 +3,8 @@
     <p-button
       icon="pi pi-bars"
       severity="secondary"
-      [text]="true"
-      [rounded]="true"
+      variant="outlined"
+      styleClass="topbar__btn"
       [ariaLabel]="lang.t('header.toggleSidebar')"
       [pTooltip]="lang.t('header.toggleSidebar')"
       tooltipPosition="bottom"
@@ -16,8 +16,8 @@
     <p-button
       [icon]="theme.theme() === 'dark' ? 'pi pi-sun' : 'pi pi-moon'"
       severity="secondary"
-      [text]="true"
-      [rounded]="true"
+      variant="outlined"
+      styleClass="topbar__btn"
       [ariaLabel]="lang.t('header.toggleTheme')"
       [pTooltip]="lang.t('header.toggleTheme')"
       tooltipPosition="bottom"
@@ -27,9 +27,9 @@
     <button
       pButton
       type="button"
+      class="topbar__btn"
       severity="secondary"
-      [text]="true"
-      [rounded]="true"
+      [outlined]="true"
       [attr.aria-label]="lang.t('header.search')"
       [attr.aria-expanded]="searchOpen()"
       [pTooltip]="lang.t('header.search')"
@@ -41,8 +41,8 @@
     <p-button
       icon="pi pi-bell"
       severity="secondary"
-      [text]="true"
-      [rounded]="true"
+      variant="outlined"
+      styleClass="topbar__btn"
       [ariaLabel]="lang.t('header.notifications')"
       [pTooltip]="lang.t('header.notifications')"
       tooltipPosition="bottom"
@@ -52,17 +52,24 @@
         <span class="topbar__dot"></span>
       }
     </p-button>
-    <button
-      type="button"
+    <p-button
+      icon="pi pi-globe"
+      severity="secondary"
+      variant="outlined"
+      styleClass="topbar__btn topbar__lang"
+      [label]="lang.t('header.languageName')"
+      [ariaLabel]="lang.t('header.language')"
+      (onClick)="lang.toggle()"
+    />
+    <a
       class="user-chip"
-      aria-haspopup="menu"
-      [attr.aria-label]="auth.session()?.name || lang.t('header.profile')"
-      (click)="openUserMenu($event)"
+      routerLink="/profile"
+      routerLinkActive="is-active"
+      ariaCurrentWhenActive="page"
+      [attr.aria-label]="lang.t('header.profile')"
     >
-      <span class="avatar" aria-hidden="true">{{ initials() }}</span>
-      <span class="user-chip__name">{{ shortName() }}</span>
-      <span class="presence" aria-hidden="true"></span>
-    </button>
+      <app-user-avatar [size]="48" />
+    </a>
   </div>
 </header>
 
@@ -98,5 +105,3 @@
     }
   </div>
 </p-popover>
-
-<p-menu #userMenu [popup]="true" [model]="menuItems()" appendTo="body" />

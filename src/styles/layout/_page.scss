@@ -11,14 +11,34 @@
 .page {
   display: flex;
   flex-direction: column;
-  gap: space(4);
+  gap: space(2);
 }
 
+app-page-header {
+  display: block;
+}
+
+// Title card: 100px tall, 16px radius and padding; 162px between title and actions on desktop.
 .page-header {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
+  align-items: center;
   gap: space(4);
+  min-height: 100px;
+  padding: 16px;
+  background: var(--app-surface);
+  border-radius: 16px;
+}
+
+// Tight title lines so the content fits the 100px card.
+.page-header h1 {
+  line-height: 1.25;
+}
+
+@media (min-width: 1100px) {
+  .page-header {
+    gap: 162px;
+  }
 }
 
 .page-header__actions {

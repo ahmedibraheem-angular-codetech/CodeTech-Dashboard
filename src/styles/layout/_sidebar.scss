@@ -161,16 +161,26 @@
   border-top: 0;
 }
 
-.sidebar__user .avatar {
-  display: grid;
-  place-items: center;
-  flex: 0 0 42px;
-  width: 42px;
-  height: 42px;
-  border-radius: 50%;
-  background: var(--app-sidebar-avatar-bg);
+.sidebar__profile {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+  min-width: 0;
+  border-radius: 12px;
+  color: inherit;
+  text-decoration: none;
+}
+
+.sidebar__profile:hover .sidebar__user-copy strong,
+.sidebar__profile.is-active .sidebar__user-copy strong {
   color: var(--app-sidebar-link-active);
-  font-weight: 800;
+}
+
+.sidebar__profile app-user-avatar {
+  flex: 0 0 auto;
+  --p-avatar-background: var(--app-sidebar-avatar-bg);
+  --p-avatar-color: var(--app-sidebar-link-active);
 }
 
 .sidebar__user-copy {

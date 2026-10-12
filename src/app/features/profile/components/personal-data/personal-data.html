@@ -1,0 +1,63 @@
+<article class="section-card profile-card">
+  <div class="section-head">
+    <div class="section-head__title">
+      <span class="icon-badge" aria-hidden="true"><i class="pi pi-user"></i></span>
+      <h2>{{ lang.t('profile.dataTitle') }}</h2>
+    </div>
+  </div>
+
+  <form [formGroup]="form" (ngSubmit)="save()" novalidate>
+    <div class="profile-fields">
+      @for (field of fields; track field.name) {
+        <label class="field">
+          <span class="field__label">{{ lang.t(field.labelKey) }}</span>
+          <p-iconfield>
+            <input
+              pInputText
+              [fluid]="true"
+              [id]="'profile-' + field.name"
+              [type]="field.type"
+              [formControlName]="field.name"
+              [attr.autocomplete]="field.autocomplete"
+              [attr.dir]="field.ltr ? 'ltr' : null"
+              [class.profile-field--ltr]="field.ltr"
+              [invalid]="!!errorKey(field.name)"
+              [attr.aria-invalid]="!!errorKey(field.name)"
+              [attr.aria-describedby]="
+                errorKey(field.name) ? 'profile-' + field.name + '-error' : null
+              "
+            />
+            <p-inputicon [class]="field.icon" />
+          </p-iconfield>
+          @if (errorKey(field.name); as key) {
+            <app-field-error [id]="'profile-' + field.name + '-error'">{{
+              lang.t(key)
+            }}</app-field-error>
+          }
+        </label>
+      }
+    </div>
+
+    <div class="profile-actions">
+      <p-button
+        type="submit"
+        styleClass="profile-btn"
+        icon="pi pi-save"
+        iconPos="right"
+        [fluid]="true"
+        [label]="lang.t('profile.save')"
+        [loading]="saving()"
+      />
+      <p-button
+        type="button"
+        class="profile-actions__cancel"
+        styleClass="profile-btn"
+        severity="secondary"
+        [text]="true"
+        [fluid]="true"
+        [label]="lang.t('profile.cancel')"
+        (onClick)="cancel()"
+      />
+    </div>
+  </form>
+</article>

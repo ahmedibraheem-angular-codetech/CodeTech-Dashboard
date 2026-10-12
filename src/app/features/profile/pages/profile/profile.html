@@ -1,0 +1,68 @@
+@if (user(); as profile) {
+  <section class="page profile">
+    <header class="profile-head">
+      <div class="profile-head__who">
+        <app-user-avatar [size]="56" radius="14px" />
+        <div class="profile-head__info">
+          <div class="profile-head__title">
+            <h1>{{ profile.name }}</h1>
+            <p-tag
+              class="profile-head__role"
+              severity="info"
+              [rounded]="true"
+              [value]="lang.t(profile.roleKey)"
+            />
+          </div>
+          @if (lastLogin(); as login) {
+            <p class="profile-head__meta muted">
+              <span class="visually-hidden">{{ lang.t('profile.lastLogin') }}</span>
+              <time [attr.datetime]="login.iso">
+                <i class="pi pi-clock" aria-hidden="true"></i>
+                {{ login.time }}
+              </time>
+              <span aria-hidden="true">·</span>
+              <time [attr.datetime]="login.date">
+                <i class="pi pi-calendar" aria-hidden="true"></i>
+                {{ login.date }}
+              </time>
+            </p>
+          }
+        </div>
+      </div>
+      <p-button
+        class="profile-head__logout"
+        styleClass="profile-btn"
+        icon="pi pi-sign-out"
+        iconPos="right"
+        severity="danger"
+        [text]="true"
+        [label]="lang.t('header.logout')"
+        (onClick)="logout()"
+      />
+    </header>
+
+    <p-tabs class="profile-tabs" [(value)]="tab">
+      <p-tablist>
+        <p-tab value="data">
+          <i class="pi pi-user" aria-hidden="true"></i>
+          <span>{{ lang.t('profile.tabData') }}</span>
+        </p-tab>
+        <p-tab value="password">
+          <i class="pi pi-lock" aria-hidden="true"></i>
+          <span>{{ lang.t('profile.tabPassword') }}</span>
+        </p-tab>
+      </p-tablist>
+      <p-tabpanels>
+        <p-tabpanel value="data">
+          <div class="row g-2">
+            <div class="col-12 col-lg-7"><app-personal-data /></div>
+            <div class="col-12 col-lg-5"><app-avatar-card /></div>
+          </div>
+        </p-tabpanel>
+        <p-tabpanel value="password">
+          <app-password-change />
+        </p-tabpanel>
+      </p-tabpanels>
+    </p-tabs>
+  </section>
+}

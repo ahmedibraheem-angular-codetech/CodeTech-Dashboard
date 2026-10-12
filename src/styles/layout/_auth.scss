@@ -56,7 +56,7 @@
 
 .auth-card,
 .auth-card form {
-  width: min(440px, 100%);
+  width: min(482px, 100%);
   display: flex;
   flex-direction: column;
   gap: 18px;
@@ -75,10 +75,16 @@
 .auth-card {
   --p-inputtext-background: #fff;
   --p-inputtext-color: #16324f;
-  --p-inputtext-border-radius: 16px;
-  --p-inputtext-border-color: #e6ebf2;
-  --p-inputtext-hover-border-color: #c9d8ea;
-  --p-inputtext-focus-border-color: #7eb6f0;
+  --p-inputtext-border-radius: 20px;
+  --p-inputtext-border-color: #1c81d3;
+  --p-inputtext-hover-border-color: #1c81d3;
+  --p-inputtext-focus-border-color: #1c81d3;
+  // Same border colour in every state, so keyboard focus needs its own visible ring.
+  --p-inputtext-focus-ring-shadow: 0 0 0 3px rgb(28 129 211 / 25%);
+  --p-inputtext-padding-x: 20px;
+  --p-inputtext-padding-y: 12px;
+  // Also drives the icon offset and the icon-field padding.
+  --p-form-field-padding-x: 20px;
   --p-inputtext-placeholder-color: #94a3b8;
   --p-iconfield-icon-color: #94a3b8;
   --p-button-link-color: #1e3a5f;
@@ -90,8 +96,10 @@
   --p-toggleswitch-checked-hover-background: #7fb4f5;
 }
 
-.auth-card .p-inputtext {
-  min-height: 54px;
+// Auth fields: 482 × 56 at full size (the card is 482 wide), 20px radius, 12px / 20px padding.
+// Scoped to icon fields so the OTP boxes keep their own size.
+.auth-card .p-iconfield .p-inputtext {
+  height: 56px;
 }
 
 .auth-brand {

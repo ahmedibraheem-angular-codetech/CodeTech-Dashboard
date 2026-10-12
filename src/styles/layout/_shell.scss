@@ -18,13 +18,22 @@
   gap: space(3);
 }
 
+// Holds the header card and the routed page, stacked with an 8px rhythm.
 .shell__content {
+  display: flex;
+  flex-direction: column;
+  gap: space(2);
   flex: 1;
   min-width: 0;
   padding: space(5);
   background: var(--app-canvas);
   border-radius: var(--app-radius-xl);
   box-shadow: var(--app-shadow-sm);
+}
+
+// The outlet element is an empty marker; hiding it keeps it from adding a flex gap.
+.shell__content > router-outlet {
+  display: none;
 }
 
 [data-density='compact'] .shell__content {

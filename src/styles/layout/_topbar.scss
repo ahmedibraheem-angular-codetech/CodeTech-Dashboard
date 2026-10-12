@@ -8,10 +8,9 @@
   justify-content: space-between;
   gap: space(3);
   min-height: var(--app-header-height);
-  padding: 10px 14px;
+  padding: 12px 16px;
   background: var(--app-header-bg);
-  border-radius: 22px;
-  box-shadow: var(--app-shadow-sm);
+  border-radius: 16px;
 }
 
 .topbar__trail,
@@ -29,8 +28,21 @@
   color: var(--app-text);
 }
 
-.user-chip:hover {
-  background: var(--app-surface-muted);
+// Header controls: 48px outlined squares (icon-only) or pills (language), 16px radius.
+.topbar__btn {
+  --p-button-border-radius: 16px;
+  --p-button-icon-only-width: 48px;
+  --p-button-padding-y: 0;
+
+  height: 48px;
+  --p-button-outlined-secondary-border-color: var(--app-border);
+  --p-button-outlined-secondary-color: var(--app-muted);
+  --p-button-outlined-secondary-hover-background: var(--app-surface-muted);
+}
+
+.topbar__lang {
+  --p-button-padding-x: 16px;
+  --p-button-outlined-secondary-color: var(--app-text);
 }
 
 // Unread marker inside the notifications `p-button`.
@@ -45,22 +57,18 @@
 }
 
 .user-chip {
-  padding: 4px 8px;
-  border-radius: 999px;
-}
-
-.user-chip__name {
-  font-weight: 700;
+  padding: 0;
+  border-radius: 50%;
 }
 
 .crumbs {
   display: flex;
   align-items: center;
   gap: 8px;
-  min-height: 40px;
-  padding: 0 12px;
+  min-height: 48px;
+  padding: 0 16px;
   border: 1px solid var(--app-border);
-  border-radius: 999px;
+  border-radius: 16px;
   background: var(--app-surface);
   color: var(--app-muted);
   font-size: var(--app-font-sm);

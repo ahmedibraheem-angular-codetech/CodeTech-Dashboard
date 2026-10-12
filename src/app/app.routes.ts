@@ -43,6 +43,12 @@ export const routes: Routes = [
           import('./features/settings/pages/settings/settings').then((m) => m.SettingsPage),
         data: { breadcrumb: 'settings.title', titleKey: 'settings.title' },
       },
+      {
+        path: 'profile',
+        loadComponent: () =>
+          import('./features/profile/pages/profile/profile').then((m) => m.ProfilePage),
+        data: { breadcrumb: 'profile.title', titleKey: 'profile.title' },
+      },
       section('about', 'nav.about'),
       section('contact/inquiries', 'nav.inquiries'),
       section('contact/start', 'nav.startProjects'),

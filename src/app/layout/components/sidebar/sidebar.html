@@ -45,11 +45,19 @@
     }
   </nav>
   <div class="sidebar__user">
-    <span class="avatar" aria-hidden="true">{{ initials() }}</span>
-    <div class="sidebar__user-copy">
-      <strong>{{ auth.session()?.name }}</strong>
-      <small>{{ lang.t(auth.session()?.roleKey ?? 'roles.superAdmin') }}</small>
-    </div>
+    <a
+      class="sidebar__profile"
+      routerLink="/profile"
+      routerLinkActive="is-active"
+      ariaCurrentWhenActive="page"
+      [attr.aria-label]="lang.t('header.profile')"
+    >
+      <app-user-avatar [size]="42" />
+      <span class="sidebar__user-copy">
+        <strong>{{ auth.session()?.name }}</strong>
+        <small>{{ lang.t(auth.session()?.roleKey ?? 'roles.superAdmin') }}</small>
+      </span>
+    </a>
     <button
       type="button"
       class="sidebar__logout"
