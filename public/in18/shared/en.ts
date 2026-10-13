@@ -11,5 +11,6 @@ export const en = {
   'common.error': 'Something went wrong',
   'common.close': 'Close',
   'common.save': 'Save',
+  'common.saveChanges': 'Save changes',
   'common.cancel': 'Cancel',
 } as const;

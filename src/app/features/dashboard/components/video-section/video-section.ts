@@ -4,6 +4,7 @@ import {
   DestroyRef,
   inject,
   model,
+  signal,
   viewChild,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -41,14 +42,24 @@ export class VideoSection {
 
   /**
    * TEMPORARY: fixed YouTube video until the backend returns the uploaded video URL.
-   * Replace with the URL from `HomepageService` once it exists.
+   * The poster is `public/images/video-poster.jpg`. Replace both once a real URL exists.
    */
+  readonly playing = signal(false);
   readonly videoSrc: SafeResourceUrl = inject(DomSanitizer).bypassSecurityTrustResourceUrl(
-    'https://www.youtube.com/embed/X5xvlXV9crE',
+    'https://www.youtube.com/embed/X5xvlXV9crE?autoplay=1',
   );
+
+  play(): void {
+    if (this.enabled()) {
+      this.playing.set(true);
+    }
+  }
 
   toggle(enabled: boolean): void {
     this.enabled.set(enabled);
+    if (!enabled) {
+      this.playing.set(false);
+    }
     this.api.setVideoEnabled(enabled);
   }
 
@@ -85,7 +96,10 @@ export class VideoSection {
       .setVideoName(null)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
-        next: () => this.name.set(null),
+        next: () => {
+          this.playing.set(false);
+          this.name.set(null);
+        },
         error: () => this.notifyFailure(),
       });
   }

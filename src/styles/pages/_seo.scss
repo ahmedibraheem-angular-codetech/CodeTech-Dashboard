@@ -89,38 +89,6 @@
   min-height: 48px;
 }
 
-.locale-switch {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 4px;
-  padding: 4px;
-  border-radius: 16px;
-  background: #f4f7fb;
-}
-
-.locale-switch__option {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  height: 42px;
-  border: 0;
-  border-radius: 12px;
-  background: transparent;
-  color: #16324f;
-  font-weight: 700;
-}
-
-.locale-switch__option img {
-  width: 22px;
-  height: 22px;
-}
-
-.locale-switch__option.is-active {
-  background: #fff;
-  box-shadow: 0 1px 2px rgb(22 50 79 / 8%);
-}
-
 .seo-panel__body {
   padding: 16px;
   border-radius: 16px;

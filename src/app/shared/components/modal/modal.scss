@@ -1,0 +1,103 @@
+// PrimeNG renders `.p-dialog` itself, outside this component's view, so these rules are
+// global and namespaced under `.app-modal` (set through `styleClass`). Sizes and colours go
+// through the dialog's own design tokens; the rest are scoped layout rules.
+.p-dialog.app-modal {
+  --p-dialog-background: #fff;
+  --p-dialog-border-radius: 20px;
+  --p-dialog-header-padding: 16px 24px;
+  --p-dialog-content-padding: 0 24px;
+  --p-dialog-footer-padding: 0 24px;
+  --p-dialog-footer-gap: 12px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 16px;
+  width: min(724px, calc(100vw - 32px));
+  padding-bottom: 24px;
+}
+
+// The header is a full-bleed band; it follows the dialog's rounded top corners.
+.app-modal .p-dialog-header {
+  border-bottom: 1px solid #edeeee;
+  border-start-start-radius: inherit;
+  border-start-end-radius: inherit;
+  background: #f9fafb;
+}
+
+.app-modal .p-dialog-content {
+  min-height: 0;
+}
+
+.app-modal .p-dialog-footer {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: stretch;
+}
+
+.app-modal .p-dialog-footer:empty {
+  display: none;
+}
+
+.app-modal__heading {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.app-modal__icon,
+.app-modal .p-dialog-close-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 48px;
+  height: 48px;
+  border: 1px solid #edeeee;
+  border-radius: 50%;
+  background: #fff;
+  color: var(--app-muted);
+}
+
+.app-modal__icon {
+  font-size: 1.25rem;
+}
+
+.app-modal .p-dialog-close-button {
+  padding: 0;
+  color: var(--app-text);
+}
+
+.app-modal__title {
+  min-width: 0;
+  color: var(--app-text);
+  font-size: 1.25rem;
+  font-weight: 700;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+
+// Save and Cancel share the row equally and wrap on very narrow screens.
+.app-modal__action {
+  flex: 1 1 10rem;
+  min-width: 0;
+}
+
+@media (max-width: 640px) {
+  .p-dialog.app-modal {
+    --p-dialog-header-padding: 12px 16px;
+    --p-dialog-content-padding: 0 16px;
+    --p-dialog-footer-padding: 0 16px;
+  }
+
+  .app-modal__icon,
+  .app-modal .p-dialog-close-button {
+    width: 40px;
+    height: 40px;
+  }
+
+  .app-modal__title {
+    font-size: 1.0625rem;
+  }
+}

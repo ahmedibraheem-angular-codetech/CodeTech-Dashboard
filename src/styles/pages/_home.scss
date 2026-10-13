@@ -62,7 +62,9 @@
   --p-button-secondary-active-color: #3b82f6;
 }
 
-.partner-card__tool--delete {
+// The pale-red delete colours are shared with the delete buttons of the story-block modal.
+.partner-card__tool--delete,
+.block-form__delete {
   --p-button-secondary-background: #fff1f2;
   --p-button-secondary-hover-background: #ffe4e6;
   --p-button-secondary-active-background: #ffe4e6;
@@ -74,17 +76,50 @@
   --p-button-secondary-active-color: #e11d48;
 }
 
+// Poster for the intro video. The image is the temporary clip's thumbnail.
 .video-frame {
+  position: relative;
+  display: flex;
+  height: 435px;
+  padding: 40.5px;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 13.5px;
+  align-self: stretch;
   overflow: hidden;
-  border-radius: 18px;
-  background: #0f172a;
+  border-radius: 16px;
+  background:
+    linear-gradient(0deg, rgb(0 0 0 / 40%) 0%, rgb(0 0 0 / 40%) 100%),
+    url('/images/video-poster.jpg') lightgray 50% / cover no-repeat;
 }
 
 .video-frame__player {
-  display: block;
+  position: absolute;
+  inset: 0;
   width: 100%;
-  aspect-ratio: 16 / 9;
+  height: 100%;
   border: 0;
+}
+
+.video-play {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 64px;
+  border: 0;
+  border-radius: 50%;
+  background: #2f6fed;
+  color: #fff;
+  font-size: 1.3rem;
+  box-shadow: var(--app-shadow-md);
+  cursor: pointer;
+}
+
+.video-play:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 3px;
 }
 
 .video-frame.is-off {
@@ -175,4 +210,168 @@
   min-height: 180px;
   object-fit: cover;
   border-radius: 16px;
+}
+
+// Story-block modal: content of `app-modal`. Fields reuse the global `.field` styles.
+.block-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding-block-end: 8px;
+  --p-inputtext-border-radius: 16px;
+  --p-inputtext-border-color: #edeeee;
+  --p-inputtext-background: #fff;
+  --p-textarea-border-radius: 16px;
+  --p-textarea-border-color: #edeeee;
+  --p-textarea-background: #fff;
+}
+
+.block-form__lang {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.block-form .p-inputtext,
+.block-form .p-textarea {
+  min-height: 48px;
+}
+
+.points {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+}
+
+.points__title {
+  margin: 0;
+  color: var(--app-text);
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+// The delete button sits inside the field, at its end.
+.point-row {
+  position: relative;
+}
+
+.point-row .p-inputtext {
+  padding-inline-end: 52px;
+}
+
+.point-row__delete {
+  position: absolute;
+  inset-inline-end: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.block-form__delete {
+  --p-button-sm-icon-only-width: 32px;
+  --p-button-icon-only-width: 32px;
+  --p-button-sm-padding-x: 0;
+  --p-button-sm-padding-y: 0;
+  --p-button-border-radius: 10px;
+  --p-button-sm-font-size: 0.8rem;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+}
+
+.points__add {
+  --p-button-secondary-background: #eeecfb;
+  --p-button-secondary-hover-background: #e3e0f8;
+  --p-button-secondary-active-background: #e3e0f8;
+  --p-button-secondary-border-color: transparent;
+  --p-button-secondary-hover-border-color: transparent;
+  --p-button-secondary-active-border-color: transparent;
+  --p-button-secondary-color: #3b3a64;
+  --p-button-secondary-hover-color: #3b3a64;
+  --p-button-secondary-active-color: #3b3a64;
+  --p-button-border-radius: 12px;
+}
+
+.image-drop {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  min-height: 148px;
+  padding: 16px;
+  border: 1px dashed #b9cbe6;
+  border-radius: 16px;
+  background: #f7fbff;
+  text-align: center;
+  cursor: pointer;
+}
+
+.image-drop:focus-within {
+  outline: 2px solid var(--app-primary);
+  outline-offset: 2px;
+}
+
+.image-drop input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+}
+
+.image-drop__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  margin-bottom: 4px;
+  border-radius: 50%;
+  background: #e3effd;
+  color: #3b82f6;
+}
+
+.image-drop strong {
+  color: var(--app-primary);
+  font-size: var(--app-font-md);
+}
+
+.image-drop small,
+.image-file small {
+  color: #94a3b8;
+  font-size: 12px;
+}
+
+.image-file {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 8px;
+  padding: 8px 12px;
+  border: 1px solid #edeeee;
+  border-radius: 16px;
+  background: #fff;
+}
+
+.image-file__thumb {
+  flex: none;
+  width: 40px;
+  height: 40px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.image-file__text {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.image-file__text strong {
+  overflow: hidden;
+  color: var(--app-text);
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }

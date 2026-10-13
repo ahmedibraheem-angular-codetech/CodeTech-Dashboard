@@ -1,6 +1,6 @@
 <article class="section-card">
   <div class="section-head">
-    <h2>{{ block().title }}</h2>
+    <h2>{{ view().title }}</h2>
     @if (filled()) {
       <p-button
         icon="pi pi-pencil"
@@ -16,10 +16,10 @@
       <div class="story">
         <img class="story__visual" src="images/dashboardcodetech.svg" alt="" />
         <div class="story__text">
-          <h3>{{ block().title }}</h3>
-          <p>{{ block().body }}</p>
+          <h3>{{ view().title }}</h3>
+          <p>{{ view().body }}</p>
           <ul class="check-list">
-            @for (point of block().points; track $index) {
+            @for (point of view().points; track $index) {
               <li>
                 <i class="pi pi-check" aria-hidden="true"></i><span>{{ point }}</span>
               </li>
@@ -44,35 +44,132 @@
   }
 </article>
 
-<p-dialog
-  [header]="lang.t('home.edit')"
-  [visible]="editorOpen()"
-  (visibleChange)="!$event && editorOpen.set(false)"
-  [modal]="true"
-  [draggable]="false"
-  [style]="{ width: 'min(36rem, 94vw)' }"
+<app-modal
+  [(visible)]="editorOpen"
+  [title]="view().title || lang.t('home.edit')"
+  [icon]="icon()"
+  [saving]="saving()"
+  [saveDisabled]="form.controls.ar.invalid"
+  (save)="save()"
 >
-  <form class="form-grid" [formGroup]="form" (ngSubmit)="save()">
-    <label class="field">
-      <span class="field__label">{{ lang.t('users.name') }}</span>
-      <input pInputText [fluid]="true" formControlName="title" />
-    </label>
-    <label class="field">
-      <span class="field__label">{{ lang.t('home.body') }}</span>
-      <textarea pTextarea [fluid]="true" rows="4" formControlName="body"></textarea>
-    </label>
-    <label class="field">
-      <span class="field__label">{{ lang.t('home.point') }} 1</span>
-      <input pInputText [fluid]="true" formControlName="point1" />
-    </label>
-    <label class="field">
-      <span class="field__label">{{ lang.t('home.point') }} 2</span>
-      <input pInputText [fluid]="true" formControlName="point2" />
-    </label>
-    <label class="field">
-      <span class="field__label">{{ lang.t('home.point') }} 3</span>
-      <input pInputText [fluid]="true" formControlName="point3" />
-    </label>
-    <p-button type="submit" [label]="lang.t('common.save')" [loading]="saving()" [fluid]="true" />
-  </form>
-</p-dialog>
+  <div class="block-form">
+    <app-locale-switch [value]="locale()" (picked)="locale.set($event)" />
+
+    @for (code of locales; track code) {
+      @if (locale() === code) {
+        @let group = form.controls[code];
+        <div class="block-form__lang" [attr.dir]="code === 'ar' ? 'rtl' : 'ltr'" [attr.lang]="code">
+          <div class="field">
+            <label class="field__label" [attr.for]="'block-title-' + code">
+              {{ text('home.title', code) }}
+            </label>
+            <p-iconfield>
+              <input
+                pInputText
+                [id]="'block-title-' + code"
+                [fluid]="true"
+                [formControl]="group.controls.title"
+                [attr.aria-required]="code === 'ar'"
+                [placeholder]="text('home.titlePh', code)"
+              />
+              <p-inputicon [class]="icon()" />
+            </p-iconfield>
+          </div>
+
+          <div class="field">
+            <label class="field__label" [attr.for]="'block-body-' + code">
+              {{ text('home.body', code) }}
+            </label>
+            <textarea
+              pTextarea
+              rows="3"
+              [id]="'block-body-' + code"
+              [fluid]="true"
+              [formControl]="group.controls.body"
+              [attr.aria-required]="code === 'ar'"
+              [placeholder]="text('home.bodyPh', code)"
+            ></textarea>
+          </div>
+
+          <app-content-panel>
+            <div class="points">
+              <h3 class="points__title">{{ text('home.points', code) }}</h3>
+              @for (point of group.controls.points.controls; track point; let i = $index) {
+                <div class="field">
+                  <label class="field__label" [attr.for]="'block-point-' + code + '-' + i">
+                    {{ text('home.point', code) }} {{ i + 1 }}
+                  </label>
+                  <div class="point-row">
+                    <input
+                      pInputText
+                      [id]="'block-point-' + code + '-' + i"
+                      [fluid]="true"
+                      [formControl]="point"
+                      [attr.aria-required]="code === 'ar'"
+                      [placeholder]="text('home.pointPh', code)"
+                    />
+                    <p-button
+                      styleClass="block-form__delete"
+                      class="point-row__delete"
+                      icon="pi pi-trash"
+                      severity="secondary"
+                      size="small"
+                      [ariaLabel]="text('home.deletePoint', code) + ' ' + (i + 1)"
+                      (onClick)="removePoint(code, i)"
+                    />
+                  </div>
+                </div>
+              }
+              <p-button
+                class="points__add"
+                icon="pi pi-plus-circle"
+                iconPos="right"
+                severity="secondary"
+                [fluid]="true"
+                [label]="text('home.addPoint', code)"
+                (onClick)="addPoint(code)"
+              />
+            </div>
+          </app-content-panel>
+        </div>
+      }
+    }
+
+    <div class="field">
+      <span class="field__label" id="block-image-label">{{ lang.t('home.image') }}</span>
+      <label class="image-drop" (dragover)="$event.preventDefault()" (drop)="onDrop($event)">
+        <input
+          type="file"
+          accept="image/png,image/jpeg"
+          aria-labelledby="block-image-label"
+          (change)="onPick($event)"
+        />
+        <span class="image-drop__icon"><i class="pi pi-download" aria-hidden="true"></i></span>
+        <strong>{{ lang.t('home.imageUpload') }}</strong>
+        <small>{{ lang.t('home.imageHint') }}</small>
+      </label>
+      @if (imageError()) {
+        <p class="field__error" role="alert">{{ lang.t(imageError()) }}</p>
+      }
+      @if (image(); as file) {
+        <div class="image-file">
+          <img class="image-file__thumb" src="images/dashboardcodetech.svg" alt="" />
+          <div class="image-file__text">
+            <strong>{{ file.name }}</strong>
+            <small
+              ><bdi>{{ imageSize() }}</bdi> · <bdi>{{ imageDate() }}</bdi></small
+            >
+          </div>
+          <p-button
+            styleClass="block-form__delete"
+            icon="pi pi-trash"
+            severity="secondary"
+            size="small"
+            [ariaLabel]="lang.t('home.deleteImage')"
+            (onClick)="removeImage()"
+          />
+        </div>
+      }
+    </div>
+  </div>
+</app-modal>

@@ -13,5 +13,6 @@ export const ar: { [K in keyof typeof en]: string } = {
   'common.error': 'حدث خطأ',
   'common.close': 'إغلاق',
   'common.save': 'حفظ',
+  'common.saveChanges': 'حفظ التعديلات',
   'common.cancel': 'إلغاء',
 };

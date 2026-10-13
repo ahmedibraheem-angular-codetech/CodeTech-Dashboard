@@ -1,0 +1,48 @@
+<p-dialog
+  styleClass="app-modal"
+  [visible]="visible()"
+  (visibleChange)="!$event && requestClose()"
+  [modal]="true"
+  [draggable]="false"
+  [resizable]="false"
+  [dismissableMask]="false"
+  [closable]="dismissible() && closeOnCancel()"
+  [closeOnEscape]="dismissible() && closeOnCancel()"
+  [closeAriaLabel]="lang.t('common.close')"
+>
+  <ng-template #header let-labelledBy="ariaLabelledBy">
+    <div class="app-modal__heading">
+      @if (icon(); as iconClass) {
+        <span class="app-modal__icon"><i [class]="iconClass" aria-hidden="true"></i></span>
+      }
+      <span class="app-modal__title" [id]="labelledBy">{{ title() }}</span>
+    </div>
+  </ng-template>
+
+  <ng-content />
+
+  <ng-template #footer>
+    @if (showSave()) {
+      <p-button
+        class="app-modal__action"
+        icon="pi pi-save"
+        [label]="saveLabel() ?? lang.t('common.saveChanges')"
+        [fluid]="true"
+        [loading]="saving()"
+        [disabled]="saveDisabled()"
+        (onClick)="onSave()"
+      />
+    }
+    @if (showCancel()) {
+      <p-button
+        class="app-modal__action"
+        severity="secondary"
+        variant="outlined"
+        [label]="cancelLabel() ?? lang.t('common.cancel')"
+        [fluid]="true"
+        [disabled]="saving()"
+        (onClick)="requestClose()"
+      />
+    }
+  </ng-template>
+</p-dialog>

@@ -37,23 +37,34 @@
   </div>
   @if (name(); as videoName) {
     <div class="video-frame" [class.is-off]="!enabled()">
-      <iframe
-        class="video-frame__player"
-        [src]="videoSrc"
-        [title]="videoName"
-        loading="lazy"
-        referrerpolicy="strict-origin-when-cross-origin"
-        allow="
-          accelerometer;
-          autoplay;
-          clipboard-write;
-          encrypted-media;
-          gyroscope;
-          picture-in-picture;
-          web-share;
-        "
-        allowfullscreen
-      ></iframe>
+      @if (playing()) {
+        <iframe
+          class="video-frame__player"
+          [src]="videoSrc"
+          [title]="videoName"
+          referrerpolicy="strict-origin-when-cross-origin"
+          allow="
+            accelerometer;
+            autoplay;
+            clipboard-write;
+            encrypted-media;
+            gyroscope;
+            picture-in-picture;
+            web-share;
+          "
+          allowfullscreen
+        ></iframe>
+      } @else {
+        <button
+          type="button"
+          class="video-play"
+          [disabled]="!enabled()"
+          [attr.aria-label]="videoName"
+          (click)="play()"
+        >
+          <i class="pi pi-play" aria-hidden="true"></i>
+        </button>
+      }
     </div>
   } @else {
     <app-section-empty
