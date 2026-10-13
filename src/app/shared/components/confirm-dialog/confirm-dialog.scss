@@ -1,0 +1,91 @@
+// PrimeNG appends the dialog to the body, so these rules are global and namespaced
+// under `.app-confirm`.
+.p-dialog.app-confirm {
+  --p-dialog-background: #fff;
+  --p-dialog-border-radius: 28px;
+  --p-dialog-content-padding: 32px 28px 8px;
+  --p-dialog-footer-padding: 16px 28px 28px;
+  --p-dialog-footer-gap: 12px;
+
+  width: min(480px, calc(100vw - 32px));
+}
+
+.app-confirm .p-dialog-content {
+  text-align: center;
+}
+
+.app-confirm .p-dialog-footer {
+  display: flex;
+}
+
+.app-confirm__body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.app-confirm__badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 76px;
+  height: 76px;
+  border-radius: 50%;
+  background: #fdecec;
+  color: #e11d48;
+  font-size: 1.75rem;
+}
+
+.app-confirm__title {
+  margin: 4px 0 0;
+  color: #16324f;
+  font-size: 1.5rem;
+  font-weight: 800;
+  line-height: 1.4;
+}
+
+.app-confirm__message {
+  margin: 0;
+  max-width: 26rem;
+  color: #8b95a5;
+  font-size: 1rem;
+  line-height: 1.7;
+}
+
+p-button.app-confirm__action {
+  display: block;
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+.app-confirm__action {
+  --p-button-border-radius: 16px;
+  --p-button-padding-y: 0;
+
+  width: 100%;
+  height: 52px;
+  font-weight: 700;
+}
+
+.app-confirm__action--danger {
+  --p-button-danger-background: #e11d48;
+  --p-button-danger-hover-background: #be123c;
+  --p-button-danger-active-background: #be123c;
+  --p-button-danger-border-color: #e11d48;
+  --p-button-danger-hover-border-color: #be123c;
+  --p-button-danger-active-border-color: #be123c;
+  --p-button-danger-color: #fff;
+}
+
+.app-confirm__action--back {
+  --p-button-outlined-secondary-background: #fff;
+  --p-button-outlined-secondary-hover-background: #f7f8fc;
+  --p-button-outlined-secondary-active-background: #f7f8fc;
+  --p-button-outlined-secondary-border-color: #e3e8f2;
+  --p-button-outlined-secondary-hover-border-color: #e3e8f2;
+  --p-button-outlined-secondary-active-border-color: #e3e8f2;
+  --p-button-outlined-secondary-color: #64748b;
+  --p-button-outlined-secondary-hover-color: #64748b;
+  --p-button-outlined-secondary-active-color: #64748b;
+}

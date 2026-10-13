@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ViewEncapsulation, signal } from '@angular/core';
 import { Button } from 'primeng/button';
 import { Dialog } from 'primeng/dialog';
 
@@ -10,13 +10,19 @@ export interface ConfirmOptions {
   danger?: boolean;
 }
 
+let nextTitleId = 0;
+
 @Component({
   selector: 'app-confirm-dialog',
   imports: [Button, Dialog],
   templateUrl: './confirm-dialog.html',
+  styleUrl: './confirm-dialog.scss',
+  encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ConfirmDialog {
+  /** One id per instance: the home page renders two of these dialogs. */
+  readonly titleId = `confirm-title-${++nextTitleId}`;
   readonly visible = signal(false);
   readonly title = signal('');
   readonly message = signal('');

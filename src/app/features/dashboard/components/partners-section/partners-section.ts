@@ -2,6 +2,7 @@ import {
   ChangeDetectionStrategy,
   Component,
   DestroyRef,
+  computed,
   inject,
   input,
   output,
@@ -9,32 +10,28 @@ import {
   viewChild,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MessageService } from 'primeng/api';
 import { Button } from 'primeng/button';
-import { Dialog } from 'primeng/dialog';
-import { InputText } from 'primeng/inputtext';
 import { Tooltip } from 'primeng/tooltip';
 
 import { LanguageService } from '../../../../core/services/language.service';
 import { ConfirmDialog } from '../../../../shared/components/confirm-dialog/confirm-dialog';
 import { ContentPanel } from '../../../../shared/components/content-panel/content-panel';
+import { Modal } from '../../../../shared/components/modal/modal';
 import { SectionEmpty } from '../../../../shared/components/section-empty/section-empty';
-import { Partner } from '../../models/homepage.model';
+import { formatIsoDate, toIsoDate } from '../../../../shared/utils/date';
+import { formatFileSize } from '../../../../shared/utils/file-size';
+import {
+  BLOCK_IMAGE_MAX_BYTES,
+  BLOCK_IMAGE_TYPES,
+  BlockImage,
+  Partner,
+} from '../../models/homepage.model';
 import { HomepageService } from '../../services/homepage.service';
 
 @Component({
   selector: 'app-partners-section',
-  imports: [
-    ReactiveFormsModule,
-    Button,
-    Dialog,
-    InputText,
-    Tooltip,
-    SectionEmpty,
-    ContentPanel,
-    ConfirmDialog,
-  ],
+  imports: [Button, Tooltip, SectionEmpty, ContentPanel, Modal, ConfirmDialog],
   templateUrl: './partners-section.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -42,22 +39,24 @@ export class PartnersSection {
   private readonly api = inject(HomepageService);
   private readonly messages = inject(MessageService);
   private readonly destroyRef = inject(DestroyRef);
-  private readonly fb = inject(FormBuilder);
   private readonly confirm = viewChild.required(ConfirmDialog);
   readonly lang = inject(LanguageService);
 
   readonly partners = input.required<Partner[]>();
-  /** Emitted after a partner was added, edited or removed, so the parent can reload. */
+  /** Emitted after a partner was added or removed, so the parent can reload. */
   readonly changed = output<void>();
 
   readonly editorOpen = signal(false);
-  readonly editingId = signal<string | null>(null);
   readonly saving = signal(false);
-
-  readonly form = this.fb.nonNullable.group({
-    name: ['', Validators.required],
-    monogram: ['', [Validators.required, Validators.maxLength(2)]],
-  });
+  readonly image = signal<BlockImage | null>(null);
+  /** Object URL of the picked file, shown in the file row until the modal closes. */
+  readonly preview = signal<string | null>(null);
+  /** Translation key of the last rejected image, or empty. */
+  readonly imageError = signal('');
+  readonly imageSize = computed(() => formatFileSize(this.image()?.size ?? 0));
+  readonly imageDate = computed(() =>
+    formatIsoDate(this.image()?.uploadedAt ?? '1970-01-01', this.lang.language()),
+  );
 
   download(partner: Partner): void {
     const link = document.createElement('a');
@@ -66,25 +65,39 @@ export class PartnersSection {
     link.click();
   }
 
-  open(partner?: Partner): void {
-    this.editingId.set(partner?.id ?? null);
-    this.form.reset({ name: partner?.name ?? '', monogram: partner?.monogram ?? '' });
+  open(): void {
+    this.clearImage();
+    this.imageError.set('');
     this.editorOpen.set(true);
   }
 
+  onPick(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    this.takeImage(input.files?.[0]);
+    input.value = '';
+  }
+
+  onDrop(event: DragEvent): void {
+    event.preventDefault();
+    this.takeImage(event.dataTransfer?.files?.[0]);
+  }
+
+  removeImage(): void {
+    this.clearImage();
+    this.imageError.set('');
+  }
+
   save(): void {
-    if (this.form.invalid) {
-      this.form.markAllAsTouched();
+    const image = this.image();
+    if (!image || this.saving()) {
       return;
     }
-    if (this.saving()) {
-      return;
-    }
-    const value = this.form.getRawValue();
+    const base = image.name.replace(/\.[^.]+$/, '').trim() || image.name;
     const partner: Partner = {
-      id: this.editingId() ?? crypto.randomUUID(),
-      name: value.name.trim(),
-      monogram: value.monogram.trim(),
+      id: crypto.randomUUID(),
+      name: base,
+      monogram: base.charAt(0),
+      image,
     };
     this.saving.set(true);
     this.api
@@ -94,6 +107,7 @@ export class PartnersSection {
         next: () => {
           this.saving.set(false);
           this.editorOpen.set(false);
+          this.clearImage();
           this.changed.emit();
           this.messages.add({ severity: 'success', summary: this.lang.t('common.save') });
         },
@@ -109,7 +123,7 @@ export class PartnersSection {
       title: this.lang.t('home.deleteTitle'),
       message: this.lang.t('home.deletePartner'),
       confirmLabel: this.lang.t('users.delete'),
-      cancelLabel: this.lang.t('common.cancel'),
+      cancelLabel: this.lang.t('common.back'),
       danger: true,
     });
     if (!accepted) {
@@ -122,6 +136,33 @@ export class PartnersSection {
         next: () => this.changed.emit(),
         error: () => this.notifyFailure(),
       });
+  }
+
+  private takeImage(file: File | undefined): void {
+    if (!file) {
+      return;
+    }
+    if (!BLOCK_IMAGE_TYPES.includes(file.type)) {
+      this.imageError.set('home.imageType');
+      return;
+    }
+    if (file.size > BLOCK_IMAGE_MAX_BYTES) {
+      this.imageError.set('home.imageSize');
+      return;
+    }
+    this.clearImage();
+    this.imageError.set('');
+    this.preview.set(URL.createObjectURL(file));
+    this.image.set({ name: file.name, size: file.size, uploadedAt: toIsoDate(new Date()) });
+  }
+
+  private clearImage(): void {
+    const preview = this.preview();
+    if (preview) {
+      URL.revokeObjectURL(preview);
+    }
+    this.preview.set(null);
+    this.image.set(null);
   }
 
   private notifyFailure(): void {

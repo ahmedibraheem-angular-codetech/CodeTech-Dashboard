@@ -86,7 +86,7 @@ export class VideoSection {
       title: this.lang.t('home.deleteVideo'),
       message: this.lang.t('home.deleteVideoMessage'),
       confirmLabel: this.lang.t('users.delete'),
-      cancelLabel: this.lang.t('common.cancel'),
+      cancelLabel: this.lang.t('common.back'),
       danger: true,
     });
     if (!accepted) {

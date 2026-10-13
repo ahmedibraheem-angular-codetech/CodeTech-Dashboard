@@ -41,6 +41,8 @@ export class Modal {
   readonly title = input.required<string>();
   /** Optional PrimeIcons class shown beside the title, e.g. `pi pi-user-edit`. */
   readonly icon = input<string>();
+  /** Optional image shown beside the title instead of `icon`. */
+  readonly iconUrl = input<string>();
 
   /** True while the parent's save is running: shows a spinner and blocks save, cancel and dismiss. */
   readonly saving = input(false);
@@ -48,6 +50,8 @@ export class Modal {
   readonly saveDisabled = input(false);
   /** Defaults to "Save changes". */
   readonly saveLabel = input<string>();
+  /** Icon on the save button. Pass an empty string to show the label alone. */
+  readonly saveIcon = input('pi pi-save');
   /** Defaults to "Cancel". */
   readonly cancelLabel = input<string>();
   readonly showSave = input(true);

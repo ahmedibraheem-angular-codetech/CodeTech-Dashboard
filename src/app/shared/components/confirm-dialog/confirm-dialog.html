@@ -1,23 +1,38 @@
 <p-dialog
-  [header]="title()"
+  styleClass="app-confirm"
   [visible]="visible()"
   (visibleChange)="onVisible($event)"
   [modal]="true"
   [draggable]="false"
-  [style]="{ width: 'min(28rem, 94vw)' }"
->
-  <p>{{ message() }}</p>
+  [resizable]="false"
+  [showHeader]="false"
+  [closable]="false"
+  [dismissableMask]="false"
+[attr.aria-labelledby]="titleId">
+  <div class="app-confirm__body">
+    @if (danger()) {
+      <span class="app-confirm__badge" aria-hidden="true"><i class="pi pi-trash"></i></span>
+    }
+    <h2 class="app-confirm__title" [id]="titleId">{{ title() }}</h2>
+    <p class="app-confirm__message">{{ message() }}</p>
+  </div>
   <ng-template #footer>
     <p-button
+      class="app-confirm__action"
+      [styleClass]="
+        danger() ? 'app-confirm__action app-confirm__action--danger' : 'app-confirm__action'
+      "
+      [label]="confirmLabel()"
+      [severity]="danger() ? 'danger' : null"
+      (onClick)="confirm()"
+    />
+    <p-button
+      class="app-confirm__action"
+      styleClass="app-confirm__action app-confirm__action--back"
       [label]="cancelLabel()"
       severity="secondary"
       variant="outlined"
       (onClick)="cancel()"
-    />
-    <p-button
-      [label]="confirmLabel()"
-      [severity]="danger() ? 'danger' : null"
-      (onClick)="confirm()"
     />
   </ng-template>
 </p-dialog>

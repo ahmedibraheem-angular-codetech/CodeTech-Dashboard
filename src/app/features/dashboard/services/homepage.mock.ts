@@ -8,14 +8,14 @@ export const HOMEPAGE_SEED: HomepageContent = {
   videoName: 'intro-video.mp4',
   contactRequests: 12,
   partners: [
-    { id: 'p1', name: 'شريك التقنية', monogram: 'ك' },
-    { id: 'p2', name: 'شريك التحول', monogram: 'ت' },
-    { id: 'p3', name: 'شريك الابتكار', monogram: 'ق' },
-    { id: 'p4', name: 'شريك النمو', monogram: 'ن' },
-    { id: 'p5', name: 'شريك المعرفة', monogram: 'م' },
-    { id: 'p6', name: 'شريك الجودة', monogram: 'ج' },
-    { id: 'p7', name: 'شريك الرؤية', monogram: 'ر' },
-    { id: 'p8', name: 'شريك التمكين', monogram: 'س' },
+    { id: 'p1', name: 'شريك التقنية', monogram: 'ك', image: null },
+    { id: 'p2', name: 'شريك التحول', monogram: 'ت', image: null },
+    { id: 'p3', name: 'شريك الابتكار', monogram: 'ق', image: null },
+    { id: 'p4', name: 'شريك النمو', monogram: 'ن', image: null },
+    { id: 'p5', name: 'شريك المعرفة', monogram: 'م', image: null },
+    { id: 'p6', name: 'شريك الجودة', monogram: 'ج', image: null },
+    { id: 'p7', name: 'شريك الرؤية', monogram: 'ر', image: null },
+    { id: 'p8', name: 'شريك التمكين', monogram: 'س', image: null },
   ],
   about: {
     texts: {

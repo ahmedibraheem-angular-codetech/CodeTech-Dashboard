@@ -13,4 +13,5 @@ export const en = {
   'common.save': 'Save',
   'common.saveChanges': 'Save changes',
   'common.cancel': 'Cancel',
+  'common.back': 'Go back',
 } as const;

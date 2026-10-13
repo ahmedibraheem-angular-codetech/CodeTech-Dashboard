@@ -15,4 +15,5 @@ export const ar: { [K in keyof typeof en]: string } = {
   'common.save': 'حفظ',
   'common.saveChanges': 'حفظ التعديلات',
   'common.cancel': 'إلغاء',
+  'common.back': 'تراجع',
 };

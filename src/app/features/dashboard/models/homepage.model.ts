@@ -4,6 +4,7 @@ export interface Partner {
   id: string;
   name: string;
   monogram: string;
+  image: BlockImage | null;
 }
 
 /** One language of a story block. The number of points is free. */

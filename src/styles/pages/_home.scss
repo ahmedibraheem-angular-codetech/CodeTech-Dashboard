@@ -175,7 +175,7 @@
 // Image beside a white text card. The surrounding container is `app-content-panel`.
 .story {
   display: grid;
-  grid-template-columns: minmax(0, 3fr) minmax(0, 5fr);
+  grid-template-columns: 377px minmax(0, 1fr);
   gap: 12px;
   align-items: stretch;
   width: 100%;
@@ -187,6 +187,7 @@
   }
 
   .story__visual {
+    width: 100%;
     height: 220px;
   }
 }
@@ -236,12 +237,11 @@
 }
 
 .story__visual {
-  display: block;
-  width: 100%;
+  width: 377px;
   align-self: stretch;
-  min-height: 180px;
-  object-fit: cover;
   border-radius: 16px;
+  opacity: 0.9;
+  background: url('/images/dashboardcodetech.svg') lightgray 50% / cover no-repeat;
 }
 
 // Story-block modal: content of `app-modal`. Fields reuse the global `.field` styles.
@@ -326,22 +326,17 @@
 
 .image-drop {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 4px;
-  min-height: 148px;
   padding: 16px;
-  border: 1px dashed #b9cbe6;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  align-self: stretch;
   border-radius: 16px;
-  background: #f7fbff;
+  border: 1.5px dashed rgb(28 129 211 / 40%);
+  background: #f9fafb;
   text-align: center;
   cursor: pointer;
-}
-
-.image-drop:focus-within {
-  outline: 2px solid var(--app-primary);
-  outline-offset: 2px;
 }
 
 .image-drop input {
@@ -358,7 +353,6 @@
   justify-content: center;
   width: 40px;
   height: 40px;
-  margin-bottom: 4px;
   border-radius: 50%;
   background: #e3effd;
   color: #3b82f6;

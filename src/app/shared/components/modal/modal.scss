@@ -64,6 +64,12 @@
   font-size: 1.25rem;
 }
 
+.app-modal__icon img {
+  display: block;
+  width: 20px;
+  height: 20px;
+}
+
 .app-modal .p-dialog-close-button {
   padding: 0;
   color: var(--app-text);

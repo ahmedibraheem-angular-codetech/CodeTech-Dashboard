@@ -12,7 +12,9 @@
 >
   <ng-template #header let-labelledBy="ariaLabelledBy">
     <div class="app-modal__heading">
-      @if (icon(); as iconClass) {
+      @if (iconUrl(); as url) {
+        <span class="app-modal__icon"><img [src]="url" alt="" /></span>
+      } @else if (icon(); as iconClass) {
         <span class="app-modal__icon"><i [class]="iconClass" aria-hidden="true"></i></span>
       }
       <span class="app-modal__title" [id]="labelledBy">{{ title() }}</span>
@@ -25,7 +27,7 @@
     @if (showSave()) {
       <p-button
         class="app-modal__action"
-        icon="pi pi-save"
+        [icon]="saveIcon() || undefined"
         [label]="saveLabel() ?? lang.t('common.saveChanges')"
         [fluid]="true"
         [loading]="saving()"

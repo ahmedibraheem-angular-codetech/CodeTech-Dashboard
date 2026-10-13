@@ -58,25 +58,56 @@
   }
 </article>
 
-<p-dialog
-  [header]="lang.t(editingId() ? 'home.editPartner' : 'home.addPartner')"
-  [visible]="editorOpen()"
-  (visibleChange)="!$event && editorOpen.set(false)"
-  [modal]="true"
-  [draggable]="false"
-  [style]="{ width: 'min(32rem, 94vw)' }"
+<app-modal
+  [(visible)]="editorOpen"
+  [title]="lang.t('home.addPartner')"
+  iconUrl="images/partner-add.svg"
+  [saving]="saving()"
+  [saveDisabled]="!image()"
+  [saveLabel]="lang.t('home.add')"
+  saveIcon=""
+  (save)="save()"
+  (cancel)="removeImage()"
 >
-  <form class="form-grid" [formGroup]="form" (ngSubmit)="save()">
-    <label class="field">
-      <span class="field__label">{{ lang.t('home.partnerName') }}</span>
-      <input pInputText [fluid]="true" formControlName="name" />
+  <div class="field">
+    <span class="field__label" id="partner-image-label">{{ lang.t('home.partnerImage') }}</span>
+    <label class="image-drop" (dragover)="$event.preventDefault()" (drop)="onDrop($event)">
+      <input
+        type="file"
+        tabindex="-1"
+        accept="image/png,image/jpeg"
+        aria-labelledby="partner-image-label"
+        (change)="onPick($event)"
+      />
+      <span class="image-drop__icon"><i class="pi pi-download" aria-hidden="true"></i></span>
+      <strong>{{ lang.t('home.partnerImageUpload') }}</strong>
+      <small>{{ lang.t('home.imageHint') }}</small>
     </label>
-    <label class="field">
-      <span class="field__label">{{ lang.t('home.monogram') }}</span>
-      <input pInputText [fluid]="true" formControlName="monogram" maxlength="2" />
-    </label>
-    <p-button type="submit" [label]="lang.t('common.save')" [loading]="saving()" [fluid]="true" />
-  </form>
-</p-dialog>
+    @if (imageError()) {
+      <p class="field__error" role="alert">{{ lang.t(imageError()) }}</p>
+    }
+    @if (image(); as file) {
+      <div class="image-file">
+        @if (preview(); as url) {
+          <img class="image-file__thumb" [src]="url" alt="" />
+        }
+        <div class="image-file__text">
+          <strong>{{ file.name }}</strong>
+          <small
+            ><bdi>{{ imageSize() }}</bdi> · <bdi>{{ imageDate() }}</bdi></small
+          >
+        </div>
+        <p-button
+          styleClass="block-form__delete"
+          icon="pi pi-trash"
+          severity="secondary"
+          size="small"
+          [ariaLabel]="lang.t('home.deleteImage')"
+          (onClick)="removeImage()"
+        />
+      </div>
+    }
+  </div>
+</app-modal>
 
 <app-confirm-dialog />
