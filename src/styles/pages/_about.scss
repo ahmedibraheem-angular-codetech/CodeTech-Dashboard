@@ -166,58 +166,10 @@
   background: #eef2f6;
 }
 
-.about-member__tools {
+.about-member__photo .partner-card__tools {
   position: absolute;
   top: 8px;
-  left: 50%;
-  display: flex;
-  gap: 8px;
-  transform: translateX(-50%);
-}
-
-.about-member__tools .about-tool {
-  --p-button-sm-icon-only-width: 28px;
-  --p-button-icon-only-width: 28px;
-  --p-button-sm-padding-x: 0;
-  --p-button-sm-padding-y: 0;
-  --p-button-border-radius: 50%;
-  --p-button-gap: 0;
-  --p-button-secondary-border-color: transparent;
-  --p-button-secondary-hover-border-color: transparent;
-  --p-button-secondary-active-border-color: transparent;
-
-  display: flex;
-  width: 28px;
-  height: 28px;
-  padding: 0;
-  justify-content: center;
-  align-items: center;
-  gap: 0;
-}
-
-.about-member__tools .about-tool .p-button-icon {
-  width: 14px;
-  height: 14px;
-  flex-shrink: 0;
-  font-size: 14px;
-}
-
-.about-tool--edit {
-  --p-button-secondary-background: #edf5fb;
-  --p-button-secondary-hover-background: #d7ebf7;
-  --p-button-secondary-active-background: #d7ebf7;
-  --p-button-secondary-color: #3b82f6;
-  --p-button-secondary-hover-color: #3b82f6;
-  --p-button-secondary-active-color: #3b82f6;
-}
-
-.about-tool--delete {
-  --p-button-secondary-background: #fceeee;
-  --p-button-secondary-hover-background: #f8e0e0;
-  --p-button-secondary-active-background: #f8e0e0;
-  --p-button-secondary-color: #e11d48;
-  --p-button-secondary-hover-color: #e11d48;
-  --p-button-secondary-active-color: #e11d48;
+  left: 8px;
 }
 
 .about-member h3 {

@@ -12,8 +12,13 @@ h1 {
 }
 
 h2 {
-  font-size: 1.05rem;
-  font-weight: 800;
+  color: #002951;
+  text-align: start;
+  font-family: var(--app-font);
+  font-size: 20px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 150%;
 }
 
 h3 {

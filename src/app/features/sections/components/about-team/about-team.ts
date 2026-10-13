@@ -14,6 +14,7 @@ import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { MessageService } from 'primeng/api';
 import { Button } from 'primeng/button';
 import { InputText } from 'primeng/inputtext';
+import { Tooltip } from 'primeng/tooltip';
 
 import { LanguageService } from '../../../../core/services/language.service';
 import { ConfirmDialog } from '../../../../shared/components/confirm-dialog/confirm-dialog';
@@ -40,6 +41,7 @@ function control(value: string): FormControl<string> {
     ReactiveFormsModule,
     Button,
     InputText,
+    Tooltip,
     ConfirmDialog,
     ContentPanel,
     Modal,
@@ -73,6 +75,13 @@ export class AboutTeamSection {
     name: control(''),
     role: control(''),
   });
+
+  download(member: AboutMember): void {
+    const link = document.createElement('a');
+    link.href = 'images/avatar-placeholder.svg';
+    link.download = `${member.name}.svg`;
+    link.click();
+  }
 
   open(member?: AboutMember): void {
     this.editingId.set(member?.id ?? null);

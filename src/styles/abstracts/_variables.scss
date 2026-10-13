@@ -32,7 +32,9 @@ $color-sidebar-user-name: #1e293b;
 $color-sidebar-logout-bg: #fff1f2;
 $color-header-bg: #ffffff;
 
-$font-family: 'Cairo', 'Inter', 'Segoe UI', tahoma, sans-serif;
+// One family for Arabic and English. The face files are not in the repo yet, so the
+// browser uses the `sans-serif` fallback until they are added under `public/fonts/thmanyah-sans/`.
+$font-family: 'Thmanyah Sans', sans-serif;
 $font-size-xs: 0.75rem;
 $font-size-sm: 0.8125rem;
 $font-size-md: 0.9375rem;
