@@ -1,0 +1,38 @@
+@if (status() === 'loading') {
+  <app-state-view mode="loading" />
+} @else if (status() === 'error') {
+  <app-state-view mode="error" (retry)="reload()" />
+} @else {
+  <section class="page">
+    <app-page-header [title]="lang.t('about.manage')" [subtitle]="lang.t('about.subtitle')" />
+
+    @if (story(); as storyBlock) {
+      <app-about-groups
+        section="story"
+        [content]="storyBlock"
+        [heading]="lang.t('about.story')"
+        [emptyTitle]="lang.t('about.storyEmpty')"
+        [emptyHint]="lang.t('about.storyEmptyHint')"
+        [emptyAction]="lang.t('about.storyAdd')"
+        [modalTitle]="lang.t('about.story')"
+        (saved)="story.set($event)"
+      />
+    }
+    @if (vision(); as visionBlock) {
+      <app-about-groups
+        section="vision"
+        [content]="visionBlock"
+        [heading]="lang.t('about.vision')"
+        [emptyTitle]="lang.t('about.visionEmpty')"
+        [emptyHint]="lang.t('about.visionEmptyHint')"
+        [emptyAction]="lang.t('about.visionAdd')"
+        [modalTitle]="lang.t('about.vision')"
+        (saved)="vision.set($event)"
+      />
+    }
+    @if (ceo(); as ceoBlock) {
+      <app-about-ceo [content]="ceoBlock" (saved)="ceo.set($event)" />
+    }
+    <app-about-team [team]="team()" (changed)="team.set($event)" />
+  </section>
+}

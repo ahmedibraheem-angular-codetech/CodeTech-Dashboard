@@ -1,0 +1,150 @@
+<article class="section-card">
+  <div class="section-head">
+    <h2>{{ lang.t('about.ceo') }}</h2>
+    @if (filled()) {
+      <p-button
+        styleClass="block-edit"
+        icon="pi pi-pen-to-square"
+        iconPos="right"
+        [label]="lang.t('home.edit')"
+        (onClick)="open()"
+      />
+    }
+  </div>
+
+  @if (filled()) {
+    <app-content-panel>
+      <div class="about-ceo">
+        <div class="about-ceo__photo" role="img" [attr.aria-label]="view().name"></div>
+        <div class="about-ceo__copy">
+          <p class="about-ceo__role">{{ view().role }}</p>
+          <h3>{{ view().name }}</h3>
+          <p class="about-ceo__body">{{ view().body }}</p>
+          @if (view().quote) {
+            <blockquote class="about-quote">
+              <span class="about-quote__mark" aria-hidden="true">“</span>
+              <span>{{ view().quote }}</span>
+              <span class="about-quote__mark" aria-hidden="true">”</span>
+            </blockquote>
+          }
+        </div>
+      </div>
+    </app-content-panel>
+  } @else {
+    <app-section-empty [title]="lang.t('about.ceoEmpty')" [hint]="lang.t('about.ceoEmptyHint')">
+      <p-button
+        icon="pi pi-file"
+        [label]="lang.t('about.ceoAdd')"
+        severity="secondary"
+        variant="outlined"
+        (onClick)="open()"
+      />
+    </app-section-empty>
+  }
+</article>
+
+<app-modal
+  [(visible)]="editorOpen"
+  [title]="lang.t('about.ceo')"
+  icon="pi pi-user"
+  [saving]="saving()"
+  [saveDisabled]="form.controls.ar.invalid"
+  (save)="save()"
+>
+  <div class="block-form">
+    <app-locale-switch [value]="locale()" (picked)="locale.set($event)" />
+    @for (code of locales; track code) {
+      @if (locale() === code) {
+        @let group = form.controls[code];
+        <div class="block-form__lang" [attr.dir]="code === 'ar' ? 'rtl' : 'ltr'" [attr.lang]="code">
+          <div class="field">
+            <label class="field__label" [attr.for]="'ceo-name-' + code">{{
+              text('about.name', code)
+            }}</label>
+            <input
+              pInputText
+              [id]="'ceo-name-' + code"
+              [fluid]="true"
+              [formControl]="group.controls.name"
+              [attr.aria-required]="code === 'ar'"
+            />
+          </div>
+          <div class="field">
+            <label class="field__label" [attr.for]="'ceo-role-' + code">{{
+              text('about.role', code)
+            }}</label>
+            <input
+              pInputText
+              [id]="'ceo-role-' + code"
+              [fluid]="true"
+              [formControl]="group.controls.role"
+              [attr.aria-required]="code === 'ar'"
+            />
+          </div>
+          <div class="field">
+            <label class="field__label" [attr.for]="'ceo-body-' + code">{{
+              text('about.body', code)
+            }}</label>
+            <textarea
+              pTextarea
+              rows="3"
+              [id]="'ceo-body-' + code"
+              [fluid]="true"
+              [formControl]="group.controls.body"
+              [attr.aria-required]="code === 'ar'"
+            ></textarea>
+          </div>
+          <div class="field">
+            <label class="field__label" [attr.for]="'ceo-quote-' + code">{{
+              text('about.quote', code)
+            }}</label>
+            <textarea
+              pTextarea
+              rows="2"
+              [id]="'ceo-quote-' + code"
+              [fluid]="true"
+              [formControl]="group.controls.quote"
+            ></textarea>
+          </div>
+        </div>
+      }
+    }
+    <div class="field">
+      <span class="field__label" id="ceo-image-label">{{ lang.t('home.image') }}</span>
+      <label class="image-drop" (dragover)="$event.preventDefault()" (drop)="onDrop($event)">
+        <input
+          type="file"
+          accept="image/png,image/jpeg"
+          tabindex="-1"
+          aria-labelledby="ceo-image-label"
+          (change)="onPick($event)"
+        />
+        <span class="image-drop__icon"><i class="pi pi-download" aria-hidden="true"></i></span>
+        <strong>{{ lang.t('home.imageUpload') }}</strong>
+        <small>{{ lang.t('home.imageHint') }}</small>
+      </label>
+      @if (imageError()) {
+        <p class="field__error" role="alert">{{ lang.t(imageError()) }}</p>
+      }
+      @if (image(); as file) {
+        <div class="image-file">
+          <img class="image-file__thumb" src="images/ceo.svg" alt="" />
+          <div class="image-file__text">
+            <strong>{{ file.name }}</strong>
+            <small
+              ><bdi>{{ imageSize() }}</bdi> · <bdi>{{ imageDate() }}</bdi></small
+            >
+          </div>
+          <p-button
+            styleClass="block-form__delete"
+            icon="pi pi-trash"
+            severity="secondary"
+            size="small"
+            [ariaLabel]="lang.t('home.deleteImage')"
+            (onClick)="removeImage()"
+          />
+        </div>
+      }
+    </div>
+  </div>
+</app-modal>

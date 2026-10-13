@@ -10,6 +10,7 @@
 @use 'layout/topbar';
 @use 'layout/page';
 @use 'pages/home';
+@use 'pages/about';
 @use 'pages/profile';
 @use 'pages/seo';
 @use 'layout/auth';
@@ -18,4 +19,3 @@
 @use 'vendors/primeng';
 
 @import 'vendors/bootstrap';
-

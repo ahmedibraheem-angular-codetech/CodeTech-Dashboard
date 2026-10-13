@@ -1,0 +1,263 @@
+// About CodeTech management. Shared field, button and drop-zone styles stay in the home sheet.
+
+.about-story {
+  display: grid;
+  grid-template-columns: minmax(220px, 377px) minmax(0, 1fr);
+  gap: 12px;
+  align-items: stretch;
+  width: 100%;
+}
+
+.about-visual {
+  width: 100%;
+  min-height: 280px;
+  align-self: stretch;
+  border-radius: 16px;
+  opacity: 0.9;
+  background: url('/images/dashboardcodetech.svg') lightgray 50% / cover no-repeat;
+}
+
+.about-notes,
+.about-split,
+.about-team,
+.about-ceo {
+  width: 100%;
+  min-width: 0;
+}
+
+.about-notes {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.about-note {
+  padding: 16px;
+  border: 1px solid #edeeee;
+  border-radius: 16px;
+  background: #fff;
+}
+
+.about-note h3,
+.about-member h3 {
+  margin: 0 0 8px;
+  color: var(--app-text);
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.about-split {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.about-highlight {
+  margin: 12px 0 0;
+  padding: 12px 16px;
+  border-radius: 12px;
+  background: #e8f3fc;
+  color: #1e4b7a;
+  font-size: var(--app-font-sm);
+  line-height: 1.7;
+}
+
+.about-ceo {
+  display: flex;
+  align-items: stretch;
+  gap: 12px;
+  width: 100%;
+}
+
+.about-ceo__photo {
+  width: 445px;
+  height: 294px;
+  flex: none;
+  border-radius: 16px;
+  opacity: 0.9;
+  background: url('/images/ceo.svg') lightgray 50% / cover no-repeat;
+}
+
+.about-ceo__copy {
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  align-items: flex-start;
+  gap: 12px;
+  flex: 1 0 0;
+  min-width: 0;
+  border-radius: 16px;
+  border: 1px solid #edeeee;
+  background: #fff;
+}
+
+.about-ceo__role,
+.about-ceo__body {
+  margin: 0;
+  color: var(--app-muted);
+  line-height: 1.8;
+}
+
+.about-ceo__role {
+  font-size: var(--app-font-sm);
+}
+
+.about-ceo__copy h3 {
+  margin: 0;
+  color: var(--app-text);
+  font-size: 1.35rem;
+  font-weight: 800;
+  line-height: 1.3;
+}
+
+.about-quote {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  margin: auto 0 0;
+  padding: 12px 16px;
+  border-radius: 12px;
+  background: #e8f3fc;
+  color: #2f6fed;
+  font-size: var(--app-font-sm);
+  font-weight: 700;
+  line-height: 1.7;
+}
+
+.about-quote span:not(.about-quote__mark) {
+  flex: 1;
+}
+
+.about-quote__mark {
+  flex: none;
+  font-size: 1.75rem;
+  line-height: 1;
+}
+
+.about-team {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.about-member {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 8px;
+  border: 1px solid #edeeee;
+  border-radius: 16px;
+  background: #fff;
+  text-align: center;
+}
+
+.about-member__photo {
+  position: relative;
+  overflow: hidden;
+  border-radius: 12px;
+}
+
+.about-member__photo img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+  background: #eef2f6;
+}
+
+.about-member__tools {
+  position: absolute;
+  top: 8px;
+  left: 50%;
+  display: flex;
+  gap: 8px;
+  transform: translateX(-50%);
+}
+
+.about-member__tools .about-tool {
+  --p-button-sm-icon-only-width: 28px;
+  --p-button-icon-only-width: 28px;
+  --p-button-sm-padding-x: 0;
+  --p-button-sm-padding-y: 0;
+  --p-button-border-radius: 50%;
+  --p-button-gap: 0;
+  --p-button-secondary-border-color: transparent;
+  --p-button-secondary-hover-border-color: transparent;
+  --p-button-secondary-active-border-color: transparent;
+
+  display: flex;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  justify-content: center;
+  align-items: center;
+  gap: 0;
+}
+
+.about-member__tools .about-tool .p-button-icon {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+  font-size: 14px;
+}
+
+.about-tool--edit {
+  --p-button-secondary-background: #edf5fb;
+  --p-button-secondary-hover-background: #d7ebf7;
+  --p-button-secondary-active-background: #d7ebf7;
+  --p-button-secondary-color: #3b82f6;
+  --p-button-secondary-hover-color: #3b82f6;
+  --p-button-secondary-active-color: #3b82f6;
+}
+
+.about-tool--delete {
+  --p-button-secondary-background: #fceeee;
+  --p-button-secondary-hover-background: #f8e0e0;
+  --p-button-secondary-active-background: #f8e0e0;
+  --p-button-secondary-color: #e11d48;
+  --p-button-secondary-hover-color: #e11d48;
+  --p-button-secondary-active-color: #e11d48;
+}
+
+.about-member h3 {
+  margin: 8px 0 0;
+}
+
+.about-member p {
+  margin: 0;
+  color: var(--app-muted);
+  font-size: var(--app-font-sm);
+}
+
+@media (max-width: 1100px) {
+  .about-team {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 900px) {
+  .about-story,
+  .about-split {
+    grid-template-columns: 1fr;
+  }
+
+  .about-visual {
+    min-height: 220px;
+  }
+
+  .about-ceo {
+    flex-direction: column;
+  }
+
+  .about-ceo__photo {
+    width: 100%;
+    max-width: 445px;
+  }
+}
+
+@media (max-width: 640px) {
+  .about-team {
+    grid-template-columns: 1fr;
+  }
+}

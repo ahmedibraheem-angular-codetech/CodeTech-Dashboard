@@ -1,0 +1,175 @@
+<article class="section-card">
+  <div class="section-head">
+    <h2>{{ heading() }}</h2>
+    @if (filled()) {
+      <p-button
+        styleClass="block-edit"
+        icon="pi pi-pen-to-square"
+        iconPos="right"
+        [label]="lang.t('home.edit')"
+        (onClick)="open()"
+      />
+    }
+  </div>
+
+  @if (filled()) {
+    <app-content-panel>
+      @if (section() === 'story') {
+        <div class="about-story">
+          <div class="about-visual" aria-hidden="true"></div>
+          <div class="about-notes">
+            @for (group of view(); track group.id) {
+              <div class="about-note">
+                <h3>{{ group.title }}</h3>
+                <ul class="check-list">
+                  @for (point of group.points; track $index) {
+                    <li>
+                      <i class="pi pi-check-circle" aria-hidden="true"></i><span>{{ point }}</span>
+                    </li>
+                  }
+                </ul>
+              </div>
+            }
+          </div>
+        </div>
+      } @else {
+        <div class="about-split">
+          @for (group of view(); track group.id) {
+            <div class="about-note">
+              <h3>{{ group.title }}</h3>
+              <ul class="check-list">
+                @for (point of group.points; track $index) {
+                  <li>
+                    <i class="pi pi-check-circle" aria-hidden="true"></i><span>{{ point }}</span>
+                  </li>
+                }
+              </ul>
+              @if (group.highlight) {
+                <p class="about-highlight">{{ group.highlight }}</p>
+              }
+            </div>
+          }
+        </div>
+      }
+    </app-content-panel>
+  } @else {
+    <app-section-empty [title]="emptyTitle()" [hint]="emptyHint()">
+      <p-button
+        icon="pi pi-file"
+        [label]="emptyAction()"
+        severity="secondary"
+        variant="outlined"
+        (onClick)="open()"
+      />
+    </app-section-empty>
+  }
+</article>
+
+<app-modal
+  [(visible)]="editorOpen"
+  [title]="modalTitle()"
+  [icon]="icon()"
+  [saving]="saving()"
+  [saveDisabled]="form.controls.ar.invalid"
+  (save)="save()"
+>
+  <div class="block-form">
+    <app-locale-switch [value]="locale()" (picked)="locale.set($event)" />
+
+    @for (code of locales; track code) {
+      @if (locale() === code) {
+        <div class="block-form__lang" [attr.dir]="code === 'ar' ? 'rtl' : 'ltr'" [attr.lang]="code">
+          @for (
+            group of form.controls[code].controls;
+            track group.controls.id.value;
+            let gi = $index
+          ) {
+            <app-content-panel>
+              <div class="points">
+                <h3 class="points__title">{{ group.controls.title.value }}</h3>
+                @for (point of group.controls.points.controls; track point; let pi = $index) {
+                  <div class="field">
+                    <label
+                      class="field__label"
+                      [attr.for]="'about-point-' + code + '-' + gi + '-' + pi"
+                    >
+                      {{ text('home.point', code) }} {{ pi + 1 }}
+                    </label>
+                    <div class="point-row">
+                      <input
+                        pInputText
+                        [id]="'about-point-' + code + '-' + gi + '-' + pi"
+                        [fluid]="true"
+                        [formControl]="point"
+                        [attr.aria-required]="code === 'ar'"
+                        [placeholder]="text('home.pointPh', code)"
+                      />
+                      <p-button
+                        styleClass="block-form__delete"
+                        class="point-row__delete"
+                        icon="pi pi-trash"
+                        severity="secondary"
+                        size="small"
+                        [ariaLabel]="text('home.deletePoint', code) + ' ' + (pi + 1)"
+                        (onClick)="removePoint(code, gi, pi)"
+                      />
+                    </div>
+                  </div>
+                }
+                <p-button
+                  class="points__add"
+                  icon="pi pi-plus-circle"
+                  iconPos="right"
+                  severity="secondary"
+                  [fluid]="true"
+                  [label]="text('home.addPoint', code)"
+                  (onClick)="addPoint(code, gi)"
+                />
+              </div>
+            </app-content-panel>
+          }
+        </div>
+      }
+    }
+
+    @if (section() === 'story') {
+      <div class="field">
+        <span class="field__label" id="about-image-label">{{ lang.t('home.image') }}</span>
+        <label class="image-drop" (dragover)="$event.preventDefault()" (drop)="onDrop($event)">
+          <input
+            type="file"
+            accept="image/png,image/jpeg"
+            tabindex="-1"
+            aria-labelledby="about-image-label"
+            (change)="onPick($event)"
+          />
+          <span class="image-drop__icon"><i class="pi pi-download" aria-hidden="true"></i></span>
+          <strong>{{ lang.t('home.imageUpload') }}</strong>
+          <small>{{ lang.t('home.imageHint') }}</small>
+        </label>
+        @if (imageError()) {
+          <p class="field__error" role="alert">{{ lang.t(imageError()) }}</p>
+        }
+        @if (image(); as file) {
+          <div class="image-file">
+            <img class="image-file__thumb" src="images/dashboardcodetech.svg" alt="" />
+            <div class="image-file__text">
+              <strong>{{ file.name }}</strong>
+              <small
+                ><bdi>{{ imageSize() }}</bdi> · <bdi>{{ imageDate() }}</bdi></small
+              >
+            </div>
+            <p-button
+              styleClass="block-form__delete"
+              icon="pi pi-trash"
+              severity="secondary"
+              size="small"
+              [ariaLabel]="lang.t('home.deleteImage')"
+              (onClick)="removeImage()"
+            />
+          </div>
+        }
+      </div>
+    }
+  </div>
+</app-modal>

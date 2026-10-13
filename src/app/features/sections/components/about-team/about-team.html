@@ -1,0 +1,119 @@
+<article class="section-card">
+  <div class="section-head">
+    <h2>{{ lang.t('about.team') }} ({{ team().length }})</h2>
+    @if (team().length) {
+      <p-button
+        icon="pi pi-plus"
+        [label]="lang.t('about.memberAdd')"
+        severity="secondary"
+        variant="outlined"
+        (onClick)="open()"
+      />
+    }
+  </div>
+
+  @if (team().length === 0) {
+    <app-section-empty [title]="lang.t('about.teamEmpty')" [hint]="lang.t('about.teamEmptyHint')">
+      <p-button
+        icon="pi pi-plus"
+        [label]="lang.t('about.teamAdd')"
+        severity="secondary"
+        variant="outlined"
+        (onClick)="open()"
+      />
+    </app-section-empty>
+  } @else {
+    <app-content-panel>
+      <div class="about-team">
+        @for (member of team(); track member.id) {
+          <article class="about-member">
+            <div class="about-member__photo">
+              <img src="images/avatar-placeholder.svg" [alt]="member.name" />
+              <div class="about-member__tools">
+                <p-button
+                  styleClass="about-tool about-tool--edit"
+                  icon="pi pi-pen-to-square"
+                  severity="secondary"
+                  size="small"
+                  [ariaLabel]="lang.t('about.editMember')"
+                  (onClick)="open(member)"
+                />
+                <p-button
+                  styleClass="about-tool about-tool--delete"
+                  icon="pi pi-trash"
+                  severity="secondary"
+                  size="small"
+                  [ariaLabel]="lang.t('about.delete')"
+                  (onClick)="remove(member)"
+                />
+              </div>
+            </div>
+            <h3>{{ member.name }}</h3>
+            <p>{{ member.role }}</p>
+          </article>
+        }
+      </div>
+    </app-content-panel>
+  }
+</article>
+
+<app-modal
+  [(visible)]="editorOpen"
+  [title]="lang.t(editingId() ? 'about.editMember' : 'about.memberAdd')"
+  icon="pi pi-users"
+  [saving]="saving()"
+  [saveDisabled]="form.invalid"
+  [saveLabel]="lang.t(editingId() ? 'common.saveChanges' : 'about.memberAdd')"
+  [saveIcon]="editingId() ? 'pi pi-save' : ''"
+  (save)="save()"
+>
+  <div class="block-form">
+    <div class="field">
+      <label class="field__label" for="member-name">{{ lang.t('about.memberName') }}</label>
+      <input pInputText id="member-name" [fluid]="true" [formControl]="form.controls.name" />
+    </div>
+    <div class="field">
+      <label class="field__label" for="member-role">{{ lang.t('about.memberRole') }}</label>
+      <input pInputText id="member-role" [fluid]="true" [formControl]="form.controls.role" />
+    </div>
+    <div class="field">
+      <span class="field__label" id="member-image-label">{{ lang.t('home.image') }}</span>
+      <label class="image-drop" (dragover)="$event.preventDefault()" (drop)="onDrop($event)">
+        <input
+          type="file"
+          accept="image/png,image/jpeg"
+          tabindex="-1"
+          aria-labelledby="member-image-label"
+          (change)="onPick($event)"
+        />
+        <span class="image-drop__icon"><i class="pi pi-download" aria-hidden="true"></i></span>
+        <strong>{{ lang.t('home.imageUpload') }}</strong>
+        <small>{{ lang.t('home.imageHint') }}</small>
+      </label>
+      @if (imageError()) {
+        <p class="field__error" role="alert">{{ lang.t(imageError()) }}</p>
+      }
+      @if (image(); as file) {
+        <div class="image-file">
+          <img class="image-file__thumb" src="images/avatar-placeholder.svg" alt="" />
+          <div class="image-file__text">
+            <strong>{{ file.name }}</strong>
+            <small
+              ><bdi>{{ imageSize() }}</bdi> · <bdi>{{ imageDate() }}</bdi></small
+            >
+          </div>
+          <p-button
+            styleClass="block-form__delete"
+            icon="pi pi-trash"
+            severity="secondary"
+            size="small"
+            [ariaLabel]="lang.t('home.deleteImage')"
+            (onClick)="removeImage()"
+          />
+        </div>
+      }
+    </div>
+  </div>
+</app-modal>
+
+<app-confirm-dialog />
