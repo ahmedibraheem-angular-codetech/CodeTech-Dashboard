@@ -37,33 +37,54 @@
   gap: 8px;
 }
 
-// Icon-only circles: download is pale blue, delete is pale red. 8px from the card edge.
-.partner-card__tool {
-  --p-button-sm-icon-only-width: 36px;
-  --p-button-icon-only-width: 36px;
+// Both partner actions are 28px rounded squares. Only the colour differs.
+.partner-card__tools .partner-card__tool {
+  --p-button-sm-icon-only-width: 28px;
+  --p-button-icon-only-width: 28px;
   --p-button-sm-padding-x: 0;
   --p-button-sm-padding-y: 0;
-  --p-button-border-radius: 50%;
-  --p-button-sm-font-size: 0.8rem;
-  width: 36px;
-  height: 36px;
-  padding: 0;
-}
-
-.partner-card__tool--download {
-  --p-button-secondary-background: #eef5ff;
-  --p-button-secondary-hover-background: #dbeafe;
-  --p-button-secondary-active-background: #dbeafe;
+  --p-button-border-radius: 10px;
+  --p-button-gap: 0;
   --p-button-secondary-border-color: transparent;
   --p-button-secondary-hover-border-color: transparent;
   --p-button-secondary-active-border-color: transparent;
+
+  display: flex;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  justify-content: center;
+  align-items: center;
+  gap: 0;
+  aspect-ratio: 1 / 1;
+}
+
+.partner-card__tools .partner-card__tool .p-button-icon {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+  aspect-ratio: 1 / 1;
+  font-size: 14px;
+}
+
+.partner-card__tool--download {
+  --p-button-secondary-background: #edf5fb;
+  --p-button-secondary-hover-background: #d7ebf7;
+  --p-button-secondary-active-background: #d7ebf7;
   --p-button-secondary-color: #3b82f6;
   --p-button-secondary-hover-color: #3b82f6;
   --p-button-secondary-active-color: #3b82f6;
 }
 
-// The pale-red delete colours are shared with the delete buttons of the story-block modal.
-.partner-card__tool--delete,
+.partner-card__tool--delete {
+  --p-button-secondary-background: #fceeee;
+  --p-button-secondary-hover-background: #f8e0e0;
+  --p-button-secondary-active-background: #f8e0e0;
+  --p-button-secondary-color: #e11d48;
+  --p-button-secondary-hover-color: #e11d48;
+  --p-button-secondary-active-color: #e11d48;
+}
+
 .block-form__delete {
   --p-button-secondary-background: #fff1f2;
   --p-button-secondary-hover-background: #ffe4e6;
@@ -138,6 +159,17 @@
     flex-basis: 100%;
     max-width: 100%;
   }
+}
+
+// Filled edit action on a story block: blue, white label, pencil-in-square icon.
+.block-edit {
+  --p-button-border-radius: 16px;
+  --p-button-padding-x: 22px;
+  --p-button-padding-y: 0;
+  --p-button-gap: 10px;
+
+  height: 48px;
+  font-weight: 700;
 }
 
 // Image beside a white text card. The surrounding container is `app-content-panel`.

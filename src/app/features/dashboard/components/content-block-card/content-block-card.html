@@ -3,10 +3,10 @@
     <h2>{{ view().title }}</h2>
     @if (filled()) {
       <p-button
-        icon="pi pi-pencil"
+        styleClass="block-edit"
+        icon="pi pi-pen-to-square"
+        iconPos="right"
         [label]="lang.t('home.edit')"
-        severity="secondary"
-        variant="outlined"
         (onClick)="open()"
       />
     }
