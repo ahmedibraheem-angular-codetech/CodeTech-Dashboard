@@ -26,20 +26,17 @@ describe('Home', () => {
     expect(root.querySelector('app-partners-section')).not.toBeNull();
     expect(root.querySelector('app-video-section')).not.toBeNull();
     expect(root.querySelectorAll('app-content-block-card')).toHaveLength(2);
-    expect(root.querySelector('app-overview-stats')).not.toBeNull();
-    expect(root.querySelector('app-recent-users')).not.toBeNull();
+    expect(root.querySelector('app-overview-stats')).toBeNull();
+    expect(root.textContent).toContain('عملاؤنا و شركاؤنا');
   });
 
-  it('renders the seeded partners, users and contact-request count', async () => {
+  it('renders the seeded partners and the filled story sections', async () => {
     const fixture = await render();
     const root: HTMLElement = fixture.nativeElement;
 
     expect(root.querySelectorAll('.partner-card')).toHaveLength(8);
-    const stats = Array.from(root.querySelectorAll('app-overview-stats .settings-card strong')).map(
-      (element) => element.textContent?.trim(),
-    );
-    // partners, users, active users, contact requests (from the homepage content seed)
-    expect(stats).toEqual(['8', '8', '6', '12']);
-    expect(root.querySelectorAll('app-recent-users tbody tr')).toHaveLength(5);
+    expect(root.querySelector('.video-frame')).not.toBeNull();
+    expect(root.querySelectorAll('.story')).toHaveLength(2);
+    expect(root.querySelector('app-section-empty')).toBeNull();
   });
 });

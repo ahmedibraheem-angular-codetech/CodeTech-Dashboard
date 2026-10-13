@@ -1,30 +1,47 @@
 <article class="section-card">
   <div class="section-head">
     <h2>{{ block().title }}</h2>
-    <p-button
-      icon="pi pi-pencil"
-      [label]="lang.t('home.edit')"
-      severity="secondary"
-      variant="outlined"
-      (onClick)="open()"
-    />
+    @if (filled()) {
+      <p-button
+        icon="pi pi-pencil"
+        [label]="lang.t('home.edit')"
+        severity="secondary"
+        variant="outlined"
+        (onClick)="open()"
+      />
+    }
   </div>
-  <div class="story">
-    <div>
-      <p>{{ block().body }}</p>
-      <ul class="check-list">
-        @for (point of block().points; track $index) {
-          <li>
-            <i class="pi pi-check-circle" aria-hidden="true"></i><span>{{ point }}</span>
-          </li>
-        }
-      </ul>
-    </div>
-    <div class="monument" aria-hidden="true">
-      <span class="monument__tower"></span>
-      <span class="monument__glow"></span>
-    </div>
-  </div>
+  @if (filled()) {
+    <app-content-panel>
+      <div class="story">
+        <img class="story__visual" src="images/dashboardcodetech.svg" alt="" />
+        <div class="story__text">
+          <h3>{{ block().title }}</h3>
+          <p>{{ block().body }}</p>
+          <ul class="check-list">
+            @for (point of block().points; track $index) {
+              <li>
+                <i class="pi pi-check" aria-hidden="true"></i><span>{{ point }}</span>
+              </li>
+            }
+          </ul>
+        </div>
+      </div>
+    </app-content-panel>
+  } @else {
+    <app-section-empty
+      [title]="lang.t(kind() === 'about' ? 'home.aboutEmpty' : 'home.visionEmpty')"
+      [hint]="lang.t(kind() === 'about' ? 'home.aboutEmptyHint' : 'home.visionEmptyHint')"
+    >
+      <p-button
+        icon="pi pi-file"
+        [label]="lang.t(kind() === 'about' ? 'home.aboutAdd' : 'home.visionAdd')"
+        severity="secondary"
+        variant="outlined"
+        (onClick)="open()"
+      />
+    </app-section-empty>
+  }
 </article>
 
 <p-dialog

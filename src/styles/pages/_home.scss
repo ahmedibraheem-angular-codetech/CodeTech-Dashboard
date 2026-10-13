@@ -1,102 +1,143 @@
 // Homepage management: partners, video, story blocks.
 
-.partner-grid,
-.video-mosaic {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 16px;
+.partners-panel {
+  padding: 12px;
+  gap: 12px;
+  border: 1px solid #edeeee;
+  border-radius: 16px;
+  box-shadow: none;
+}
+
+.partner-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  width: 100%;
 }
 
 .partner-card {
-  position: relative;
-  display: grid;
-  place-items: center;
-  min-height: 132px;
-  border: 0;
-  border-radius: 18px;
-  background: linear-gradient(160deg, #2563eb, #1e40af);
-  color: #fff;
-  font-size: 3rem;
-  font-weight: 800;
+  display: flex;
+  height: 135px;
+  padding: 8px;
+  align-items: flex-start;
+  justify-content: flex-end;
+  gap: 12px;
+  flex: 1 0 calc((100% - 36px) / 4);
+  max-width: calc((100% - 36px) / 4);
+  border-radius: 16px;
+  border: 1px solid #edeeee;
+  background:
+    url('/images/codeTech.svg') center / cover no-repeat,
+    #fff;
 }
 
 .partner-card__tools {
-  position: absolute;
-  top: 8px;
-  inset-inline: 8px;
   display: flex;
-  justify-content: space-between;
+  align-items: flex-start;
+  gap: 8px;
 }
 
-// Small `p-button`s sitting on the blue partner card: scoped tokens, light chip on the gradient.
+// Icon-only circles: download is pale blue, delete is pale red. 8px from the card edge.
 .partner-card__tool {
-  --p-button-secondary-background: rgba(255, 255, 255, 0.92);
-  --p-button-secondary-hover-background: #fff;
-  --p-button-secondary-active-background: #fff;
+  --p-button-sm-icon-only-width: 36px;
+  --p-button-icon-only-width: 36px;
+  --p-button-sm-padding-x: 0;
+  --p-button-sm-padding-y: 0;
+  --p-button-border-radius: 50%;
+  --p-button-sm-font-size: 0.8rem;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+}
+
+.partner-card__tool--download {
+  --p-button-secondary-background: #eef5ff;
+  --p-button-secondary-hover-background: #dbeafe;
+  --p-button-secondary-active-background: #dbeafe;
   --p-button-secondary-border-color: transparent;
   --p-button-secondary-hover-border-color: transparent;
   --p-button-secondary-active-border-color: transparent;
-  --p-button-secondary-color: #1e3a8a;
-  --p-button-secondary-hover-color: #1e3a8a;
-  --p-button-secondary-active-color: #1e3a8a;
+  --p-button-secondary-color: #3b82f6;
+  --p-button-secondary-hover-color: #3b82f6;
+  --p-button-secondary-active-color: #3b82f6;
+}
+
+.partner-card__tool--delete {
+  --p-button-secondary-background: #fff1f2;
+  --p-button-secondary-hover-background: #ffe4e6;
+  --p-button-secondary-active-background: #ffe4e6;
+  --p-button-secondary-border-color: transparent;
+  --p-button-secondary-hover-border-color: transparent;
+  --p-button-secondary-active-border-color: transparent;
+  --p-button-secondary-color: #e11d48;
+  --p-button-secondary-hover-color: #e11d48;
+  --p-button-secondary-active-color: #e11d48;
 }
 
 .video-frame {
-  position: relative;
   overflow: hidden;
   border-radius: 18px;
+  background: #0f172a;
+}
+
+.video-frame__player {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border: 0;
 }
 
 .video-frame.is-off {
   opacity: 0.45;
 }
 
-.video-tile {
-  min-height: 120px;
-  background: linear-gradient(145deg, #334155, #0f172a);
+@media (max-width: 900px) {
+  .partner-card {
+    flex-basis: calc((100% - 12px) / 2);
+    max-width: calc((100% - 12px) / 2);
+  }
 }
 
-.video-tile:nth-child(2) {
-  background: linear-gradient(145deg, #78716c, #44403c);
-}
-.video-tile:nth-child(3) {
-  background: linear-gradient(145deg, #1d4ed8, #0f172a);
-}
-.video-tile:nth-child(4) {
-  background: linear-gradient(145deg, #e7c2b0, #9a6b58);
-}
-.video-tile:nth-child(5) {
-  background: linear-gradient(145deg, #475569, #1e293b);
-}
-.video-tile:nth-child(6) {
-  background: linear-gradient(145deg, #7f1d1d, #111827);
-}
-.video-tile:nth-child(7) {
-  background: linear-gradient(145deg, #b45309, #44403c);
-}
-.video-tile:nth-child(8) {
-  background: linear-gradient(145deg, #0ea5e9, #1e3a8a);
+@media (max-width: 640px) {
+  .partner-card {
+    flex-basis: 100%;
+    max-width: 100%;
+  }
 }
 
-.video-play {
-  position: absolute;
-  inset: 0;
-  margin: auto;
-  width: 64px;
-  height: 64px;
-  border: 0;
-  border-radius: 50%;
-  background: #2f6fed;
-  color: #fff;
-  font-size: 1.3rem;
-  box-shadow: var(--app-shadow-md);
-}
-
+// Image beside a white text card. The surrounding container is `app-content-panel`.
 .story {
   display: grid;
-  grid-template-columns: 1.2fr 0.8fr;
-  gap: 18px;
-  align-items: center;
+  grid-template-columns: minmax(0, 3fr) minmax(0, 5fr);
+  gap: 12px;
+  align-items: stretch;
+  width: 100%;
+}
+
+@media (max-width: 900px) {
+  .story {
+    grid-template-columns: 1fr;
+  }
+
+  .story__visual {
+    height: 220px;
+  }
+}
+
+.story__text {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 16px;
+  border: 1px solid #edeeee;
+  border-radius: 16px;
+  background: #fff;
+}
+
+.story h3 {
+  margin: 0 0 8px;
+  font-size: 1rem;
+  font-weight: 700;
 }
 
 .story p {
@@ -123,35 +164,15 @@
 }
 
 .check-list i {
-  color: var(--app-success);
+  color: var(--app-primary);
   margin-top: 2px;
 }
 
-.monument {
-  position: relative;
+.story__visual {
+  display: block;
+  width: 100%;
+  align-self: stretch;
   min-height: 180px;
-  overflow: hidden;
+  object-fit: cover;
   border-radius: 16px;
-  background: linear-gradient(#7ec8f8, #d9f1ff 55%, #f8fafc);
-}
-
-.monument__tower {
-  position: absolute;
-  inset-inline-start: 28%;
-  bottom: 0;
-  width: 34%;
-  height: 78%;
-  background: linear-gradient(#f8fafc, #93c5fd);
-  clip-path: polygon(35% 0, 65% 0, 80% 100%, 20% 100%);
-}
-
-.monument__glow {
-  position: absolute;
-  inset-inline-end: 8%;
-  top: 10%;
-  width: 28%;
-  height: 70%;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.1), #fb923c);
-  clip-path: polygon(40% 0, 70% 0, 100% 100%, 0 100%);
-  opacity: 0.85;
 }

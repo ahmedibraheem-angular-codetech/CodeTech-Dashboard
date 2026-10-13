@@ -20,6 +20,16 @@ describe('PartnersSection', () => {
     return fixture;
   }
 
+  it('shows the empty state when there are no partners', () => {
+    const fixture = setup();
+    fixture.componentRef.setInput('partners', []);
+    fixture.detectChanges();
+    const root: HTMLElement = fixture.nativeElement;
+    expect(root.querySelector('app-section-empty')).not.toBeNull();
+    expect(root.textContent).toContain('لا يوجد شركاء بعد');
+    expect(root.querySelector('.partner-card')).toBeNull();
+  });
+
   it('does not save an invalid partner', () => {
     const fixture = setup();
     const save = vi.spyOn(TestBed.inject(HomepageService), 'savePartner');

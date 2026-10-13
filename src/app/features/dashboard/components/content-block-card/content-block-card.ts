@@ -2,6 +2,7 @@ import {
   ChangeDetectionStrategy,
   Component,
   DestroyRef,
+  computed,
   inject,
   input,
   output,
@@ -16,6 +17,8 @@ import { InputText } from 'primeng/inputtext';
 import { Textarea } from 'primeng/textarea';
 
 import { LanguageService } from '../../../../core/services/language.service';
+import { ContentPanel } from '../../../../shared/components/content-panel/content-panel';
+import { SectionEmpty } from '../../../../shared/components/section-empty/section-empty';
 import { ContentBlock } from '../../models/homepage.model';
 import { HomepageService } from '../../services/homepage.service';
 
@@ -23,7 +26,7 @@ export type ContentBlockKind = 'about' | 'vision';
 
 @Component({
   selector: 'app-content-block-card',
-  imports: [ReactiveFormsModule, Button, Dialog, InputText, Textarea],
+  imports: [ReactiveFormsModule, Button, Dialog, InputText, Textarea, SectionEmpty, ContentPanel],
   templateUrl: './content-block-card.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -36,6 +39,7 @@ export class ContentBlockCard {
 
   readonly kind = input.required<ContentBlockKind>();
   readonly block = input.required<ContentBlock>();
+  readonly filled = computed(() => this.block().body.trim().length > 0);
   /** Emitted with the saved block so the parent can replace its copy. */
   readonly blockSaved = output<ContentBlock>();
 

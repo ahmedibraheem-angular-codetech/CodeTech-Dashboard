@@ -18,13 +18,23 @@ import { Tooltip } from 'primeng/tooltip';
 
 import { LanguageService } from '../../../../core/services/language.service';
 import { ConfirmDialog } from '../../../../shared/components/confirm-dialog/confirm-dialog';
-import { StateView } from '../../../../shared/components/state-view/state-view';
+import { ContentPanel } from '../../../../shared/components/content-panel/content-panel';
+import { SectionEmpty } from '../../../../shared/components/section-empty/section-empty';
 import { Partner } from '../../models/homepage.model';
 import { HomepageService } from '../../services/homepage.service';
 
 @Component({
   selector: 'app-partners-section',
-  imports: [ReactiveFormsModule, Button, Dialog, InputText, Tooltip, StateView, ConfirmDialog],
+  imports: [
+    ReactiveFormsModule,
+    Button,
+    Dialog,
+    InputText,
+    Tooltip,
+    SectionEmpty,
+    ContentPanel,
+    ConfirmDialog,
+  ],
   templateUrl: './partners-section.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -48,6 +58,13 @@ export class PartnersSection {
     name: ['', Validators.required],
     monogram: ['', [Validators.required, Validators.maxLength(2)]],
   });
+
+  download(partner: Partner): void {
+    const link = document.createElement('a');
+    link.href = 'images/codeTech.svg';
+    link.download = `${partner.name}.svg`;
+    link.click();
+  }
 
   open(partner?: Partner): void {
     this.editingId.set(partner?.id ?? null);

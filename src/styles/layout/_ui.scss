@@ -16,6 +16,29 @@
   height: 28px;
 }
 
+.section-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 28px 16px 12px;
+  text-align: center;
+}
+
+.section-empty h3 {
+  margin: 4px 0 0;
+  color: var(--app-text);
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+
+.section-empty p {
+  margin: 0 0 8px;
+  max-width: 28rem;
+  color: var(--app-muted);
+  font-size: var(--app-font-sm);
+}
+
 .settings-card {
   @include card-surface;
   padding: space(5);

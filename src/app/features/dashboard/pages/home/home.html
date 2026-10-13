@@ -16,28 +16,5 @@
     @if (vision(); as block) {
       <app-content-block-card kind="vision" [block]="block" (blockSaved)="vision.set($event)" />
     }
-
-    <app-overview-stats
-      [partnerCount]="partners().length"
-      [userTotal]="userTotal()"
-      [activeUsers]="activeUsers()"
-      [contactRequests]="contactRequests()"
-    />
-
-    <article class="section-card">
-      <div class="section-head">
-        <h2>{{ lang.t('home.activity') }}</h2>
-      </div>
-      <ul class="activity-list">
-        @for (item of activity; track item.text) {
-          <li>
-            <span>{{ lang.t(item.text) }}</span>
-            <time class="muted">{{ lang.t(item.time) }}</time>
-          </li>
-        }
-      </ul>
-    </article>
-
-    <app-recent-users [users]="recentUsers()" />
   </section>
 }

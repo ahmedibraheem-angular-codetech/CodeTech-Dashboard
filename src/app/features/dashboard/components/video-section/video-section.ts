@@ -8,6 +8,7 @@ import {
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { MessageService } from 'primeng/api';
 import { Button } from 'primeng/button';
 import { FileSelectEvent, FileUpload } from 'primeng/fileupload';
@@ -16,12 +17,12 @@ import { Tooltip } from 'primeng/tooltip';
 
 import { LanguageService } from '../../../../core/services/language.service';
 import { ConfirmDialog } from '../../../../shared/components/confirm-dialog/confirm-dialog';
-import { StateView } from '../../../../shared/components/state-view/state-view';
+import { SectionEmpty } from '../../../../shared/components/section-empty/section-empty';
 import { HomepageService } from '../../services/homepage.service';
 
 @Component({
   selector: 'app-video-section',
-  imports: [FormsModule, Button, FileUpload, ToggleSwitch, Tooltip, StateView, ConfirmDialog],
+  imports: [FormsModule, Button, FileUpload, ToggleSwitch, Tooltip, SectionEmpty, ConfirmDialog],
   templateUrl: './video-section.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -38,7 +39,13 @@ export class VideoSection {
   /** Two-way bound by the parent: `[(name)]="videoName"`. */
   readonly name = model.required<string | null>();
 
-  readonly tiles = [1, 2, 3, 4, 5, 6, 7, 8];
+  /**
+   * TEMPORARY: fixed YouTube video until the backend returns the uploaded video URL.
+   * Replace with the URL from `HomepageService` once it exists.
+   */
+  readonly videoSrc: SafeResourceUrl = inject(DomSanitizer).bypassSecurityTrustResourceUrl(
+    'https://www.youtube.com/embed/X5xvlXV9crE',
+  );
 
   toggle(enabled: boolean): void {
     this.enabled.set(enabled);
