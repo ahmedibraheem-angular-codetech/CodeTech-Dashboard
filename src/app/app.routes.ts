@@ -50,7 +50,26 @@ export const routes: Routes = [
         data: { breadcrumb: 'profile.title', titleKey: 'profile.title' },
       },
       section('about', 'nav.about'),
-      section('contact/inquiries', 'nav.inquiries'),
+      {
+        path: 'contact/inquiries',
+        data: { breadcrumb: 'nav.inquiries' },
+        children: [
+          {
+            path: '',
+            loadComponent: () =>
+              import('./features/sections/pages/section/section').then((m) => m.SectionPage),
+            data: { titleKey: 'nav.inquiries' },
+          },
+          {
+            path: ':id',
+            loadComponent: () =>
+              import('./features/sections/components/inquiry-detail/inquiry-detail').then(
+                (m) => m.InquiryDetailPage,
+              ),
+            data: { breadcrumb: ':id', titleKey: 'nav.inquiries' },
+          },
+        ],
+      },
       section('contact/start', 'nav.startProjects'),
       section('contact/new', 'nav.contactNew'),
       section('contact/done', 'nav.contactDone'),

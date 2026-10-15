@@ -20,6 +20,7 @@ export const NAV_ITEMS: NavItem[] = [
         labelKey: 'nav.inquiries',
         icon: 'pi pi-comments',
         route: '/contact/inquiries',
+        exact: false,
       },
       {
         id: 'contact-start',

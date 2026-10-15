@@ -33,8 +33,11 @@ export class BreadcrumbService {
       .filter(Boolean)
       .join('/');
     const next = segment ? `${url}/${segment}` : url;
-    const key = route.data['breadcrumb'];
-    if (typeof key === 'string') {
+    const key =
+      route.data['breadcrumb'] === ':id'
+        ? (route.paramMap.get('id') ?? '')
+        : route.data['breadcrumb'];
+    if (typeof key === 'string' && key) {
       acc.push({ key, url: next || '/' });
     }
     for (const child of route.children) {

@@ -119,7 +119,12 @@
         </tr>
       </ng-template>
       <ng-template #body let-row>
-        <tr>
+        <tr
+          [class.app-data-table__row--clickable]="rowClickable()"
+          [attr.tabindex]="rowClickable() ? 0 : null"
+          (click)="onRowClick($event, row)"
+          (keydown.enter)="onRowClick($event, row)"
+        >
           @for (column of columns(); track column.key) {
             <td>
               @if (templateFor(column.key); as template) {

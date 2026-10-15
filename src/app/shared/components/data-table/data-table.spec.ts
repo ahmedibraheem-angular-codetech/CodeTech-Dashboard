@@ -21,9 +21,11 @@ interface Row {
       [rows]="visible()"
       [columns]="columns"
       [filters]="filters"
+      [rowClickable]="true"
       [(query)]="query"
       [(selectedFilters)]="selected"
       (export)="exported.set($event.length)"
+      (rowClick)="opened.set($event.id)"
     >
       <ng-template appDataCell="name" let-row>
         <strong class="custom-name">{{ row.name }}</strong>
@@ -35,6 +37,7 @@ class Host {
   readonly query = signal('');
   readonly selected = signal<string[]>([]);
   readonly exported = signal(0);
+  readonly opened = signal('');
   readonly columns: DataTableColumn<Row>[] = [
     { key: 'id', header: 'ID', field: 'id' },
     { key: 'name', header: 'Name', field: 'name' },
@@ -83,5 +86,12 @@ describe('DataTable', () => {
 
     table['exportRows']();
     expect(fixture.componentInstance.exported()).toBe(2);
+  });
+
+  it('emits the clicked row when row navigation is enabled', () => {
+    const fixture = render();
+    const row = fixture.nativeElement.querySelector('tbody tr') as HTMLElement;
+    row.click();
+    expect(fixture.componentInstance.opened()).toBe('1');
   });
 });

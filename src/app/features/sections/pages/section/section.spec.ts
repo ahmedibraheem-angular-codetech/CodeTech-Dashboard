@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, provideRouter } from '@angular/router';
 import { MessageService } from 'primeng/api';
 import { of } from 'rxjs';
 
@@ -20,6 +20,7 @@ describe('SectionPage', () => {
       providers: [
         MessageService,
         { provide: API_LATENCY_MS, useValue: 0 },
+        provideRouter([]),
         { provide: ActivatedRoute, useValue: route(titleKey) },
       ],
     });
@@ -37,6 +38,14 @@ describe('SectionPage', () => {
 
     expect(root.querySelector('app-about-page')).not.toBeNull();
     expect(root.textContent).toContain('إدارة صفحة عن كود التقنية');
+  });
+
+  it('renders the inquiries board on the inquiries route', async () => {
+    const fixture = await render('nav.inquiries');
+    const root: HTMLElement = fixture.nativeElement;
+
+    expect(root.querySelector('app-inquiries-board')).not.toBeNull();
+    expect(root.querySelector('app-about-page')).toBeNull();
   });
 
   it('keeps every other section route as a placeholder', async () => {

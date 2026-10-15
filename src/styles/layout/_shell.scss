@@ -1,21 +1,32 @@
-// App shell: page frame, main column and content canvas.
+// App shell: white frame, main panel and content stack.
 @use 'abstracts/functions' as *;
 @use 'abstracts/mixins' as *;
 
+// White frame, 1440px wide on desktop. Narrower screens shrink it instead of scrolling.
 .shell {
   display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  width: 100%;
+  // max-width: 1440px;
   min-height: 100vh;
-  gap: space(3);
-  padding: space(3);
-  background: var(--app-background);
+  margin-inline: auto;
+  padding: 28px;
+  background: var(--app-surface);
+  // border-radius: 40px;
 }
 
+// Grey panel beside the sidebar. It carries the padding and radius the content used to own.
 .shell__main {
   display: flex;
   flex-direction: column;
+  align-items: center;
   flex: 1;
   min-width: 0;
-  gap: space(3);
+  gap: space(2);
+  padding: 16px;
+  background: #f7f8fa;
+  border-radius: 28px;
 }
 
 // Holds the header card and the routed page, stacked with an 8px rhythm.
@@ -23,12 +34,9 @@
   display: flex;
   flex-direction: column;
   gap: space(2);
+  width: 100%;
   flex: 1;
   min-width: 0;
-  padding: space(5);
-  background: var(--app-canvas);
-  border-radius: var(--app-radius-xl);
-  box-shadow: var(--app-shadow-sm);
 }
 
 // The outlet element is an empty marker; hiding it keeps it from adding a flex gap.
@@ -36,6 +44,13 @@
   display: none;
 }
 
-[data-density='compact'] .shell__content {
+[data-density='compact'] .shell__main {
   padding: space(3);
+}
+
+@media (max-width: 991px) {
+  .shell,
+  .shell__main {
+    border-radius: 0;
+  }
 }

@@ -23,8 +23,10 @@
     [filterLabel]="lang.language() === 'ar' ? 'كل الحالات' : 'All statuses'"
     [exportLabel]="lang.language() === 'ar' ? 'تصدير' : 'Export'"
     [searchLabel]="lang.language() === 'ar' ? 'بحث' : 'Search'"
+    [rowClickable]="true"
     [(query)]="query"
     [(selectedFilters)]="selectedFilters"
     (export)="exported($event)"
+    (rowClick)="open($event)"
   />
 </section>

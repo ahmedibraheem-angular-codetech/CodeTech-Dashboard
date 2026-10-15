@@ -22,7 +22,7 @@
                   class="sidebar__child"
                   [routerLink]="child.route"
                   routerLinkActive="is-active"
-                  [routerLinkActiveOptions]="childMatch"
+                  [routerLinkActiveOptions]="linkMatch(child)"
                 >
                   <i [class]="child.icon" aria-hidden="true"></i>
                   <span class="sidebar__label">{{ lang.t(child.labelKey) }}</span>

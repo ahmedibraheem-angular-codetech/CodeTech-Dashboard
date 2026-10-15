@@ -32,6 +32,16 @@ export class Sidebar {
     fragment: 'ignored',
     matrixParams: 'ignored',
   };
+  readonly childPrefixMatch: IsActiveMatchOptions = {
+    paths: 'subset',
+    queryParams: 'ignored',
+    fragment: 'ignored',
+    matrixParams: 'ignored',
+  };
+
+  linkMatch(item: NavItem): IsActiveMatchOptions {
+    return item.exact === false ? this.childPrefixMatch : this.childMatch;
+  }
   readonly lang = inject(LanguageService);
   readonly layout = inject(LayoutService);
   readonly auth = inject(AuthService);

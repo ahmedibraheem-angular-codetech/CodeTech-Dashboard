@@ -8,7 +8,7 @@
   align-self: stretch;
   width: var(--app-sidebar-width);
   flex: 0 0 var(--app-sidebar-width);
-  min-height: calc(100vh - #{space(6)});
+  min-height: calc(100vh - 56px);
   height: auto;
   padding: 22px 16px 16px;
   background: var(--app-sidebar-bg);

@@ -67,6 +67,8 @@ export class DataTable<T extends object = Record<string, unknown>> {
   readonly pageSize = input(10);
   readonly pageSizeOptions = input<number[]>([10, 20, 50]);
   readonly selectionMode = input<'single' | 'multiple' | null>(null);
+  /** When true, a row click emits `rowClick`. Toolbar and cell controls stay on the parent. */
+  readonly rowClickable = input(false);
 
   readonly query = model('');
   readonly selectedFilters = model<readonly string[]>([]);
@@ -75,6 +77,7 @@ export class DataTable<T extends object = Record<string, unknown>> {
   readonly export = output<readonly T[]>();
   readonly queryChange = output<string>();
   readonly selectedFiltersChange = output<readonly string[]>();
+  readonly rowClick = output<T>();
 
   protected readonly searchOpen = signal(false);
   protected readonly filterOpen = signal(false);
@@ -159,6 +162,17 @@ export class DataTable<T extends object = Record<string, unknown>> {
 
   protected exportRows(): void {
     this.export.emit(this.rows());
+  }
+
+  protected onRowClick(event: Event, row: T): void {
+    if (!this.rowClickable()) {
+      return;
+    }
+    const target = event.target as HTMLElement | null;
+    if (target?.closest('button, a, input, textarea, .p-checkbox, .p-button')) {
+      return;
+    }
+    this.rowClick.emit(row);
   }
 
   protected emptyText(): string {

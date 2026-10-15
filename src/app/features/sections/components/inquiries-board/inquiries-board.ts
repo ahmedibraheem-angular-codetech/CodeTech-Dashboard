@@ -1,4 +1,13 @@
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  DestroyRef,
+  computed,
+  inject,
+  signal,
+} from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { Router } from '@angular/router';
 import { MessageService } from 'primeng/api';
 
 import { LanguageService } from '../../../../core/services/language.service';
@@ -13,20 +22,19 @@ import {
 import { PageHeader } from '../../../../shared/components/page-header/page-header';
 import { StatisticsCards } from '../../../../shared/components/statistics-cards/statistics-cards';
 import { StatisticsCard } from '../../../../shared/components/statistics-cards/statistics-card.model';
+import { Inquiry, InquiryStatus } from '../../models/inquiry.model';
+import { InquiriesService } from '../../services/inquiries.service';
 
-interface Inquiry {
+interface InquiryRow {
   id: string;
   name: DataTableIconValue;
   org: DataTableIconValue;
   phone: string;
   product: string;
-  status: DataTableBadgeValue & { value: string };
+  status: DataTableBadgeValue & { value: InquiryStatus };
   when: DataTableDateValue;
 }
 
-const STATUSES = ['new', 'progress', 'closed'] as const;
-
-/** Illustrative inquiries screen. The shared widgets stay free of this sample. */
 @Component({
   selector: 'app-inquiries-board',
   imports: [PageHeader, StatisticsCards, DataTable],
@@ -35,11 +43,22 @@ const STATUSES = ['new', 'progress', 'closed'] as const;
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class InquiriesBoard {
+  private readonly api = inject(InquiriesService);
   private readonly messages = inject(MessageService);
+  private readonly router = inject(Router);
+  private readonly destroyRef = inject(DestroyRef);
   readonly lang = inject(LanguageService);
 
   readonly query = signal('');
   readonly selectedFilters = signal<string[]>([]);
+  private readonly source = signal<Inquiry[]>([]);
+
+  constructor() {
+    this.api
+      .list()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((rows) => this.source.set(rows));
+  }
 
   readonly cards = computed<StatisticsCard[]>(() => {
     const ar = this.lang.language() === 'ar';
@@ -84,13 +103,13 @@ export class InquiriesBoard {
     const ar = this.lang.language() === 'ar';
     return [
       { value: 'all', label: ar ? 'كل الحالات' : 'All statuses', selectAll: true },
-      { value: 'new', label: ar ? 'جديد' : 'New' },
-      { value: 'progress', label: ar ? 'قيد المتابعة' : 'In progress' },
-      { value: 'closed', label: ar ? 'مغلق' : 'Closed' },
+      { value: 'new', label: this.lang.t('inquiry.statusNew') },
+      { value: 'progress', label: this.lang.t('inquiry.statusProgress') },
+      { value: 'closed', label: this.lang.t('inquiry.statusClosed') },
     ];
   });
 
-  readonly columns = computed<DataTableColumn<Inquiry>[]>(() => {
+  readonly columns = computed<DataTableColumn<InquiryRow>[]>(() => {
     const ar = this.lang.language() === 'ar';
     return [
       { key: 'id', header: 'ID', field: 'id', width: '140px' },
@@ -132,38 +151,52 @@ export class InquiriesBoard {
     ];
   });
 
-  private readonly source: Inquiry[] = Array.from({ length: 8 }, (_, index) => {
-    const status = STATUSES[index % STATUSES.length];
-    return {
-      id: 'REQ-00000',
-      name: { icon: 'pi pi-user', label: 'يوسف احمد' },
-      org: { icon: 'pi pi-building', label: 'كود التقنية' },
-      phone: '+2040798140',
-      product: 'الما',
-      status: {
-        value: status,
-        label: status === 'new' ? 'جديد' : status === 'progress' ? 'قيد المتابعة' : 'مغلق',
-        tone: status,
-      },
-      when: { date: '2026-03-18', time: '12:00 ظهراً' },
-    };
-  });
-
   readonly rows = computed(() => {
     const query = this.query().trim();
     const selected = this.selectedFilters();
-    return this.source.filter((row) => {
-      const statusOk = selected.length === 0 || selected.includes(row.status.value);
-      const haystack = `${row.id} ${row.name.label} ${row.org.label} ${row.phone} ${row.product}`;
-      return statusOk && (!query || haystack.includes(query));
-    });
+    return this.source()
+      .filter((row) => {
+        const statusOk = selected.length === 0 || selected.includes(row.status);
+        const haystack = `${row.id} ${row.customer} ${row.org} ${row.phone} ${row.product}`;
+        return statusOk && (!query || haystack.includes(query));
+      })
+      .map((row) => this.toRow(row));
   });
 
-  protected exported(rows: readonly Inquiry[]): void {
+  protected exported(rows: readonly InquiryRow[]): void {
     this.messages.add({
       severity: 'success',
       summary: this.lang.language() === 'ar' ? `تصدير ${rows.length}` : `Export ${rows.length}`,
     });
+  }
+
+  protected open(row: InquiryRow): void {
+    void this.router.navigate(['/contact/inquiries', row.id]);
+  }
+
+  private toRow(row: Inquiry): InquiryRow {
+    return {
+      id: row.id,
+      name: { icon: 'pi pi-user', label: row.customer },
+      org: { icon: 'pi pi-building', label: row.org },
+      phone: row.phone,
+      product: row.product,
+      status: {
+        value: row.status,
+        label: this.lang.t(this.statusKey(row.status)),
+        tone: row.status,
+      },
+      when: { date: row.date, time: row.time },
+    };
+  }
+
+  private statusKey(
+    status: InquiryStatus,
+  ): 'inquiry.statusNew' | 'inquiry.statusProgress' | 'inquiry.statusClosed' {
+    if (status === 'progress') {
+      return 'inquiry.statusProgress';
+    }
+    return status === 'closed' ? 'inquiry.statusClosed' : 'inquiry.statusNew';
   }
 
   private card(
