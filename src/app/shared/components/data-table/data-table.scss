@@ -164,18 +164,46 @@
 }
 
 .app-data-table .dt-badge--new {
-  background: #f3e8ff;
-  color: #7c3aed;
+border-radius: 96px;
+background: #F6F9FE;
+color: #0074D4;
+font-size: 12px;
+font-style: normal;
+font-weight: 500;
+line-height: normal;
+display: flex;
+width: 92px;
+height: 32px;
+padding: 4px 10px;
+justify-content: center;
+align-items: center;
+gap: 6px;
 }
 
 .app-data-table .dt-badge--progress {
-  background: #ffedd5;
-  color: #ea580c;
+display: flex;
+width: 92px;
+height: 32px;
+padding: 4px 10px;
+justify-content: center;
+align-items: center;
+gap: 6px;
+border-radius: 96px;
+background: var(--orange-50, #FFF7ED);  color: var(--orange-600, #EA580C);
+;
 }
 
 .app-data-table .dt-badge--closed {
-  background: #ffe4e6;
-  color: #e11d48;
+display: flex;
+width: 92px;
+height: 32px;
+padding: 4px 10px;
+justify-content: center;
+align-items: center;
+gap: 6px;
+border-radius: 96px;
+background: var(--Ken-Coral-Red-50, #FFF5F4);
+color: #E5001E;
 }
 
 .app-data-table .dt-badge--neutral {

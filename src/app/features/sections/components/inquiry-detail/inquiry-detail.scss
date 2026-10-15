@@ -22,8 +22,7 @@
   margin: 0;
 }
 
-.inquiry__when,
-.inquiry-step__when {
+.inquiry__when {
   display: inline-flex;
   align-items: center;
   gap: 8px;
@@ -31,8 +30,7 @@
   font-size: 13px;
 }
 
-.inquiry__when i,
-.inquiry-step__when i {
+.inquiry__when i {
   margin-inline-end: 4px;
 }
 
@@ -159,6 +157,7 @@
   gap: 12px;
 }
 
+
 .inquiry-card__head h2 {
   margin: 0;
 }
@@ -237,35 +236,49 @@
 }
 
 .inquiry-steps {
+  position: relative;
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: 28px;
   margin: 0;
-  padding: 16px;
+  padding: 20px 18px;
   border: 1px solid #edeeee;
-  border-radius: 14px;
+  border-radius: 16px;
   background: #f9fafb;
   list-style: none;
 }
 
+.inquiry-steps::before {
+  content: '';
+  position: absolute;
+  inset-inline-start: calc(18px + 11px);
+  top: 32px;
+  bottom: 52px;
+  width: 1.5px;
+  background: #d5deea;
+}
+
 .inquiry-step {
+  position: relative;
   display: flex;
-  gap: 10px;
+  align-items: flex-start;
+  gap: 12px;
 }
 
 .inquiry-step__mark {
+  position: relative;
+  z-index: 1;
   display: inline-flex;
   flex: none;
   align-items: center;
   justify-content: center;
-  width: 22px;
-  height: 22px;
-  margin-top: 2px;
+  width: 24px;
+  height: 24px;
   border: 2px solid #d7dee8;
   border-radius: 50%;
   background: #fff;
   color: #fff;
-  font-size: 10px;
+  font-size: 11px;
 }
 
 .inquiry-step--done .inquiry-step__mark {
@@ -278,16 +291,29 @@
   color: #2f6fed;
 }
 
+.inquiry-step--dot .inquiry-step__mark::before {
+  content: '';
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #2f6fed;
+}
+
 .inquiry-step__body {
   display: flex;
   min-width: 0;
+  flex: 1;
   flex-direction: column;
+  align-items: flex-start;
   gap: 4px;
+  text-align: start;
 }
 
 .inquiry-step__body strong {
   color: #16324f;
   font-size: 14px;
+  font-weight: 700;
+  line-height: 1.5;
 }
 
 .inquiry-step__body p {
@@ -295,6 +321,27 @@
   color: #94a3b8;
   font-size: 12px;
   line-height: 1.6;
+}
+
+.inquiry-step__when {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-top: 4px;
+  color: #94a3b8;
+  font-size: 12px;
+}
+
+.inquiry-step__when i {
+  margin-inline-end: 4px;
+  font-size: 12px;
+}
+
+.inquiry-step__arrow {
+  margin-inline: 0;
+  color: #c5d0dc;
+  font-size: 10px;
 }
 
 .inquiry-composer {

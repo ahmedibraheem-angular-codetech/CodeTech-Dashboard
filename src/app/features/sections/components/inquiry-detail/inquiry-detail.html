@@ -118,13 +118,15 @@
         </header>
         <ol class="inquiry-steps">
           @for (step of steps(); track step.id) {
-            <li class="inquiry-step" [class]="'inquiry-step inquiry-step--' + step.state">
+            <li
+              class="inquiry-step"
+              [class]="'inquiry-step inquiry-step--' + step.state"
+              [class.inquiry-step--dot]="step.state === 'current' && step.id === 'done'"
+            >
               <span class="inquiry-step__mark" aria-hidden="true">
                 @if (step.state === 'done') {
                   <i class="pi pi-check"></i>
-                } @else if (step.state === 'current' && step.id === 'done') {
-                  <i class="pi pi-circle-fill"></i>
-                } @else if (step.state === 'current') {
+                } @else if (step.state === 'current' && step.id !== 'done') {
                   <i class="pi pi-plus"></i>
                 }
               </span>
@@ -132,9 +134,11 @@
                 <strong>{{ step.title }}</strong>
                 <p>{{ step.hint }}</p>
                 <span class="inquiry-step__when">
-                  <span><i class="pi pi-clock" aria-hidden="true"></i>{{ step.time }}</span>
-                  <span class="inquiry__sep">-</span>
                   <span><i class="pi pi-calendar" aria-hidden="true"></i>{{ step.date }}</span>
+                  <i class="pi pi-arrow-left inquiry-step__arrow" aria-hidden="true"></i>
+                  <span dir="ltr"
+                    ><i class="pi pi-clock" aria-hidden="true"></i>{{ step.time }}</span
+                  >
                 </span>
               </div>
             </li>
