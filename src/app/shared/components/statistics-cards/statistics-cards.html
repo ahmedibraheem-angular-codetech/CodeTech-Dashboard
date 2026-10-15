@@ -1,0 +1,47 @@
+<div class="stats">
+  @for (card of cards(); track card.id) {
+    @if (card.interactive) {
+      <button type="button" class="stat-card" (click)="choose(card)">
+        <ng-container [ngTemplateOutlet]="body" [ngTemplateOutletContext]="{ $implicit: card }" />
+      </button>
+    } @else {
+      <article class="stat-card">
+        <ng-container [ngTemplateOutlet]="body" [ngTemplateOutletContext]="{ $implicit: card }" />
+      </article>
+    }
+  }
+</div>
+
+<ng-template #body let-card>
+  <div class="stat-card__top">
+    <h3 class="stat-card__title">{{ card.title }}</h3>
+    @if (card.icon) {
+      <span
+        class="stat-card__icon"
+        [style.color]="card.iconColor"
+        [style.background]="card.iconBackground"
+        aria-hidden="true"
+      >
+        <i [class]="card.icon"></i>
+      </span>
+    }
+  </div>
+  <p class="stat-card__value">{{ valueOf(card) }}</p>
+  @if (trendOf(card) || card.caption) {
+    <div class="stat-card__foot">
+      @if (card.caption) {
+        <span class="stat-card__caption">{{ card.caption }}</span>
+      }
+      @if (trendOf(card); as trend) {
+        <span
+          class="stat-card__trend"
+          dir="ltr"
+          [class]="'stat-card__trend stat-card__trend--' + direction(card)"
+        >
+          <i [class]="iconFor(direction(card))" aria-hidden="true"></i>
+          <span>{{ trend }}</span>
+        </span>
+      }
+    </div>
+  }
+</ng-template>

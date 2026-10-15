@@ -1,0 +1,178 @@
+<section class="app-data-table">
+  <header class="app-data-table__head">
+    @if (title()) {
+      <h2>{{ title() }}</h2>
+    }
+    <div class="app-data-table__tools">
+      @if (showSearch()) {
+        @if (searchOpen()) {
+          <input
+            class="app-data-table__query"
+            type="search"
+            [value]="query()"
+            [attr.aria-label]="searchLabel()"
+            [placeholder]="searchLabel()"
+            (input)="onQuery($event)"
+          />
+        }
+        <p-button
+          styleClass="app-data-table__icon-btn"
+          icon="pi pi-search"
+          severity="secondary"
+          variant="outlined"
+          [ariaLabel]="searchLabel()"
+          (onClick)="toggleSearch()"
+        />
+      }
+      @if (filters().length) {
+        <button
+          type="button"
+          class="app-data-table__btn app-data-table__filter"
+          [class.app-data-table__filter--open]="filterOpen()"
+          [attr.aria-expanded]="filterOpen()"
+          [attr.aria-label]="filterLabel()"
+          (click)="filterMenu.toggle($event)"
+        >
+          <i class="pi pi-filter" aria-hidden="true"></i>
+          <span>{{ filterLabel() }}</span>
+          <i
+            class="pi"
+            [class.pi-chevron-up]="filterOpen()"
+            [class.pi-chevron-down]="!filterOpen()"
+            aria-hidden="true"
+          ></i>
+        </button>
+        <p-popover
+          #filterMenu
+          styleClass="app-data-table-menu"
+          appendTo="body"
+          [dismissable]="true"
+          [focusOnShow]="false"
+          (onShow)="filterOpen.set(true)"
+          (onHide)="filterOpen.set(false)"
+        >
+          <ul class="app-data-table-menu__list">
+            @for (option of filters(); track option.value) {
+              <li>
+                <label class="app-data-table-option">
+                  <p-checkbox
+                    [binary]="true"
+                    [inputId]="'filter-' + option.value"
+                    [ariaLabel]="option.label"
+                    [ngModel]="checked(option)"
+                    (ngModelChange)="setOption(option, $event)"
+                  />
+                  <span>{{ option.label }}</span>
+                </label>
+              </li>
+            }
+          </ul>
+        </p-popover>
+      }
+      @if (showExport()) {
+        <p-button
+          styleClass="app-data-table__btn"
+          icon="pi pi-download"
+          iconPos="right"
+          severity="secondary"
+          variant="outlined"
+          [label]="exportLabel()"
+          (onClick)="exportRows()"
+        />
+      }
+    </div>
+  </header>
+
+  <div class="app-data-table__scroll">
+    <p-table
+      styleClass="app-data-table__grid"
+      [value]="tableRows()"
+      [dataKey]="dataKey()"
+      [loading]="loading()"
+      [paginator]="paginator()"
+      [rows]="pageSize()"
+      [rowsPerPageOptions]="pageSizeOptions()"
+      sortMode="single"
+      [selectionMode]="selectionMode() ?? undefined"
+      [(selection)]="selection"
+      [rowHover]="true"
+    >
+      <ng-template #header>
+        <tr>
+          @for (column of columns(); track column.key) {
+            @if (column.sortable && column.field) {
+              <th [pSortableColumn]="column.field" [style.width]="column.width ?? null">
+                <ng-container
+                  [ngTemplateOutlet]="heading"
+                  [ngTemplateOutletContext]="{ $implicit: column }"
+                />
+              </th>
+            } @else {
+              <th [style.width]="column.width ?? null">
+                <ng-container
+                  [ngTemplateOutlet]="heading"
+                  [ngTemplateOutletContext]="{ $implicit: column }"
+                />
+              </th>
+            }
+          }
+        </tr>
+      </ng-template>
+      <ng-template #body let-row>
+        <tr>
+          @for (column of columns(); track column.key) {
+            <td>
+              @if (templateFor(column.key); as template) {
+                <ng-container
+                  [ngTemplateOutlet]="template"
+                  [ngTemplateOutletContext]="{
+                    $implicit: row,
+                    row: row,
+                    column: column,
+                    value: valueOf(row, column),
+                  }"
+                />
+              } @else if (column.kind === 'badge') {
+                @if (badgeOf(valueOf(row, column)); as badge) {
+                  <span class="dt-badge" [class]="'dt-badge dt-badge--' + badge.tone">{{
+                    badge.label
+                  }}</span>
+                }
+              } @else if (column.kind === 'icon-text') {
+                @if (iconOf(valueOf(row, column)); as item) {
+                  <span class="dt-icon-text">
+                    <i [class]="item.icon" aria-hidden="true"></i>
+                    <span>{{ item.label }}</span>
+                  </span>
+                }
+              } @else if (column.kind === 'datetime') {
+                @if (dateOf(valueOf(row, column)); as when) {
+                  <span class="dt-when">
+                    <span><i class="pi pi-calendar" aria-hidden="true"></i>{{ when.date }}</span>
+                    @if (when.time) {
+                      <span class="dt-when__sep" aria-hidden="true">-</span>
+                      <span><i class="pi pi-clock" aria-hidden="true"></i>{{ when.time }}</span>
+                    }
+                  </span>
+                }
+              } @else {
+                <span [attr.dir]="column.dir || null">{{ textOf(valueOf(row, column)) }}</span>
+              }
+            </td>
+          }
+        </tr>
+      </ng-template>
+      <ng-template #heading let-column>
+        {{ column.header }}
+        @if (column.sortable && column.field) {
+          <p-sortIcon [field]="column.field" />
+        }
+      </ng-template>
+      <ng-template #emptymessage>
+        <tr>
+          <td [attr.colspan]="columns().length">{{ emptyText() }}</td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+</section>

@@ -1,0 +1,30 @@
+<section class="page">
+  <app-page-header
+    [title]="lang.language() === 'ar' ? 'الاستفسارات' : 'Inquiries'"
+    [subtitle]="
+      lang.language() === 'ar' ? 'إدارة الاستفسارات المستقبلة' : 'Manage incoming inquiries'
+    "
+  >
+    <button
+      type="button"
+      class="inquiries-menu"
+      [attr.aria-label]="lang.language() === 'ar' ? 'خيارات الصفحة' : 'Page options'"
+    >
+      <i class="pi pi-file-edit" aria-hidden="true"></i>
+      <i class="pi pi-chevron-down" aria-hidden="true"></i>
+    </button>
+  </app-page-header>
+  <app-statistics-cards [cards]="cards()" />
+  <app-data-table
+    [title]="lang.language() === 'ar' ? 'الاستفسارات' : 'Inquiries'"
+    [rows]="rows()"
+    [columns]="columns()"
+    [filters]="filters()"
+    [filterLabel]="lang.language() === 'ar' ? 'كل الحالات' : 'All statuses'"
+    [exportLabel]="lang.language() === 'ar' ? 'تصدير' : 'Export'"
+    [searchLabel]="lang.language() === 'ar' ? 'بحث' : 'Search'"
+    [(query)]="query"
+    [(selectedFilters)]="selectedFilters"
+    (export)="exported($event)"
+  />
+</section>
