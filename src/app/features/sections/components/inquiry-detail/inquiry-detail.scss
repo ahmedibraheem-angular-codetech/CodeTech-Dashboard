@@ -46,7 +46,7 @@
   --p-button-border-radius: 14px;
   --p-button-padding-y: 0;
   --p-button-padding-x: 14px;
-  --p-button-outlined-secondary-border-color: #e6ebf2;
+  --p-button-outlined-secondary-border-color: var(--app-border);
   --p-button-outlined-secondary-color: #334155;
 
   height: 44px;
@@ -170,7 +170,7 @@
   height: 36px;
   border-radius: 50%;
   background: #f1f5f9;
-  color: #64748b;
+  color: var(--app-muted);
 }
 
 .inquiry-fields,
@@ -210,7 +210,7 @@
   align-items: center;
   justify-content: space-between;
   gap: 8px;
-  color: #16324f;
+  color: var(--app-text);
   font-size: 14px;
   font-weight: 700;
 }
@@ -310,7 +310,7 @@
 }
 
 .inquiry-step__body strong {
-  color: #16324f;
+  color: var(--app-text);
   font-size: 14px;
   font-weight: 700;
   line-height: 1.5;
@@ -356,7 +356,7 @@
   width: 100%;
   min-height: 168px;
   padding: 16px 18px;
-  border: 1px solid #e6ebf2;
+  border: 1px solid var(--app-border);
   border-radius: 16px;
   background: #fff;
   color: #334155;

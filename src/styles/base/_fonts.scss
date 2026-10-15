@@ -1,14 +1,45 @@
-// Self-hosted Thmanyah Sans. This file is imported first so `@font-face` rules
-// land before component CSS. No faces are declared yet: the project has no
-// `.woff2`, `.woff`, or `.ttf` files, and weights must match the real files.
-//
-// Put each weight in `public/fonts/thmanyah-sans/` (served from `/fonts/thmanyah-sans/`)
-// and add one rule per file, for example:
-//
-// @font-face {
-//   font-family: 'Thmanyah Sans';
-//   src: url('/fonts/thmanyah-sans/<file>.woff2') format('woff2');
-//   font-weight: 400;
-//   font-style: normal;
-//   font-display: swap;
-// }
+// Thmanyah Sans, the UI family. Only the weights that exist as files are declared.
+// The serif text and display cuts in the same folder are not part of `--app-font`.
+// Paths are relative to this file so the Angular style bundler emits the woff2 assets.
+
+$thmanyah-sans: '../Thmanyah-Font-Family/thmanyah typeface/thmanyahsans/woff2';
+
+@font-face {
+  font-family: 'Thmanyah Sans';
+  src: url('#{$thmanyah-sans}/thmanyahsans-Light.woff2') format('woff2');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Thmanyah Sans';
+  src: url('#{$thmanyah-sans}/thmanyahsans-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Thmanyah Sans';
+  src: url('#{$thmanyah-sans}/thmanyahsans-Medium.woff2') format('woff2');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Thmanyah Sans';
+  src: url('#{$thmanyah-sans}/thmanyahsans-Bold.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Thmanyah Sans';
+  src: url('#{$thmanyah-sans}/thmanyahsans-Black.woff2') format('woff2');
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}

@@ -1,2 +1,4 @@
-@import 'bootstrap/scss/bootstrap-grid';
-@import 'bootstrap/scss/bootstrap-utilities';
+// Grid and utilities only. Bootstrap's own partials still use `@import`, which Sass
+// loads when these entry files are used. Reboot is intentionally not included.
+@use 'bootstrap/scss/bootstrap-grid';
+@use 'bootstrap/scss/bootstrap-utilities';

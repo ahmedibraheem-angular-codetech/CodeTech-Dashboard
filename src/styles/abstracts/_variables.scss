@@ -32,8 +32,7 @@ $color-sidebar-user-name: #1e293b;
 $color-sidebar-logout-bg: #fff1f2;
 $color-header-bg: #ffffff;
 
-// One family for Arabic and English. The face files are not in the repo yet, so the
-// browser uses the `sans-serif` fallback until they are added under `public/fonts/thmanyah-sans/`.
+// One family for Arabic and English. The faces are the woff2 files declared in `base/_fonts.scss`.
 $font-family: 'Thmanyah Sans', sans-serif;
 $font-size-xs: 0.75rem;
 $font-size-sm: 0.8125rem;

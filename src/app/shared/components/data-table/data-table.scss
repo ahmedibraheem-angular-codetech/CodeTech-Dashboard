@@ -26,11 +26,11 @@
   --p-button-secondary-background: #fff;
   --p-button-secondary-hover-background: #f8fafc;
   --p-button-secondary-active-background: #f8fafc;
-  --p-button-secondary-border-color: #e6ebf2;
+  --p-button-secondary-border-color: var(--app-border);
   --p-button-secondary-hover-border-color: #d5dee8;
   --p-button-secondary-color: #334155;
   --p-button-secondary-hover-color: #334155;
-  --p-button-outlined-secondary-border-color: #e6ebf2;
+  --p-button-outlined-secondary-border-color: var(--app-border);
   --p-button-outlined-secondary-color: #334155;
   --p-button-border-radius: 12px;
   --p-button-padding-y: 0;
@@ -43,7 +43,7 @@
   gap: 8px;
   height: 40px;
   padding: 0 14px;
-  border: 1px solid #e6ebf2;
+  border: 1px solid var(--app-border);
   border-radius: 12px;
   background: #fff;
   color: #334155;
@@ -54,7 +54,7 @@
 }
 
 .app-data-table__filter i {
-  color: #64748b;
+  color: var(--app-muted);
   font-size: 14px;
 }
 
@@ -67,10 +67,10 @@
   width: min(220px, 46vw);
   height: 40px;
   padding: 0 12px;
-  border: 1px solid #e6ebf2;
+  border: 1px solid var(--app-border);
   border-radius: 12px;
   background: #fff;
-  color: #16324f;
+  color: var(--app-text);
   font: inherit;
   font-size: 14px;
 }
@@ -79,10 +79,10 @@
   --p-button-icon-only-width: 40px;
   --p-button-secondary-background: #fff;
   --p-button-secondary-hover-background: #f8fafc;
-  --p-button-secondary-border-color: #e6ebf2;
-  --p-button-secondary-color: #64748b;
-  --p-button-outlined-secondary-border-color: #e6ebf2;
-  --p-button-outlined-secondary-color: #64748b;
+  --p-button-secondary-border-color: var(--app-border);
+  --p-button-secondary-color: var(--app-muted);
+  --p-button-outlined-secondary-border-color: var(--app-border);
+  --p-button-outlined-secondary-color: var(--app-muted);
   --p-button-border-radius: 12px;
 
   width: 40px;
@@ -208,7 +208,7 @@ color: #E5001E;
 
 .app-data-table .dt-badge--neutral {
   background: #f1f5f9;
-  color: #64748b;
+  color: var(--app-muted);
 }
 
 .app-data-table .dt-icon-text {
@@ -225,7 +225,7 @@ color: #E5001E;
   height: 28px;
   border-radius: 50%;
   background: #f1f5f9;
-  color: #64748b;
+  color: var(--app-muted);
   font-size: 13px;
 }
 
@@ -233,7 +233,7 @@ color: #E5001E;
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  color: #64748b;
+  color: var(--app-muted);
   font-size: 13px;
   white-space: nowrap;
 }
@@ -276,7 +276,7 @@ color: #E5001E;
   gap: 10px;
   padding: 8px 10px;
   border-radius: 10px;
-  color: #16324f;
+  color: var(--app-text);
   font-size: 14px;
   cursor: pointer;
 }
