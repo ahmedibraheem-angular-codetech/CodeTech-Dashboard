@@ -4,6 +4,7 @@ import {
   DestroyRef,
   computed,
   inject,
+  input,
   signal,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -48,6 +49,19 @@ export class InquiriesBoard {
   private readonly router = inject(Router);
   private readonly destroyRef = inject(DestroyRef);
   readonly lang = inject(LanguageService);
+
+  /** Overrides the page and table title. Inquiries keeps its own title when this is empty. */
+  readonly pageTitle = input('');
+  /** List prefix used when a row opens its details page. */
+  readonly detailPath = input('/contact/inquiries');
+
+  readonly heading = computed(() => {
+    const custom = this.pageTitle().trim();
+    if (custom) {
+      return custom;
+    }
+    return this.lang.language() === 'ar' ? 'الاستفسارات' : 'Inquiries';
+  });
 
   readonly query = signal('');
   readonly selectedFilters = signal<string[]>([]);
@@ -171,7 +185,7 @@ export class InquiriesBoard {
   }
 
   protected open(row: InquiryRow): void {
-    void this.router.navigate(['/contact/inquiries', row.id]);
+    void this.router.navigate([this.detailPath(), row.id]);
   }
 
   private toRow(row: Inquiry): InquiryRow {

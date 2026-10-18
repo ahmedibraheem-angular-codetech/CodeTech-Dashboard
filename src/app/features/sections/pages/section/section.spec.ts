@@ -48,6 +48,15 @@ describe('SectionPage', () => {
     expect(root.querySelector('app-about-page')).toBeNull();
   });
 
+  it('renders the same requests board on start projects, with that page title', async () => {
+    const fixture = await render('nav.startProjects');
+    const root: HTMLElement = fixture.nativeElement;
+
+    expect(root.querySelector('app-inquiries-board')).not.toBeNull();
+    expect(root.querySelector('h1')?.textContent).toContain('بدأ المشاريع');
+    expect(root.textContent).toContain('إدارة الاستفسارات المستقبلة');
+  });
+
   it('keeps every other section route as a placeholder', async () => {
     const fixture = await render('nav.productsItem');
     const root: HTMLElement = fixture.nativeElement;

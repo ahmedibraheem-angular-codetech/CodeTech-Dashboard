@@ -1,6 +1,6 @@
 <section class="page">
   <app-page-header
-    [title]="lang.language() === 'ar' ? 'الاستفسارات' : 'Inquiries'"
+    [title]="heading()"
     [subtitle]="
       lang.language() === 'ar' ? 'إدارة الاستفسارات المستقبلة' : 'Manage incoming inquiries'
     "
@@ -16,7 +16,7 @@
   </app-page-header>
   <app-statistics-cards [cards]="cards()" />
   <app-data-table
-    [title]="lang.language() === 'ar' ? 'الاستفسارات' : 'Inquiries'"
+    [title]="heading()"
     [rows]="rows()"
     [columns]="columns()"
     [filters]="filters()"

@@ -70,7 +70,26 @@ export const routes: Routes = [
           },
         ],
       },
-      section('contact/start', 'nav.startProjects'),
+      {
+        path: 'contact/start',
+        data: { breadcrumb: 'nav.startProjects' },
+        children: [
+          {
+            path: '',
+            loadComponent: () =>
+              import('./features/sections/pages/section/section').then((m) => m.SectionPage),
+            data: { titleKey: 'nav.startProjects' },
+          },
+          {
+            path: ':id',
+            loadComponent: () =>
+              import('./features/sections/components/inquiry-detail/inquiry-detail').then(
+                (m) => m.InquiryDetailPage,
+              ),
+            data: { breadcrumb: ':id', titleKey: 'nav.startProjects' },
+          },
+        ],
+      },
       section('contact/new', 'nav.contactNew'),
       section('contact/done', 'nav.contactDone'),
       section('products/page', 'nav.productsPage'),

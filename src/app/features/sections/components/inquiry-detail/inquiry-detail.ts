@@ -63,7 +63,7 @@ export class InquiryDetailPage {
   private readonly confirm = viewChild.required(ConfirmDialog);
   readonly lang = inject(LanguageService);
 
-  /** Bound from `/contact/inquiries/:id` through `withComponentInputBinding`. */
+  /** Bound from `/contact/inquiries/:id` or `/contact/start/:id`. */
   readonly id = input.required<string>();
 
   readonly status = signal<Status>('loading');
@@ -172,7 +172,7 @@ export class InquiryDetailPage {
       .subscribe({
         next: () => {
           this.messages.add({ severity: 'success', summary: this.lang.t('inquiry.deleted') });
-          void this.router.navigate(['/contact/inquiries']);
+          void this.router.navigate([this.listPath()]);
         },
         error: () => this.fail(),
       });
@@ -180,6 +180,12 @@ export class InquiryDetailPage {
 
   protected reload(): void {
     this.load(this.id());
+  }
+
+  /** Delete returns to the list that opened this request. */
+  private listPath(): string {
+    const path = this.router.url.split('?')[0];
+    return path.startsWith('/contact/start') ? '/contact/start' : '/contact/inquiries';
   }
 
   private load(id: string): void {

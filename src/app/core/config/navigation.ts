@@ -27,6 +27,7 @@ export const NAV_ITEMS: NavItem[] = [
         labelKey: 'nav.startProjects',
         icon: 'pi pi-flag',
         route: '/contact/start',
+        exact: false,
       },
     ],
   },
