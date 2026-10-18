@@ -77,6 +77,27 @@ export class Sidebar {
     });
   }
 
+  /** `/products/new` and `/products/:id` stay on المنتجات, without matching `/products/page`. */
+  productSectionActive(): boolean {
+    const url = this.router.url.split('?')[0];
+    if (url === '/products') {
+      return true;
+    }
+    return (
+      url.startsWith('/products/') &&
+      !url.startsWith('/products/page') &&
+      !url.startsWith('/products/categories')
+    );
+  }
+
+  projectSectionActive(): boolean {
+    const url = this.router.url.split('?')[0];
+    if (url === '/projects') {
+      return true;
+    }
+    return url.startsWith('/projects/') && !url.startsWith('/projects/page');
+  }
+
   childActive(item: NavItem): boolean {
     return (item.children ?? []).some((child) => this.isRouteActive(child.route));
   }

@@ -16,6 +16,10 @@ import { ar as layoutAr } from '../../../../public/in18/layout/ar';
 import { en as layoutEn } from '../../../../public/in18/layout/en';
 import { ar as commonAr } from '../../../../public/in18/shared/ar';
 import { en as commonEn } from '../../../../public/in18/shared/en';
+import { ar as productsAr } from '../../../../public/in18/products/ar';
+import { en as productsEn } from '../../../../public/in18/products/en';
+import { ar as projectsAr } from '../../../../public/in18/projects/ar';
+import { en as projectsEn } from '../../../../public/in18/projects/en';
 
 import { mergeTranslations, zipTranslations } from './merge';
 
@@ -31,4 +35,6 @@ export const TRANSLATIONS = mergeTranslations(
   zipTranslations(settingsAr, settingsEn),
   zipTranslations(sectionsAr, sectionsEn),
   zipTranslations(seoAr, seoEn),
+  zipTranslations(productsAr, productsEn),
+  zipTranslations(projectsAr, projectsEn),
 );

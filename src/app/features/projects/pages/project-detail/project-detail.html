@@ -1,0 +1,22 @@
+<section class="page">
+  @if (status() === 'loading') {
+    <app-state-view mode="loading" [message]="lang.t('common.loading')" />
+  } @else if (status() === 'missing' || !item()) {
+    <app-state-view mode="empty" [message]="lang.t('project.notFound')" />
+  } @else if (item(); as project) {
+    <app-page-header [title]="project.name">
+      <a class="projects-board__add" [routerLink]="['/projects', project.id, 'edit']">
+        {{ lang.t('project.edit') }}
+      </a>
+    </app-page-header>
+    <article class="project-tile">
+      <img class="project-detail__cover" [src]="project.coverUrl" alt="" />
+      <p>{{ project.summary }}</p>
+      <ul class="project-tile__tags">
+        @for (tag of project.tags; track tag.label) {
+          <li><i [class]="tag.icon" aria-hidden="true"></i>{{ tag.label }}</li>
+        }
+      </ul>
+    </article>
+  }
+</section>

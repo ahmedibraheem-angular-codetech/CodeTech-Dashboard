@@ -1,0 +1,16 @@
+export const en = {
+  'project.manage': 'Manage projects',
+  'project.subtitle': 'Manage the projects shown on the site',
+  'project.catalog': 'Projects',
+  'project.add': 'Add a new project',
+  'project.edit': 'Edit project',
+  'project.deleteTitle': 'Delete project',
+  'project.deleteMessage': 'Do you want to delete this project?',
+  'project.deleted': 'Project deleted',
+  'project.saved': 'Project saved',
+  'project.empty': 'No projects yet',
+  'project.notFound': 'This project could not be found.',
+  'project.name': 'Project name',
+  'project.summary': 'Short description',
+  'project.back': 'Back to projects',
+} as const;

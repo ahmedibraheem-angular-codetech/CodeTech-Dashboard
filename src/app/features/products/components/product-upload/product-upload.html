@@ -1,0 +1,14 @@
+<label class="uploader">
+  @if (url()) {
+    <img class="uploader__preview" [src]="url()" alt="" />
+  } @else {
+    <span class="uploader__mark" aria-hidden="true"><i class="pi pi-image"></i></span>
+  }
+  <span>{{ lang.t('product.uploadHint') }}</span>
+  <small>{{ name() || lang.t('product.uploadTypes') }}</small>
+  <input #file type="file" accept="image/png,image/jpeg" (change)="choose($event)" />
+</label>
+<div class="uploader__actions">
+  <button type="button" (click)="open(file)">{{ lang.t('product.chooseLibrary') }}</button>
+  <button type="button" [disabled]="!url()">{{ lang.t('product.viewIcon') }}</button>
+</div>

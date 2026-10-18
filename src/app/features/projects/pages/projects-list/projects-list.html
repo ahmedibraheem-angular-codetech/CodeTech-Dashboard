@@ -1,0 +1,77 @@
+<section class="page projects-board">
+  <app-page-header [title]="lang.t('project.manage')" [subtitle]="lang.t('project.subtitle')">
+    <label class="projects-board__catalog">
+      <span>{{ lang.t('project.catalog') }}</span>
+      <p-toggleswitch
+        [ngModel]="api.catalogVisible()"
+        (ngModelChange)="api.toggleCatalog()"
+        [ariaLabel]="lang.t('project.catalog')"
+      />
+    </label>
+    <a class="projects-board__add" routerLink="/projects/new">
+      <i class="pi pi-plus" aria-hidden="true"></i>
+      {{ lang.t('project.add') }}
+    </a>
+  </app-page-header>
+
+  @if (!api.catalogVisible()) {
+    <app-state-view mode="empty" [message]="lang.t('project.empty')" />
+  } @else if (items().length === 0) {
+    <app-state-view mode="empty" [message]="lang.t('project.empty')" />
+  } @else {
+    <div class="project-grid">
+      @for (project of visible(); track project.id) {
+        <article class="project-tile">
+          <a class="project-tile__media" [routerLink]="['/projects', project.id]">
+            <img [src]="project.coverUrl" alt="" />
+            <span class="project-tile__actions">
+              <button
+                type="button"
+                class="project-tile__icon project-tile__icon--danger"
+                [attr.aria-label]="lang.t('project.deleteTitle')"
+                (click)="$event.preventDefault(); $event.stopPropagation(); remove(project)"
+              >
+                <i class="pi pi-trash" aria-hidden="true"></i>
+              </button>
+              <a
+                class="project-tile__icon"
+                [routerLink]="['/projects', project.id, 'edit']"
+                [attr.aria-label]="lang.t('project.edit')"
+                (click)="$event.stopPropagation()"
+              >
+                <i class="pi pi-pencil" aria-hidden="true"></i>
+              </a>
+            </span>
+          </a>
+          <div class="project-tile__head">
+            <h2>
+              <a [routerLink]="['/projects', project.id]">{{ project.name }}</a>
+            </h2>
+            <p-toggleswitch
+              [ngModel]="project.published"
+              (ngModelChange)="publish(project.id, $event)"
+              [ariaLabel]="project.name"
+            />
+          </div>
+          <p>{{ project.summary }}</p>
+          <ul class="project-tile__tags">
+            @for (tag of project.tags; track tag.label) {
+              <li><i [class]="tag.icon" aria-hidden="true"></i>{{ tag.label }}</li>
+            }
+          </ul>
+        </article>
+      }
+    </div>
+    <p-paginator
+      [first]="first()"
+      [rows]="rows()"
+      [totalRecords]="items().length"
+      [rowsPerPageOptions]="[10, 20, 50]"
+      [showCurrentPageReport]="true"
+      currentPageReportTemplate="{currentPage} من {totalPages}"
+      [alwaysShow]="true"
+      (onPageChange)="page($event)"
+    />
+  }
+  <app-confirm-dialog />
+</section>

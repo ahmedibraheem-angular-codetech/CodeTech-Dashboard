@@ -93,10 +93,84 @@ export const routes: Routes = [
       section('contact/new', 'nav.contactNew'),
       section('contact/done', 'nav.contactDone'),
       section('products/page', 'nav.productsPage'),
-      section('products', 'nav.productsItem'),
       section('products/categories', 'nav.categories'),
+      {
+        path: 'products',
+        data: { breadcrumb: 'nav.productsItem' },
+        children: [
+          {
+            path: '',
+            loadComponent: () =>
+              import('./features/products/pages/products-list/products-list').then(
+                (m) => m.ProductsPage,
+              ),
+            data: { titleKey: 'product.manage', breadcrumb: 'product.manage' },
+          },
+          {
+            path: 'new',
+            loadComponent: () =>
+              import('./features/products/pages/product-editor/product-editor').then(
+                (m) => m.ProductEditor,
+              ),
+            data: { mode: 'create', titleKey: 'product.add', breadcrumb: 'product.add' },
+          },
+          {
+            path: ':id/edit',
+            loadComponent: () =>
+              import('./features/products/pages/product-editor/product-editor').then(
+                (m) => m.ProductEditor,
+              ),
+            data: { mode: 'edit', titleKey: 'product.edit', breadcrumb: 'product.edit' },
+          },
+          {
+            path: ':id',
+            loadComponent: () =>
+              import('./features/products/pages/product-detail/product-detail').then(
+                (m) => m.ProductDetailPage,
+              ),
+            data: { breadcrumb: ':id', titleKey: 'nav.productsItem' },
+          },
+        ],
+      },
       section('projects/page', 'nav.projectsPage'),
-      section('projects', 'nav.projectsItem'),
+      {
+        path: 'projects',
+        data: { breadcrumb: 'nav.projects' },
+        children: [
+          {
+            path: '',
+            loadComponent: () =>
+              import('./features/projects/pages/projects-list/projects-list').then(
+                (m) => m.ProjectsPage,
+              ),
+            data: { titleKey: 'project.manage', breadcrumb: 'project.manage' },
+          },
+          {
+            path: 'new',
+            loadComponent: () =>
+              import('./features/projects/pages/project-editor/project-editor').then(
+                (m) => m.ProjectEditor,
+              ),
+            data: { mode: 'create', titleKey: 'project.add', breadcrumb: 'project.add' },
+          },
+          {
+            path: ':id/edit',
+            loadComponent: () =>
+              import('./features/projects/pages/project-editor/project-editor').then(
+                (m) => m.ProjectEditor,
+              ),
+            data: { mode: 'edit', titleKey: 'project.edit', breadcrumb: 'project.edit' },
+          },
+          {
+            path: ':id',
+            loadComponent: () =>
+              import('./features/projects/pages/project-detail/project-detail').then(
+                (m) => m.ProjectDetailPage,
+              ),
+            data: { breadcrumb: ':id', titleKey: 'nav.projectsItem' },
+          },
+        ],
+      },
       section('services', 'nav.services'),
       section('knowledge', 'nav.knowledge'),
       section('reviews', 'nav.reviews'),

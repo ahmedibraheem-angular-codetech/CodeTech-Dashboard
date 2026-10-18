@@ -17,15 +17,28 @@
           @if (isOpen(item.id)) {
             <div class="sidebar__children">
               @for (child of item.children; track child.id) {
-                <a
-                  class="sidebar__child"
-                  [routerLink]="child.route"
-                  routerLinkActive="is-active"
-                  [routerLinkActiveOptions]="linkMatch(child)"
-                >
-                  <i [class]="child.icon" aria-hidden="true"></i>
-                  <span class="sidebar__label">{{ lang.t(child.labelKey) }}</span>
-                </a>
+                @if (child.id === 'products-list' || child.id === 'projects-list') {
+                  <a
+                    class="sidebar__child"
+                    [class.is-active]="
+                      child.id === 'products-list' ? productSectionActive() : projectSectionActive()
+                    "
+                    [routerLink]="child.route"
+                  >
+                    <i [class]="child.icon" aria-hidden="true"></i>
+                    <span class="sidebar__label">{{ lang.t(child.labelKey) }}</span>
+                  </a>
+                } @else {
+                  <a
+                    class="sidebar__child"
+                    [routerLink]="child.route"
+                    routerLinkActive="is-active"
+                    [routerLinkActiveOptions]="linkMatch(child)"
+                  >
+                    <i [class]="child.icon" aria-hidden="true"></i>
+                    <span class="sidebar__label">{{ lang.t(child.labelKey) }}</span>
+                  </a>
+                }
               }
             </div>
           }

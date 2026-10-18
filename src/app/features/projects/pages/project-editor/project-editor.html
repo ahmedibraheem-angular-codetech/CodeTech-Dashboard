@@ -1,0 +1,22 @@
+<section class="page">
+  <app-page-header [title]="lang.t(mode() === 'edit' ? 'project.edit' : 'project.add')">
+    <a class="projects-board__add" routerLink="/projects">{{ lang.t('project.back') }}</a>
+  </app-page-header>
+  @if (status() === 'loading') {
+    <app-state-view mode="loading" [message]="lang.t('common.loading')" />
+  } @else if (status() === 'missing') {
+    <app-state-view mode="empty" [message]="lang.t('project.notFound')" />
+  } @else {
+    <form class="project-form" [formGroup]="form" (ngSubmit)="save()">
+      <label class="field">
+        <span class="field__label">{{ lang.t('project.name') }}</span>
+        <input formControlName="name" />
+      </label>
+      <label class="field">
+        <span class="field__label">{{ lang.t('project.summary') }}</span>
+        <textarea rows="4" formControlName="summary"></textarea>
+      </label>
+      <p-button type="submit" [label]="lang.t('common.save')" />
+    </form>
+  }
+</section>

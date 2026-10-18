@@ -1,0 +1,513 @@
+<section class="page">
+  <app-page-header [title]="lang.t(mode() === 'edit' ? 'product.edit' : 'product.add')">
+    @if (mode() === 'edit') {
+      <p-button [label]="lang.t('common.save')" (onClick)="finish()" />
+    } @else {
+      <button type="button" class="draft-button" (click)="saveDraft()">
+        <i class="pi pi-file" aria-hidden="true"></i>
+        {{ lang.t('product.saveDraft') }}
+      </button>
+    }
+  </app-page-header>
+
+  @if (status() === 'loading') {
+    <app-state-view mode="loading" [message]="lang.t('common.loading')" />
+  } @else if (status() === 'missing') {
+    <app-state-view mode="empty" [message]="lang.t('product.notFound')" />
+  } @else {
+    @if (mode() === 'edit') {
+      <div class="section-tabs" role="tablist">
+        @for (item of steps; track item.id; let index = $index) {
+          <button
+            type="button"
+            role="tab"
+            [id]="'product-tab-' + item.id"
+            [attr.aria-selected]="step() === index"
+            [attr.aria-controls]="'product-panel'"
+            [class.is-active]="step() === index"
+            (click)="select(index)"
+          >
+            {{ lang.t(item.labelKey) }}
+          </button>
+        }
+      </div>
+    } @else {
+      <ol class="wizard">
+        @for (item of steps; track item.id; let index = $index) {
+          <li>
+            <button
+              type="button"
+              class="wizard__step"
+              [class.is-active]="step() === index"
+              [class.is-done]="index < step()"
+              [disabled]="index > step()"
+              (click)="select(index)"
+            >
+              <span class="wizard__mark">
+                @if (index < step()) {
+                  <i class="pi pi-check" aria-hidden="true"></i>
+                }
+              </span>
+              <span>{{ lang.t(item.labelKey) }}</span>
+            </button>
+          </li>
+        }
+      </ol>
+    }
+
+    <app-locale-switch [value]="locale()" (picked)="locale.set($event)" />
+
+    <div class="editor-card" id="product-panel" role="tabpanel">
+      @switch (stepId()) {
+        @case ('info') {
+          <div class="split">
+            <div class="stack">
+              <h2>{{ lang.t('product.cover') }}</h2>
+              <app-product-upload
+                [name]="draft().coverName"
+                [url]="draft().coverUrl"
+                (picked)="setCover('cover', $event)"
+              />
+              <h2>{{ lang.t('product.thumb') }}</h2>
+              <app-product-upload
+                [name]="draft().thumbName"
+                [url]="draft().thumbUrl"
+                (picked)="setCover('thumb', $event)"
+              />
+            </div>
+            <div class="stack">
+              <h2>{{ lang.t('product.info') }}</h2>
+              <label class="field">
+                <span class="field__label">{{ lang.t('product.name') }}</span>
+                <input
+                  [value]="text(draft().name)"
+                  [placeholder]="lang.t('product.namePh')"
+                  (input)="setField('name', $event)"
+                />
+                @if (nameError()) {
+                  <app-field-error>{{ lang.t('product.required') }}</app-field-error>
+                }
+              </label>
+              <label class="field">
+                <span class="field__label">{{ lang.t('product.summary') }}</span>
+                <textarea
+                  rows="4"
+                  [value]="text(draft().summary)"
+                  [placeholder]="lang.t('product.summaryPh')"
+                  (input)="setField('summary', $event)"
+                ></textarea>
+              </label>
+              <label class="field">
+                <span class="field__label">{{ lang.t('product.category') }}</span>
+                <input
+                  [value]="text(draft().category)"
+                  [placeholder]="lang.t('product.categoryPh')"
+                  (input)="setField('category', $event)"
+                />
+              </label>
+            </div>
+          </div>
+          <h2>{{ lang.t('product.features') }}</h2>
+          @for (feature of draft().features; track feature.id; let index = $index) {
+            <div class="pair">
+              <label class="field">
+                <span class="field__label">{{ lang.t('product.featureTitle') }}</span>
+                <input
+                  [value]="text(feature.title)"
+                  (input)="setPoint('features', index, 'title', $event)"
+                />
+              </label>
+              <label class="field">
+                <span class="field__label">{{ lang.t('product.featureBody') }}</span>
+                <textarea
+                  rows="3"
+                  [value]="text(feature.body)"
+                  (input)="setPoint('features', index, 'body', $event)"
+                ></textarea>
+              </label>
+            </div>
+          }
+          <button type="button" class="add-row" (click)="addPoint('features')">
+            {{ lang.t('product.addFeature') }}
+          </button>
+          <h2>{{ lang.t('product.stats') }}</h2>
+          @for (stat of draft().stats; track stat.id; let index = $index) {
+            <div class="pair">
+              <app-product-upload
+                [name]="stat.imageName"
+                [url]="stat.imageUrl"
+                (picked)="setStatImage(index, $event)"
+              />
+              <div class="stack">
+                <label class="field">
+                  <span class="field__label">{{ lang.t('product.value') }}</span>
+                  <input [value]="stat.value" (input)="setStat(index, 'value', $event)" />
+                </label>
+                <label class="field">
+                  <span class="field__label">{{ lang.t('product.featureTitle') }}</span>
+                  <input [value]="text(stat.label)" (input)="setStat(index, 'label', $event)" />
+                </label>
+                <label class="field">
+                  <span class="field__label">{{ lang.t('product.featureBody') }}</span>
+                  <textarea
+                    rows="3"
+                    [value]="text(stat.body)"
+                    (input)="setStat(index, 'body', $event)"
+                  ></textarea>
+                </label>
+              </div>
+            </div>
+          }
+          <button type="button" class="add-row" (click)="addStat()">
+            {{ lang.t('product.addBlock') }}
+          </button>
+        }
+        @case ('sectors') {
+          <h2>{{ lang.t('product.sectors') }}</h2>
+          <div class="media-grid">
+            @for (sector of draft().sectors; track sector.id; let index = $index) {
+              <article class="mini-card">
+                <app-product-upload
+                  [name]="sector.imageName"
+                  [url]="sector.imageUrl"
+                  (picked)="setMediaImage('sectors', index, $event)"
+                />
+                <label class="field">
+                  <span class="field__label">{{ lang.t('product.featureTitle') }}</span>
+                  <input
+                    [value]="text(sector.title)"
+                    (input)="setMediaText('sectors', index, 'title', $event)"
+                  />
+                </label>
+              </article>
+            }
+          </div>
+          <button type="button" class="add-row" (click)="addMedia('sectors')">
+            {{ lang.t('product.addSector') }}
+          </button>
+          <h2>{{ lang.t('product.challenges') }}</h2>
+          @for (item of draft().challenges; track item.id; let index = $index) {
+            <div class="pair">
+              <label class="field">
+                <span class="field__label">{{ lang.t('product.featureTitle') }}</span>
+                <input
+                  [value]="text(item.title)"
+                  (input)="setPoint('challenges', index, 'title', $event)"
+                />
+              </label>
+              <label class="field">
+                <span class="field__label">{{ lang.t('product.featureBody') }}</span>
+                <textarea
+                  rows="3"
+                  [value]="text(item.body)"
+                  (input)="setPoint('challenges', index, 'body', $event)"
+                ></textarea>
+              </label>
+            </div>
+          }
+          <button type="button" class="add-row" (click)="addPoint('challenges')">
+            {{ lang.t('product.addChallenge') }}
+          </button>
+          <h2>{{ lang.t('product.solution') }}</h2>
+          <div class="pair">
+            <app-product-upload
+              [name]="draft().solution.imageName"
+              [url]="draft().solution.imageUrl"
+              (picked)="setSingleImage('solution', $event)"
+            />
+            <div class="stack">
+              <label class="field">
+                <span class="field__label">{{ lang.t('product.featureTitle') }}</span>
+                <input
+                  [value]="text(draft().solution.title)"
+                  (input)="setSingle('solution', 'title', $event)"
+                />
+              </label>
+              <label class="field">
+                <span class="field__label">{{ lang.t('product.featureBody') }}</span>
+                <textarea
+                  rows="3"
+                  [value]="text(draft().solution.body)"
+                  (input)="setSingle('solution', 'body', $event)"
+                ></textarea>
+              </label>
+            </div>
+          </div>
+        }
+        @case ('offer') {
+          <h2>{{ lang.t('product.offer') }}</h2>
+          @for (item of draft().offer; track item.id; let index = $index) {
+            <div class="pair">
+              <label class="field">
+                <span class="field__label">{{ lang.t('product.featureTitle') }}</span>
+                <input
+                  [value]="text(item.title)"
+                  (input)="setPoint('offer', index, 'title', $event)"
+                />
+              </label>
+              <label class="field">
+                <span class="field__label">{{ lang.t('product.featureBody') }}</span>
+                <textarea
+                  rows="3"
+                  [value]="text(item.body)"
+                  (input)="setPoint('offer', index, 'body', $event)"
+                ></textarea>
+              </label>
+            </div>
+          }
+          <button type="button" class="add-row" (click)="addPoint('offer')">
+            {{ lang.t('product.addFeature') }}
+          </button>
+          <h2>{{ lang.t('product.results') }}</h2>
+          @for (item of draft().results; track item.id; let index = $index) {
+            <div class="pair">
+              <label class="field">
+                <span class="field__label">{{ lang.t('product.featureTitle') }}</span>
+                <input
+                  [value]="text(item.title)"
+                  (input)="setPoint('results', index, 'title', $event)"
+                />
+              </label>
+              <label class="field">
+                <span class="field__label">{{ lang.t('product.featureBody') }}</span>
+                <textarea
+                  rows="3"
+                  [value]="text(item.body)"
+                  (input)="setPoint('results', index, 'body', $event)"
+                ></textarea>
+              </label>
+            </div>
+          }
+          <button type="button" class="add-row" (click)="addPoint('results')">
+            {{ lang.t('product.addFeature') }}
+          </button>
+        }
+        @case ('tools') {
+          <h2>{{ lang.t('product.tools') }}</h2>
+          @for (tool of draft().tools; track tool.id; let index = $index) {
+            <article class="mini-card">
+              <app-product-upload
+                [name]="tool.imageName"
+                [url]="tool.imageUrl"
+                (picked)="setMediaImage('tools', index, $event)"
+              />
+              <label class="field">
+                <span class="field__label">{{ lang.t('product.featureTitle') }}</span>
+                <input
+                  [value]="text(tool.title)"
+                  (input)="setMediaText('tools', index, 'title', $event)"
+                />
+              </label>
+              <label class="field">
+                <span class="field__label">{{ lang.t('product.featureBody') }}</span>
+                <textarea
+                  rows="3"
+                  [value]="text(tool.body)"
+                  (input)="setMediaText('tools', index, 'body', $event)"
+                ></textarea>
+              </label>
+            </article>
+          }
+          <button type="button" class="add-row" (click)="addMedia('tools')">
+            {{ lang.t('product.addFeature') }}
+          </button>
+        }
+        @case ('units') {
+          <h2>{{ lang.t('product.units') }}</h2>
+          @for (unit of draft().units; track unit.id; let index = $index) {
+            <article class="mini-card">
+              <app-product-upload
+                [name]="unit.imageName"
+                [url]="unit.imageUrl"
+                (picked)="setUnitImage(index, $event)"
+              />
+              <label class="field">
+                <span class="field__label">{{ lang.t('product.featureTitle') }}</span>
+                <input [value]="text(unit.title)" (input)="setUnit(index, 'title', $event)" />
+              </label>
+              <label class="field">
+                <span class="field__label">{{ lang.t('product.featureBody') }}</span>
+                <textarea
+                  rows="3"
+                  [value]="text(unit.body)"
+                  (input)="setUnit(index, 'body', $event)"
+                ></textarea>
+              </label>
+              @for (point of unit.points; track point.id; let pointIndex = $index) {
+                <div class="pair">
+                  <label class="field">
+                    <span class="field__label">{{ lang.t('product.featureTitle') }}</span>
+                    <input
+                      [value]="text(point.title)"
+                      (input)="setUnitPoint(index, pointIndex, 'title', $event)"
+                    />
+                  </label>
+                  <label class="field">
+                    <span class="field__label">{{ lang.t('product.featureBody') }}</span>
+                    <textarea
+                      rows="2"
+                      [value]="text(point.body)"
+                      (input)="setUnitPoint(index, pointIndex, 'body', $event)"
+                    ></textarea>
+                  </label>
+                </div>
+              }
+              <button type="button" class="add-row" (click)="addUnitPoint(index)">
+                {{ lang.t('product.addFeature') }}
+              </button>
+            </article>
+          }
+          <button type="button" class="add-row" (click)="addUnit()">
+            {{ lang.t('product.addUnit') }}
+          </button>
+        }
+        @case ('identity') {
+          <h2>{{ lang.t('product.steps') }}</h2>
+          @for (item of draft().steps; track item.id; let index = $index) {
+            <div class="pair">
+              <label class="field">
+                <span class="field__label">{{ lang.t('product.featureTitle') }}</span>
+                <input
+                  [value]="text(item.title)"
+                  (input)="setPoint('steps', index, 'title', $event)"
+                />
+              </label>
+              <label class="field">
+                <span class="field__label">{{ lang.t('product.featureBody') }}</span>
+                <textarea
+                  rows="3"
+                  [value]="text(item.body)"
+                  (input)="setPoint('steps', index, 'body', $event)"
+                ></textarea>
+              </label>
+            </div>
+          }
+          <button type="button" class="add-row" (click)="addPoint('steps')">
+            {{ lang.t('product.addStep') }}
+          </button>
+          <h2>{{ lang.t('product.identity') }}</h2>
+          <div class="pair">
+            <app-product-upload
+              [name]="draft().identity.imageName"
+              [url]="draft().identity.imageUrl"
+              (picked)="setSingleImage('identity', $event)"
+            />
+            <div class="stack">
+              <label class="field">
+                <span class="field__label">{{ lang.t('product.featureTitle') }}</span>
+                <input
+                  [value]="text(draft().identity.title)"
+                  (input)="setSingle('identity', 'title', $event)"
+                />
+              </label>
+              <label class="field">
+                <span class="field__label">{{ lang.t('product.featureBody') }}</span>
+                <textarea
+                  rows="3"
+                  [value]="text(draft().identity.body)"
+                  (input)="setSingle('identity', 'body', $event)"
+                ></textarea>
+              </label>
+            </div>
+          </div>
+        }
+        @case ('faq') {
+          <h2>{{ lang.t('product.faq') }}</h2>
+          @for (item of draft().faqs; track item.id; let index = $index) {
+            <div class="pair">
+              <label class="field">
+                <span class="field__label">{{ lang.t('product.question') }}</span>
+                <input [value]="text(item.question)" (input)="setFaq(index, 'question', $event)" />
+              </label>
+              <label class="field">
+                <span class="field__label">{{ lang.t('product.answer') }}</span>
+                <textarea
+                  rows="3"
+                  [value]="text(item.answer)"
+                  (input)="setFaq(index, 'answer', $event)"
+                ></textarea>
+              </label>
+            </div>
+          }
+          <button type="button" class="add-row" (click)="addFaq()">
+            {{ lang.t('product.addFaq') }}
+          </button>
+          <h2>{{ lang.t('product.highlights') }}</h2>
+          @for (item of draft().highlights; track item.id; let index = $index) {
+            <div class="pair">
+              <label class="field">
+                <span class="field__label">{{ lang.t('product.featureTitle') }}</span>
+                <input
+                  [value]="text(item.title)"
+                  (input)="setPoint('highlights', index, 'title', $event)"
+                />
+              </label>
+              <label class="field">
+                <span class="field__label">{{ lang.t('product.featureBody') }}</span>
+                <textarea
+                  rows="3"
+                  [value]="text(item.body)"
+                  (input)="setPoint('highlights', index, 'body', $event)"
+                ></textarea>
+              </label>
+            </div>
+          }
+          <button type="button" class="add-row" (click)="addPoint('highlights')">
+            {{ lang.t('product.addFeature') }}
+          </button>
+        }
+        @case ('seo') {
+          <h2>SEO</h2>
+          <label class="field">
+            <span class="field__label">{{ lang.t('product.seoSlug') }}</span>
+            <input
+              [value]="text(draft().seo.slug)"
+              [placeholder]="lang.t('product.seoSlugPh')"
+              (input)="setSeo('slug', $event)"
+            />
+          </label>
+          <label class="field">
+            <span class="field__label">{{ lang.t('product.seoTitle') }}</span>
+            <input
+              [value]="text(draft().seo.title)"
+              [placeholder]="lang.t('product.seoTitlePh')"
+              (input)="setSeo('title', $event)"
+            />
+          </label>
+          <label class="field">
+            <span class="field__label">{{ lang.t('product.seoKeywords') }}</span>
+            <input
+              [value]="text(draft().seo.keywords)"
+              [placeholder]="lang.t('product.seoKeywordsPh')"
+              (input)="setSeo('keywords', $event)"
+            />
+          </label>
+          <label class="field">
+            <span class="field__label">{{ lang.t('product.seoDescription') }}</span>
+            <textarea
+              rows="4"
+              maxlength="160"
+              [value]="text(draft().seo.description)"
+              [placeholder]="lang.t('product.seoDescriptionPh')"
+              (input)="setSeo('description', $event)"
+            ></textarea>
+            <small class="counter">{{ text(draft().seo.description).length }}/160</small>
+          </label>
+        }
+      }
+    </div>
+
+    @if (mode() === 'create') {
+      <footer class="editor-footer">
+        <button type="button" class="text-button" (click)="previous()">
+          {{ lang.t('product.previous') }}
+        </button>
+        @if (lastStep()) {
+          <p-button [label]="lang.t('product.finish')" (onClick)="finish()" />
+        } @else {
+          <p-button [label]="lang.t('product.next')" (onClick)="next()" />
+        }
+      </footer>
+    }
+  }
+</section>

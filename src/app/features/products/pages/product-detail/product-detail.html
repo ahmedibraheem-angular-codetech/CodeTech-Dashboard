@@ -1,0 +1,160 @@
+<section class="page">
+  @if (status() === 'loading') {
+    <app-state-view mode="loading" [message]="lang.t('common.loading')" />
+  } @else if (status() === 'missing' || !item()) {
+    <app-state-view mode="empty" [message]="lang.t('product.notFound')" />
+  } @else if (item(); as product) {
+    <app-page-header [title]="text(product.name)">
+      <a class="primary-link" [routerLink]="['/products', product.id, 'edit']">
+        {{ lang.t('product.edit') }}
+      </a>
+    </app-page-header>
+    <app-locale-switch [value]="locale()" (picked)="locale.set($event)" />
+
+    <article class="detail-hero">
+      @if (product.coverUrl) {
+        <img [src]="product.coverUrl" alt="" />
+      }
+      <div>
+        <h2>{{ text(product.name) }}</h2>
+        <p>{{ text(product.summary) }}</p>
+        <span class="chips">
+          @for (feature of product.features; track feature.id) {
+            @if (text(feature.title)) {
+              <em>{{ text(feature.title) }}</em>
+            }
+          }
+        </span>
+      </div>
+    </article>
+
+    <article class="detail-card">
+      <h2>{{ lang.t('product.features') }}</h2>
+      @for (feature of product.features; track feature.id) {
+        <p>
+          <strong>{{ text(feature.title) }}</strong> {{ text(feature.body) }}
+        </p>
+      }
+    </article>
+
+    <article class="detail-card">
+      <h2>{{ lang.t('product.stats') }}</h2>
+      <div class="media-grid">
+        @for (stat of product.stats; track stat.id) {
+          <div class="mini-card">
+            @if (stat.imageUrl) {
+              <img [src]="stat.imageUrl" alt="" />
+            }
+            <strong>{{ stat.value }} {{ text(stat.label) }}</strong>
+            <p>{{ text(stat.body) }}</p>
+          </div>
+        }
+      </div>
+    </article>
+
+    <article class="detail-card">
+      <h2>{{ lang.t('product.sectors') }}</h2>
+      <div class="media-grid">
+        @for (sector of product.sectors; track sector.id) {
+          <div class="mini-card">
+            @if (sector.imageUrl) {
+              <img [src]="sector.imageUrl" alt="" />
+            }
+            <strong>{{ text(sector.title) }}</strong>
+          </div>
+        }
+      </div>
+      <h2>{{ lang.t('product.challenges') }}</h2>
+      @for (challenge of product.challenges; track challenge.id) {
+        <p>
+          <strong>{{ text(challenge.title) }}</strong> {{ text(challenge.body) }}
+        </p>
+      }
+      <h2>{{ lang.t('product.solution') }}</h2>
+      <p>
+        <strong>{{ text(product.solution.title) }}</strong> {{ text(product.solution.body) }}
+      </p>
+    </article>
+
+    <article class="detail-card">
+      <h2>{{ lang.t('product.offer') }}</h2>
+      @for (entry of product.offer; track entry.id) {
+        <p>
+          <strong>{{ text(entry.title) }}</strong> {{ text(entry.body) }}
+        </p>
+      }
+      <h2>{{ lang.t('product.results') }}</h2>
+      @for (entry of product.results; track entry.id) {
+        <p>
+          <strong>{{ text(entry.title) }}</strong> {{ text(entry.body) }}
+        </p>
+      }
+    </article>
+
+    <article class="detail-card">
+      <h2>{{ lang.t('product.tools') }}</h2>
+      @for (tool of product.tools; track tool.id) {
+        <p>
+          <strong>{{ text(tool.title) }}</strong> {{ text(tool.body) }}
+        </p>
+      }
+    </article>
+
+    <article class="detail-card">
+      <h2>{{ lang.t('product.units') }}</h2>
+      @for (unit of product.units; track unit.id) {
+        <h3>{{ text(unit.title) }}</h3>
+        <p>{{ text(unit.body) }}</p>
+        @for (point of unit.points; track point.id) {
+          <p>
+            <strong>{{ text(point.title) }}</strong> {{ text(point.body) }}
+          </p>
+        }
+      }
+    </article>
+
+    <article class="detail-card">
+      <h2>{{ lang.t('product.steps') }}</h2>
+      @for (step of product.steps; track step.id) {
+        <p>
+          <strong>{{ text(step.title) }}</strong> {{ text(step.body) }}
+        </p>
+      }
+      <h2>{{ lang.t('product.identity') }}</h2>
+      <p>
+        <strong>{{ text(product.identity.title) }}</strong> {{ text(product.identity.body) }}
+      </p>
+    </article>
+
+    <article class="detail-card">
+      <h2>{{ lang.t('product.faq') }}</h2>
+      @for (faq of product.faqs; track faq.id) {
+        <p>
+          <strong>{{ text(faq.question) }}</strong> {{ text(faq.answer) }}
+        </p>
+      }
+      <h2>{{ lang.t('product.highlights') }}</h2>
+      @for (item of product.highlights; track item.id) {
+        <p>
+          <strong>{{ text(item.title) }}</strong> {{ text(item.body) }}
+        </p>
+      }
+    </article>
+
+    <article class="detail-card">
+      <h2>SEO</h2>
+      <p>
+        <strong>{{ lang.t('product.seoSlug') }}</strong> {{ text(product.seo.slug) }}
+      </p>
+      <p>
+        <strong>{{ lang.t('product.seoTitle') }}</strong> {{ text(product.seo.title) }}
+      </p>
+      <p>
+        <strong>{{ lang.t('product.seoKeywords') }}</strong> {{ text(product.seo.keywords) }}
+      </p>
+      <p>
+        <strong>{{ lang.t('product.seoDescription') }}</strong> {{ text(product.seo.description) }}
+      </p>
+    </article>
+  }
+</section>
