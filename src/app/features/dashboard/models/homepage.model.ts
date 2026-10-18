@@ -7,21 +7,18 @@ export interface Partner {
   image: BlockImage | null;
 }
 
-/** One language of a story block. The number of points is free. */
 export interface ContentBlockText {
   title: string;
   body: string;
   points: string[];
 }
 
-/** Metadata of the uploaded section image. `uploadedAt` is an ISO date (`yyyy-mm-dd`). */
 export interface BlockImage {
   name: string;
   size: number;
   uploadedAt: string;
 }
 
-/** A story block is written in both languages and shares one image. */
 export interface ContentBlock {
   texts: Record<AppLanguage, ContentBlockText>;
   image: BlockImage | null;

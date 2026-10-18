@@ -12,9 +12,7 @@ import { HomepageService } from '../../services/homepage.service';
 
 type Status = 'loading' | 'ready' | 'error';
 
-/**
- * Homepage management: partners, intro video, and the two story blocks.
- */
+
 @Component({
   selector: 'app-home',
   imports: [PageHeader, StateView, PartnersSection, VideoSection, ContentBlockCard],

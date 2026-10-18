@@ -1,3 +1,4 @@
+import { NgTemplateOutlet } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -40,7 +41,16 @@ interface TimelineStep {
 
 @Component({
   selector: 'app-inquiry-detail',
-  imports: [ReactiveFormsModule, Button, Textarea, ConfirmDialog, FieldError, Modal, StateView],
+  imports: [
+    NgTemplateOutlet,
+    ReactiveFormsModule,
+    Button,
+    Textarea,
+    ConfirmDialog,
+    FieldError,
+    Modal,
+    StateView,
+  ],
   templateUrl: './inquiry-detail.html',
   styleUrl: './inquiry-detail.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -71,6 +81,16 @@ export class InquiryDetailPage {
   });
 
   readonly steps = computed(() => this.buildSteps(this.item()));
+
+  readonly composerCopy = computed(() => {
+    const reply = this.composer() === 'reply';
+    return {
+      title: this.lang.t(reply ? 'inquiry.addReplyTitle' : 'inquiry.addNoteTitle'),
+      field: this.lang.t(reply ? 'inquiry.replyField' : 'inquiry.noteField'),
+      save: this.lang.t(reply ? 'inquiry.send' : 'inquiry.add'),
+      error: this.lang.t(reply ? 'inquiry.replyRequired' : 'inquiry.noteRequired'),
+    };
+  });
 
   constructor() {
     effect(() => {
@@ -112,7 +132,7 @@ export class InquiryDetailPage {
     });
   }
 
-  protected async closeRequest(): Promise<void> {
+  protected closeRequest(): void {
     const current = this.item();
     if (!current || this.saving()) {
       return;
@@ -174,26 +194,6 @@ export class InquiryDetailPage {
         },
         error: () => this.status.set('error'),
       });
-  }
-
-  protected composerTitle(): string {
-    return this.lang.t(
-      this.composer() === 'reply' ? 'inquiry.addReplyTitle' : 'inquiry.addNoteTitle',
-    );
-  }
-
-  protected composerField(): string {
-    return this.lang.t(this.composer() === 'reply' ? 'inquiry.replyField' : 'inquiry.noteField');
-  }
-
-  protected composerSave(): string {
-    return this.lang.t(this.composer() === 'reply' ? 'inquiry.send' : 'inquiry.add');
-  }
-
-  protected composerError(): string {
-    return this.lang.t(
-      this.composer() === 'reply' ? 'inquiry.replyRequired' : 'inquiry.noteRequired',
-    );
   }
 
   private statusLabel(status: InquiryStatus): string {

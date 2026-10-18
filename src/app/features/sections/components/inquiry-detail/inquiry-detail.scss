@@ -157,7 +157,6 @@
   gap: 12px;
 }
 
-
 .inquiry-card__head h2 {
   margin: 0;
 }
@@ -277,8 +276,6 @@
   border: 2px solid #d7dee8;
   border-radius: 50%;
   background: #fff;
-  color: #fff;
-  font-size: 11px;
 }
 
 .inquiry-step--done .inquiry-step__mark {
@@ -288,15 +285,28 @@
 
 .inquiry-step--current .inquiry-step__mark {
   border-color: #2f6fed;
-  color: #2f6fed;
 }
 
-.inquiry-step--dot .inquiry-step__mark::before {
-  content: '';
+.inquiry-step__check {
+  display: block;
   width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: #2f6fed;
+  height: 6px;
+  fill: var(--Neutral-White, #fff);
+}
+
+.inquiry-step__check path {
+  fill: inherit;
+}
+
+.inquiry-step__dot {
+  display: block;
+  width: 4px;
+  height: 4px;
+  fill: #1c81d3;
+}
+
+.inquiry-step__dot circle {
+  fill: inherit;
 }
 
 .inquiry-step__body {

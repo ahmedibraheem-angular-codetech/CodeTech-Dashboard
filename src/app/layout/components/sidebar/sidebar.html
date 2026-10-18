@@ -7,7 +7,6 @@
           <button
             type="button"
             class="sidebar__link"
-            [class.is-active]="childActive(item)"
             (click)="toggle(item.id)"
             [attr.aria-expanded]="isOpen(item.id)"
           >

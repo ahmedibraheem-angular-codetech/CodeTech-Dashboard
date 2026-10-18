@@ -29,6 +29,8 @@ describe('InquiryDetailPage', () => {
     expect(root.textContent).toContain('إرسال رد');
     expect(root.textContent).toContain('إضافة ملحوظة');
     expect(root.querySelector('.inquiry-card--note')).toBeNull();
+    expect(root.querySelectorAll('.inquiry-step__check')).toHaveLength(1);
+    expect(root.querySelectorAll('.inquiry-step__dot')).toHaveLength(1);
   });
 
   it('shows the note and reply cards on a follow-up inquiry', async () => {
@@ -39,5 +41,7 @@ describe('InquiryDetailPage', () => {
     expect(root.querySelector('.inquiry-card--reply')).not.toBeNull();
     expect(root.textContent).toContain('إغلاق الطلب');
     expect(root.textContent).toContain('زياد محمد عبدالسميع');
+    expect(root.querySelectorAll('.inquiry-step__check')).toHaveLength(3);
+    expect(root.querySelectorAll('.inquiry-step__dot')).toHaveLength(1);
   });
 });
