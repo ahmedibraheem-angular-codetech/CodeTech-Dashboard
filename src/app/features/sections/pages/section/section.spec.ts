@@ -46,6 +46,7 @@ describe('SectionPage', () => {
 
     expect(root.querySelector('app-inquiries-board')).not.toBeNull();
     expect(root.querySelector('app-about-page')).toBeNull();
+    expect(root.querySelector('h1')?.textContent).toContain('تواصل مع صاحب العمل');
   });
 
   it('renders the same requests board on start projects, with that page title', async () => {
@@ -53,7 +54,7 @@ describe('SectionPage', () => {
     const root: HTMLElement = fixture.nativeElement;
 
     expect(root.querySelector('app-inquiries-board')).not.toBeNull();
-    expect(root.querySelector('h1')?.textContent).toContain('بدأ المشاريع');
+    expect(root.querySelector('h1')?.textContent).toContain('تواصل مع صاحب العمل');
     expect(root.textContent).toContain('إدارة الاستفسارات المستقبلة');
   });
 

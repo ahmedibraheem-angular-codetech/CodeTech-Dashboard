@@ -60,7 +60,7 @@ export class InquiriesBoard {
     if (custom) {
       return custom;
     }
-    return this.lang.language() === 'ar' ? 'الاستفسارات' : 'Inquiries';
+    return this.lang.t('nav.inquiries');
   });
 
   readonly query = signal('');
