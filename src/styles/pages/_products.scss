@@ -975,10 +975,69 @@ app-product-editor .locale-switch__option.is-active::after {
   outline: 2px solid color-mix(in srgb, var(--app-primary) 28%, transparent);
 }
 
-.editor-section--faq > .editor-section__head {
+.editor-section--faq > .editor-section__head,
+.editor-section--seo > .editor-section__head {
   justify-content: flex-start;
   gap: 8px;
 }
+
+.editor-section--faq > .editor-section__head .icon-badge,
+.editor-section--seo > .editor-section__head .icon-badge {
+  display: grid;
+  flex: none;
+  order: -1;
+  place-items: center;
+}
+
+.editor-section--seo > .editor-section__body {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 16px;
+  border: 1px solid #edeeee;
+  border-radius: 16px;
+  background: #f9fafb;
+}
+
+.seo-field {
+  position: relative;
+  display: block;
+}
+
+.seo-field__icon,
+.seo-field__mark {
+  position: absolute;
+  z-index: 1;
+  inset-inline-end: 14px;
+  top: 50%;
+  color: #94a3b8;
+  font-size: 14px;
+  pointer-events: none;
+  transform: translateY(-50%);
+}
+
+.seo-field__mark {
+  font-weight: 700;
+}
+
+.seo-field .p-inputtext {
+  padding-inline-end: 42px;
+}
+
+.seo-description {
+  position: relative;
+}
+
+.seo-description .p-textarea {
+  padding-bottom: 28px;
+}
+
+.seo-description .counter {
+  position: absolute;
+  inset-inline-end: 14px;
+  bottom: 10px;
+}
+
 
 .editor-section--faq > .editor-section__body {
   gap: 14px;

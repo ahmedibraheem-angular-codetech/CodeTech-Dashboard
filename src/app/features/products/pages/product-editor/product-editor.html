@@ -637,54 +637,65 @@
       </section>
     }
     @case ('seo') {
-      <section class="editor-section">
+      <section class="editor-section editor-section--seo">
         <header class="editor-section__head">
           <h2>SEO</h2>
           <span class="icon-badge" aria-hidden="true"><i class="pi pi-search"></i></span>
         </header>
-        <label class="field">
-          <span class="field__label">{{ copy('product.seoSlug') }}</span>
-          <input
-            pInputText
-            [fluid]="true"
-            [value]="text(draft().seo.slug)"
-            [placeholder]="copy('product.seoSlugPh')"
-            (input)="setSeo('slug', $event)"
-          />
-        </label>
-        <label class="field">
-          <span class="field__label">{{ copy('product.seoTitle') }}</span>
-          <input
-            pInputText
-            [fluid]="true"
-            [value]="text(draft().seo.title)"
-            [placeholder]="copy('product.seoTitlePh')"
-            (input)="setSeo('title', $event)"
-          />
-        </label>
-        <label class="field">
-          <span class="field__label">{{ copy('product.seoKeywords') }}</span>
-          <input
-            pInputText
-            [fluid]="true"
-            [value]="text(draft().seo.keywords)"
-            [placeholder]="copy('product.seoKeywordsPh')"
-            (input)="setSeo('keywords', $event)"
-          />
-        </label>
-        <label class="field">
-          <span class="field__label">{{ copy('product.seoDescription') }}</span>
-          <textarea
-            pTextarea
-            [fluid]="true"
-            rows="4"
-            maxlength="160"
-            [value]="text(draft().seo.description)"
-            [placeholder]="copy('product.seoDescriptionPh')"
-            (input)="setSeo('description', $event)"
-          ></textarea>
-          <small class="counter">{{ text(draft().seo.description).length }}/160</small>
-        </label>
+        <div class="editor-section__body">
+          <label class="field">
+            <span class="field__label">{{ copy('product.seoSlug') }}</span>
+            <span class="seo-field">
+              <i class="seo-field__icon pi pi-link" aria-hidden="true"></i>
+              <input
+                pInputText
+                [fluid]="true"
+                [value]="text(draft().seo.slug)"
+                [placeholder]="copy('product.seoSlugPh')"
+                (input)="setSeo('slug', $event)"
+              />
+            </span>
+          </label>
+          <label class="field">
+            <span class="field__label">{{ copy('product.seoTitle') }}</span>
+            <span class="seo-field">
+              <span class="seo-field__mark" aria-hidden="true">T</span>
+              <input
+                pInputText
+                [fluid]="true"
+                [value]="text(draft().seo.title)"
+                [placeholder]="copy('product.seoTitlePh')"
+                (input)="setSeo('title', $event)"
+              />
+            </span>
+          </label>
+          <label class="field">
+            <span class="field__label">{{ copy('product.seoKeywords') }}</span>
+            <span class="seo-field">
+              <i class="seo-field__icon pi pi-tag" aria-hidden="true"></i>
+              <input
+                pInputText
+                [fluid]="true"
+                [value]="text(draft().seo.keywords)"
+                [placeholder]="copy('product.seoKeywordsPh')"
+                (input)="setSeo('keywords', $event)"
+              />
+            </span>
+          </label>
+          <label class="field seo-description">
+            <span class="field__label">{{ copy('product.seoDescription') }}</span>
+            <textarea
+              pTextarea
+              [fluid]="true"
+              rows="4"
+              maxlength="160"
+              [value]="text(draft().seo.description)"
+              [placeholder]="copy('product.seoDescriptionPh')"
+              (input)="setSeo('description', $event)"
+            ></textarea>
+            <small class="counter">{{ text(draft().seo.description).length }}/160</small>
+          </label>
+        </div>
       </section>
     }
   }
