@@ -159,19 +159,15 @@ export class ProductEditor {
   }
 
   protected unitName(index: number): string {
-    const order =
-      this.locale() === 'ar'
-        ? ['الأول', 'الثاني', 'الثالث', 'الرابع', 'الخامس', 'السادس']
-        : ['1', '2', '3', '4', '5', '6'];
-    return `${this.copy('product.unitItem')} ${order[index] ?? index + 1}`;
+    return `${this.copy('product.unitItem')} ${this.ordinal('product.unitOrder', index)}`;
   }
 
   protected stepName(index: number): string {
-    const order =
-      this.locale() === 'ar'
-        ? ['الأولى', 'الثانية', 'الثالثة', 'الرابعة', 'الخامسة', 'السادسة']
-        : ['1', '2', '3', '4', '5', '6'];
-    return `${this.copy('product.stepItem')} ${order[index] ?? index + 1}`;
+    return `${this.copy('product.stepItem')} ${this.ordinal('product.stepOrder', index)}`;
+  }
+
+  private ordinal(prefix: 'product.unitOrder' | 'product.stepOrder', index: number): string {
+    return this.lang.lookup(`${prefix}.${index + 1}`, this.locale()) ?? `${index + 1}`;
   }
 
   protected retry(): void {
