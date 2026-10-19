@@ -8,6 +8,7 @@ import {
   signal,
   untracked,
   viewChild,
+  type WritableSignal,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router, RouterLink } from '@angular/router';
@@ -19,12 +20,15 @@ import { ConfirmDialog } from '../../../../shared/components/confirm-dialog/conf
 import { PageHeader } from '../../../../shared/components/page-header/page-header';
 import { PageTabs, type PageTab } from '../../../../shared/components/page-tabs/page-tabs';
 import { StateView } from '../../../../shared/components/state-view/state-view';
+import { DetailPoints } from '../../components/detail-points/detail-points';
 import { readLocale, type LocaleText, type Product } from '../../models/product.model';
 import { ProductsService } from '../../services/products.service';
 
+type DetailList = 'stats' | 'sectors' | 'integrations' | 'units' | 'identity';
+
 @Component({
   selector: 'app-product-detail',
-  imports: [RouterLink, PageHeader, PageTabs, StateView, ConfirmDialog],
+  imports: [RouterLink, PageHeader, PageTabs, StateView, ConfirmDialog, DetailPoints],
   templateUrl: './product-detail.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -77,74 +81,37 @@ export class ProductDetailPage {
     await navigator.clipboard.writeText(code);
   }
 
-  protected removeIntegration(index: number): void {
+  protected removeItem(key: DetailList, index: number): void {
     const product = this.item();
-    if (!product || product.integrations.length < 2) {
+    const list = product?.[key];
+    if (!product || !list || list.length < 2) {
       return;
     }
-    const integrations = product.integrations.filter((_, itemIndex) => itemIndex !== index);
-    const next = { ...product, integrations };
+    const nextList = list.filter((_, itemIndex) => itemIndex !== index);
+    const next = { ...product, [key]: nextList };
     this.item.set(next);
-    this.api.save(next).pipe(takeUntilDestroyed(this.destroyRef)).subscribe();
-  }
-
-  protected removeSector(index: number): void {
-    const product = this.item();
-    if (!product || product.sectors.length < 2) {
-      return;
-    }
-    const sectors = product.sectors.filter((_, itemIndex) => itemIndex !== index);
-    const next = { ...product, sectors };
-    this.item.set(next);
-    this.api.save(next).pipe(takeUntilDestroyed(this.destroyRef)).subscribe();
-  }
-
-  protected removeIdentity(index: number): void {
-    const product = this.item();
-    if (!product || product.identity.length < 2) {
-      return;
-    }
-    const identity = product.identity.filter((_, itemIndex) => itemIndex !== index);
-    const next = { ...product, identity };
-    this.item.set(next);
-    if (this.identityIndex() >= identity.length) {
-      this.identityIndex.set(Math.max(0, identity.length - 1));
-    } else if (index < this.identityIndex()) {
-      this.identityIndex.update((current) => current - 1);
+    const selected = this.selection(key);
+    if (selected) {
+      if (selected() >= nextList.length) {
+        selected.set(Math.max(0, nextList.length - 1));
+      } else if (index < selected()) {
+        selected.update((current) => current - 1);
+      }
     }
     this.api.save(next).pipe(takeUntilDestroyed(this.destroyRef)).subscribe();
   }
 
-  protected removeUnit(index: number): void {
-    const product = this.item();
-    if (!product || product.units.length < 2) {
-      return;
+  private selection(key: DetailList): WritableSignal<number> | undefined {
+    if (key === 'stats') {
+      return this.statIndex;
     }
-    const units = product.units.filter((_, itemIndex) => itemIndex !== index);
-    const next = { ...product, units };
-    this.item.set(next);
-    if (this.unitIndex() >= units.length) {
-      this.unitIndex.set(Math.max(0, units.length - 1));
-    } else if (index < this.unitIndex()) {
-      this.unitIndex.update((current) => current - 1);
+    if (key === 'units') {
+      return this.unitIndex;
     }
-    this.api.save(next).pipe(takeUntilDestroyed(this.destroyRef)).subscribe();
-  }
-
-  protected removeStat(index: number): void {
-    const product = this.item();
-    if (!product || product.stats.length < 2) {
-      return;
+    if (key === 'identity') {
+      return this.identityIndex;
     }
-    const stats = product.stats.filter((_, itemIndex) => itemIndex !== index);
-    const next = { ...product, stats };
-    this.item.set(next);
-    if (this.statIndex() >= stats.length) {
-      this.statIndex.set(Math.max(0, stats.length - 1));
-    } else if (index < this.statIndex()) {
-      this.statIndex.update((current) => current - 1);
-    }
-    this.api.save(next).pipe(takeUntilDestroyed(this.destroyRef)).subscribe();
+    return undefined;
   }
 
   protected async removeProduct(): Promise<void> {

@@ -1,0 +1,68 @@
+<section class="editor-section">
+  <header class="editor-section__head">
+    <h2>{{ editor.copy('product.steps') }}</h2>
+    <span class="icon-badge" aria-hidden="true"><i class="pi pi-list"></i></span>
+  </header>
+  <div class="editor-section__body">
+    @for (item of editor.draft().steps; track item.id; let index = $index) {
+      <app-feature-card
+        [label]="editor.stepName(index)"
+        [title]="editor.text(item.title)"
+        [titleLabel]="editor.copy('product.stepTitle')"
+        [titlePlaceholder]="editor.copy('product.stepTitlePh')"
+        [body]="editor.text(item.body)"
+        [bodyLabel]="editor.copy('product.stepBody')"
+        [bodyPlaceholder]="editor.copy('product.stepBodyPh')"
+        [iconLabel]="editor.copy('product.uploadLabel')"
+        [imageName]="item.imageName"
+        [imageUrl]="item.imageUrl"
+        [locale]="editor.locale()"
+        [actions]="false"
+        [removeDisabled]="editor.draft().steps.length === 1"
+        [removeLabel]="editor.copy('product.deleteTitle')"
+        (titleChange)="editor.setPoint('steps', index, 'title', $event)"
+        (bodyChange)="editor.setPoint('steps', index, 'body', $event)"
+        (imageChange)="editor.setPointImage('steps', index, $event)"
+        (removed)="editor.removePoint('steps', index)"
+      />
+    }
+    <button type="button" class="add-row" (click)="editor.addPoint('steps')">
+      <span class="add-row__mark" aria-hidden="true"><i class="pi pi-plus"></i></span>
+      {{ editor.copy('product.addStep') }}
+    </button>
+  </div>
+</section>
+<section class="editor-section">
+  <header class="editor-section__head">
+    <h2>{{ editor.copy('product.identityTitle') }}</h2>
+    <span class="icon-badge" aria-hidden="true"><i class="pi pi-desktop"></i></span>
+  </header>
+  <div class="editor-section__body">
+    @for (item of editor.draft().identity; track item.id; let index = $index) {
+      <app-feature-card
+        [label]="editor.unitName(index)"
+        [title]="editor.text(item.title)"
+        [titleLabel]="editor.copy('product.unitTitle')"
+        [titlePlaceholder]="editor.copy('product.unitTitlePh')"
+        [body]="editor.text(item.body)"
+        [bodyLabel]="editor.copy('product.identityBody')"
+        [bodyPlaceholder]="editor.copy('product.identityBodyPh')"
+        [iconLabel]="editor.copy('product.uploadLabel')"
+        [imageName]="item.imageName"
+        [imageUrl]="item.imageUrl"
+        [locale]="editor.locale()"
+        [actions]="false"
+        [removeDisabled]="editor.draft().identity.length === 1"
+        [removeLabel]="editor.copy('product.deleteTitle')"
+        (titleChange)="editor.setMediaText('identity', index, 'title', $event)"
+        (bodyChange)="editor.setMediaText('identity', index, 'body', $event)"
+        (imageChange)="editor.setMediaImage('identity', index, $event)"
+        (removed)="editor.removeMedia('identity', index)"
+      />
+    }
+    <button type="button" class="add-row" (click)="editor.addMedia('identity')">
+      <span class="add-row__mark" aria-hidden="true"><i class="pi pi-plus"></i></span>
+      {{ editor.copy('product.addUnit') }}
+    </button>
+  </div>
+</section>

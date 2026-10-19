@@ -1,0 +1,17 @@
+<ul class="challenge-grid">
+  @for (item of items(); track item.id) {
+    <li>
+      <span>
+        <strong>{{ text(item.title) }}</strong>
+        <small>{{ text(item.body) }}</small>
+      </span>
+      <span class="detail-features__icon">
+        @if (iconClass(item.imageUrl); as icon) {
+          <i [class]="icon" aria-hidden="true"></i>
+        } @else {
+          <i [class]="'pi ' + fallback()" aria-hidden="true"></i>
+        }
+      </span>
+    </li>
+  }
+</ul>

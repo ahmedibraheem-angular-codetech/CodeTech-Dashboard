@@ -12,10 +12,6 @@ import {
 import { takeUntilDestroyed, toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MessageService } from 'primeng/api';
-import { IconField } from 'primeng/iconfield';
-import { InputIcon } from 'primeng/inputicon';
-import { InputText } from 'primeng/inputtext';
-import { Textarea } from 'primeng/textarea';
 import { catchError, finalize, map, of, switchMap } from 'rxjs';
 
 import type { AppLanguage } from '../../../../core/i18n/translations';
@@ -24,9 +20,16 @@ import {
   EditorShell,
   type EditorShellLabels,
 } from '../../../../shared/components/editor-shell/editor-shell';
-import { FeatureCard } from '../../../../shared/components/feature-card/feature-card';
-import { FieldError } from '../../../../shared/components/field-error/field-error';
-import { ProductUpload } from '../../components/product-upload/product-upload';
+import {
+  FaqStep,
+  IdentityStep,
+  InfoStep,
+  OfferStep,
+  SeoStep,
+  SectorsStep,
+  ToolsStep,
+  UnitsStep,
+} from './steps/product-steps';
 import {
   PRODUCT_STEPS,
   blankProduct,
@@ -48,13 +51,14 @@ type MediaList = 'sectors' | 'tools' | 'integrations' | 'identity';
   selector: 'app-product-editor',
   imports: [
     EditorShell,
-    FieldError,
-    ProductUpload,
-    FeatureCard,
-    IconField,
-    InputIcon,
-    InputText,
-    Textarea,
+    InfoStep,
+    SectorsStep,
+    OfferStep,
+    ToolsStep,
+    UnitsStep,
+    IdentityStep,
+    FaqStep,
+    SeoStep,
   ],
   templateUrl: './product-editor.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -73,7 +77,7 @@ export class ProductEditor {
   readonly locale = signal<AppLanguage>(this.lang.language());
   readonly step = signal(0);
   /** Highest step index the user has left with التالي. */
-  protected readonly passed = signal(-1);
+  readonly passed = signal(-1);
   readonly draft = signal<Product>(blankProduct());
   readonly status = signal<'loading' | 'ready' | 'missing' | 'error'>(
     this.route.snapshot.data['mode'] === 'edit' ? 'loading' : 'ready',
@@ -161,23 +165,23 @@ export class ProductEditor {
       });
   }
 
-  protected text(value: LocaleText): string {
+  text(value: LocaleText): string {
     return readLocale(value, this.locale());
   }
 
-  protected copy(key: string): string {
+  copy(key: string): string {
     return this.lang.lookup(key, this.locale()) ?? key;
   }
 
-  protected useLocale(language: AppLanguage): void {
+  useLocale(language: AppLanguage): void {
     this.locale.set(language);
   }
 
-  protected unitName(index: number): string {
+  unitName(index: number): string {
     return `${this.copy('product.unitItem')} ${this.ordinal('product.unitOrder', index)}`;
   }
 
-  protected stepName(index: number): string {
+  stepName(index: number): string {
     return `${this.copy('product.stepItem')} ${this.ordinal('product.stepOrder', index)}`;
   }
 
@@ -185,20 +189,20 @@ export class ProductEditor {
     return this.lang.lookup(`${prefix}.${index + 1}`, this.locale()) ?? `${index + 1}`;
   }
 
-  protected retry(): void {
+  retry(): void {
     if (this.mode() === 'edit' && this.id()) {
       this.reload.update((value) => value + 1);
     }
   }
 
-  protected select(index: number | undefined): void {
+  select(index: number | undefined): void {
     if (this.saving() || index === undefined || (this.mode() === 'create' && index > this.step())) {
       return;
     }
     this.step.set(index);
   }
 
-  protected next(): void {
+  next(): void {
     if (this.saving() || this.lastStep()) {
       return;
     }
@@ -211,7 +215,7 @@ export class ProductEditor {
     this.step.set(leaving + 1);
   }
 
-  protected previous(): void {
+  previous(): void {
     if (this.saving()) {
       return;
     }
@@ -222,11 +226,11 @@ export class ProductEditor {
     this.step.update((current) => current - 1);
   }
 
-  protected saveDraft(): void {
+  saveDraft(): void {
     this.persist(false, 'product.draftSaved', false);
   }
 
-  protected finish(): void {
+  finish(): void {
     if (this.mode() === 'edit') {
       this.persist(this.draft().published, 'product.saved', true);
       return;
@@ -235,11 +239,11 @@ export class ProductEditor {
   }
 
   /** Edit-mode publish or unpublish. The editor stays open. */
-  protected updatePublished(published: boolean): void {
+  updatePublished(published: boolean): void {
     this.persist(published, published ? 'product.saved' : 'product.draftSaved', false);
   }
 
-  protected setField(key: 'name' | 'summary' | 'category', event: Event): void {
+  setField(key: 'name' | 'summary' | 'category', event: Event): void {
     const value = this.read(event);
     if (value === undefined) {
       return;
@@ -253,7 +257,7 @@ export class ProductEditor {
     }
   }
 
-  protected setPoint(list: PointList, index: number, field: 'title' | 'body', event: Event): void {
+  setPoint(list: PointList, index: number, field: 'title' | 'body', event: Event): void {
     const value = this.read(event);
     if (value === undefined) {
       return;
@@ -264,11 +268,11 @@ export class ProductEditor {
     }));
   }
 
-  protected addPoint(list: PointList): void {
+  addPoint(list: PointList): void {
     this.draft.update((current) => ({ ...current, [list]: [...current[list], productPoint()] }));
   }
 
-  protected removePoint(list: PointList, index: number): void {
+  removePoint(list: PointList, index: number): void {
     this.draft.update((current) => ({
       ...current,
       [list]:
@@ -278,23 +282,14 @@ export class ProductEditor {
     }));
   }
 
-  protected setPointImage(
-    list: PointList,
-    index: number,
-    file: { name: string; url: string },
-  ): void {
+  setPointImage(list: PointList, index: number, file: { name: string; url: string }): void {
     this.draft.update((current) => ({
       ...current,
       [list]: this.mapAt(current[list], index, (item) => this.withImage(item, file)),
     }));
   }
 
-  protected setMediaText(
-    list: MediaList,
-    index: number,
-    field: 'title' | 'body',
-    event: Event,
-  ): void {
+  setMediaText(list: MediaList, index: number, field: 'title' | 'body', event: Event): void {
     const value = this.read(event);
     if (value === undefined) {
       return;
@@ -305,22 +300,18 @@ export class ProductEditor {
     }));
   }
 
-  protected setMediaImage(
-    list: MediaList,
-    index: number,
-    file: { name: string; url: string },
-  ): void {
+  setMediaImage(list: MediaList, index: number, file: { name: string; url: string }): void {
     this.draft.update((current) => ({
       ...current,
       [list]: this.mapAt(current[list], index, (item) => this.withImage(item, file)),
     }));
   }
 
-  protected addMedia(list: MediaList): void {
+  addMedia(list: MediaList): void {
     this.draft.update((current) => ({ ...current, [list]: [...current[list], productMedia()] }));
   }
 
-  protected removeMedia(list: MediaList, index: number): void {
+  removeMedia(list: MediaList, index: number): void {
     this.draft.update((current) => ({
       ...current,
       [list]:
@@ -330,7 +321,7 @@ export class ProductEditor {
     }));
   }
 
-  protected setSingle(key: 'solution', field: 'title' | 'body', event: Event): void {
+  setSingle(key: 'solution', field: 'title' | 'body', event: Event): void {
     const value = this.read(event);
     if (value === undefined) {
       return;
@@ -341,14 +332,14 @@ export class ProductEditor {
     }));
   }
 
-  protected setSingleImage(key: 'solution', file: { name: string; url: string }): void {
+  setSingleImage(key: 'solution', file: { name: string; url: string }): void {
     this.draft.update((current) => ({
       ...current,
       [key]: this.withImage(current[key], file),
     }));
   }
 
-  protected setCover(kind: 'cover' | 'thumb', file: { name: string; url: string }): void {
+  setCover(kind: 'cover' | 'thumb', file: { name: string; url: string }): void {
     this.draft.update((current) =>
       kind === 'cover'
         ? { ...current, coverName: file.name, coverUrl: file.url }
@@ -356,10 +347,7 @@ export class ProductEditor {
     );
   }
 
-  protected setCoverText(
-    key: 'coverTitle' | 'coverAlt' | 'thumbTitle' | 'thumbAlt',
-    event: Event,
-  ): void {
+  setCoverText(key: 'coverTitle' | 'coverAlt' | 'thumbTitle' | 'thumbAlt', event: Event): void {
     const value = this.read(event);
     if (value === undefined) {
       return;
@@ -370,7 +358,7 @@ export class ProductEditor {
     }));
   }
 
-  protected setStat(index: number, field: 'value' | 'label' | 'body', event: Event): void {
+  setStat(index: number, field: 'value' | 'label' | 'body', event: Event): void {
     const value = this.read(event);
     if (value === undefined) {
       return;
@@ -389,18 +377,18 @@ export class ProductEditor {
     }));
   }
 
-  protected setStatImage(index: number, file: { name: string; url: string }): void {
+  setStatImage(index: number, file: { name: string; url: string }): void {
     this.draft.update((current) => ({
       ...current,
       stats: this.mapAt(current.stats, index, (item) => this.withImage(item, file)),
     }));
   }
 
-  protected addStat(): void {
+  addStat(): void {
     this.draft.update((current) => ({ ...current, stats: [...current.stats, productStat()] }));
   }
 
-  protected removeStat(index: number): void {
+  removeStat(index: number): void {
     this.draft.update((current) => ({
       ...current,
       stats:
@@ -410,7 +398,7 @@ export class ProductEditor {
     }));
   }
 
-  protected setUnit(index: number, field: 'title' | 'body', event: Event): void {
+  setUnit(index: number, field: 'title' | 'body', event: Event): void {
     const value = this.read(event);
     if (value === undefined) {
       return;
@@ -421,19 +409,14 @@ export class ProductEditor {
     }));
   }
 
-  protected setUnitImage(index: number, file: { name: string; url: string }): void {
+  setUnitImage(index: number, file: { name: string; url: string }): void {
     this.draft.update((current) => ({
       ...current,
       units: this.mapAt(current.units, index, (item) => this.withImage(item, file)),
     }));
   }
 
-  protected setUnitPoint(
-    unitIndex: number,
-    pointIndex: number,
-    field: 'title' | 'body',
-    event: Event,
-  ): void {
+  setUnitPoint(unitIndex: number, pointIndex: number, field: 'title' | 'body', event: Event): void {
     const value = this.read(event);
     if (value === undefined) {
       return;
@@ -451,7 +434,7 @@ export class ProductEditor {
     }));
   }
 
-  protected setUnitPointImage(
+  setUnitPointImage(
     unitIndex: number,
     pointIndex: number,
     file: { name: string; url: string },
@@ -469,11 +452,11 @@ export class ProductEditor {
     }));
   }
 
-  protected addUnit(): void {
+  addUnit(): void {
     this.draft.update((current) => ({ ...current, units: [...current.units, productUnit()] }));
   }
 
-  protected removeUnit(index: number): void {
+  removeUnit(index: number): void {
     this.draft.update((current) => ({
       ...current,
       units:
@@ -483,7 +466,7 @@ export class ProductEditor {
     }));
   }
 
-  protected removeUnitPoint(unitIndex: number, pointIndex: number): void {
+  removeUnitPoint(unitIndex: number, pointIndex: number): void {
     this.draft.update((current) => ({
       ...current,
       units: current.units.map((unit, index) =>
@@ -494,7 +477,7 @@ export class ProductEditor {
     }));
   }
 
-  protected addUnitPoint(unitIndex: number): void {
+  addUnitPoint(unitIndex: number): void {
     this.draft.update((current) => ({
       ...current,
       units: current.units.map((unit, index) =>
@@ -503,7 +486,7 @@ export class ProductEditor {
     }));
   }
 
-  protected setFaq(index: number, field: 'question' | 'answer', event: Event): void {
+  setFaq(index: number, field: 'question' | 'answer', event: Event): void {
     const value = this.read(event);
     if (value === undefined) {
       return;
@@ -514,11 +497,11 @@ export class ProductEditor {
     }));
   }
 
-  protected addFaq(): void {
+  addFaq(): void {
     this.draft.update((current) => ({ ...current, faqs: [...current.faqs, productFaq()] }));
   }
 
-  protected removeFaq(index: number): void {
+  removeFaq(index: number): void {
     this.draft.update((current) => ({
       ...current,
       faqs:
@@ -526,7 +509,7 @@ export class ProductEditor {
     }));
   }
 
-  protected setSeo(field: keyof Product['seo'], event: Event): void {
+  setSeo(field: keyof Product['seo'], event: Event): void {
     const value = this.read(event);
     if (value === undefined) {
       return;

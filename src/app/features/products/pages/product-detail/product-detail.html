@@ -88,8 +88,8 @@
                     role="button"
                     tabindex="0"
                     [attr.aria-disabled]="product.stats.length < 2"
-                    (click)="$event.stopPropagation(); removeStat(index)"
-                    (keydown.enter)="$event.stopPropagation(); removeStat(index)"
+                    (click)="$event.stopPropagation(); removeItem('stats', index)"
+                    (keydown.enter)="$event.stopPropagation(); removeItem('stats', index)"
                   >
                     <i class="pi pi-trash" aria-hidden="true"></i>
                   </span>
@@ -171,7 +171,7 @@
                       type="button"
                       [disabled]="product.sectors.length < 2"
                       [attr.aria-label]="lang.t('about.delete')"
-                      (click)="removeSector(index)"
+                      (click)="removeItem('sectors', index)"
                     >
                       <i class="pi pi-trash" aria-hidden="true"></i>
                     </button>
@@ -186,23 +186,11 @@
               <h2>{{ lang.t('product.challenges') }}</h2>
               <span class="icon-badge"><i class="pi pi-bullseye" aria-hidden="true"></i></span>
             </header>
-            <ul class="challenge-grid">
-              @for (challenge of product.challenges; track challenge.id) {
-                <li>
-                  <span>
-                    <strong>{{ text(challenge.title) }}</strong>
-                    <small>{{ text(challenge.body) }}</small>
-                  </span>
-                  <span class="detail-features__icon">
-                    @if (iconClass(challenge.imageUrl); as icon) {
-                      <i [class]="icon" aria-hidden="true"></i>
-                    } @else {
-                      <i class="pi pi-share-alt" aria-hidden="true"></i>
-                    }
-                  </span>
-                </li>
-              }
-            </ul>
+            <app-detail-points
+              [items]="product.challenges"
+              [locale]="locale()"
+              fallback="pi-share-alt"
+            />
           </article>
 
           <div class="detail-overview">
@@ -251,23 +239,7 @@
               <h2>{{ lang.t('product.offer') }}</h2>
               <span class="icon-badge"><i class="pi pi-list" aria-hidden="true"></i></span>
             </header>
-            <ul class="challenge-grid">
-              @for (entry of product.offer; track entry.id) {
-                <li>
-                  <span>
-                    <strong>{{ text(entry.title) }}</strong>
-                    <small>{{ text(entry.body) }}</small>
-                  </span>
-                  <span class="detail-features__icon">
-                    @if (iconClass(entry.imageUrl); as icon) {
-                      <i [class]="icon" aria-hidden="true"></i>
-                    } @else {
-                      <i class="pi pi-list" aria-hidden="true"></i>
-                    }
-                  </span>
-                </li>
-              }
-            </ul>
+            <app-detail-points [items]="product.offer" [locale]="locale()" fallback="pi-list" />
           </article>
 
           <article class="detail-panel">
@@ -275,23 +247,11 @@
               <h2>{{ lang.t('product.results') }}</h2>
               <span class="icon-badge"><i class="pi pi-chart-bar" aria-hidden="true"></i></span>
             </header>
-            <ul class="challenge-grid">
-              @for (entry of product.results; track entry.id) {
-                <li>
-                  <span>
-                    <strong>{{ text(entry.title) }}</strong>
-                    <small>{{ text(entry.body) }}</small>
-                  </span>
-                  <span class="detail-features__icon">
-                    @if (iconClass(entry.imageUrl); as icon) {
-                      <i [class]="icon" aria-hidden="true"></i>
-                    } @else {
-                      <i class="pi pi-chart-bar" aria-hidden="true"></i>
-                    }
-                  </span>
-                </li>
-              }
-            </ul>
+            <app-detail-points
+              [items]="product.results"
+              [locale]="locale()"
+              fallback="pi-chart-bar"
+            />
           </article>
 
           <article class="detail-panel">
@@ -318,7 +278,7 @@
                       type="button"
                       [disabled]="product.integrations.length < 2"
                       [attr.aria-label]="lang.t('about.delete')"
-                      (click)="removeIntegration(index)"
+                      (click)="removeItem('integrations', index)"
                     >
                       <i class="pi pi-trash" aria-hidden="true"></i>
                     </button>
@@ -351,8 +311,8 @@
                       role="button"
                       tabindex="0"
                       [attr.aria-disabled]="product.units.length < 2"
-                      (click)="$event.stopPropagation(); removeUnit(index)"
-                      (keydown.enter)="$event.stopPropagation(); removeUnit(index)"
+                      (click)="$event.stopPropagation(); removeItem('units', index)"
+                      (keydown.enter)="$event.stopPropagation(); removeItem('units', index)"
                     >
                       <i class="pi pi-trash" aria-hidden="true"></i>
                     </span>
@@ -377,23 +337,7 @@
                   </div>
                 </div>
                 <h3 class="detail-subhead">{{ lang.t('product.unitFeatures') }}</h3>
-                <ul class="challenge-grid">
-                  @for (point of unit.points; track point.id) {
-                    <li>
-                      <span>
-                        <strong>{{ text(point.title) }}</strong>
-                        <small>{{ text(point.body) }}</small>
-                      </span>
-                      <span class="detail-features__icon">
-                        @if (iconClass(point.imageUrl); as icon) {
-                          <i [class]="icon" aria-hidden="true"></i>
-                        } @else {
-                          <i class="pi pi-clock" aria-hidden="true"></i>
-                        }
-                      </span>
-                    </li>
-                  }
-                </ul>
+                <app-detail-points [items]="unit.points" [locale]="locale()" fallback="pi-clock" />
               }
             </article>
             <article class="detail-panel">
@@ -411,23 +355,7 @@
               <h2>{{ lang.t('product.productBenefits') }}</h2>
               <span class="icon-badge"><i class="pi pi-star" aria-hidden="true"></i></span>
             </header>
-            <ul class="challenge-grid">
-              @for (item of product.highlights; track item.id) {
-                <li>
-                  <span>
-                    <strong>{{ text(item.title) }}</strong>
-                    <small>{{ text(item.body) }}</small>
-                  </span>
-                  <span class="detail-features__icon">
-                    @if (iconClass(item.imageUrl); as icon) {
-                      <i [class]="icon" aria-hidden="true"></i>
-                    } @else {
-                      <i class="pi pi-star" aria-hidden="true"></i>
-                    }
-                  </span>
-                </li>
-              }
-            </ul>
+            <app-detail-points [items]="product.highlights" [locale]="locale()" />
           </article>
         </div>
       }
@@ -472,8 +400,8 @@
                       role="button"
                       tabindex="0"
                       [attr.aria-disabled]="product.identity.length < 2"
-                      (click)="$event.stopPropagation(); removeIdentity(index)"
-                      (keydown.enter)="$event.stopPropagation(); removeIdentity(index)"
+                      (click)="$event.stopPropagation(); removeItem('identity', index)"
+                      (keydown.enter)="$event.stopPropagation(); removeItem('identity', index)"
                     >
                       <i class="pi pi-trash" aria-hidden="true"></i>
                     </span>
@@ -518,23 +446,7 @@
               <h2>{{ lang.t('product.whyChoose') }}</h2>
               <span class="icon-badge"><i class="pi pi-star" aria-hidden="true"></i></span>
             </header>
-            <ul class="challenge-grid">
-              @for (item of product.highlights; track item.id) {
-                <li>
-                  <span>
-                    <strong>{{ text(item.title) }}</strong>
-                    <small>{{ text(item.body) }}</small>
-                  </span>
-                  <span class="detail-features__icon">
-                    @if (iconClass(item.imageUrl); as icon) {
-                      <i [class]="icon" aria-hidden="true"></i>
-                    } @else {
-                      <i class="pi pi-star" aria-hidden="true"></i>
-                    }
-                  </span>
-                </li>
-              }
-            </ul>
+            <app-detail-points [items]="product.highlights" [locale]="locale()" />
           </article>
           <article class="detail-panel">
             <header class="detail-panel__head">
