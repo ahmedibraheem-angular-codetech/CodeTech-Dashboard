@@ -1,4 +1,4 @@
-<section class="page" [attr.dir]="locale() === 'ar' ? 'rtl' : 'ltr'">
+<section class="page">
   <app-page-header [title]="title()">
     @if (mode() === 'edit') {
       <p-button
@@ -80,7 +80,7 @@
       <app-locale-switch [value]="locale()" (picked)="localeChange.emit($event)" />
     </div>
 
-    <div class="editor-card" [id]="panelId()" role="tabpanel">
+    <div class="editor-card" [id]="panelId()" role="tabpanel" [attr.dir]="locale() === 'ar' ? 'rtl' : 'ltr'">
       <ng-content />
     </div>
 

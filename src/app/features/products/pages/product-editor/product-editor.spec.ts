@@ -87,7 +87,9 @@ describe('ProductEditor', () => {
     english?.click();
     fixture.detectChanges();
 
-    expect(document.documentElement.dir).toBe('ltr');
+    expect(document.documentElement.dir).toBe('rtl');
+    expect(root.querySelector('.editor-card')?.getAttribute('dir')).toBe('ltr');
+    expect(root.textContent).toContain('إضافة منتج جديد');
     expect(root.textContent).toContain('Product title');
     expect(root.textContent).toContain('Product features');
     expect(root.textContent).toContain('Add a feature');
