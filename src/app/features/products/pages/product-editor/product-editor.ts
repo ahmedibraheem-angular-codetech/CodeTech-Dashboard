@@ -110,6 +110,11 @@ export class ProductEditor {
 
   constructor() {
     effect(() => {
+      const language = this.lang.language();
+      untracked(() => this.locale.set(language));
+    });
+
+    effect(() => {
       const editing = this.mode() === 'edit' && this.id();
       untracked(() => {
         if (editing) {
@@ -163,6 +168,10 @@ export class ProductEditor {
 
   protected copy(key: string): string {
     return this.lang.lookup(key, this.locale()) ?? key;
+  }
+
+  protected useLocale(language: AppLanguage): void {
+    this.lang.set(language);
   }
 
   protected unitName(index: number): string {

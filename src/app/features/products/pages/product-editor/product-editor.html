@@ -19,7 +19,7 @@
   (stepChange)="select($event)"
   (next)="next()"
   (previous)="previous()"
-  (localeChange)="locale.set($event)"
+  (localeChange)="useLocale($event)"
 >
   @switch (stepId()) {
     @case ('info') {

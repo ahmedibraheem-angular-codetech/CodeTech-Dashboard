@@ -33,6 +33,7 @@ describe('ProductEditor', () => {
     if (api) {
       TestBed.overrideProvider(ProductsService, { useValue: api });
     }
+    localStorage.setItem('codetech.language', 'ar');
     const fixture = TestBed.createComponent(ProductEditor);
     fixture.componentRef.setInput('id', id);
     fixture.detectChanges();
@@ -86,6 +87,7 @@ describe('ProductEditor', () => {
     english?.click();
     fixture.detectChanges();
 
+    expect(document.documentElement.dir).toBe('ltr');
     expect(root.textContent).toContain('Product title');
     expect(root.textContent).toContain('Product features');
     expect(root.textContent).toContain('Add a feature');
@@ -171,6 +173,10 @@ describe('ProductEditor', () => {
     switchToEnglish(root);
     fixture.detectChanges();
     enterName(root, 'New product');
+    fixture.detectChanges();
+    [...root.querySelectorAll<HTMLButtonElement>('.locale-switch__option')]
+      .find((item) => item.textContent?.includes('عربي'))
+      ?.click();
     fixture.detectChanges();
     for (let step = 0; step < 7; step += 1) {
       clickNext(root);

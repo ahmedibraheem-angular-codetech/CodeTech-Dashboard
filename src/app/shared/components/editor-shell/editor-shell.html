@@ -1,4 +1,4 @@
-<section class="page">
+<section class="page" [attr.dir]="locale() === 'ar' ? 'rtl' : 'ltr'">
   <app-page-header [title]="title()">
     @if (mode() === 'edit') {
       <p-button

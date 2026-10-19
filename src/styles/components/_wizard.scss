@@ -16,17 +16,21 @@
 
 .wizard .p-steplist {
   display: flex;
+  align-items: flex-start;
   gap: 0;
   width: 100%;
+  min-width: min-content;
   margin: 0;
   padding: 0;
 }
 
-.wizard .p-step {
+.wizard .p-step,
+.wizard .p-step:last-of-type {
   position: relative;
   display: flex;
-  flex: 1 0 96px;
+  flex: 1 1 0;
   justify-content: center;
+  min-width: 96px;
   padding: 0;
   background: transparent;
 }
@@ -57,7 +61,7 @@
   align-items: center;
   gap: 10px;
   width: 100%;
-  min-width: 88px;
+  min-width: 0;
   border: 0;
   background: transparent;
   color: #8ea0b8;
