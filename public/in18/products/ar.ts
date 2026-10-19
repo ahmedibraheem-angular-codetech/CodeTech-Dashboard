@@ -7,6 +7,8 @@ export const ar: { [K in keyof typeof en]: string } = {
   'product.edit': 'تعديل بيانات المنتج',
   'product.catalog': 'المنتجات',
   'product.saveDraft': 'حفظ كمسودة',
+  'product.publish': 'نشر',
+  'product.unpublish': 'إلغاء النشر',
   'product.next': 'التالي',
   'product.previous': 'رجوع',
   'product.finish': 'إنهاء',

@@ -9,7 +9,7 @@ import {
   signal,
   untracked,
 } from '@angular/core';
-import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
+import { takeUntilDestroyed, toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MessageService } from 'primeng/api';
 import { Button } from 'primeng/button';
@@ -17,7 +17,7 @@ import { IconField } from 'primeng/iconfield';
 import { InputIcon } from 'primeng/inputicon';
 import { InputText } from 'primeng/inputtext';
 import { Textarea } from 'primeng/textarea';
-import { map } from 'rxjs';
+import { catchError, finalize, map, of, switchMap } from 'rxjs';
 
 import type { AppLanguage } from '../../../../core/i18n/translations';
 import { LanguageService } from '../../../../core/services/language.service';
@@ -75,13 +75,17 @@ export class ProductEditor {
   /** Bound from `/products/:id/edit`. Empty while creating. */
   readonly id = input('');
   readonly steps = PRODUCT_STEPS;
-  readonly locale = signal<AppLanguage>('ar');
+  readonly locale = signal<AppLanguage>(this.lang.language());
   readonly step = signal(0);
   /** Highest step index the user has left with التالي. */
   protected readonly passed = signal(-1);
   readonly draft = signal<Product>(blankProduct());
-  readonly status = signal<'loading' | 'ready' | 'missing'>('ready');
+  readonly status = signal<'loading' | 'ready' | 'missing' | 'error'>(
+    this.route.snapshot.data['mode'] === 'edit' ? 'loading' : 'ready',
+  );
+  readonly saving = signal(false);
   readonly nameError = signal(false);
+  private readonly reload = signal(0);
 
   readonly mode = toSignal(
     this.route.data.pipe(map((data) => (data['mode'] === 'edit' ? 'edit' : 'create'))),
@@ -93,21 +97,57 @@ export class ProductEditor {
   );
   readonly lastStep = computed(() => this.step() === PRODUCT_STEPS.length - 1);
 
+  private readonly editRequest = computed(() =>
+    this.mode() === 'edit' && this.id() ? { id: this.id(), reload: this.reload() } : null,
+  );
+
   constructor() {
     effect(() => {
-      const mode = this.mode();
-      const id = this.id();
+      const editing = this.mode() === 'edit' && this.id();
       untracked(() => {
-        if (mode === 'edit' && id) {
-          this.load(id);
+        if (editing) {
           return;
         }
         this.status.set('ready');
         this.draft.set(blankProduct());
         this.step.set(0);
         this.passed.set(-1);
+        this.nameError.set(false);
       });
     });
+
+    toObservable(this.editRequest)
+      .pipe(
+        switchMap((request) => {
+          if (!request) {
+            return of(null);
+          }
+          this.status.set('loading');
+          return this.api.get(request.id).pipe(
+            map((product) => ({ failed: false as const, product })),
+            catchError(() => of({ failed: true as const, product: null })),
+          );
+        }),
+        takeUntilDestroyed(),
+      )
+      .subscribe((result) => {
+        if (!result) {
+          return;
+        }
+        if (result.failed) {
+          this.status.set('error');
+          return;
+        }
+        if (!result.product) {
+          this.status.set('missing');
+          return;
+        }
+        this.draft.set(result.product);
+        this.step.set(0);
+        this.passed.set(-1);
+        this.nameError.set(false);
+        this.status.set('ready');
+      });
   }
 
   protected text(value: LocaleText): string {
@@ -134,22 +174,36 @@ export class ProductEditor {
     return `${this.copy('product.stepItem')} ${order[index] ?? index + 1}`;
   }
 
+  protected retry(): void {
+    if (this.mode() === 'edit' && this.id()) {
+      this.reload.update((value) => value + 1);
+    }
+  }
+
   protected select(index: number | undefined): void {
-    if (index === undefined || (this.mode() === 'create' && index > this.step())) {
+    if (this.saving() || index === undefined || (this.mode() === 'create' && index > this.step())) {
       return;
     }
     this.step.set(index);
   }
 
   protected next(): void {
-    if (!this.lastStep()) {
-      const leaving = this.step();
-      this.passed.update((current) => Math.max(current, leaving));
-      this.step.set(leaving + 1);
+    if (this.saving() || this.lastStep()) {
+      return;
     }
+    if (this.mode() === 'create' && this.step() === 0 && !this.namesValid()) {
+      this.nameError.set(true);
+      return;
+    }
+    const leaving = this.step();
+    this.passed.update((current) => Math.max(current, leaving));
+    this.step.set(leaving + 1);
   }
 
   protected previous(): void {
+    if (this.saving()) {
+      return;
+    }
     if (this.step() === 0) {
       void this.router.navigate(['/products']);
       return;
@@ -162,11 +216,23 @@ export class ProductEditor {
   }
 
   protected finish(): void {
+    if (this.mode() === 'edit') {
+      this.persist(this.draft().published, 'product.saved', true);
+      return;
+    }
     this.persist(true, 'product.saved', true);
+  }
+
+  /** Edit-mode publish or unpublish. The editor stays open. */
+  protected updatePublished(published: boolean): void {
+    this.persist(published, published ? 'product.saved' : 'product.draftSaved', false);
   }
 
   protected setField(key: 'name' | 'summary' | 'category', event: Event): void {
     const value = this.read(event);
+    if (value === undefined) {
+      return;
+    }
     this.draft.update((current) => ({
       ...current,
       [key]: this.writeLocale(current[key], value),
@@ -178,6 +244,9 @@ export class ProductEditor {
 
   protected setPoint(list: PointList, index: number, field: 'title' | 'body', event: Event): void {
     const value = this.read(event);
+    if (value === undefined) {
+      return;
+    }
     this.draft.update((current) => ({
       ...current,
       [list]: this.patchLocaleField(current[list], index, field, value),
@@ -216,6 +285,9 @@ export class ProductEditor {
     event: Event,
   ): void {
     const value = this.read(event);
+    if (value === undefined) {
+      return;
+    }
     this.draft.update((current) => ({
       ...current,
       [list]: this.patchLocaleField(current[list], index, field, value),
@@ -249,6 +321,9 @@ export class ProductEditor {
 
   protected setSingle(key: 'solution', field: 'title' | 'body', event: Event): void {
     const value = this.read(event);
+    if (value === undefined) {
+      return;
+    }
     this.draft.update((current) => ({
       ...current,
       [key]: { ...current[key], [field]: this.writeLocale(current[key][field], value) },
@@ -275,6 +350,9 @@ export class ProductEditor {
     event: Event,
   ): void {
     const value = this.read(event);
+    if (value === undefined) {
+      return;
+    }
     this.draft.update((current) => ({
       ...current,
       [key]: this.writeLocale(current[key], value),
@@ -283,6 +361,9 @@ export class ProductEditor {
 
   protected setStat(index: number, field: 'value' | 'label' | 'body', event: Event): void {
     const value = this.read(event);
+    if (value === undefined) {
+      return;
+    }
     this.draft.update((current) => ({
       ...current,
       stats: current.stats.map((item, itemIndex) => {
@@ -320,6 +401,9 @@ export class ProductEditor {
 
   protected setUnit(index: number, field: 'title' | 'body', event: Event): void {
     const value = this.read(event);
+    if (value === undefined) {
+      return;
+    }
     this.draft.update((current) => ({
       ...current,
       units: this.patchLocaleField(current.units, index, field, value),
@@ -340,6 +424,9 @@ export class ProductEditor {
     event: Event,
   ): void {
     const value = this.read(event);
+    if (value === undefined) {
+      return;
+    }
     this.draft.update((current) => ({
       ...current,
       units: current.units.map((unit, index) =>
@@ -385,6 +472,17 @@ export class ProductEditor {
     }));
   }
 
+  protected removeUnitPoint(unitIndex: number, pointIndex: number): void {
+    this.draft.update((current) => ({
+      ...current,
+      units: current.units.map((unit, index) =>
+        index === unitIndex && unit.points.length > 1
+          ? { ...unit, points: unit.points.filter((_, item) => item !== pointIndex) }
+          : unit,
+      ),
+    }));
+  }
+
   protected addUnitPoint(unitIndex: number): void {
     this.draft.update((current) => ({
       ...current,
@@ -396,6 +494,9 @@ export class ProductEditor {
 
   protected setFaq(index: number, field: 'question' | 'answer', event: Event): void {
     const value = this.read(event);
+    if (value === undefined) {
+      return;
+    }
     this.draft.update((current) => ({
       ...current,
       faqs: this.patchLocaleField(current.faqs, index, field, value),
@@ -416,25 +517,13 @@ export class ProductEditor {
 
   protected setSeo(field: keyof Product['seo'], event: Event): void {
     const value = this.read(event);
+    if (value === undefined) {
+      return;
+    }
     this.draft.update((current) => ({
       ...current,
       seo: { ...current.seo, [field]: this.writeLocale(current.seo[field], value) },
     }));
-  }
-
-  private load(id: string): void {
-    this.status.set('loading');
-    this.api
-      .get(id)
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe((product) => {
-        if (!product) {
-          this.status.set('missing');
-          return;
-        }
-        this.draft.set(product);
-        this.status.set('ready');
-      });
   }
 
   private persist(
@@ -442,30 +531,48 @@ export class ProductEditor {
     message: 'product.saved' | 'product.draftSaved',
     leave: boolean,
   ): void {
+    if (this.saving()) {
+      return;
+    }
     const current = { ...this.draft(), published };
-    if (published && (!current.name.ar.trim() || !current.name.en.trim())) {
+    if (published && !this.namesValid()) {
       this.nameError.set(true);
       this.step.set(0);
       return;
     }
+    this.saving.set(true);
     this.api
       .save(current)
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe((saved) => {
-        this.draft.set(saved);
-        this.messages.add({ severity: 'success', summary: this.lang.t(message) });
-        if (leave) {
-          void this.router.navigate(['/products', saved.id]);
-        }
+      .pipe(
+        finalize(() => this.saving.set(false)),
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe({
+        next: (saved) => {
+          this.draft.set(saved);
+          this.nameError.set(false);
+          this.messages.add({ severity: 'success', summary: this.lang.t(message) });
+          if (leave) {
+            void this.router.navigate(['/products', saved.id]);
+          }
+        },
+        error: () => {
+          this.messages.add({ severity: 'error', summary: this.lang.t('common.error') });
+        },
       });
   }
 
-  private read(event: Event): string {
+  private namesValid(): boolean {
+    const { name } = this.draft();
+    return name.ar.trim().length > 0 && name.en.trim().length > 0;
+  }
+
+  private read(event: Event): string | undefined {
     const target = event.target;
     if (target instanceof HTMLInputElement || target instanceof HTMLTextAreaElement) {
       return target.value;
     }
-    return '';
+    return undefined;
   }
 
   private writeLocale(current: LocaleText, value: string): LocaleText {

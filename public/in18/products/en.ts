@@ -5,6 +5,8 @@ export const en = {
   'product.edit': 'Edit product',
   'product.catalog': 'Products',
   'product.saveDraft': 'Save as draft',
+  'product.publish': 'Publish',
+  'product.unpublish': 'Unpublish',
   'product.next': 'Next',
   'product.previous': 'Back',
   'product.finish': 'Finish',

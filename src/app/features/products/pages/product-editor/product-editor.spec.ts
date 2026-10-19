@@ -37,6 +37,15 @@ describe('ProductEditor', () => {
     expect(root.querySelector('.section-tabs')).toBeNull();
     expect(root.textContent).toContain('التالي');
 
+    enterName(root, 'منتج تجريبي');
+    fixture.detectChanges();
+    [...root.querySelectorAll<HTMLButtonElement>('.locale-switch__option')]
+      .find((button) => button.textContent?.includes('English'))
+      ?.click();
+    fixture.detectChanges();
+    enterName(root, 'Sample product');
+    fixture.detectChanges();
+
     root.querySelector<HTMLButtonElement>('.editor-nav--next')?.click();
     fixture.detectChanges();
 
@@ -89,3 +98,12 @@ describe('ProductEditor', () => {
     expect(name?.value).toBe('نظام إدارة خدمات تقنية المعلومات');
   });
 });
+
+function enterName(root: HTMLElement, value: string): void {
+  const name = root.querySelector<HTMLInputElement>('input:not([type="file"])');
+  if (!name) {
+    throw new Error('Product name field is missing');
+  }
+  name.value = value;
+  name.dispatchEvent(new Event('input'));
+}

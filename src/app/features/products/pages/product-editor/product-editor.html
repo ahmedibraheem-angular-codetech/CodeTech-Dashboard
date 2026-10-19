@@ -1,7 +1,32 @@
 <section class="page">
   <app-page-header [title]="lang.t(mode() === 'edit' ? 'product.edit' : 'product.add')">
     @if (mode() === 'edit') {
-      <p-button [label]="lang.t('common.save')" (onClick)="finish()" />
+      <p-button
+        class="editor-draft"
+        styleClass="editor-draft__button"
+        icon="pi pi-file"
+        iconPos="right"
+        severity="secondary"
+        [outlined]="true"
+        [disabled]="saving()"
+        [label]="lang.t('product.saveDraft')"
+        (onClick)="saveDraft()"
+      />
+      <p-button
+        class="editor-draft"
+        styleClass="editor-draft__button"
+        severity="secondary"
+        [outlined]="true"
+        [disabled]="saving()"
+        [label]="lang.t(draft().published ? 'product.unpublish' : 'product.publish')"
+        (onClick)="updatePublished(!draft().published)"
+      />
+      <p-button
+        [disabled]="saving()"
+        [loading]="saving()"
+        [label]="lang.t('common.save')"
+        (onClick)="finish()"
+      />
     } @else {
       <p-button
         class="editor-draft"
@@ -10,6 +35,8 @@
         iconPos="right"
         severity="secondary"
         [outlined]="true"
+        [disabled]="saving()"
+        [loading]="saving()"
         [label]="lang.t('product.saveDraft')"
         (onClick)="saveDraft()"
       />
@@ -20,6 +47,8 @@
     <app-state-view mode="loading" [message]="lang.t('common.loading')" />
   } @else if (status() === 'missing') {
     <app-state-view mode="empty" [message]="lang.t('product.notFound')" />
+  } @else if (status() === 'error') {
+    <app-state-view mode="error" [message]="lang.t('common.error')" (retry)="retry()" />
   } @else {
     @if (mode() === 'edit') {
       <div class="section-tabs" role="tablist">
@@ -31,6 +60,7 @@
             [attr.aria-selected]="step() === index"
             [attr.aria-controls]="'product-panel'"
             [class.is-active]="step() === index"
+            [disabled]="saving()"
             (click)="select(index)"
           >
             {{ lang.t(item.labelKey) }}
@@ -242,6 +272,15 @@
               @for (sector of draft().sectors; track sector.id; let index = $index) {
                 <div class="field">
                   <span class="field__label">{{ copy('product.sectorImage') }}</span>
+                  <button
+                    type="button"
+                    class="feature-card__remove"
+                    [disabled]="draft().sectors.length === 1 || saving()"
+                    [attr.aria-label]="copy('product.deleteTitle')"
+                    (click)="removeMedia('sectors', index)"
+                  >
+                    <i class="pi pi-trash" aria-hidden="true"></i>
+                  </button>
                   <app-product-upload
                     [locale]="locale()"
                     [name]="sector.imageName"
@@ -496,8 +535,9 @@
                       [imageName]="point.imageName"
                       [imageUrl]="point.imageUrl"
                       [locale]="locale()"
-                      [removeDisabled]="true"
+                      [removeDisabled]="unit.points.length === 1 || saving()"
                       [removeLabel]="copy('product.deleteTitle')"
+                      (removed)="removeUnitPoint(index, pointIndex)"
                       (titleChange)="setUnitPoint(index, pointIndex, 'title', $event)"
                       (bodyChange)="setUnitPoint(index, pointIndex, 'body', $event)"
                       (imageChange)="setUnitPointImage(index, pointIndex, $event)"
@@ -655,6 +695,8 @@
             <label class="field">
               <span class="field__label">{{ copy('product.seoSlug') }}</span>
               <input
+                pInputText
+                [fluid]="true"
                 [value]="text(draft().seo.slug)"
                 [placeholder]="copy('product.seoSlugPh')"
                 (input)="setSeo('slug', $event)"
@@ -663,6 +705,8 @@
             <label class="field">
               <span class="field__label">{{ copy('product.seoTitle') }}</span>
               <input
+                pInputText
+                [fluid]="true"
                 [value]="text(draft().seo.title)"
                 [placeholder]="copy('product.seoTitlePh')"
                 (input)="setSeo('title', $event)"
@@ -671,6 +715,8 @@
             <label class="field">
               <span class="field__label">{{ copy('product.seoKeywords') }}</span>
               <input
+                pInputText
+                [fluid]="true"
                 [value]="text(draft().seo.keywords)"
                 [placeholder]="copy('product.seoKeywordsPh')"
                 (input)="setSeo('keywords', $event)"
@@ -679,6 +725,8 @@
             <label class="field">
               <span class="field__label">{{ copy('product.seoDescription') }}</span>
               <textarea
+                pTextarea
+                [fluid]="true"
                 rows="4"
                 maxlength="160"
                 [value]="text(draft().seo.description)"
@@ -698,6 +746,8 @@
           <p-button
             class="editor-next"
             styleClass="editor-nav editor-nav--next"
+            [disabled]="saving()"
+            [loading]="saving()"
             [label]="lang.t('product.finish')"
             (onClick)="finish()"
           />
@@ -705,6 +755,8 @@
           <p-button
             class="editor-next"
             styleClass="editor-nav editor-nav--next"
+            [disabled]="saving()"
+            [loading]="saving()"
             [label]="lang.t('product.next')"
             (onClick)="next()"
           />
@@ -714,6 +766,7 @@
           styleClass="editor-nav editor-nav--back"
           severity="secondary"
           [outlined]="true"
+          [disabled]="saving()"
           [label]="lang.t('product.previous')"
           (onClick)="previous()"
         />
