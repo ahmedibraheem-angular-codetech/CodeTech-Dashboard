@@ -38,33 +38,12 @@
         }
       </div>
     } @else {
-      <p-stepper class="wizard" [value]="step()">
-        <p-step-list>
-          @for (item of steps; track item.id; let index = $index) {
-            <p-step [value]="index" [disabled]="index > step()">
-              <ng-template #content>
-                <button
-                  type="button"
-                  class="wizard__step"
-                  [class.is-active]="step() === index"
-                  [class.is-done]="passedStep(index)"
-                  [disabled]="index > step()"
-                  (click)="select(index)"
-                >
-                  <span class="wizard__mark">
-                    @if (passedStep(index)) {
-                      <i class="pi pi-check" aria-hidden="true"></i>
-                    } @else {
-                      {{ index + 1 }}
-                    }
-                  </span>
-                  <span class="wizard__label">{{ lang.t(item.labelKey) }}</span>
-                </button>
-              </ng-template>
-            </p-step>
-          }
-        </p-step-list>
-      </p-stepper>
+      <app-wizard-stepper
+        [steps]="wizardSteps()"
+        [active]="step()"
+        [passed]="passed()"
+        (picked)="select($event)"
+      />
     }
 
     <div class="editor-locale">
@@ -154,49 +133,25 @@
               </header>
               <div class="editor-section__body">
                 @for (feature of draft().features; track feature.id; let index = $index) {
-                  <header class="repeat-card__head">
-                    <span>{{ copy('product.featureItem') }} {{ index + 1 }}</span>
-                    <button
-                      type="button"
-                      class="repeat-card__remove"
-                      [disabled]="draft().features.length === 1"
-                      [attr.aria-label]="copy('product.deleteTitle')"
-                      (click)="removePoint('features', index)"
-                    >
-                      <i class="pi pi-trash" aria-hidden="true"></i>
-                    </button>
-                  </header>
-                  <label class="field">
-                    <span class="field__label">{{ copy('product.featureTitle') }}</span>
-                    <input
-                      pInputText
-                      [fluid]="true"
-                      [value]="text(feature.title)"
-                      [placeholder]="copy('product.featureTitlePh')"
-                      (input)="setPoint('features', index, 'title', $event)"
-                    />
-                  </label>
-                  <label class="field">
-                    <span class="field__label">{{ copy('product.featureBody') }}</span>
-                    <textarea
-                      pTextarea
-                      [fluid]="true"
-                      rows="3"
-                      [value]="text(feature.body)"
-                      [placeholder]="copy('product.featureBody')"
-                      (input)="setPoint('features', index, 'body', $event)"
-                    ></textarea>
-                  </label>
-                  <div class="field">
-                    <span class="field__label">{{ copy('product.icon') }}</span>
-                    <app-product-upload
-                      [locale]="locale()"
-                      [actions]="true"
-                      [name]="feature.imageName"
-                      [url]="feature.imageUrl"
-                      (picked)="setPointImage('features', index, $event)"
-                    />
-                  </div>
+                  <app-feature-card
+                    [label]="copy('product.featureItem') + ' ' + (index + 1)"
+                    [title]="text(feature.title)"
+                    [titleLabel]="copy('product.featureTitle')"
+                    [titlePlaceholder]="copy('product.featureTitlePh')"
+                    [body]="text(feature.body)"
+                    [bodyLabel]="copy('product.featureBody')"
+                    [bodyPlaceholder]="copy('product.featureBody')"
+                    [iconLabel]="copy('product.icon')"
+                    [imageName]="feature.imageName"
+                    [imageUrl]="feature.imageUrl"
+                    [locale]="locale()"
+                    [removeDisabled]="draft().features.length === 1"
+                    [removeLabel]="copy('product.deleteTitle')"
+                    (titleChange)="setPoint('features', index, 'title', $event)"
+                    (bodyChange)="setPoint('features', index, 'body', $event)"
+                    (imageChange)="setPointImage('features', index, $event)"
+                    (removed)="removePoint('features', index)"
+                  />
                 }
                 <button type="button" class="add-row" (click)="addPoint('features')">
                   <span class="add-row__mark" aria-hidden="true"><i class="pi pi-plus"></i></span>

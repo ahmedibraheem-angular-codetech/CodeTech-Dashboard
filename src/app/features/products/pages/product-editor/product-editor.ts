@@ -16,16 +16,17 @@ import { Button } from 'primeng/button';
 import { IconField } from 'primeng/iconfield';
 import { InputIcon } from 'primeng/inputicon';
 import { InputText } from 'primeng/inputtext';
-import { Step, StepList, Stepper } from 'primeng/stepper';
 import { Textarea } from 'primeng/textarea';
 import { map } from 'rxjs';
 
 import type { AppLanguage } from '../../../../core/i18n/translations';
 import { LanguageService } from '../../../../core/services/language.service';
+import { FeatureCard } from '../../../../shared/components/feature-card/feature-card';
 import { FieldError } from '../../../../shared/components/field-error/field-error';
 import { LocaleSwitch } from '../../../../shared/components/locale-switch/locale-switch';
 import { PageHeader } from '../../../../shared/components/page-header/page-header';
 import { StateView } from '../../../../shared/components/state-view/state-view';
+import { WizardStepper } from '../../../../shared/components/wizard-stepper/wizard-stepper';
 import { ProductUpload } from '../../components/product-upload/product-upload';
 import {
   PRODUCT_STEPS,
@@ -53,9 +54,8 @@ type MediaList = 'sectors' | 'tools' | 'integrations' | 'identity';
     FieldError,
     StateView,
     ProductUpload,
-    Stepper,
-    StepList,
-    Step,
+    FeatureCard,
+    WizardStepper,
     IconField,
     InputIcon,
     InputText,
@@ -78,7 +78,7 @@ export class ProductEditor {
   readonly locale = signal<AppLanguage>('ar');
   readonly step = signal(0);
   /** Highest step index the user has left with التالي. */
-  private readonly passed = signal(-1);
+  protected readonly passed = signal(-1);
   readonly draft = signal<Product>(blankProduct());
   readonly status = signal<'loading' | 'ready' | 'missing'>('ready');
   readonly nameError = signal(false);
@@ -88,6 +88,9 @@ export class ProductEditor {
     { initialValue: this.route.snapshot.data['mode'] === 'edit' ? 'edit' : 'create' },
   );
   readonly stepId = computed(() => PRODUCT_STEPS[this.step()].id);
+  readonly wizardSteps = computed(() =>
+    this.steps.map((item) => ({ id: item.id, label: this.lang.t(item.labelKey) })),
+  );
   readonly lastStep = computed(() => this.step() === PRODUCT_STEPS.length - 1);
 
   constructor() {
@@ -129,10 +132,6 @@ export class ProductEditor {
         ? ['الأولى', 'الثانية', 'الثالثة', 'الرابعة', 'الخامسة', 'السادسة']
         : ['1', '2', '3', '4', '5', '6'];
     return `${this.copy('product.stepItem')} ${order[index] ?? index + 1}`;
-  }
-
-  protected passedStep(index: number): boolean {
-    return index <= this.passed() && index !== this.step();
   }
 
   protected select(index: number | undefined): void {

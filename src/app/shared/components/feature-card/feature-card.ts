@@ -1,0 +1,34 @@
+import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
+import { InputText } from 'primeng/inputtext';
+import { Textarea } from 'primeng/textarea';
+
+import type { AppLanguage } from '../../../core/i18n/language';
+import { ProductUpload } from '../../../features/products/components/product-upload/product-upload';
+
+/** One product feature: tab, title, description, and icon. */
+@Component({
+  selector: 'app-feature-card',
+  imports: [InputText, Textarea, ProductUpload],
+  templateUrl: './feature-card.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+})
+export class FeatureCard {
+  readonly label = input.required<string>();
+  readonly title = input('');
+  readonly titleLabel = input.required<string>();
+  readonly titlePlaceholder = input('');
+  readonly body = input('');
+  readonly bodyLabel = input.required<string>();
+  readonly bodyPlaceholder = input('');
+  readonly iconLabel = input.required<string>();
+  readonly imageName = input('');
+  readonly imageUrl = input('');
+  readonly locale = input<AppLanguage | null>(null);
+  readonly removeDisabled = input(false);
+  readonly removeLabel = input('');
+
+  readonly titleChange = output<Event>();
+  readonly bodyChange = output<Event>();
+  readonly imageChange = output<{ name: string; url: string }>();
+  readonly removed = output<void>();
+}

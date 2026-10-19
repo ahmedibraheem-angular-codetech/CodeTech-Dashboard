@@ -5,6 +5,7 @@ import {
   inject,
   input,
   output,
+  signal,
 } from '@angular/core';
 
 import type { AppLanguage } from '../../../../core/i18n/language';
@@ -22,6 +23,36 @@ export class ProductUpload {
   readonly actions = input(false);
   readonly locale = input<AppLanguage | null>(null);
   readonly picked = output<{ name: string; url: string }>();
+  protected readonly source = signal<'upload' | 'library'>('upload');
+  protected readonly icons = [
+    'pi-star',
+    'pi-heart',
+    'pi-bolt',
+    'pi-check-circle',
+    'pi-shield',
+    'pi-cog',
+    'pi-users',
+    'pi-chart-line',
+    'pi-globe',
+    'pi-lock',
+    'pi-bell',
+    'pi-calendar',
+    'pi-image',
+    'pi-send',
+    'pi-wifi',
+    'pi-mobile',
+    'pi-desktop',
+    'pi-database',
+    'pi-cloud',
+    'pi-shopping-cart',
+    'pi-wallet',
+    'pi-map-marker',
+    'pi-thumbs-up',
+    'pi-flag',
+    'pi-bookmark',
+    'pi-compass',
+    'pi-box',
+  ];
   private previewUrl = '';
 
   constructor() {
@@ -53,5 +84,14 @@ export class ProductUpload {
 
   protected open(input: HTMLInputElement): void {
     input.click();
+  }
+
+  protected pickIcon(icon: string): void {
+    this.revokePreview();
+    this.picked.emit({ name: icon, url: `icon:${icon}` });
+  }
+
+  protected iconSelected(icon: string): boolean {
+    return this.url() === `icon:${icon}`;
   }
 }

@@ -1,0 +1,127 @@
+.wizard.p-stepper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  align-self: stretch;
+  justify-content: center;
+  gap: 16px;
+  width: 100%;
+  margin: 0;
+  padding: 20px;
+  overflow-x: auto;
+  border: 1px solid #f3f3f3;
+  border-radius: 16px;
+  background: #fff;
+}
+
+.wizard .p-steplist {
+  display: flex;
+  gap: 0;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+.wizard .p-step {
+  position: relative;
+  display: flex;
+  flex: 1 0 96px;
+  justify-content: center;
+  padding: 0;
+  background: transparent;
+}
+
+.wizard .p-stepper-separator {
+  position: absolute;
+  z-index: 0;
+  top: 10px;
+  width: calc(100% + 1px);
+  height: 0;
+  margin: 0;
+  padding: 0;
+  inset-inline-start: 50%;
+  border: 0;
+  border-top: 1px solid #e4e9f0;
+  background: transparent;
+}
+
+.wizard .p-step:has(.is-done) .p-stepper-separator {
+  border-top-color: #1c81d3;
+}
+
+.wizard__step {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  min-width: 88px;
+  border: 0;
+  background: transparent;
+  color: #8ea0b8;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.35;
+  text-align: center;
+  cursor: pointer;
+}
+
+.wizard__step:disabled {
+  cursor: default;
+}
+
+.wizard__step:focus-visible {
+  outline: 2px solid var(--app-primary);
+  outline-offset: 2px;
+}
+
+.wizard__label {
+  max-width: 128px;
+}
+
+.wizard__mark {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  padding: 1.661px;
+  aspect-ratio: 1 / 1;
+  border: 1.5px solid #d9e2ee;
+  border-radius: 53.143px;
+  background: #fff;
+  color: transparent;
+  font-size: 0;
+}
+
+.wizard__step.is-active .wizard__mark {
+  border-color: #1c81d3;
+}
+
+.wizard__step.is-active .wizard__mark::after {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 53.143px;
+  background: #1c81d3;
+}
+
+.wizard__step.is-done .wizard__mark {
+  border: 0;
+  background: #1c81d3;
+  color: #fff;
+  font-size: 9px;
+}
+
+.wizard__step.is-done .wizard__mark .pi {
+  color: #fff;
+  font-size: 9px;
+}
+
+.wizard__step.is-active {
+  color: var(--app-text);
+  font-weight: 700;
+}

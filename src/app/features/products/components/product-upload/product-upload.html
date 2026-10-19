@@ -1,22 +1,55 @@
 @if (actions()) {
-  <div class="uploader__actions">
-    <button type="button" class="uploader__action" (click)="open(file)">
+  <div class="uploader__actions" role="tablist">
+    <button
+      type="button"
+      class="uploader__action"
+      role="tab"
+      [class.uploader__action--primary]="source() === 'library'"
+      [attr.aria-selected]="source() === 'library'"
+      (click)="source.set('library')"
+    >
       {{ copy('product.chooseLibrary') }}
       <i class="pi pi-face-smile" aria-hidden="true"></i>
     </button>
-    <button type="button" class="uploader__action uploader__action--primary" (click)="open(file)">
+    <button
+      type="button"
+      class="uploader__action"
+      role="tab"
+      [class.uploader__action--primary]="source() === 'upload'"
+      [attr.aria-selected]="source() === 'upload'"
+      (click)="source.set('upload')"
+    >
       {{ copy('product.uploadIcon') }}
-      <i class="pi pi-folder" aria-hidden="true"></i>
+      <i class="pi pi-upload" aria-hidden="true"></i>
     </button>
   </div>
 }
-<label class="uploader">
-  @if (url()) {
-    <img class="uploader__preview" [src]="url()" alt="" />
-  } @else {
-    <span class="uploader__mark" aria-hidden="true"><i class="pi pi-file"></i></span>
-  }
-  <span>{{ copy('product.uploadHint') }}</span>
-  <small>{{ name() || copy('product.uploadTypes') }}</small>
-  <input #file type="file" accept="image/png,image/jpeg" (change)="choose($event)" />
-</label>
+@if (actions() && source() === 'library') {
+  <div class="icon-library" role="listbox" [attr.aria-label]="copy('product.chooseLibrary')">
+    @for (icon of icons; track icon) {
+      <button
+        type="button"
+        class="icon-library__item"
+        role="option"
+        [class.is-selected]="iconSelected(icon)"
+        [attr.aria-selected]="iconSelected(icon)"
+        (click)="pickIcon(icon)"
+      >
+        <i [class]="'pi ' + icon" aria-hidden="true"></i>
+      </button>
+    }
+  </div>
+} @else {
+  <label class="uploader">
+    @if (url() && !url().startsWith('icon:')) {
+      <img class="uploader__preview" [src]="url()" alt="" />
+    } @else {
+      <span class="uploader__mark" aria-hidden="true">
+        <i class="pi" [class.pi-upload]="actions()" [class.pi-file]="!actions()"></i>
+      </span>
+    }
+    <span>{{ copy('product.uploadHint') }}</span>
+    <small>{{ name() || copy('product.uploadTypes') }}</small>
+    <input #file type="file" accept="image/png,image/jpeg" (change)="choose($event)" />
+  </label>
+}
