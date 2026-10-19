@@ -4,159 +4,560 @@
   } @else if (status() === 'missing' || !item()) {
     <app-state-view mode="empty" [message]="lang.t('product.notFound')" />
   } @else if (item(); as product) {
-    <app-page-header [title]="text(product.name)">
-      <a class="primary-link" [routerLink]="['/products', product.id, 'edit']">
-        {{ lang.t('product.edit') }}
+    <app-page-header [title]="text(product.name)" [subtitle]="text(product.summary)">
+      <span class="detail-status" [class.is-draft]="!product.published">
+        {{ product.published ? lang.t('product.live') : lang.t('product.draft') }}
+      </span>
+      <a class="detail-edit" [routerLink]="['/products', product.id, 'edit']">
+        <i class="pi pi-pen-to-square" aria-hidden="true"></i>
+        {{ lang.t('product.editAction') }}
       </a>
+      <button type="button" class="detail-delete" (click)="removeProduct()">
+        <i class="pi pi-trash" aria-hidden="true"></i>
+        {{ lang.t('about.delete') }}
+      </button>
     </app-page-header>
-    <app-locale-switch [value]="locale()" (picked)="locale.set($event)" />
 
-    <article class="detail-hero">
-      @if (product.coverUrl) {
-        <img [src]="product.coverUrl" alt="" />
-      }
-      <div>
-        <h2>{{ text(product.name) }}</h2>
-        <p>{{ text(product.summary) }}</p>
-        <span class="chips">
-          @for (feature of product.features; track feature.id) {
-            @if (text(feature.title)) {
-              <em>{{ text(feature.title) }}</em>
+    <app-page-tabs [tabs]="tabs" [value]="tab()" (valueChange)="selectTab($event)" />
+
+    @switch (tab()) {
+      @case ('info') {
+        <div class="detail-overview">
+          <article class="detail-panel">
+            <header class="detail-panel__head">
+              <h2>{{ lang.t('product.info') }}</h2>
+              <span class="icon-badge"><i class="pi pi-box" aria-hidden="true"></i></span>
+            </header>
+            <div class="detail-fields">
+              <div class="detail-field">
+                <span>ID</span>
+                <strong>
+                  {{ product.id }}
+                  <button
+                    type="button"
+                    (click)="copyCode(product.id)"
+                    [attr.aria-label]="product.id"
+                  >
+                    <i class="pi pi-copy" aria-hidden="true"></i>
+                  </button>
+                </strong>
+              </div>
+              <div class="detail-field">
+                <span>{{ lang.t('product.productName') }}</span>
+                <strong class="detail-field__lead">
+                  <i class="pi pi-user" aria-hidden="true"></i>
+                  {{ text(product.name) }}
+                </strong>
+              </div>
+              <div class="detail-field">
+                <span>{{ lang.t('product.summary') }}</span>
+                <p class="detail-field__lead">
+                  <i class="pi pi-align-right" aria-hidden="true"></i>
+                  {{ text(product.summary) }}
+                </p>
+              </div>
+            </div>
+          </article>
+
+          <article class="detail-panel">
+            <header class="detail-panel__head">
+              <h2>{{ lang.t('product.photo') }}</h2>
+              <span class="icon-badge"><i class="pi pi-image" aria-hidden="true"></i></span>
+            </header>
+            @if (product.coverUrl) {
+              <img class="detail-photo" [src]="product.coverUrl" alt="" />
             }
-          }
-        </span>
-      </div>
-    </article>
+          </article>
 
-    <article class="detail-card">
-      <h2>{{ lang.t('product.features') }}</h2>
-      @for (feature of product.features; track feature.id) {
-        <p>
-          <strong>{{ text(feature.title) }}</strong> {{ text(feature.body) }}
-        </p>
-      }
-    </article>
-
-    <article class="detail-card">
-      <h2>{{ lang.t('product.stats') }}</h2>
-      <div class="media-grid">
-        @for (stat of product.stats; track stat.id) {
-          <div class="mini-card">
-            @if (stat.imageUrl) {
-              <img [src]="stat.imageUrl" alt="" />
+          <article class="detail-panel">
+            <header class="detail-panel__head">
+              <h2>{{ lang.t('product.stats') }}</h2>
+              <span class="icon-badge"><i class="pi pi-bolt" aria-hidden="true"></i></span>
+            </header>
+            <div class="stat-tabs">
+              @for (stat of product.stats; track stat.id; let index = $index) {
+                <button
+                  type="button"
+                  class="stat-tab"
+                  [class.is-active]="statIndex() === index"
+                  (click)="statIndex.set(index)"
+                >
+                  {{ lang.t('product.statItem') }} {{ index + 1 }}
+                  <span
+                    class="stat-tab__remove"
+                    role="button"
+                    tabindex="0"
+                    [attr.aria-disabled]="product.stats.length < 2"
+                    (click)="$event.stopPropagation(); removeStat(index)"
+                    (keydown.enter)="$event.stopPropagation(); removeStat(index)"
+                  >
+                    <i class="pi pi-trash" aria-hidden="true"></i>
+                  </span>
+                </button>
+              }
+            </div>
+            @if (product.stats[statIndex()]; as stat) {
+              <div class="stat-fields">
+                <div class="detail-field">
+                  <span>{{ lang.t('product.statLabel') }}</span>
+                  <strong>
+                    {{ text(stat.label) }}
+                    <i class="pi pi-user" aria-hidden="true"></i>
+                  </strong>
+                </div>
+                <div class="detail-field">
+                  <span>{{ lang.t('product.statValue') }}</span>
+                  <strong>
+                    <bdi dir="ltr">{{ stat.value }}</bdi>
+                    <i class="pi pi-plus" aria-hidden="true"></i>
+                  </strong>
+                </div>
+              </div>
+              @if (stat.imageUrl) {
+                <img class="detail-photo" [src]="stat.imageUrl" alt="" />
+              }
             }
-            <strong>{{ stat.value }} {{ text(stat.label) }}</strong>
-            <p>{{ text(stat.body) }}</p>
+          </article>
+
+          <article class="detail-panel">
+            <header class="detail-panel__head">
+              <h2>{{ lang.t('product.features') }}</h2>
+              <span class="icon-badge"><i class="pi pi-star" aria-hidden="true"></i></span>
+            </header>
+            <ul class="detail-features">
+              @for (feature of product.features; track feature.id) {
+                <li>
+                  <span>
+                    <strong>{{ text(feature.title) }}</strong>
+                    <small>{{ text(feature.body) }}</small>
+                  </span>
+                  <span class="detail-features__icon">
+                    @if (iconClass(feature.imageUrl); as icon) {
+                      <i [class]="icon" aria-hidden="true"></i>
+                    } @else if (feature.imageUrl) {
+                      <img [src]="feature.imageUrl" alt="" />
+                    } @else {
+                      <i class="pi pi-star" aria-hidden="true"></i>
+                    }
+                  </span>
+                </li>
+              }
+            </ul>
+          </article>
+        </div>
+      }
+      @case ('sectors') {
+        <div class="detail-stack">
+          <article class="detail-panel">
+            <header class="detail-panel__head">
+              <h2>{{ lang.t('product.sectors') }}</h2>
+              <span class="icon-badge"><i class="pi pi-heart" aria-hidden="true"></i></span>
+            </header>
+            <div class="sector-grid">
+              @for (sector of product.sectors; track sector.id; let index = $index) {
+                <article class="sector-card">
+                  @if (sector.imageUrl) {
+                    <img [src]="sector.imageUrl" alt="" />
+                  }
+                  <strong>{{ text(sector.title) }}</strong>
+                  <span class="sector-card__actions">
+                    <a
+                      [routerLink]="['/products', product.id, 'edit']"
+                      [attr.aria-label]="lang.t('product.editAction')"
+                    >
+                      <i class="pi pi-pen-to-square" aria-hidden="true"></i>
+                    </a>
+                    <button
+                      type="button"
+                      [disabled]="product.sectors.length < 2"
+                      [attr.aria-label]="lang.t('about.delete')"
+                      (click)="removeSector(index)"
+                    >
+                      <i class="pi pi-trash" aria-hidden="true"></i>
+                    </button>
+                  </span>
+                </article>
+              }
+            </div>
+          </article>
+
+          <article class="detail-panel">
+            <header class="detail-panel__head">
+              <h2>{{ lang.t('product.challenges') }}</h2>
+              <span class="icon-badge"><i class="pi pi-bullseye" aria-hidden="true"></i></span>
+            </header>
+            <ul class="challenge-grid">
+              @for (challenge of product.challenges; track challenge.id) {
+                <li>
+                  <span>
+                    <strong>{{ text(challenge.title) }}</strong>
+                    <small>{{ text(challenge.body) }}</small>
+                  </span>
+                  <span class="detail-features__icon">
+                    @if (iconClass(challenge.imageUrl); as icon) {
+                      <i [class]="icon" aria-hidden="true"></i>
+                    } @else {
+                      <i class="pi pi-share-alt" aria-hidden="true"></i>
+                    }
+                  </span>
+                </li>
+              }
+            </ul>
+          </article>
+
+          <div class="detail-overview">
+            <article class="detail-panel">
+              <header class="detail-panel__head">
+                <h2>{{ lang.t('product.solution') }}</h2>
+                <span class="icon-badge"><i class="pi pi-share-alt" aria-hidden="true"></i></span>
+              </header>
+              <div class="detail-fields">
+                <div class="detail-field">
+                  <span>{{ lang.t('product.solutionTitle') }}</span>
+                  <strong class="detail-field__lead">
+                    <i class="pi pi-user" aria-hidden="true"></i>
+                    {{ text(product.solution.title) }}
+                  </strong>
+                </div>
+                <div class="detail-field">
+                  <span>{{ lang.t('product.solutionBody') }}</span>
+                  <p class="detail-field__lead">
+                    <i class="pi pi-align-left" aria-hidden="true"></i>
+                    {{ text(product.solution.body) }}
+                  </p>
+                </div>
+              </div>
+            </article>
+            <article class="detail-panel">
+              <header class="detail-panel__head">
+                <h2>{{ lang.t('product.adImage') }}</h2>
+                <span class="icon-badge"><i class="pi pi-image" aria-hidden="true"></i></span>
+              </header>
+              @if (product.solution.imageUrl) {
+                <img
+                  class="detail-photo detail-photo--tall"
+                  [src]="product.solution.imageUrl"
+                  alt=""
+                />
+              }
+            </article>
           </div>
-        }
-      </div>
-    </article>
+        </div>
+      }
+      @case ('offer') {
+        <div class="detail-stack">
+          <article class="detail-panel">
+            <header class="detail-panel__head">
+              <h2>{{ lang.t('product.offer') }}</h2>
+              <span class="icon-badge"><i class="pi pi-list" aria-hidden="true"></i></span>
+            </header>
+            <ul class="challenge-grid">
+              @for (entry of product.offer; track entry.id) {
+                <li>
+                  <span>
+                    <strong>{{ text(entry.title) }}</strong>
+                    <small>{{ text(entry.body) }}</small>
+                  </span>
+                  <span class="detail-features__icon">
+                    @if (iconClass(entry.imageUrl); as icon) {
+                      <i [class]="icon" aria-hidden="true"></i>
+                    } @else {
+                      <i class="pi pi-list" aria-hidden="true"></i>
+                    }
+                  </span>
+                </li>
+              }
+            </ul>
+          </article>
 
-    <article class="detail-card">
-      <h2>{{ lang.t('product.sectors') }}</h2>
-      <div class="media-grid">
-        @for (sector of product.sectors; track sector.id) {
-          <div class="mini-card">
-            @if (sector.imageUrl) {
-              <img [src]="sector.imageUrl" alt="" />
-            }
-            <strong>{{ text(sector.title) }}</strong>
+          <article class="detail-panel">
+            <header class="detail-panel__head">
+              <h2>{{ lang.t('product.results') }}</h2>
+              <span class="icon-badge"><i class="pi pi-chart-bar" aria-hidden="true"></i></span>
+            </header>
+            <ul class="challenge-grid">
+              @for (entry of product.results; track entry.id) {
+                <li>
+                  <span>
+                    <strong>{{ text(entry.title) }}</strong>
+                    <small>{{ text(entry.body) }}</small>
+                  </span>
+                  <span class="detail-features__icon">
+                    @if (iconClass(entry.imageUrl); as icon) {
+                      <i [class]="icon" aria-hidden="true"></i>
+                    } @else {
+                      <i class="pi pi-chart-bar" aria-hidden="true"></i>
+                    }
+                  </span>
+                </li>
+              }
+            </ul>
+          </article>
+
+          <article class="detail-panel">
+            <header class="detail-panel__head">
+              <h2>{{ lang.t('product.integration') }}</h2>
+              <span class="icon-badge"><i class="pi pi-link" aria-hidden="true"></i></span>
+            </header>
+            <div class="logo-grid">
+              @for (item of product.integrations; track item.id; let index = $index) {
+                <article class="logo-card">
+                  @if (iconClass(item.imageUrl); as icon) {
+                    <i [class]="icon" aria-hidden="true"></i>
+                  } @else if (item.imageUrl) {
+                    <img [src]="item.imageUrl" [alt]="text(item.title)" />
+                  }
+                  <span class="sector-card__actions">
+                    <a
+                      [routerLink]="['/products', product.id, 'edit']"
+                      [attr.aria-label]="lang.t('product.editAction')"
+                    >
+                      <i class="pi pi-pen-to-square" aria-hidden="true"></i>
+                    </a>
+                    <button
+                      type="button"
+                      [disabled]="product.integrations.length < 2"
+                      [attr.aria-label]="lang.t('about.delete')"
+                      (click)="removeIntegration(index)"
+                    >
+                      <i class="pi pi-trash" aria-hidden="true"></i>
+                    </button>
+                  </span>
+                </article>
+              }
+            </div>
+          </article>
+        </div>
+      }
+      @case ('units') {
+        <div class="detail-stack">
+          <div class="detail-overview">
+            <article class="detail-panel">
+              <header class="detail-panel__head">
+                <h2>{{ lang.t('product.units') }}</h2>
+                <span class="icon-badge"><i class="pi pi-cog" aria-hidden="true"></i></span>
+              </header>
+              <div class="stat-tabs">
+                @for (unit of product.units; track unit.id; let index = $index) {
+                  <button
+                    type="button"
+                    class="stat-tab"
+                    [class.is-active]="unitIndex() === index"
+                    (click)="unitIndex.set(index)"
+                  >
+                    {{ text(unit.title) }}
+                    <span
+                      class="stat-tab__remove"
+                      role="button"
+                      tabindex="0"
+                      [attr.aria-disabled]="product.units.length < 2"
+                      (click)="$event.stopPropagation(); removeUnit(index)"
+                      (keydown.enter)="$event.stopPropagation(); removeUnit(index)"
+                    >
+                      <i class="pi pi-trash" aria-hidden="true"></i>
+                    </span>
+                  </button>
+                }
+              </div>
+              @if (product.units[unitIndex()]; as unit) {
+                <div class="detail-fields">
+                  <div class="detail-field">
+                    <span>{{ lang.t('product.unitTitle') }}</span>
+                    <strong class="detail-field__lead">
+                      <i class="pi pi-user" aria-hidden="true"></i>
+                      {{ text(unit.title) }}
+                    </strong>
+                  </div>
+                  <div class="detail-field">
+                    <span>{{ lang.t('product.unitBody') }}</span>
+                    <p class="detail-field__lead">
+                      <i class="pi pi-align-left" aria-hidden="true"></i>
+                      {{ text(unit.body) }}
+                    </p>
+                  </div>
+                </div>
+                <h3 class="detail-subhead">{{ lang.t('product.unitFeatures') }}</h3>
+                <ul class="challenge-grid">
+                  @for (point of unit.points; track point.id) {
+                    <li>
+                      <span>
+                        <strong>{{ text(point.title) }}</strong>
+                        <small>{{ text(point.body) }}</small>
+                      </span>
+                      <span class="detail-features__icon">
+                        @if (iconClass(point.imageUrl); as icon) {
+                          <i [class]="icon" aria-hidden="true"></i>
+                        } @else {
+                          <i class="pi pi-clock" aria-hidden="true"></i>
+                        }
+                      </span>
+                    </li>
+                  }
+                </ul>
+              }
+            </article>
+            <article class="detail-panel">
+              <header class="detail-panel__head">
+                <h2>{{ lang.t('product.unitImage') }}</h2>
+                <span class="icon-badge"><i class="pi pi-image" aria-hidden="true"></i></span>
+              </header>
+              @if (product.units[unitIndex()]?.imageUrl; as image) {
+                <img class="detail-photo detail-photo--tall" [src]="image" alt="" />
+              }
+            </article>
           </div>
-        }
-      </div>
-      <h2>{{ lang.t('product.challenges') }}</h2>
-      @for (challenge of product.challenges; track challenge.id) {
-        <p>
-          <strong>{{ text(challenge.title) }}</strong> {{ text(challenge.body) }}
-        </p>
+          <article class="detail-panel">
+            <header class="detail-panel__head">
+              <h2>{{ lang.t('product.productBenefits') }}</h2>
+              <span class="icon-badge"><i class="pi pi-star" aria-hidden="true"></i></span>
+            </header>
+            <ul class="challenge-grid">
+              @for (item of product.highlights; track item.id) {
+                <li>
+                  <span>
+                    <strong>{{ text(item.title) }}</strong>
+                    <small>{{ text(item.body) }}</small>
+                  </span>
+                  <span class="detail-features__icon">
+                    @if (iconClass(item.imageUrl); as icon) {
+                      <i [class]="icon" aria-hidden="true"></i>
+                    } @else {
+                      <i class="pi pi-star" aria-hidden="true"></i>
+                    }
+                  </span>
+                </li>
+              }
+            </ul>
+          </article>
+        </div>
       }
-      <h2>{{ lang.t('product.solution') }}</h2>
-      <p>
-        <strong>{{ text(product.solution.title) }}</strong> {{ text(product.solution.body) }}
-      </p>
-    </article>
-
-    <article class="detail-card">
-      <h2>{{ lang.t('product.offer') }}</h2>
-      @for (entry of product.offer; track entry.id) {
-        <p>
-          <strong>{{ text(entry.title) }}</strong> {{ text(entry.body) }}
-        </p>
+      @case ('identity') {
+        <div class="detail-stack">
+          <article class="detail-panel">
+            <header class="detail-panel__head">
+              <h2>{{ lang.t('product.steps') }}</h2>
+              <span class="icon-badge"><i class="pi pi-list" aria-hidden="true"></i></span>
+            </header>
+            <div class="step-grid">
+              @for (step of product.steps; track step.id; let index = $index) {
+                <article class="step-card">
+                  <div>
+                    <strong>{{ index + 1 }}. {{ text(step.title) }}</strong>
+                    <p>{{ text(step.body) }}</p>
+                  </div>
+                  @if (step.imageUrl) {
+                    <img [src]="step.imageUrl" alt="" />
+                  }
+                </article>
+              }
+            </div>
+          </article>
+          <div class="detail-overview">
+            <article class="detail-panel">
+              <header class="detail-panel__head">
+                <h2>{{ lang.t('product.identity') }}</h2>
+                <span class="icon-badge"><i class="pi pi-desktop" aria-hidden="true"></i></span>
+              </header>
+              <div class="stat-tabs">
+                @for (item of product.identity; track item.id; let index = $index) {
+                  <button
+                    type="button"
+                    class="stat-tab"
+                    [class.is-active]="identityIndex() === index"
+                    (click)="identityIndex.set(index)"
+                  >
+                    {{ text(item.title) }}
+                    <span
+                      class="stat-tab__remove"
+                      role="button"
+                      tabindex="0"
+                      [attr.aria-disabled]="product.identity.length < 2"
+                      (click)="$event.stopPropagation(); removeIdentity(index)"
+                      (keydown.enter)="$event.stopPropagation(); removeIdentity(index)"
+                    >
+                      <i class="pi pi-trash" aria-hidden="true"></i>
+                    </span>
+                  </button>
+                }
+              </div>
+              @if (product.identity[identityIndex()]; as item) {
+                <div class="detail-fields">
+                  <div class="detail-field">
+                    <span>{{ lang.t('product.unitTitle') }}</span>
+                    <strong class="detail-field__lead">
+                      <i class="pi pi-user" aria-hidden="true"></i>
+                      {{ text(item.title) }}
+                    </strong>
+                  </div>
+                  <div class="detail-field">
+                    <span>{{ lang.t('product.unitBody') }}</span>
+                    <p class="detail-field__lead">
+                      <i class="pi pi-align-left" aria-hidden="true"></i>
+                      {{ text(item.body) }}
+                    </p>
+                  </div>
+                </div>
+              }
+            </article>
+            <article class="detail-panel">
+              <header class="detail-panel__head">
+                <h2>{{ lang.t('product.unitImage') }}</h2>
+                <span class="icon-badge"><i class="pi pi-image" aria-hidden="true"></i></span>
+              </header>
+              @if (product.identity[identityIndex()]?.imageUrl; as image) {
+                <img class="detail-photo detail-photo--tall" [src]="image" alt="" />
+              }
+            </article>
+          </div>
+        </div>
       }
-      <h2>{{ lang.t('product.results') }}</h2>
-      @for (entry of product.results; track entry.id) {
-        <p>
-          <strong>{{ text(entry.title) }}</strong> {{ text(entry.body) }}
-        </p>
+      @case ('faq') {
+        <div class="detail-stack">
+          <article class="detail-panel">
+            <header class="detail-panel__head">
+              <h2>{{ lang.t('product.whyChoose') }}</h2>
+              <span class="icon-badge"><i class="pi pi-star" aria-hidden="true"></i></span>
+            </header>
+            <ul class="challenge-grid">
+              @for (item of product.highlights; track item.id) {
+                <li>
+                  <span>
+                    <strong>{{ text(item.title) }}</strong>
+                    <small>{{ text(item.body) }}</small>
+                  </span>
+                  <span class="detail-features__icon">
+                    @if (iconClass(item.imageUrl); as icon) {
+                      <i [class]="icon" aria-hidden="true"></i>
+                    } @else {
+                      <i class="pi pi-star" aria-hidden="true"></i>
+                    }
+                  </span>
+                </li>
+              }
+            </ul>
+          </article>
+          <article class="detail-panel">
+            <header class="detail-panel__head">
+              <h2>{{ lang.t('product.faq') }}</h2>
+              <span class="icon-badge"
+                ><i class="pi pi-question-circle" aria-hidden="true"></i
+              ></span>
+            </header>
+            <div class="faq-list">
+              @for (faq of product.faqs; track faq.id; let index = $index) {
+                <article class="faq-item">
+                  <header>
+                    <strong>{{ text(faq.question) }}</strong>
+                    <span>{{ (index + 1).toString().padStart(2, '0') }}</span>
+                  </header>
+                  <p>{{ text(faq.answer) }}</p>
+                </article>
+              }
+            </div>
+          </article>
+        </div>
       }
-    </article>
-
-    <article class="detail-card">
-      <h2>{{ lang.t('product.tools') }}</h2>
-      @for (tool of product.tools; track tool.id) {
-        <p>
-          <strong>{{ text(tool.title) }}</strong> {{ text(tool.body) }}
-        </p>
-      }
-    </article>
-
-    <article class="detail-card">
-      <h2>{{ lang.t('product.units') }}</h2>
-      @for (unit of product.units; track unit.id) {
-        <h3>{{ text(unit.title) }}</h3>
-        <p>{{ text(unit.body) }}</p>
-        @for (point of unit.points; track point.id) {
-          <p>
-            <strong>{{ text(point.title) }}</strong> {{ text(point.body) }}
-          </p>
-        }
-      }
-    </article>
-
-    <article class="detail-card">
-      <h2>{{ lang.t('product.steps') }}</h2>
-      @for (step of product.steps; track step.id) {
-        <p>
-          <strong>{{ text(step.title) }}</strong> {{ text(step.body) }}
-        </p>
-      }
-      <h2>{{ lang.t('product.identity') }}</h2>
-      @for (item of product.identity; track item.id) {
-        <p>
-          <strong>{{ text(item.title) }}</strong> {{ text(item.body) }}
-        </p>
-      }
-    </article>
-
-    <article class="detail-card">
-      <h2>{{ lang.t('product.faq') }}</h2>
-      @for (faq of product.faqs; track faq.id) {
-        <p>
-          <strong>{{ text(faq.question) }}</strong> {{ text(faq.answer) }}
-        </p>
-      }
-      <h2>{{ lang.t('product.highlights') }}</h2>
-      @for (item of product.highlights; track item.id) {
-        <p>
-          <strong>{{ text(item.title) }}</strong> {{ text(item.body) }}
-        </p>
-      }
-    </article>
-
-    <article class="detail-card">
-      <h2>SEO</h2>
-      <p>
-        <strong>{{ lang.t('product.seoSlug') }}</strong> {{ text(product.seo.slug) }}
-      </p>
-      <p>
-        <strong>{{ lang.t('product.seoTitle') }}</strong> {{ text(product.seo.title) }}
-      </p>
-      <p>
-        <strong>{{ lang.t('product.seoKeywords') }}</strong> {{ text(product.seo.keywords) }}
-      </p>
-      <p>
-        <strong>{{ lang.t('product.seoDescription') }}</strong> {{ text(product.seo.description) }}
-      </p>
-    </article>
+    }
+    <app-confirm-dialog />
   }
 </section>

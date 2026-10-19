@@ -10,6 +10,17 @@ import {
 const FLAT = '/images/product-cover-flat.jpg';
 const DESK = '/images/product-cover-desk.jpg';
 const WOOD = '/images/product-cover-wood.jpg';
+const PROJECT = '/images/project-cover.jpg';
+const POSTER = '/images/video-poster.jpg';
+const brief = localeText('وصف يمكن استبدالة لاحقاً', 'Description can be replaced later.');
+const story = localeText(
+  'وصف نصي قصير تعريفي عن كود التقنية يتم كتابته — مصدرها فريق العمل لاحقًا.',
+  'A short description written by the team later.',
+);
+
+function marked(ar: string, en: string, icon: string, body = story) {
+  return { ...productPoint(localeText(ar, en), body), imageUrl: `icon:${icon}` };
+}
 
 function featured(): Product {
   return {
@@ -30,84 +41,146 @@ function featured(): Product {
     thumbTitle: localeText(),
     thumbAlt: localeText(),
     features: [
-      productPoint(
-        localeText('إدارة الأصول', 'Asset management'),
-        localeText('وصف يمكن استبدالة لاحقاً', 'Description can be replaced later.'),
-      ),
-      productPoint(
-        localeText('إدارة الطلبات', 'Request management'),
-        localeText('وصف يمكن استبدالة لاحقاً', 'Description can be replaced later.'),
-      ),
-      productPoint(
-        localeText('Workflow', 'Workflow'),
-        localeText('وصف يمكن استبدالة لاحقاً', 'Description can be replaced later.'),
-      ),
-      productPoint(
-        localeText('التقارير', 'Reports'),
-        localeText('وصف يمكن استبدالة لاحقاً', 'Description can be replaced later.'),
-      ),
+      {
+        ...productPoint(
+          localeText('إدارة الأصول', 'Asset management'),
+          localeText('وصف يمكن استبدالة لاحقاً', 'Description can be replaced later.'),
+        ),
+        imageUrl: 'icon:pi-cog',
+      },
+      {
+        ...productPoint(
+          localeText('إدارة الطلبات', 'Request management'),
+          localeText('وصف يمكن استبدالة لاحقاً', 'Description can be replaced later.'),
+        ),
+        imageUrl: 'icon:pi-th-large',
+      },
+      {
+        ...productPoint(
+          localeText('Workflow', 'Workflow'),
+          localeText('وصف يمكن استبدالة لاحقاً', 'Description can be replaced later.'),
+        ),
+        imageUrl: 'icon:pi-sitemap',
+      },
+      {
+        ...productPoint(
+          localeText('التقارير', 'Reports'),
+          localeText('وصف يمكن استبدالة لاحقاً', 'Description can be replaced later.'),
+        ),
+        imageUrl: 'icon:pi-clock',
+      },
     ],
     stats: [
       {
         ...productStat(),
-        value: '120+',
-        label: localeText('جهة مستفيدة', 'Organizations'),
+        value: '+10',
+        label: localeText('شركات تستخدم النظام', 'Companies using the system'),
         body: localeText('جهات تستخدم النظام يومياً.', 'Organizations using the system daily.'),
         imageName: 'stat.jpg',
+        imageUrl: WOOD,
+      },
+      {
+        ...productStat(),
+        value: '+24',
+        label: localeText('طلب يومي', 'Daily requests'),
+        body: localeText('طلبات تُغلق في نفس اليوم.', 'Requests closed the same day.'),
+        imageName: 'stat-2.jpg',
+        imageUrl: DESK,
+      },
+      {
+        ...productStat(),
+        value: '+8',
+        label: localeText('فرق عمل', 'Teams'),
+        body: localeText('فرق تتابع الأصول والطلبات.', 'Teams following assets and requests.'),
+        imageName: 'stat-3.jpg',
+        imageUrl: FLAT,
+      },
+      {
+        ...productStat(),
+        value: '+3',
+        label: localeText('لوحات متابعة', 'Dashboards'),
+        body: localeText('لوحات تعرض حالة العمل.', 'Boards that show the work status.'),
+        imageName: 'stat-4.jpg',
         imageUrl: DESK,
       },
     ],
     sectors: [
-      {
-        ...productMedia(),
-        title: localeText('التعليم', 'Education'),
-        imageName: 'education.jpg',
-        imageUrl: DESK,
-      },
-      {
-        ...productMedia(),
-        title: localeText('الصحة', 'Health'),
-        imageName: 'health.jpg',
-        imageUrl: DESK,
-      },
-      {
-        ...productMedia(),
-        title: localeText('الشركات', 'Companies'),
-        imageName: 'companies.jpg',
-        imageUrl: DESK,
-      },
-    ],
+      ['حكومي', 'Government', PROJECT],
+      ['شركات', 'Companies', DESK],
+      ['الصحة', 'Health', WOOD],
+      ['تعليم', 'Education', FLAT],
+      ['القطاع الخاص', 'Private sector', DESK],
+      ['المؤسسات', 'Institutions', PROJECT],
+      ['الأفراد', 'Individuals', POSTER],
+      ['سياحة', 'Tourism', WOOD],
+    ].map(([ar, en, imageUrl]) => ({
+      ...productMedia(),
+      title: localeText(ar, en),
+      imageName: `${en}.jpg`,
+      imageUrl,
+    })),
     challenges: [
-      productPoint(
-        localeText('تشتت الطلبات', 'Scattered requests'),
+      ['تعدد الأنظمة', 'Many systems', 'pi-server'],
+      ['العمليات تتم يدويًا', 'Work is still manual', 'pi-cog'],
+      ['ضعف التقارير', 'Weak reports', 'pi-clock'],
+      ['تأخر تنفيذ الطلبات', 'Slow request delivery', 'pi-sitemap'],
+      ['كثرة الأخطاء البشرية', 'Too many manual errors', 'pi-exclamation-circle'],
+      ['صعوبة متابعة الأداء', 'Hard to follow performance', 'pi-chart-line'],
+    ].map(([ar, en, icon]) => ({
+      ...productPoint(
+        localeText(ar, en),
         localeText(
-          'الطلبات تصل من قنوات متفرقة ويصعب تتبعها.',
-          'Requests arrive from many channels and are hard to track.',
+          'وصف نصي قصير تعريفي عن كود التقنية يتم كتابته — مصدرها فريق العمل لاحقًا.',
+          'A short description written by the team later.',
         ),
       ),
-    ],
+      imageUrl: `icon:${icon}`,
+    })),
     solution: {
       ...productMedia(),
-      title: localeText('منصة موحدة للطلب', 'One platform for every request'),
+      title: localeText(
+        'نظام إدارة خدمات تقنية المعلومات (ITSM)',
+        'IT service management system (ITSM)',
+      ),
       body: localeText(
-        'كل الطلبات والأصول والتقارير في مسار واحد.',
-        'Requests, assets, and reports in one flow.',
+        'أتمتة شاملة بنسبة 100%. ربط كامل لجميع الأنظمة بشكل منسق ومتكامل. تقارير وتحليلات بضغطة زر فورية.',
+        'Full automation. Every system connected in one flow, with reports in one click.',
       ),
       imageName: 'solution.jpg',
-      imageUrl: DESK,
+      imageUrl: POSTER,
     },
     offer: [
-      productPoint(
-        localeText('بوابة موحدة', 'Unified portal'),
-        localeText('مدخل واحد للخدمات.', 'One entry for every service.'),
+      ['ما هو؟', 'What is it?', 'pi-list'],
+      ['أين يستخدم؟', 'Where is it used?', 'pi-cog'],
+      ['لمن صُمم؟', 'Who is it for?', 'pi-clock'],
+      ['ما القيمة؟', 'What is the value?', 'pi-sitemap'],
+    ].map(([ar, en, icon]) => ({
+      ...productPoint(
+        localeText(ar, en),
+        localeText(
+          'وصف نصي قصير تعريفي عن كود التقنية يتم كتابته — مصدرها فريق العمل لاحقًا.',
+          'A short description written by the team later.',
+        ),
       ),
-    ],
+      imageUrl: `icon:${icon}`,
+    })),
     results: [
-      productPoint(
-        localeText('سرعة الاستجابة', 'Faster response'),
-        localeText('متابعة أوضح لزمن الإغلاق.', 'Clearer closure times.'),
+      ['تقليل الوقت', 'Less time', 'pi-list'],
+      ['تقليل الأخطاء', 'Fewer errors', 'pi-cog'],
+      ['رفع الإنتاجية', 'Higher output', 'pi-clock'],
+      ['تحسين اتخاذ القرار', 'Better decisions', 'pi-sitemap'],
+      ['زيادة الكفاءة', 'More efficiency', 'pi-clock'],
+      ['سهولة التوسع', 'Easier growth', 'pi-chart-line'],
+    ].map(([ar, en, icon]) => ({
+      ...productPoint(
+        localeText(ar, en),
+        localeText(
+          'وصف نصي قصير تعريفي عن كود التقنية يتم كتابته — مصدرها فريق العمل لاحقًا.',
+          'A short description written by the team later.',
+        ),
       ),
-    ],
+      imageUrl: `icon:${icon}`,
+    })),
     tools: [
       {
         ...productMedia(),
@@ -117,65 +190,140 @@ function featured(): Product {
         imageUrl: DESK,
       },
     ],
-    integrations: [productMedia()],
+    integrations: ['pi-prime', 'pi-mobile', 'pi-box', 'pi-code', 'pi-hashtag', 'pi-cog'].map(
+      (icon) => ({
+        ...productMedia(),
+        imageName: `${icon}.svg`,
+        imageUrl: `icon:${icon}`,
+      }),
+    ),
     units: [
       {
         ...productUnit(),
-        title: localeText('وحدة الطلبات', 'Requests unit'),
-        body: localeText('تسجيل الطلب وتعيينه وإغلاقه.', 'Log, assign, and close a request.'),
+        title: localeText('إدارة الطلبات', 'Request management'),
+        body: localeText(
+          'حل متكامل يساعد شركات السفر والسياحة على إدارة الحجوزات، والرحلات، والعملاء، والعمليات اليومية من منصة واحدة.',
+          'One platform for bookings, trips, customers, and daily operations.',
+        ),
         imageName: 'unit.jpg',
         imageUrl: DESK,
         points: [
-          productPoint(
-            localeText('التسجيل', 'Logging'),
-            localeText('فتح الطلب ببياناته.', 'Open the request with its data.'),
-          ),
-          productPoint(
-            localeText('الإسناد', 'Assignment'),
-            localeText('توجيه الطلب للفريق.', 'Route the request to a team.'),
-          ),
+          marked('إدارة الحجوزات', 'Booking management', 'pi-clock', brief),
+          marked('الرحلات', 'Trips', 'pi-clock', brief),
+          marked('التقارير', 'Reports', 'pi-clock', brief),
+          marked('العملاء', 'Customers', 'pi-clock', brief),
+        ],
+      },
+      {
+        ...productUnit(),
+        title: localeText('لوحة التحكم', 'Control board'),
+        body: localeText(
+          'متابعة الحالة والأرقام من لوحة واحدة.',
+          'Follow status and numbers from one board.',
+        ),
+        imageName: 'board.jpg',
+        imageUrl: POSTER,
+        points: [
+          marked('المؤشرات', 'Indicators', 'pi-chart-bar', brief),
+          marked('التنبيهات', 'Alerts', 'pi-bell', brief),
+        ],
+      },
+      {
+        ...productUnit(),
+        title: localeText('إدارة التقارير', 'Report management'),
+        body: localeText('تقارير جاهزة لحالة العمل.', 'Ready reports for the work status.'),
+        imageName: 'reports.jpg',
+        imageUrl: WOOD,
+        points: [
+          marked('تقرير يومي', 'Daily report', 'pi-file', brief),
+          marked('تقرير الأداء', 'Performance report', 'pi-chart-line', brief),
+        ],
+      },
+      {
+        ...productUnit(),
+        title: localeText('إدارة الخدمات', 'Service management'),
+        body: localeText('تنظيم الخدمات ومساراتها.', 'Organize services and their paths.'),
+        imageName: 'services.jpg',
+        imageUrl: PROJECT,
+        points: [
+          marked('كتالوج الخدمات', 'Service catalog', 'pi-list', brief),
+          marked('مسار الخدمة', 'Service path', 'pi-share-alt', brief),
         ],
       },
     ],
-    steps: [
-      productPoint(
-        localeText('استقبال الطلب', 'Receive the request'),
-        localeText('تصل البيانات من القناة المعتمدة.', 'Data arrives from the approved channel.'),
-      ),
-      productPoint(
-        localeText('المعالجة', 'Processing'),
-        localeText('الفريق ينفذ ويحدّث الحالة.', 'The team delivers and updates the status.'),
-      ),
-    ],
+    steps: [DESK, WOOD, FLAT, PROJECT, POSTER, DESK].map((imageUrl) => ({
+      ...productPoint(localeText('إعداد النظام', 'System setup'), story),
+      imageName: 'step.jpg',
+      imageUrl,
+    })),
     identity: [
-      {
-        ...productMedia(),
-        title: localeText('الهوية الرقمية', 'Digital identity'),
-        body: localeText(
-          'ألوان وخطوط وشعارات النظام كما تظهر للمستخدم.',
-          'Colors, type, and logos as the user sees them.',
-        ),
-        imageName: 'identity.jpg',
-        imageUrl: DESK,
-      },
-    ],
-    faqs: [
-      {
-        id: 'faq-channels',
-        question: localeText(
-          'هل الطلبات من كل القنوات في مكان واحد؟',
-          'Are requests from every channel in one place?',
-        ),
-        answer: localeText(
-          'نعم، القنوات المعتمدة تصب في نفس سجل الطلبات.',
-          'Yes. Approved channels land in the same request log.',
-        ),
-      },
-    ],
+      ['الواجهة الرئيسية', 'Main interface', DESK],
+      ['لوحة التحكم', 'Control board', POSTER],
+      ['نسخة الجوال', 'Mobile version', WOOD],
+      ['التقارير', 'Reports', PROJECT],
+    ].map(([ar, en, imageUrl]) => ({
+      ...productMedia(),
+      title: localeText(ar, en),
+      body: story,
+      imageName: `${en}.jpg`,
+      imageUrl,
+    })),
+    faqs: [1, 2, 3, 4].map((number) => ({
+      id: `faq-${number}`,
+      question: localeText(
+        'هل أقدر أعدل على محتوى الموقع بنفسي بعد التسليم؟',
+        'Can I edit the site content myself after delivery?',
+      ),
+      answer: localeText(
+        'نعم، نصمم لك الموقع بلوحة تحكم سهلة جداً بالعربي، وبنعلمك فيديو قصير كيف تضيف منتجاتك، تعدل النصوص، أو تنزل صور جديدة بنفسك وبدون ما تحتاج مبرمج.',
+        'Yes. The site comes with a simple Arabic control panel, and a short video shows you how to add products, edit text, and upload images yourself.',
+      ),
+    })),
     highlights: [
-      productPoint(
-        localeText('تكامل', 'Integration'),
-        localeText('يربط القنوات الداخلية.', 'Connects internal channels.'),
+      marked(
+        'مرونة عالية',
+        'High flexibility',
+        'pi-th-large',
+        localeText(
+          'قابلة للتخصيص بما يتناسب مع احتياجات كل جهة.',
+          'Customized to what each organization needs.',
+        ),
+      ),
+      marked(
+        'أمان متقدم',
+        'Advanced security',
+        'pi-shield',
+        localeText('حماية البيانات وفق أفضل الممارسات.', 'Data protected with sound practice.'),
+      ),
+      marked(
+        'قابلية التوسع',
+        'Room to grow',
+        'pi-expand',
+        localeText('تطوير النظام مع نمو أعمالك.', 'The system grows with the business.'),
+      ),
+      marked(
+        'سهولة الاستخدام',
+        'Easy to use',
+        'pi-user',
+        localeText(
+          'واجهة استخدام بسيطة تساعد على سرعة التعلم.',
+          'A simple interface that is quick to learn.',
+        ),
+      ),
+      marked(
+        'دعم فني مستمر',
+        'Ongoing support',
+        'pi-headphones',
+        localeText('فريق متخصص لتقديم الدعم الفني والتحديثات.', 'A team for support and updates.'),
+      ),
+      marked(
+        'سرعة التنفيذ',
+        'Fast delivery',
+        'pi-bolt',
+        localeText(
+          'إمكانية الربط مع الأنظمة والخدمات المختلفة.',
+          'Connects with the other systems and services.',
+        ),
       ),
     ],
     seo: {

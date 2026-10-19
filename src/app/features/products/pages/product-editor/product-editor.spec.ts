@@ -274,22 +274,26 @@ describe('ProductEditor', () => {
     const sectors = () => [
       ...root.querySelectorAll<HTMLButtonElement>('.field > .feature-card__remove'),
     ];
-    expect(sectors()).toHaveLength(3);
-    sectors()[0]?.click();
-    fixture.detectChanges();
-    sectors()[0]?.click();
-    fixture.detectChanges();
+    expect(sectors()).toHaveLength(8);
+    while (sectors().length > 1) {
+      sectors()[0]?.click();
+      fixture.detectChanges();
+    }
     expect(sectors()).toHaveLength(1);
     expect(sectors()[0]?.disabled).toBe(true);
 
     tabs[4]?.click();
     fixture.detectChanges();
     const points = () => [
-      ...root.querySelectorAll<HTMLButtonElement>('.unit-grid .feature-card__remove'),
+      ...(root
+        .querySelector('.unit-grid')
+        ?.querySelectorAll<HTMLButtonElement>('.feature-card__remove') ?? []),
     ];
-    expect(points()).toHaveLength(2);
-    points()[0]?.click();
-    fixture.detectChanges();
+    expect(points()).toHaveLength(4);
+    while (points().length > 1) {
+      points()[0]?.click();
+      fixture.detectChanges();
+    }
     expect(points()).toHaveLength(1);
     expect(points()[0]?.disabled).toBe(true);
   });
