@@ -33,15 +33,17 @@
         (input)="bodyChange.emit($event)"
       ></textarea>
     </label>
-    <div class="field">
-      <span class="field__label">{{ iconLabel() }}</span>
-      <app-product-upload
-        [locale]="locale()"
-        [actions]="true"
-        [name]="imageName()"
-        [url]="imageUrl()"
-        (picked)="imageChange.emit($event)"
-      />
-    </div>
+    @if (showIcon()) {
+      <div class="field">
+        <span class="field__label">{{ iconLabel() }}</span>
+        <app-product-upload
+          [locale]="locale()"
+          [actions]="actions()"
+          [name]="imageName()"
+          [url]="imageUrl()"
+          (picked)="imageChange.emit($event)"
+        />
+      </div>
+    }
   </div>
 </article>

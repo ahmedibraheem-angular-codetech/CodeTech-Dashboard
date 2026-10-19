@@ -203,47 +203,26 @@
               </header>
               <div class="editor-section__body">
                 @for (stat of draft().stats; track stat.id; let index = $index) {
-                  <header class="repeat-card__head">
-                    <span>{{ copy('product.statItem') }} {{ index + 1 }}</span>
-                    <button
-                      type="button"
-                      class="repeat-card__remove"
-                      [disabled]="draft().stats.length === 1"
-                      [attr.aria-label]="copy('product.deleteTitle')"
-                      (click)="removeStat(index)"
-                    >
-                      <i class="pi pi-trash" aria-hidden="true"></i>
-                    </button>
-                  </header>
-                  <label class="field">
-                    <span class="field__label">{{ copy('product.statTitle') }}</span>
-                    <input
-                      pInputText
-                      [fluid]="true"
-                      [value]="text(stat.label)"
-                      [placeholder]="copy('product.statTitlePh')"
-                      (input)="setStat(index, 'label', $event)"
-                    />
-                  </label>
-                  <label class="field">
-                    <span class="field__label">{{ copy('product.statAnswer') }}</span>
-                    <input
-                      pInputText
-                      [fluid]="true"
-                      [value]="text(stat.body)"
-                      [placeholder]="copy('product.featureBody')"
-                      (input)="setStat(index, 'body', $event)"
-                    />
-                  </label>
-                  <div class="field">
-                    <span class="field__label">{{ copy('product.statBg') }}</span>
-                    <app-product-upload
-                      [locale]="locale()"
-                      [name]="stat.imageName"
-                      [url]="stat.imageUrl"
-                      (picked)="setStatImage(index, $event)"
-                    />
-                  </div>
+                  <app-feature-card
+                    [label]="copy('product.statItem') + ' ' + (index + 1)"
+                    [title]="text(stat.label)"
+                    [titleLabel]="copy('product.statTitle')"
+                    [titlePlaceholder]="copy('product.statTitlePh')"
+                    [body]="text(stat.body)"
+                    [bodyLabel]="copy('product.statAnswer')"
+                    [bodyPlaceholder]="copy('product.featureBody')"
+                    [iconLabel]="copy('product.statBg')"
+                    [imageName]="stat.imageName"
+                    [imageUrl]="stat.imageUrl"
+                    [locale]="locale()"
+                    [actions]="false"
+                    [removeDisabled]="draft().stats.length === 1"
+                    [removeLabel]="copy('product.deleteTitle')"
+                    (titleChange)="setStat(index, 'label', $event)"
+                    (bodyChange)="setStat(index, 'body', $event)"
+                    (imageChange)="setStatImage(index, $event)"
+                    (removed)="removeStat(index)"
+                  />
                 }
                 <button type="button" class="add-row" (click)="addStat()">
                   <span class="add-row__mark" aria-hidden="true"><i class="pi pi-plus"></i></span>
@@ -284,37 +263,25 @@
             </header>
             <div class="editor-section__body">
               @for (item of draft().challenges; track item.id; let index = $index) {
-                <label class="field">
-                  <span class="field__label">{{ copy('product.challengeTitle') }}</span>
-                  <input
-                    pInputText
-                    [fluid]="true"
-                    [value]="text(item.title)"
-                    [placeholder]="copy('product.challengeTitlePh')"
-                    (input)="setPoint('challenges', index, 'title', $event)"
-                  />
-                </label>
-                <label class="field">
-                  <span class="field__label">{{ copy('product.challengeBody') }}</span>
-                  <textarea
-                    pTextarea
-                    [fluid]="true"
-                    rows="3"
-                    [value]="text(item.body)"
-                    [placeholder]="copy('product.challengeBodyPh')"
-                    (input)="setPoint('challenges', index, 'body', $event)"
-                  ></textarea>
-                </label>
-                <div class="field">
-                  <span class="field__label">{{ copy('product.icon') }}</span>
-                  <app-product-upload
-                    [locale]="locale()"
-                    [actions]="true"
-                    [name]="item.imageName"
-                    [url]="item.imageUrl"
-                    (picked)="setPointImage('challenges', index, $event)"
-                  />
-                </div>
+                <app-feature-card
+                  [label]="copy('product.challenges') + ' ' + (index + 1)"
+                  [title]="text(item.title)"
+                  [titleLabel]="copy('product.challengeTitle')"
+                  [titlePlaceholder]="copy('product.challengeTitlePh')"
+                  [body]="text(item.body)"
+                  [bodyLabel]="copy('product.challengeBody')"
+                  [bodyPlaceholder]="copy('product.challengeBodyPh')"
+                  [iconLabel]="copy('product.icon')"
+                  [imageName]="item.imageName"
+                  [imageUrl]="item.imageUrl"
+                  [locale]="locale()"
+                  [removeDisabled]="draft().challenges.length === 1"
+                  [removeLabel]="copy('product.deleteTitle')"
+                  (titleChange)="setPoint('challenges', index, 'title', $event)"
+                  (bodyChange)="setPoint('challenges', index, 'body', $event)"
+                  (imageChange)="setPointImage('challenges', index, $event)"
+                  (removed)="removePoint('challenges', index)"
+                />
               }
               <button type="button" class="add-row" (click)="addPoint('challenges')">
                 <span class="add-row__mark" aria-hidden="true"><i class="pi pi-plus"></i></span>
@@ -328,36 +295,25 @@
               <span class="icon-badge" aria-hidden="true"><i class="pi pi-code"></i></span>
             </header>
             <div class="editor-section__body">
-              <label class="field">
-                <span class="field__label">{{ copy('product.solutionTitle') }}</span>
-                <input
-                  pInputText
-                  [fluid]="true"
-                  [value]="text(draft().solution.title)"
-                  [placeholder]="copy('product.solutionTitlePh')"
-                  (input)="setSingle('solution', 'title', $event)"
-                />
-              </label>
-              <label class="field">
-                <span class="field__label">{{ copy('product.solutionBody') }}</span>
-                <textarea
-                  pTextarea
-                  [fluid]="true"
-                  rows="3"
-                  [value]="text(draft().solution.body)"
-                  [placeholder]="copy('product.solutionBodyPh')"
-                  (input)="setSingle('solution', 'body', $event)"
-                ></textarea>
-              </label>
-              <div class="field">
-                <span class="field__label">{{ copy('product.uploadLabel') }}</span>
-                <app-product-upload
-                  [locale]="locale()"
-                  [name]="draft().solution.imageName"
-                  [url]="draft().solution.imageUrl"
-                  (picked)="setSingleImage('solution', $event)"
-                />
-              </div>
+              <app-feature-card
+                [label]="copy('product.solution')"
+                [title]="text(draft().solution.title)"
+                [titleLabel]="copy('product.solutionTitle')"
+                [titlePlaceholder]="copy('product.solutionTitlePh')"
+                [body]="text(draft().solution.body)"
+                [bodyLabel]="copy('product.solutionBody')"
+                [bodyPlaceholder]="copy('product.solutionBodyPh')"
+                [iconLabel]="copy('product.uploadLabel')"
+                [imageName]="draft().solution.imageName"
+                [imageUrl]="draft().solution.imageUrl"
+                [locale]="locale()"
+                [actions]="false"
+                [removeDisabled]="true"
+                [removeLabel]="copy('product.deleteTitle')"
+                (titleChange)="setSingle('solution', 'title', $event)"
+                (bodyChange)="setSingle('solution', 'body', $event)"
+                (imageChange)="setSingleImage('solution', $event)"
+              />
             </div>
           </section>
         }
@@ -369,49 +325,25 @@
             </header>
             <div class="editor-section__body">
               @for (item of draft().offer; track item.id; let index = $index) {
-                <header class="repeat-card__head">
-                  <span>{{ copy('product.featureItem') }} {{ index + 1 }}</span>
-                  <button
-                    type="button"
-                    class="repeat-card__remove"
-                    [disabled]="draft().offer.length === 1"
-                    [attr.aria-label]="copy('product.deleteTitle')"
-                    (click)="removePoint('offer', index)"
-                  >
-                    <i class="pi pi-trash" aria-hidden="true"></i>
-                  </button>
-                </header>
-                <label class="field">
-                  <span class="field__label">{{ copy('product.featureTitle') }}</span>
-                  <input
-                    pInputText
-                    [fluid]="true"
-                    [value]="text(item.title)"
-                    [placeholder]="copy('product.featureTitlePh')"
-                    (input)="setPoint('offer', index, 'title', $event)"
-                  />
-                </label>
-                <label class="field">
-                  <span class="field__label">{{ copy('product.featureBody') }}</span>
-                  <textarea
-                    pTextarea
-                    [fluid]="true"
-                    rows="3"
-                    [value]="text(item.body)"
-                    [placeholder]="copy('product.featureBody')"
-                    (input)="setPoint('offer', index, 'body', $event)"
-                  ></textarea>
-                </label>
-                <div class="field">
-                  <span class="field__label">{{ copy('product.icon') }}</span>
-                  <app-product-upload
-                    [locale]="locale()"
-                    [actions]="true"
-                    [name]="item.imageName"
-                    [url]="item.imageUrl"
-                    (picked)="setPointImage('offer', index, $event)"
-                  />
-                </div>
+                <app-feature-card
+                  [label]="copy('product.featureItem') + ' ' + (index + 1)"
+                  [title]="text(item.title)"
+                  [titleLabel]="copy('product.featureTitle')"
+                  [titlePlaceholder]="copy('product.featureTitlePh')"
+                  [body]="text(item.body)"
+                  [bodyLabel]="copy('product.featureBody')"
+                  [bodyPlaceholder]="copy('product.featureBody')"
+                  [iconLabel]="copy('product.icon')"
+                  [imageName]="item.imageName"
+                  [imageUrl]="item.imageUrl"
+                  [locale]="locale()"
+                  [removeDisabled]="draft().offer.length === 1"
+                  [removeLabel]="copy('product.deleteTitle')"
+                  (titleChange)="setPoint('offer', index, 'title', $event)"
+                  (bodyChange)="setPoint('offer', index, 'body', $event)"
+                  (imageChange)="setPointImage('offer', index, $event)"
+                  (removed)="removePoint('offer', index)"
+                />
               }
               <button type="button" class="add-row" (click)="addPoint('offer')">
                 <span class="add-row__mark" aria-hidden="true"><i class="pi pi-plus"></i></span>
@@ -426,49 +358,25 @@
             </header>
             <div class="editor-section__body">
               @for (item of draft().results; track item.id; let index = $index) {
-                <header class="repeat-card__head">
-                  <span>{{ copy('product.resultItem') }} {{ index + 1 }}</span>
-                  <button
-                    type="button"
-                    class="repeat-card__remove"
-                    [disabled]="draft().results.length === 1"
-                    [attr.aria-label]="copy('product.deleteTitle')"
-                    (click)="removePoint('results', index)"
-                  >
-                    <i class="pi pi-trash" aria-hidden="true"></i>
-                  </button>
-                </header>
-                <label class="field">
-                  <span class="field__label">{{ copy('product.resultTitle') }}</span>
-                  <input
-                    pInputText
-                    [fluid]="true"
-                    [value]="text(item.title)"
-                    [placeholder]="copy('product.resultTitlePh')"
-                    (input)="setPoint('results', index, 'title', $event)"
-                  />
-                </label>
-                <label class="field">
-                  <span class="field__label">{{ copy('product.resultBody') }}</span>
-                  <textarea
-                    pTextarea
-                    [fluid]="true"
-                    rows="3"
-                    [value]="text(item.body)"
-                    [placeholder]="copy('product.resultBodyPh')"
-                    (input)="setPoint('results', index, 'body', $event)"
-                  ></textarea>
-                </label>
-                <div class="field">
-                  <span class="field__label">{{ copy('product.icon') }}</span>
-                  <app-product-upload
-                    [locale]="locale()"
-                    [actions]="true"
-                    [name]="item.imageName"
-                    [url]="item.imageUrl"
-                    (picked)="setPointImage('results', index, $event)"
-                  />
-                </div>
+                <app-feature-card
+                  [label]="copy('product.resultItem') + ' ' + (index + 1)"
+                  [title]="text(item.title)"
+                  [titleLabel]="copy('product.resultTitle')"
+                  [titlePlaceholder]="copy('product.resultTitlePh')"
+                  [body]="text(item.body)"
+                  [bodyLabel]="copy('product.resultBody')"
+                  [bodyPlaceholder]="copy('product.resultBodyPh')"
+                  [iconLabel]="copy('product.icon')"
+                  [imageName]="item.imageName"
+                  [imageUrl]="item.imageUrl"
+                  [locale]="locale()"
+                  [removeDisabled]="draft().results.length === 1"
+                  [removeLabel]="copy('product.deleteTitle')"
+                  (titleChange)="setPoint('results', index, 'title', $event)"
+                  (bodyChange)="setPoint('results', index, 'body', $event)"
+                  (imageChange)="setPointImage('results', index, $event)"
+                  (removed)="removePoint('results', index)"
+                />
               }
               <button type="button" class="add-row" (click)="addPoint('results')">
                 <span class="add-row__mark" aria-hidden="true"><i class="pi pi-plus"></i></span>
@@ -485,49 +393,25 @@
             </header>
             <div class="editor-section__body">
               @for (tool of draft().tools; track tool.id; let index = $index) {
-                <header class="repeat-card__head">
-                  <span>{{ copy('product.featureItem') }} {{ index + 1 }}</span>
-                  <button
-                    type="button"
-                    class="repeat-card__remove"
-                    [disabled]="draft().tools.length === 1"
-                    [attr.aria-label]="copy('product.deleteTitle')"
-                    (click)="removeMedia('tools', index)"
-                  >
-                    <i class="pi pi-trash" aria-hidden="true"></i>
-                  </button>
-                </header>
-                <label class="field">
-                  <span class="field__label">{{ copy('product.featureTitle') }}</span>
-                  <input
-                    pInputText
-                    [fluid]="true"
-                    [value]="text(tool.title)"
-                    [placeholder]="copy('product.featureTitlePh')"
-                    (input)="setMediaText('tools', index, 'title', $event)"
-                  />
-                </label>
-                <label class="field">
-                  <span class="field__label">{{ copy('product.featureBody') }}</span>
-                  <textarea
-                    pTextarea
-                    [fluid]="true"
-                    rows="3"
-                    [value]="text(tool.body)"
-                    [placeholder]="copy('product.featureBody')"
-                    (input)="setMediaText('tools', index, 'body', $event)"
-                  ></textarea>
-                </label>
-                <div class="field">
-                  <span class="field__label">{{ copy('product.icon') }}</span>
-                  <app-product-upload
-                    [locale]="locale()"
-                    [actions]="true"
-                    [name]="tool.imageName"
-                    [url]="tool.imageUrl"
-                    (picked)="setMediaImage('tools', index, $event)"
-                  />
-                </div>
+                <app-feature-card
+                  [label]="copy('product.featureItem') + ' ' + (index + 1)"
+                  [title]="text(tool.title)"
+                  [titleLabel]="copy('product.featureTitle')"
+                  [titlePlaceholder]="copy('product.featureTitlePh')"
+                  [body]="text(tool.body)"
+                  [bodyLabel]="copy('product.featureBody')"
+                  [bodyPlaceholder]="copy('product.featureBody')"
+                  [iconLabel]="copy('product.icon')"
+                  [imageName]="tool.imageName"
+                  [imageUrl]="tool.imageUrl"
+                  [locale]="locale()"
+                  [removeDisabled]="draft().tools.length === 1"
+                  [removeLabel]="copy('product.deleteTitle')"
+                  (titleChange)="setMediaText('tools', index, 'title', $event)"
+                  (bodyChange)="setMediaText('tools', index, 'body', $event)"
+                  (imageChange)="setMediaImage('tools', index, $event)"
+                  (removed)="removeMedia('tools', index)"
+                />
               }
               <button type="button" class="add-row" (click)="addMedia('tools')">
                 <span class="add-row__mark" aria-hidden="true"><i class="pi pi-plus"></i></span>
@@ -542,27 +426,26 @@
             </header>
             <div class="editor-section__body">
               @for (item of draft().integrations; track item.id; let index = $index) {
-                <header class="repeat-card__head">
-                  <span>{{ copy('product.toolItem') }} {{ index + 1 }}</span>
-                  <button
-                    type="button"
-                    class="repeat-card__remove"
-                    [disabled]="draft().integrations.length === 1"
-                    [attr.aria-label]="copy('product.deleteTitle')"
-                    (click)="removeMedia('integrations', index)"
-                  >
-                    <i class="pi pi-trash" aria-hidden="true"></i>
-                  </button>
-                </header>
-                <div class="field">
-                  <span class="field__label">{{ copy('product.uploadLabel') }}</span>
-                  <app-product-upload
-                    [locale]="locale()"
-                    [name]="item.imageName"
-                    [url]="item.imageUrl"
-                    (picked)="setMediaImage('integrations', index, $event)"
-                  />
-                </div>
+                <app-feature-card
+                  [label]="copy('product.toolItem') + ' ' + (index + 1)"
+                  [title]="text(item.title)"
+                  [titleLabel]="copy('product.featureTitle')"
+                  [titlePlaceholder]="copy('product.featureTitlePh')"
+                  [body]="text(item.body)"
+                  [bodyLabel]="copy('product.featureBody')"
+                  [bodyPlaceholder]="copy('product.featureBody')"
+                  [iconLabel]="copy('product.uploadLabel')"
+                  [imageName]="item.imageName"
+                  [imageUrl]="item.imageUrl"
+                  [locale]="locale()"
+                  [actions]="false"
+                  [removeDisabled]="draft().integrations.length === 1"
+                  [removeLabel]="copy('product.deleteTitle')"
+                  (titleChange)="setMediaText('integrations', index, 'title', $event)"
+                  (bodyChange)="setMediaText('integrations', index, 'body', $event)"
+                  (imageChange)="setMediaImage('integrations', index, $event)"
+                  (removed)="removeMedia('integrations', index)"
+                />
               }
               <button type="button" class="add-row" (click)="addMedia('integrations')">
                 <span class="add-row__mark" aria-hidden="true"><i class="pi pi-plus"></i></span>
@@ -579,88 +462,46 @@
             </header>
             <div class="editor-section__body">
               @for (unit of draft().units; track unit.id; let index = $index) {
-                <header class="repeat-card__head">
-                  <span>{{ unitName(index) }}</span>
-                  <button
-                    type="button"
-                    class="repeat-card__remove"
-                    [disabled]="draft().units.length === 1"
-                    [attr.aria-label]="copy('product.deleteTitle')"
-                    (click)="removeUnit(index)"
-                  >
-                    <i class="pi pi-trash" aria-hidden="true"></i>
-                  </button>
-                </header>
-                <label class="field">
-                  <span class="field__label">{{ copy('product.unitTitle') }}</span>
-                  <input
-                    pInputText
-                    [fluid]="true"
-                    [value]="text(unit.title)"
-                    [placeholder]="copy('product.unitTitlePh')"
-                    (input)="setUnit(index, 'title', $event)"
-                  />
-                </label>
-                <label class="field">
-                  <span class="field__label">{{ copy('product.unitBody') }}</span>
-                  <textarea
-                    pTextarea
-                    [fluid]="true"
-                    rows="3"
-                    [value]="text(unit.body)"
-                    [placeholder]="copy('product.unitBodyPh')"
-                    (input)="setUnit(index, 'body', $event)"
-                  ></textarea>
-                </label>
-                <div class="field">
-                  <span class="field__label">{{ copy('product.uploadLabel') }}</span>
-                  <app-product-upload
-                    [locale]="locale()"
-                    [name]="unit.imageName"
-                    [url]="unit.imageUrl"
-                    (picked)="setUnitImage(index, $event)"
-                  />
-                </div>
+                <app-feature-card
+                  [label]="unitName(index)"
+                  [title]="text(unit.title)"
+                  [titleLabel]="copy('product.unitTitle')"
+                  [titlePlaceholder]="copy('product.unitTitlePh')"
+                  [body]="text(unit.body)"
+                  [bodyLabel]="copy('product.unitBody')"
+                  [bodyPlaceholder]="copy('product.unitBodyPh')"
+                  [iconLabel]="copy('product.uploadLabel')"
+                  [imageName]="unit.imageName"
+                  [imageUrl]="unit.imageUrl"
+                  [locale]="locale()"
+                  [actions]="false"
+                  [removeDisabled]="draft().units.length === 1"
+                  [removeLabel]="copy('product.deleteTitle')"
+                  (titleChange)="setUnit(index, 'title', $event)"
+                  (bodyChange)="setUnit(index, 'body', $event)"
+                  (imageChange)="setUnitImage(index, $event)"
+                  (removed)="removeUnit(index)"
+                />
                 <div class="unit-grid">
                   @for (point of unit.points; track point.id; let pointIndex = $index) {
-                    <div class="unit-feature-wrap">
-                      <p class="unit-feature__title">
-                        {{ copy('product.featureItem') }} {{ pointIndex + 1 }}
-                      </p>
-                      <article class="unit-feature">
-                        <label class="field">
-                          <span class="field__label">{{ copy('product.unitFeatureName') }}</span>
-                          <input
-                            pInputText
-                            [fluid]="true"
-                            [value]="text(point.title)"
-                            [placeholder]="copy('product.unitFeatureNamePh')"
-                            (input)="setUnitPoint(index, pointIndex, 'title', $event)"
-                          />
-                        </label>
-                        <label class="field">
-                          <span class="field__label">{{ copy('product.featureBody') }}</span>
-                          <textarea
-                            pTextarea
-                            [fluid]="true"
-                            rows="3"
-                            [value]="text(point.body)"
-                            [placeholder]="copy('product.unitFeatureBodyPh')"
-                            (input)="setUnitPoint(index, pointIndex, 'body', $event)"
-                          ></textarea>
-                        </label>
-                        <div class="field">
-                          <span class="field__label">{{ copy('product.icon') }}</span>
-                          <app-product-upload
-                            [locale]="locale()"
-                            [actions]="true"
-                            [name]="point.imageName"
-                            [url]="point.imageUrl"
-                            (picked)="setUnitPointImage(index, pointIndex, $event)"
-                          />
-                        </div>
-                      </article>
-                    </div>
+                    <app-feature-card
+                      [label]="copy('product.featureItem') + ' ' + (pointIndex + 1)"
+                      [title]="text(point.title)"
+                      [titleLabel]="copy('product.unitFeatureName')"
+                      [titlePlaceholder]="copy('product.unitFeatureNamePh')"
+                      [body]="text(point.body)"
+                      [bodyLabel]="copy('product.featureBody')"
+                      [bodyPlaceholder]="copy('product.unitFeatureBodyPh')"
+                      [iconLabel]="copy('product.icon')"
+                      [imageName]="point.imageName"
+                      [imageUrl]="point.imageUrl"
+                      [locale]="locale()"
+                      [removeDisabled]="true"
+                      [removeLabel]="copy('product.deleteTitle')"
+                      (titleChange)="setUnitPoint(index, pointIndex, 'title', $event)"
+                      (bodyChange)="setUnitPoint(index, pointIndex, 'body', $event)"
+                      (imageChange)="setUnitPointImage(index, pointIndex, $event)"
+                    />
                   }
                 </div>
               }
@@ -679,48 +520,26 @@
             </header>
             <div class="editor-section__body">
               @for (item of draft().steps; track item.id; let index = $index) {
-                <header class="repeat-card__head">
-                  <span>{{ stepName(index) }}</span>
-                  <button
-                    type="button"
-                    class="repeat-card__remove"
-                    [disabled]="draft().steps.length === 1"
-                    [attr.aria-label]="copy('product.deleteTitle')"
-                    (click)="removePoint('steps', index)"
-                  >
-                    <i class="pi pi-trash" aria-hidden="true"></i>
-                  </button>
-                </header>
-                <label class="field">
-                  <span class="field__label">{{ copy('product.stepTitle') }}</span>
-                  <input
-                    pInputText
-                    [fluid]="true"
-                    [value]="text(item.title)"
-                    [placeholder]="copy('product.stepTitlePh')"
-                    (input)="setPoint('steps', index, 'title', $event)"
-                  />
-                </label>
-                <label class="field">
-                  <span class="field__label">{{ copy('product.stepBody') }}</span>
-                  <textarea
-                    pTextarea
-                    [fluid]="true"
-                    rows="3"
-                    [value]="text(item.body)"
-                    [placeholder]="copy('product.stepBodyPh')"
-                    (input)="setPoint('steps', index, 'body', $event)"
-                  ></textarea>
-                </label>
-                <div class="field">
-                  <span class="field__label">{{ copy('product.uploadLabel') }}</span>
-                  <app-product-upload
-                    [locale]="locale()"
-                    [name]="item.imageName"
-                    [url]="item.imageUrl"
-                    (picked)="setPointImage('steps', index, $event)"
-                  />
-                </div>
+                <app-feature-card
+                  [label]="stepName(index)"
+                  [title]="text(item.title)"
+                  [titleLabel]="copy('product.stepTitle')"
+                  [titlePlaceholder]="copy('product.stepTitlePh')"
+                  [body]="text(item.body)"
+                  [bodyLabel]="copy('product.stepBody')"
+                  [bodyPlaceholder]="copy('product.stepBodyPh')"
+                  [iconLabel]="copy('product.uploadLabel')"
+                  [imageName]="item.imageName"
+                  [imageUrl]="item.imageUrl"
+                  [locale]="locale()"
+                  [actions]="false"
+                  [removeDisabled]="draft().steps.length === 1"
+                  [removeLabel]="copy('product.deleteTitle')"
+                  (titleChange)="setPoint('steps', index, 'title', $event)"
+                  (bodyChange)="setPoint('steps', index, 'body', $event)"
+                  (imageChange)="setPointImage('steps', index, $event)"
+                  (removed)="removePoint('steps', index)"
+                />
               }
               <button type="button" class="add-row" (click)="addPoint('steps')">
                 <span class="add-row__mark" aria-hidden="true"><i class="pi pi-plus"></i></span>
@@ -735,48 +554,26 @@
             </header>
             <div class="editor-section__body">
               @for (item of draft().identity; track item.id; let index = $index) {
-                <header class="repeat-card__head">
-                  <span>{{ unitName(index) }}</span>
-                  <button
-                    type="button"
-                    class="repeat-card__remove"
-                    [disabled]="draft().identity.length === 1"
-                    [attr.aria-label]="copy('product.deleteTitle')"
-                    (click)="removeMedia('identity', index)"
-                  >
-                    <i class="pi pi-trash" aria-hidden="true"></i>
-                  </button>
-                </header>
-                <label class="field">
-                  <span class="field__label">{{ copy('product.unitTitle') }}</span>
-                  <input
-                    pInputText
-                    [fluid]="true"
-                    [value]="text(item.title)"
-                    [placeholder]="copy('product.unitTitlePh')"
-                    (input)="setMediaText('identity', index, 'title', $event)"
-                  />
-                </label>
-                <label class="field">
-                  <span class="field__label">{{ copy('product.identityBody') }}</span>
-                  <textarea
-                    pTextarea
-                    [fluid]="true"
-                    rows="3"
-                    [value]="text(item.body)"
-                    [placeholder]="copy('product.identityBodyPh')"
-                    (input)="setMediaText('identity', index, 'body', $event)"
-                  ></textarea>
-                </label>
-                <div class="field">
-                  <span class="field__label">{{ copy('product.uploadLabel') }}</span>
-                  <app-product-upload
-                    [locale]="locale()"
-                    [name]="item.imageName"
-                    [url]="item.imageUrl"
-                    (picked)="setMediaImage('identity', index, $event)"
-                  />
-                </div>
+                <app-feature-card
+                  [label]="unitName(index)"
+                  [title]="text(item.title)"
+                  [titleLabel]="copy('product.unitTitle')"
+                  [titlePlaceholder]="copy('product.unitTitlePh')"
+                  [body]="text(item.body)"
+                  [bodyLabel]="copy('product.identityBody')"
+                  [bodyPlaceholder]="copy('product.identityBodyPh')"
+                  [iconLabel]="copy('product.uploadLabel')"
+                  [imageName]="item.imageName"
+                  [imageUrl]="item.imageUrl"
+                  [locale]="locale()"
+                  [actions]="false"
+                  [removeDisabled]="draft().identity.length === 1"
+                  [removeLabel]="copy('product.deleteTitle')"
+                  (titleChange)="setMediaText('identity', index, 'title', $event)"
+                  (bodyChange)="setMediaText('identity', index, 'body', $event)"
+                  (imageChange)="setMediaImage('identity', index, $event)"
+                  (removed)="removeMedia('identity', index)"
+                />
               }
               <button type="button" class="add-row" (click)="addMedia('identity')">
                 <span class="add-row__mark" aria-hidden="true"><i class="pi pi-plus"></i></span>
@@ -794,28 +591,23 @@
               ></span>
             </header>
             @for (item of draft().faqs; track item.id; let index = $index) {
-              <article class="repeat-card">
-                <header class="repeat-card__head">
-                  <span class="repeat-card__index">{{ index + 1 }}</span>
-                </header>
-                <div class="pair">
-                  <label class="field">
-                    <span class="field__label">{{ copy('product.question') }}</span>
-                    <input
-                      [value]="text(item.question)"
-                      (input)="setFaq(index, 'question', $event)"
-                    />
-                  </label>
-                  <label class="field">
-                    <span class="field__label">{{ copy('product.answer') }}</span>
-                    <textarea
-                      rows="3"
-                      [value]="text(item.answer)"
-                      (input)="setFaq(index, 'answer', $event)"
-                    ></textarea>
-                  </label>
-                </div>
-              </article>
+              <app-feature-card
+                [label]="index + 1 + ''"
+                [title]="text(item.question)"
+                [titleLabel]="copy('product.question')"
+                [titlePlaceholder]="copy('product.question')"
+                [body]="text(item.answer)"
+                [bodyLabel]="copy('product.answer')"
+                [bodyPlaceholder]="copy('product.answer')"
+                [iconLabel]="copy('product.icon')"
+                [locale]="locale()"
+                [showIcon]="false"
+                [removeDisabled]="draft().faqs.length === 1"
+                [removeLabel]="copy('product.deleteTitle')"
+                (titleChange)="setFaq(index, 'question', $event)"
+                (bodyChange)="setFaq(index, 'answer', $event)"
+                (removed)="removeFaq(index)"
+              />
             }
             <button type="button" class="add-row" (click)="addFaq()">
               <i class="pi pi-plus" aria-hidden="true"></i>
@@ -828,28 +620,25 @@
               <span class="icon-badge" aria-hidden="true"><i class="pi pi-star"></i></span>
             </header>
             @for (item of draft().highlights; track item.id; let index = $index) {
-              <article class="repeat-card">
-                <header class="repeat-card__head">
-                  <span class="repeat-card__index">{{ index + 1 }}</span>
-                </header>
-                <div class="pair">
-                  <label class="field">
-                    <span class="field__label">{{ copy('product.featureTitle') }}</span>
-                    <input
-                      [value]="text(item.title)"
-                      (input)="setPoint('highlights', index, 'title', $event)"
-                    />
-                  </label>
-                  <label class="field">
-                    <span class="field__label">{{ copy('product.featureBody') }}</span>
-                    <textarea
-                      rows="3"
-                      [value]="text(item.body)"
-                      (input)="setPoint('highlights', index, 'body', $event)"
-                    ></textarea>
-                  </label>
-                </div>
-              </article>
+              <app-feature-card
+                [label]="copy('product.featureItem') + ' ' + (index + 1)"
+                [title]="text(item.title)"
+                [titleLabel]="copy('product.featureTitle')"
+                [titlePlaceholder]="copy('product.featureTitlePh')"
+                [body]="text(item.body)"
+                [bodyLabel]="copy('product.featureBody')"
+                [bodyPlaceholder]="copy('product.featureBody')"
+                [iconLabel]="copy('product.icon')"
+                [imageName]="item.imageName"
+                [imageUrl]="item.imageUrl"
+                [locale]="locale()"
+                [removeDisabled]="draft().highlights.length === 1"
+                [removeLabel]="copy('product.deleteTitle')"
+                (titleChange)="setPoint('highlights', index, 'title', $event)"
+                (bodyChange)="setPoint('highlights', index, 'body', $event)"
+                (imageChange)="setPointImage('highlights', index, $event)"
+                (removed)="removePoint('highlights', index)"
+              />
             }
             <button type="button" class="add-row" (click)="addPoint('highlights')">
               <i class="pi pi-plus" aria-hidden="true"></i>

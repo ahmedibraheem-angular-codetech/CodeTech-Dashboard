@@ -11,6 +11,7 @@ import { ProductUpload } from '../../../features/products/components/product-upl
   imports: [InputText, Textarea, ProductUpload],
   templateUrl: './feature-card.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
+  host: { style: 'display: contents' },
 })
 export class FeatureCard {
   readonly label = input.required<string>();
@@ -24,6 +25,9 @@ export class FeatureCard {
   readonly imageName = input('');
   readonly imageUrl = input('');
   readonly locale = input<AppLanguage | null>(null);
+  /** Library and upload tabs. Plain image drop zones leave this off. */
+  readonly actions = input(true);
+  readonly showIcon = input(true);
   readonly removeDisabled = input(false);
   readonly removeLabel = input('');
 

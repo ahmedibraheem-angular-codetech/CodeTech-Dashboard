@@ -406,6 +406,14 @@ export class ProductEditor {
     this.draft.update((current) => ({ ...current, faqs: [...current.faqs, productFaq()] }));
   }
 
+  protected removeFaq(index: number): void {
+    this.draft.update((current) => ({
+      ...current,
+      faqs:
+        current.faqs.length > 1 ? current.faqs.filter((_, item) => item !== index) : current.faqs,
+    }));
+  }
+
   protected setSeo(field: keyof Product['seo'], event: Event): void {
     const value = this.read(event);
     this.draft.update((current) => ({
