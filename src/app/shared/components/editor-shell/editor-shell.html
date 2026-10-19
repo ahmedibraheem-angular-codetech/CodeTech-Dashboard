@@ -51,22 +51,12 @@
     <app-state-view mode="error" [message]="labels().error" (retry)="retry.emit()" />
   } @else {
     @if (mode() === 'edit') {
-      <div class="section-tabs" role="tablist">
-        @for (item of steps(); track item.id; let index = $index) {
-          <button
-            type="button"
-            role="tab"
-            [id]="tabIdPrefix() + '-' + item.id"
-            [attr.aria-selected]="active() === index"
-            [attr.aria-controls]="panelId()"
-            [class.is-active]="active() === index"
-            [disabled]="saving()"
-            (click)="stepChange.emit(index)"
-          >
-            {{ item.label }}
-          </button>
-        }
-      </div>
+      <app-page-tabs
+        [tabs]="editorTabs()"
+        [value]="steps()[active()]?.id"
+        [disabled]="saving()"
+        (valueChange)="chooseTab($event)"
+      />
     } @else {
       <app-wizard-stepper
         [steps]="steps()"
@@ -80,7 +70,12 @@
       <app-locale-switch [value]="locale()" (picked)="localeChange.emit($event)" />
     </div>
 
-    <div class="editor-card" [id]="panelId()" role="tabpanel" [attr.dir]="locale() === 'ar' ? 'rtl' : 'ltr'">
+    <div
+      class="editor-card"
+      [id]="panelId()"
+      role="tabpanel"
+      [attr.dir]="locale() === 'ar' ? 'rtl' : 'ltr'"
+    >
       <ng-content />
     </div>
 

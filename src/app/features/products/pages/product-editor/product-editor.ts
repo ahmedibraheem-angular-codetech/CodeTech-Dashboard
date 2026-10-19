@@ -88,7 +88,11 @@ export class ProductEditor {
   );
   readonly stepId = computed(() => PRODUCT_STEPS[this.step()].id);
   readonly wizardSteps = computed(() =>
-    this.steps.map((item) => ({ id: item.id, label: this.lang.t(item.labelKey) })),
+    this.steps.map((item) => ({
+      id: item.id,
+      label: this.lang.t(item.labelKey),
+      labelKey: item.labelKey,
+    })),
   );
   readonly shellLabels = computed<EditorShellLabels>(() => ({
     saveDraft: this.lang.t('product.saveDraft'),

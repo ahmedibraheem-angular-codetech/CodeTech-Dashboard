@@ -1,8 +1,10 @@
 <p-tabs [value]="value()" (valueChange)="valueChange.emit($event)" scrollable>
   <p-tablist>
     @for (tab of tabs(); track tab.id) {
-      <p-tab [value]="tab.id">
-        <i [class]="tab.icon" aria-hidden="true"></i>
+      <p-tab [value]="tab.id" [disabled]="disabled()">
+        @if (tab.icon) {
+          <i [class]="tab.icon" aria-hidden="true"></i>
+        }
         <span>{{ lang.t(tab.labelKey) }}</span>
       </p-tab>
     }

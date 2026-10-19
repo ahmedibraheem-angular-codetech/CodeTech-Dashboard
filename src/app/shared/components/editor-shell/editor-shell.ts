@@ -1,9 +1,10 @@
-import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
 import { Button } from 'primeng/button';
 
 import type { AppLanguage } from '../../../core/i18n/language';
 import { LocaleSwitch } from '../locale-switch/locale-switch';
 import { PageHeader } from '../page-header/page-header';
+import { PageTabs, type PageTab } from '../page-tabs/page-tabs';
 import { StateView } from '../state-view/state-view';
 import { WizardStepper, type WizardStepItem } from '../wizard-stepper/wizard-stepper';
 
@@ -27,7 +28,7 @@ export interface EditorShellLabels {
  */
 @Component({
   selector: 'app-editor-shell',
-  imports: [PageHeader, Button, LocaleSwitch, StateView, WizardStepper],
+  imports: [PageHeader, Button, LocaleSwitch, StateView, WizardStepper, PageTabs],
   templateUrl: './editor-shell.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -54,4 +55,18 @@ export class EditorShell {
   readonly next = output<void>();
   readonly previous = output<void>();
   readonly localeChange = output<AppLanguage>();
+
+  protected readonly editorTabs = computed<readonly PageTab[]>(() =>
+    this.steps().map((step) => ({
+      id: step.id,
+      labelKey: step.labelKey ?? step.label,
+    })),
+  );
+
+  protected chooseTab(value: string | number | undefined): void {
+    const index = this.steps().findIndex((step) => step.id === value);
+    if (index >= 0) {
+      this.stepChange.emit(index);
+    }
+  }
 }

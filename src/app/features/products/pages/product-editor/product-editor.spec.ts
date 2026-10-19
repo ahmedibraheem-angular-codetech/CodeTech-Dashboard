@@ -13,6 +13,19 @@ import { ProductEditor } from './product-editor';
 class ProductRouteStub {}
 
 describe('ProductEditor', () => {
+  beforeEach(() => {
+    vi.stubGlobal(
+      'ResizeObserver',
+      class {
+        observe(): void {}
+        unobserve(): void {}
+        disconnect(): void {}
+      },
+    );
+  });
+
+  afterEach(() => vi.unstubAllGlobals());
+
   async function render(
     mode: 'create' | 'edit',
     id = '',
@@ -99,7 +112,7 @@ describe('ProductEditor', () => {
     const fixture = await render('edit', 'info-system');
     const root: HTMLElement = fixture.nativeElement;
 
-    expect(root.querySelector('.section-tabs[role="tablist"]')).not.toBeNull();
+    expect(root.querySelector('app-page-tabs')).not.toBeNull();
     expect(root.querySelector('p-stepper')).toBeNull();
     expect(root.querySelector<HTMLInputElement>('input:not([type="file"])')?.value).toBe(
       'نظام إدارة خدمات تقنية المعلومات',

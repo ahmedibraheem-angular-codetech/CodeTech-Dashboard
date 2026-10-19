@@ -14,7 +14,7 @@ import { LanguageService } from '../../../core/services/language.service';
 export interface PageTab {
   id: string;
   labelKey: string;
-  icon: string;
+  icon?: string;
 }
 
 /**
@@ -32,6 +32,7 @@ export interface PageTab {
 export class PageTabs {
   readonly tabs = input.required<readonly PageTab[]>();
   readonly value = input.required<string | number | undefined>();
+  readonly disabled = input(false);
   readonly valueChange = output<string | number | undefined>();
   readonly lang = inject(LanguageService);
 }

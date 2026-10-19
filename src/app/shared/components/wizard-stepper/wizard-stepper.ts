@@ -4,6 +4,7 @@ import { Step, StepList, Stepper } from 'primeng/stepper';
 export interface WizardStepItem {
   id: string;
   label: string;
+  labelKey?: string;
 }
 
 /** Horizontal PrimeNG stepper. A step shows a check only after it has been left. */
