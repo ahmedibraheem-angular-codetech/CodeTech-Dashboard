@@ -675,10 +675,49 @@ app-product-editor .locale-switch__option.is-active::after {
   min-height: 112px;
 }
 
+.editor-section--units > .editor-section__head {
+  justify-content: flex-start;
+  gap: 8px;
+}
+
+.editor-section--units > .editor-section__body {
+  gap: 16px;
+  padding: 0;
+  background: transparent;
+}
+
+.unit-block {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 14px;
+  width: 100%;
+}
+
+.unit-block > .feature-card__tab {
+  align-self: flex-start;
+}
+
+.unit-block > .feature-card__tab .feature-card__remove {
+  border-radius: 8px;
+  background: #fff1f2;
+  color: #e11d48;
+}
+
+.unit-block .p-inputtext,
+.unit-block .p-textarea,
+.unit-feature-wrap .p-inputtext,
+.unit-feature-wrap .p-textarea {
+  min-height: 52px;
+  border: 1px solid #e6ebf2;
+  border-radius: 16px;
+  background: #fff;
+}
+
 .unit-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 12px;
+  gap: 16px 12px;
 }
 
 .unit-feature-wrap {
@@ -691,6 +730,7 @@ app-product-editor .locale-switch__option.is-active::after {
 .unit-feature__title {
   margin: 0;
   color: var(--app-text);
+  font-size: 14px;
   font-weight: 700;
   text-align: start;
 }
@@ -933,6 +973,34 @@ app-product-editor .locale-switch__option.is-active::after {
 .editor-card textarea:focus-visible {
   border-color: var(--app-primary);
   outline: 2px solid color-mix(in srgb, var(--app-primary) 28%, transparent);
+}
+
+.editor-section--faq > .editor-section__head {
+  justify-content: flex-start;
+  gap: 8px;
+}
+
+.editor-section--faq > .editor-section__body {
+  gap: 14px;
+  padding: 0;
+  background: transparent;
+}
+
+.editor-section--faq .feature-card__body > .field:has(.field__mark) .p-inputtext {
+  padding-inline-start: 40px;
+}
+
+.field__mark {
+  position: absolute;
+  inset-inline-start: 14px;
+  bottom: 16px;
+  color: var(--app-muted);
+  font-size: 14px;
+  pointer-events: none;
+}
+
+.feature-card__body > .field:has(.field__mark) {
+  position: relative;
 }
 
 .field--required .field__label::after {

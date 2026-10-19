@@ -437,56 +437,60 @@
       </section>
     }
     @case ('units') {
-      <section class="editor-section">
+      <section class="editor-section editor-section--units">
         <header class="editor-section__head">
           <h2>{{ copy('product.units') }}</h2>
           <span class="icon-badge" aria-hidden="true"><i class="pi pi-cog"></i></span>
         </header>
         <div class="editor-section__body">
           @for (unit of draft().units; track unit.id; let index = $index) {
-            <app-feature-card
-              [label]="unitName(index)"
-              [title]="text(unit.title)"
-              [titleLabel]="copy('product.unitTitle')"
-              [titlePlaceholder]="copy('product.unitTitlePh')"
-              [body]="text(unit.body)"
-              [bodyLabel]="copy('product.unitBody')"
-              [bodyPlaceholder]="copy('product.unitBodyPh')"
-              [iconLabel]="copy('product.uploadLabel')"
-              [imageName]="unit.imageName"
-              [imageUrl]="unit.imageUrl"
-              [locale]="locale()"
-              [actions]="false"
-              [removeDisabled]="draft().units.length === 1"
-              [removeLabel]="copy('product.deleteTitle')"
-              (titleChange)="setUnit(index, 'title', $event)"
-              (bodyChange)="setUnit(index, 'body', $event)"
-              (imageChange)="setUnitImage(index, $event)"
-              (removed)="removeUnit(index)"
-            />
-            <div class="unit-grid">
-              @for (point of unit.points; track point.id; let pointIndex = $index) {
-                <app-feature-card
-                  [label]="copy('product.featureItem') + ' ' + (pointIndex + 1)"
-                  [title]="text(point.title)"
-                  [titleLabel]="copy('product.unitFeatureName')"
-                  [titlePlaceholder]="copy('product.unitFeatureNamePh')"
-                  [body]="text(point.body)"
-                  [bodyLabel]="copy('product.featureBody')"
-                  [bodyPlaceholder]="copy('product.unitFeatureBodyPh')"
-                  [iconLabel]="copy('product.icon')"
-                  [imageName]="point.imageName"
-                  [imageUrl]="point.imageUrl"
-                  [locale]="locale()"
-                  [removeDisabled]="unit.points.length === 1 || saving()"
-                  [removeLabel]="copy('product.deleteTitle')"
-                  (removed)="removeUnitPoint(index, pointIndex)"
-                  (titleChange)="setUnitPoint(index, pointIndex, 'title', $event)"
-                  (bodyChange)="setUnitPoint(index, pointIndex, 'body', $event)"
-                  (imageChange)="setUnitPointImage(index, pointIndex, $event)"
-                />
-              }
-            </div>
+            <article class="unit-block">
+              <app-feature-card
+                [label]="unitName(index)"
+                [title]="text(unit.title)"
+                [titleLabel]="copy('product.unitTitle')"
+                [titlePlaceholder]="copy('product.unitTitlePh')"
+                [body]="text(unit.body)"
+                [bodyLabel]="copy('product.unitBody')"
+                [bodyPlaceholder]="copy('product.unitBodyPh')"
+                [iconLabel]="copy('product.uploadLabel')"
+                [imageName]="unit.imageName"
+                [imageUrl]="unit.imageUrl"
+                [locale]="locale()"
+                [actions]="false"
+                [removeDisabled]="draft().units.length === 1 || saving()"
+                [removeLabel]="copy('product.deleteTitle')"
+                (titleChange)="setUnit(index, 'title', $event)"
+                (bodyChange)="setUnit(index, 'body', $event)"
+                (imageChange)="setUnitImage(index, $event)"
+                (removed)="removeUnit(index)"
+              />
+              <div class="unit-grid">
+                @for (point of unit.points; track point.id; let pointIndex = $index) {
+                  <div class="unit-feature-wrap">
+                    <app-feature-card
+                      [label]="copy('product.featureItem') + ' ' + (pointIndex + 1)"
+                      [title]="text(point.title)"
+                      [titleLabel]="copy('product.unitFeatureName')"
+                      [titlePlaceholder]="copy('product.unitFeatureNamePh')"
+                      [body]="text(point.body)"
+                      [bodyLabel]="copy('product.featureBody')"
+                      [bodyPlaceholder]="copy('product.unitFeatureBodyPh')"
+                      [iconLabel]="copy('product.icon')"
+                      [imageName]="point.imageName"
+                      [imageUrl]="point.imageUrl"
+                      [locale]="locale()"
+                      [removeDisabled]="unit.points.length === 1 || saving()"
+                      [removeLabel]="copy('product.deleteTitle')"
+                      (removed)="removeUnitPoint(index, pointIndex)"
+                      (titleChange)="setUnitPoint(index, pointIndex, 'title', $event)"
+                      (bodyChange)="setUnitPoint(index, pointIndex, 'body', $event)"
+                      (imageChange)="setUnitPointImage(index, pointIndex, $event)"
+                    />
+                  </div>
+                }
+              </div>
+            </article>
           }
           <button type="button" class="add-row" (click)="addUnit()">
             <span class="add-row__mark" aria-hidden="true"><i class="pi pi-plus"></i></span>
@@ -566,65 +570,70 @@
       </section>
     }
     @case ('faq') {
-      <section class="editor-section">
+      <section class="editor-section editor-section--faq">
+        <header class="editor-section__head">
+          <h2>{{ copy('product.whyChoose') }}</h2>
+          <span class="icon-badge" aria-hidden="true"><i class="pi pi-star"></i></span>
+        </header>
+        <div class="editor-section__body">
+          @for (item of draft().highlights; track item.id; let index = $index) {
+            <app-feature-card
+              [label]="copy('product.featureItem') + ' ' + (index + 1)"
+              [title]="text(item.title)"
+              [titleLabel]="copy('product.featureTitle')"
+              [titlePlaceholder]="copy('product.featureTitlePh')"
+              [body]="text(item.body)"
+              [bodyLabel]="copy('product.featureBody')"
+              [bodyPlaceholder]="copy('product.featureBody')"
+              [iconLabel]="copy('product.icon')"
+              [imageName]="item.imageName"
+              [imageUrl]="item.imageUrl"
+              [locale]="locale()"
+              [removeDisabled]="draft().highlights.length === 1"
+              [removeLabel]="copy('product.deleteTitle')"
+              (titleChange)="setPoint('highlights', index, 'title', $event)"
+              (bodyChange)="setPoint('highlights', index, 'body', $event)"
+              (imageChange)="setPointImage('highlights', index, $event)"
+              (removed)="removePoint('highlights', index)"
+            />
+          }
+          <button type="button" class="add-row" (click)="addPoint('highlights')">
+            <span class="add-row__mark" aria-hidden="true"><i class="pi pi-plus"></i></span>
+            {{ copy('product.addFeature') }}
+          </button>
+        </div>
+      </section>
+      <section class="editor-section editor-section--faq">
         <header class="editor-section__head">
           <h2>{{ copy('product.faq') }}</h2>
           <span class="icon-badge" aria-hidden="true"><i class="pi pi-question-circle"></i></span>
         </header>
-        @for (item of draft().faqs; track item.id; let index = $index) {
-          <app-feature-card
-            [label]="index + 1 + ''"
-            [title]="text(item.question)"
-            [titleLabel]="copy('product.question')"
-            [titlePlaceholder]="copy('product.question')"
-            [body]="text(item.answer)"
-            [bodyLabel]="copy('product.answer')"
-            [bodyPlaceholder]="copy('product.answer')"
-            [iconLabel]="copy('product.icon')"
-            [locale]="locale()"
-            [showIcon]="false"
-            [removeDisabled]="draft().faqs.length === 1"
-            [removeLabel]="copy('product.deleteTitle')"
-            (titleChange)="setFaq(index, 'question', $event)"
-            (bodyChange)="setFaq(index, 'answer', $event)"
-            (removed)="removeFaq(index)"
-          />
-        }
-        <button type="button" class="add-row" (click)="addFaq()">
-          <i class="pi pi-plus" aria-hidden="true"></i>
-          {{ copy('product.addFaq') }}
-        </button>
-      </section>
-      <section class="editor-section">
-        <header class="editor-section__head">
-          <h2>{{ copy('product.highlights') }}</h2>
-          <span class="icon-badge" aria-hidden="true"><i class="pi pi-star"></i></span>
-        </header>
-        @for (item of draft().highlights; track item.id; let index = $index) {
-          <app-feature-card
-            [label]="copy('product.featureItem') + ' ' + (index + 1)"
-            [title]="text(item.title)"
-            [titleLabel]="copy('product.featureTitle')"
-            [titlePlaceholder]="copy('product.featureTitlePh')"
-            [body]="text(item.body)"
-            [bodyLabel]="copy('product.featureBody')"
-            [bodyPlaceholder]="copy('product.featureBody')"
-            [iconLabel]="copy('product.icon')"
-            [imageName]="item.imageName"
-            [imageUrl]="item.imageUrl"
-            [locale]="locale()"
-            [removeDisabled]="draft().highlights.length === 1"
-            [removeLabel]="copy('product.deleteTitle')"
-            (titleChange)="setPoint('highlights', index, 'title', $event)"
-            (bodyChange)="setPoint('highlights', index, 'body', $event)"
-            (imageChange)="setPointImage('highlights', index, $event)"
-            (removed)="removePoint('highlights', index)"
-          />
-        }
-        <button type="button" class="add-row" (click)="addPoint('highlights')">
-          <i class="pi pi-plus" aria-hidden="true"></i>
-          {{ copy('product.addFeature') }}
-        </button>
+        <div class="editor-section__body">
+          @for (item of draft().faqs; track item.id; let index = $index) {
+            <app-feature-card
+              [label]="copy('product.faqItem') + ' ' + (index + 1)"
+              [title]="text(item.question)"
+              [titleLabel]="copy('product.question')"
+              [titlePlaceholder]="copy('product.questionPh')"
+              titleIcon="pi-question-circle"
+              [body]="text(item.answer)"
+              [bodyLabel]="copy('product.answer')"
+              [bodyPlaceholder]="copy('product.answerPh')"
+              [iconLabel]="copy('product.icon')"
+              [locale]="locale()"
+              [showIcon]="false"
+              [removeDisabled]="draft().faqs.length === 1"
+              [removeLabel]="copy('product.deleteTitle')"
+              (titleChange)="setFaq(index, 'question', $event)"
+              (bodyChange)="setFaq(index, 'answer', $event)"
+              (removed)="removeFaq(index)"
+            />
+          }
+          <button type="button" class="add-row" (click)="addFaq()">
+            <span class="add-row__mark" aria-hidden="true"><i class="pi pi-plus"></i></span>
+            {{ copy('product.addFaq') }}
+          </button>
+        </div>
       </section>
     }
     @case ('seo') {

@@ -18,6 +18,7 @@ export class FeatureCard {
   readonly title = input('');
   readonly titleLabel = input.required<string>();
   readonly titlePlaceholder = input('');
+  readonly titleIcon = input('');
   readonly body = input('');
   readonly bodyLabel = input.required<string>();
   readonly bodyPlaceholder = input('');

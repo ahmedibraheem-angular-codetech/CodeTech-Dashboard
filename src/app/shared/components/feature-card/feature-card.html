@@ -21,6 +21,9 @@
         [placeholder]="titlePlaceholder()"
         (input)="titleChange.emit($event)"
       />
+      @if (titleIcon()) {
+        <i class="field__mark" [class]="'pi ' + titleIcon()" aria-hidden="true"></i>
+      }
     </label>
     <label class="field">
       <span class="field__label">{{ bodyLabel() }}</span>
