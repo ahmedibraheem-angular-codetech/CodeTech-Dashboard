@@ -616,24 +616,6 @@ app-product-editor .locale-switch__option.is-active {
   box-shadow: none;
 }
 
-app-product-editor .locale-switch__option.is-active img {
-  display: none;
-}
-
-app-product-editor .locale-switch__option.is-active::after {
-  content: '✓';
-  display: grid;
-  width: 22px;
-  height: 22px;
-  place-items: center;
-  border-radius: 50%;
-  background: var(--app-success);
-  color: var(--app-primary-contrast);
-  font-size: 12px;
-  font-weight: 700;
-  line-height: 1;
-}
-
 .editor-layout {
   display: grid;
   grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr);
