@@ -121,9 +121,11 @@
         </p>
       }
       <h2>{{ lang.t('product.identity') }}</h2>
-      <p>
-        <strong>{{ text(product.identity.title) }}</strong> {{ text(product.identity.body) }}
-      </p>
+      @for (item of product.identity; track item.id) {
+        <p>
+          <strong>{{ text(item.title) }}</strong> {{ text(item.body) }}
+        </p>
+      }
     </article>
 
     <article class="detail-card">

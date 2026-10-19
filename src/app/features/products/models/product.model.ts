@@ -1,12 +1,20 @@
+import type { AppLanguage } from '../../../core/i18n/language';
+
 export interface LocaleText {
   ar: string;
   en: string;
+}
+
+export function readLocale(value: LocaleText, language: AppLanguage): string {
+  return value[language];
 }
 
 export interface ProductPoint {
   id: string;
   title: LocaleText;
   body: LocaleText;
+  imageName: string;
+  imageUrl: string;
 }
 
 export interface ProductStat {
@@ -56,8 +64,12 @@ export interface Product {
   category: LocaleText;
   coverName: string;
   coverUrl: string;
+  coverTitle: LocaleText;
+  coverAlt: LocaleText;
   thumbName: string;
   thumbUrl: string;
+  thumbTitle: LocaleText;
+  thumbAlt: LocaleText;
   features: ProductPoint[];
   stats: ProductStat[];
   sectors: ProductMedia[];
@@ -66,9 +78,10 @@ export interface Product {
   offer: ProductPoint[];
   results: ProductPoint[];
   tools: ProductMedia[];
+  integrations: ProductMedia[];
   units: ProductUnit[];
   steps: ProductPoint[];
-  identity: ProductMedia;
+  identity: ProductMedia[];
   faqs: ProductFaq[];
   highlights: ProductPoint[];
   seo: ProductSeo;
@@ -99,7 +112,7 @@ export function productId(prefix: string): string {
 }
 
 export function productPoint(title = localeText(), body = localeText()): ProductPoint {
-  return { id: productId('point'), title, body };
+  return { id: productId('point'), title, body, imageName: '', imageUrl: '' };
 }
 
 export function productStat(): ProductStat {
@@ -130,7 +143,7 @@ export function productUnit(): ProductUnit {
     body: localeText(),
     imageName: '',
     imageUrl: '',
-    points: [productPoint()],
+    points: [productPoint(), productPoint(), productPoint(), productPoint()],
   };
 }
 
@@ -147,8 +160,12 @@ export function blankProduct(): Product {
     category: localeText(),
     coverName: '',
     coverUrl: '',
+    coverTitle: localeText(),
+    coverAlt: localeText(),
     thumbName: '',
     thumbUrl: '',
+    thumbTitle: localeText(),
+    thumbAlt: localeText(),
     features: [productPoint()],
     stats: [productStat()],
     sectors: [productMedia()],
@@ -157,9 +174,10 @@ export function blankProduct(): Product {
     offer: [productPoint()],
     results: [productPoint()],
     tools: [productMedia()],
+    integrations: [productMedia()],
     units: [productUnit()],
     steps: [productPoint()],
-    identity: productMedia(),
+    identity: [productMedia()],
     faqs: [productFaq()],
     highlights: [productPoint()],
     seo: {

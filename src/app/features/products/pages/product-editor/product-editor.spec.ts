@@ -38,6 +38,24 @@ describe('ProductEditor', () => {
     expect(root.textContent).toContain('التالي');
   });
 
+  it('switches form copy with the Arabic and English locale tab', async () => {
+    const fixture = await render('create');
+    const root: HTMLElement = fixture.nativeElement;
+
+    expect(root.textContent).toContain('عنوان المنتج');
+    expect(root.textContent).toContain('مميزات المنتج');
+
+    const english = [...root.querySelectorAll<HTMLButtonElement>('.locale-switch__option')].find(
+      (button) => button.textContent?.includes('English'),
+    );
+    english?.click();
+    fixture.detectChanges();
+
+    expect(root.textContent).toContain('Product title');
+    expect(root.textContent).toContain('Product features');
+    expect(root.textContent).toContain('Add a feature');
+  });
+
   it('uses tabs on the edit flow and keeps the product name', async () => {
     const fixture = await render('edit', 'info-system');
     const root: HTMLElement = fixture.nativeElement;

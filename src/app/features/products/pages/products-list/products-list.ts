@@ -23,7 +23,7 @@ import {
   type ProductCardFeature,
 } from '../../../../shared/components/product-card/product-card';
 import { StateView } from '../../../../shared/components/state-view/state-view';
-import { type Product, type ProductPoint } from '../../models/product.model';
+import { readLocale, type Product, type ProductPoint } from '../../models/product.model';
 import { ProductsService } from '../../services/products.service';
 
 @Component({
@@ -40,7 +40,6 @@ import { ProductsService } from '../../services/products.service';
     ConfirmDialog,
   ],
   templateUrl: './products-list.html',
-  styleUrl: '../../products.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProductsPage {
@@ -67,13 +66,11 @@ export class ProductsPage {
   readonly visible = computed(() => this.source().slice(this.first(), this.first() + this.rows()));
 
   protected text(product: Product): string {
-    const language = this.lang.language();
-    return product.name[language] || product.name.ar;
+    return this.display(product.name);
   }
 
   protected summary(product: Product): string {
-    const language = this.lang.language();
-    return product.summary[language] || product.summary.ar;
+    return this.display(product.summary);
   }
 
   protected features(product: Product): ProductPoint[] {
@@ -81,8 +78,11 @@ export class ProductsPage {
   }
 
   protected featureText(point: ProductPoint, field: 'title' | 'body'): string {
-    const language = this.lang.language();
-    return point[field][language] || point[field].ar;
+    return this.display(point[field]);
+  }
+
+  private display(value: ProductPoint['title']): string {
+    return readLocale(value, this.lang.language()) || value.ar;
   }
 
   protected cardFeatures(product: Product): ProductCardFeature[] {

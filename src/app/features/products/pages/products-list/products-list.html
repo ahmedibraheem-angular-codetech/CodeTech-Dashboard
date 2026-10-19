@@ -1,56 +1,56 @@
 <section class="page product-board">
   <app-page-header [title]="lang.t('product.manage')" [subtitle]="lang.t('product.subtitle')" />
   <section class="product-board__body">
-  <div class="product-board__toolbar">
-    <label class="product-board__catalog">
-      <span>{{ lang.t('product.catalog') }}</span>
-      <p-toggleswitch
-        [ngModel]="api.catalogVisible()"
-        (ngModelChange)="api.toggleCatalog()"
-        [ariaLabel]="lang.t('product.catalog')"
-      />
-    </label>
-    <a class="product-board__add" routerLink="/products/new">
-      {{ lang.t('product.add') }}
-      <i class="pi pi-plus" aria-hidden="true"></i>
-    </a>
-  </div>
-
-  @if (visible().length === 0) {
-    <app-state-view mode="empty" [message]="lang.t('product.empty')" />
-  } @else {
-    <div class="product-grid">
-      @for (product of visible(); track product.id; let index = $index) {
-        <app-product-card
-          [imageUrl]="product.coverUrl"
-          [title]="text(product)"
-          [summary]="summary(product)"
-          [features]="cardFeatures(product)"
-          [revealed]="index === 1"
-          [deleteLabel]="lang.t('product.deleteTitle')"
-          [editLabel]="lang.t('product.edit')"
-          [viewLabel]="lang.t('product.view')"
-          [moreLabel]="lang.t('product.view')"
-          (deleteRequested)="remove(product)"
-          (editRequested)="openEditor(product)"
-          (viewRequested)="openDetails(product)"
-          (moreRequested)="openMenu($event, product)"
+    <div class="product-board__toolbar">
+      <label class="product-board__catalog">
+        <span>{{ lang.t('product.catalog') }}</span>
+        <p-toggleswitch
+          [ngModel]="api.catalogVisible()"
+          (ngModelChange)="api.toggleCatalog()"
+          [ariaLabel]="lang.t('product.catalog')"
         />
-      }
+      </label>
+      <a class="product-board__add" routerLink="/products/new">
+        {{ lang.t('product.add') }}
+        <i class="pi pi-plus" aria-hidden="true"></i>
+      </a>
     </div>
 
-    <p-paginator
-      [first]="first()"
-      [rows]="rows()"
-      [totalRecords]="total()"
-      [rowsPerPageOptions]="[10, 20, 50]"
-      [showCurrentPageReport]="true"
-      [showFirstLastIcon]="false"
-      currentPageReportTemplate="عرض {currentPage} من {rows}"
-      [alwaysShow]="true"
-      (onPageChange)="page($event)"
-    />
-  }
+    @if (visible().length === 0) {
+      <app-state-view mode="empty" [message]="lang.t('product.empty')" />
+    } @else {
+      <div class="product-grid">
+        @for (product of visible(); track product.id; let index = $index) {
+          <app-product-card
+            [imageUrl]="product.coverUrl"
+            [title]="text(product)"
+            [summary]="summary(product)"
+            [features]="cardFeatures(product)"
+            [revealed]="index === 1"
+            [deleteLabel]="lang.t('product.deleteTitle')"
+            [editLabel]="lang.t('product.edit')"
+            [viewLabel]="lang.t('product.view')"
+            [moreLabel]="lang.t('product.view')"
+            (deleteRequested)="remove(product)"
+            (editRequested)="openEditor(product)"
+            (viewRequested)="openDetails(product)"
+            (moreRequested)="openMenu($event, product)"
+          />
+        }
+      </div>
+
+      <p-paginator
+        [first]="first()"
+        [rows]="rows()"
+        [totalRecords]="total()"
+        [rowsPerPageOptions]="[10, 20, 50]"
+        [showCurrentPageReport]="true"
+        [showFirstLastIcon]="false"
+        currentPageReportTemplate="عرض {currentPage} من {rows}"
+        [alwaysShow]="true"
+        (onPageChange)="page($event)"
+      />
+    }
   </section>
 
   <p-popover #actions appendTo="body">

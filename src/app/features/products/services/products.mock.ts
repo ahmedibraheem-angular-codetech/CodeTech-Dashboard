@@ -23,8 +23,12 @@ function featured(): Product {
     category: localeText('أنظمة تشغيلية', 'Operations systems'),
     coverName: 'cover.jpg',
     coverUrl: DESK,
+    coverTitle: localeText(),
+    coverAlt: localeText(),
     thumbName: 'thumb.jpg',
     thumbUrl: DESK,
+    thumbTitle: localeText(),
+    thumbAlt: localeText(),
     features: [
       productPoint(
         localeText('إدارة الأصول', 'Asset management'),
@@ -113,6 +117,7 @@ function featured(): Product {
         imageUrl: DESK,
       },
     ],
+    integrations: [productMedia()],
     units: [
       {
         ...productUnit(),
@@ -142,16 +147,18 @@ function featured(): Product {
         localeText('الفريق ينفذ ويحدّث الحالة.', 'The team delivers and updates the status.'),
       ),
     ],
-    identity: {
-      ...productMedia(),
-      title: localeText('الهوية الرقمية', 'Digital identity'),
-      body: localeText(
-        'ألوان وخطوط وشعارات النظام كما تظهر للمستخدم.',
-        'Colors, type, and logos as the user sees them.',
-      ),
-      imageName: 'identity.jpg',
-      imageUrl: DESK,
-    },
+    identity: [
+      {
+        ...productMedia(),
+        title: localeText('الهوية الرقمية', 'Digital identity'),
+        body: localeText(
+          'ألوان وخطوط وشعارات النظام كما تظهر للمستخدم.',
+          'Colors, type, and logos as the user sees them.',
+        ),
+        imageName: 'identity.jpg',
+        imageUrl: DESK,
+      },
+    ],
     faqs: [
       {
         id: 'faq-channels',

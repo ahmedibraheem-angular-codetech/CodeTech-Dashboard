@@ -16,14 +16,13 @@ import { LanguageService } from '../../../../core/services/language.service';
 import { LocaleSwitch } from '../../../../shared/components/locale-switch/locale-switch';
 import { PageHeader } from '../../../../shared/components/page-header/page-header';
 import { StateView } from '../../../../shared/components/state-view/state-view';
-import { type LocaleText, type Product } from '../../models/product.model';
+import { readLocale, type LocaleText, type Product } from '../../models/product.model';
 import { ProductsService } from '../../services/products.service';
 
 @Component({
   selector: 'app-product-detail',
   imports: [PageHeader, RouterLink, LocaleSwitch, StateView],
   templateUrl: './product-detail.html',
-  styleUrl: '../../products.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProductDetailPage {
@@ -43,7 +42,7 @@ export class ProductDetailPage {
   }
 
   protected text(value: LocaleText): string {
-    return value[this.locale()];
+    return readLocale(value, this.locale());
   }
 
   private load(id: string): void {
