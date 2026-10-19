@@ -16,6 +16,7 @@ import { Button } from 'primeng/button';
 import { IconField } from 'primeng/iconfield';
 import { InputIcon } from 'primeng/inputicon';
 import { InputText } from 'primeng/inputtext';
+import { Step, StepList, Stepper } from 'primeng/stepper';
 import { Textarea } from 'primeng/textarea';
 import { map } from 'rxjs';
 
@@ -52,6 +53,9 @@ type MediaList = 'sectors' | 'tools' | 'integrations' | 'identity';
     FieldError,
     StateView,
     ProductUpload,
+    Stepper,
+    StepList,
+    Step,
     IconField,
     InputIcon,
     InputText,
@@ -73,6 +77,8 @@ export class ProductEditor {
   readonly steps = PRODUCT_STEPS;
   readonly locale = signal<AppLanguage>('ar');
   readonly step = signal(0);
+  /** Highest step index the user has left with التالي. */
+  private readonly passed = signal(-1);
   readonly draft = signal<Product>(blankProduct());
   readonly status = signal<'loading' | 'ready' | 'missing'>('ready');
   readonly nameError = signal(false);
@@ -96,6 +102,7 @@ export class ProductEditor {
         this.status.set('ready');
         this.draft.set(blankProduct());
         this.step.set(0);
+        this.passed.set(-1);
       });
     });
   }
@@ -124,8 +131,12 @@ export class ProductEditor {
     return `${this.copy('product.stepItem')} ${order[index] ?? index + 1}`;
   }
 
-  protected select(index: number): void {
-    if (this.mode() === 'create' && index > this.step()) {
+  protected passedStep(index: number): boolean {
+    return index <= this.passed() && index !== this.step();
+  }
+
+  protected select(index: number | undefined): void {
+    if (index === undefined || (this.mode() === 'create' && index > this.step())) {
       return;
     }
     this.step.set(index);
@@ -133,7 +144,9 @@ export class ProductEditor {
 
   protected next(): void {
     if (!this.lastStep()) {
-      this.step.update((current) => current + 1);
+      const leaving = this.step();
+      this.passed.update((current) => Math.max(current, leaving));
+      this.step.set(leaving + 1);
     }
   }
 

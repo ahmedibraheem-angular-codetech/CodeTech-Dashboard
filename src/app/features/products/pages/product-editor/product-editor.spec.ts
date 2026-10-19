@@ -33,9 +33,22 @@ describe('ProductEditor', () => {
     const fixture = await render('create');
     const root: HTMLElement = fixture.nativeElement;
 
-    expect(root.querySelector('.wizard')).not.toBeNull();
-    expect(root.querySelector('[role="tablist"]')).toBeNull();
+    expect(root.querySelector('p-stepper.wizard')).not.toBeNull();
+    expect(root.querySelector('.section-tabs')).toBeNull();
     expect(root.textContent).toContain('التالي');
+
+    root.querySelector<HTMLButtonElement>('.editor-nav--next')?.click();
+    fixture.detectChanges();
+
+    const marks = [...root.querySelectorAll<HTMLButtonElement>('.wizard__step')];
+    expect(marks[0]?.classList.contains('is-done')).toBe(true);
+    expect(marks[0]?.querySelector('.pi-check')).not.toBeNull();
+    expect(marks[1]?.classList.contains('is-done')).toBe(false);
+
+    marks[0]?.click();
+    fixture.detectChanges();
+    expect(marks[0]?.classList.contains('is-done')).toBe(false);
+    expect(marks[0]?.querySelector('.pi-check')).toBeNull();
   });
 
   it('switches form copy with the Arabic and English locale tab', async () => {
@@ -60,8 +73,8 @@ describe('ProductEditor', () => {
     const fixture = await render('edit', 'info-system');
     const root: HTMLElement = fixture.nativeElement;
 
-    expect(root.querySelector('[role="tablist"]')).not.toBeNull();
-    expect(root.querySelector('.wizard')).toBeNull();
+    expect(root.querySelector('.section-tabs[role="tablist"]')).not.toBeNull();
+    expect(root.querySelector('p-stepper')).toBeNull();
     expect(root.querySelector<HTMLInputElement>('input:not([type="file"])')?.value).toBe(
       'نظام إدارة خدمات تقنية المعلومات',
     );

@@ -38,29 +38,33 @@
         }
       </div>
     } @else {
-      <ol class="wizard">
-        @for (item of steps; track item.id; let index = $index) {
-          <li>
-            <button
-              type="button"
-              class="wizard__step"
-              [class.is-active]="step() === index"
-              [class.is-done]="index < step()"
-              [disabled]="index > step()"
-              (click)="select(index)"
-            >
-              <span class="wizard__mark">
-                @if (index < step()) {
-                  <i class="pi pi-check" aria-hidden="true"></i>
-                } @else {
-                  {{ index + 1 }}
-                }
-              </span>
-              <span class="wizard__label">{{ lang.t(item.labelKey) }}</span>
-            </button>
-          </li>
-        }
-      </ol>
+      <p-stepper class="wizard" [value]="step()">
+        <p-step-list>
+          @for (item of steps; track item.id; let index = $index) {
+            <p-step [value]="index" [disabled]="index > step()">
+              <ng-template #content>
+                <button
+                  type="button"
+                  class="wizard__step"
+                  [class.is-active]="step() === index"
+                  [class.is-done]="passedStep(index)"
+                  [disabled]="index > step()"
+                  (click)="select(index)"
+                >
+                  <span class="wizard__mark">
+                    @if (passedStep(index)) {
+                      <i class="pi pi-check" aria-hidden="true"></i>
+                    } @else {
+                      {{ index + 1 }}
+                    }
+                  </span>
+                  <span class="wizard__label">{{ lang.t(item.labelKey) }}</span>
+                </button>
+              </ng-template>
+            </p-step>
+          }
+        </p-step-list>
+      </p-stepper>
     }
 
     <div class="editor-locale">
