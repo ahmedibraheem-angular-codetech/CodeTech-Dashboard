@@ -1,0 +1,120 @@
+<section class="page">
+  <app-page-header [title]="title()">
+    @if (mode() === 'edit') {
+      <p-button
+        class="editor-draft"
+        styleClass="editor-draft__button"
+        icon="pi pi-file"
+        iconPos="right"
+        severity="secondary"
+        [outlined]="true"
+        [disabled]="saving()"
+        [label]="labels().saveDraft"
+        (onClick)="saveDraft.emit()"
+      />
+      <p-button
+        class="editor-draft"
+        styleClass="editor-draft__button"
+        severity="secondary"
+        [outlined]="true"
+        [disabled]="saving()"
+        [label]="published() ? labels().unpublish : labels().publish"
+        (onClick)="publishChange.emit(!published())"
+      />
+      <p-button
+        [disabled]="saving()"
+        [loading]="saving()"
+        [label]="labels().save"
+        (onClick)="save.emit()"
+      />
+    } @else {
+      <p-button
+        class="editor-draft"
+        styleClass="editor-draft__button"
+        icon="pi pi-file"
+        iconPos="right"
+        severity="secondary"
+        [outlined]="true"
+        [disabled]="saving()"
+        [loading]="saving()"
+        [label]="labels().saveDraft"
+        (onClick)="saveDraft.emit()"
+      />
+    }
+  </app-page-header>
+
+  @if (status() === 'loading') {
+    <app-state-view mode="loading" [message]="labels().loading" />
+  } @else if (status() === 'missing') {
+    <app-state-view mode="empty" [message]="labels().missing" />
+  } @else if (status() === 'error') {
+    <app-state-view mode="error" [message]="labels().error" (retry)="retry.emit()" />
+  } @else {
+    @if (mode() === 'edit') {
+      <div class="section-tabs" role="tablist">
+        @for (item of steps(); track item.id; let index = $index) {
+          <button
+            type="button"
+            role="tab"
+            [id]="tabIdPrefix() + '-' + item.id"
+            [attr.aria-selected]="active() === index"
+            [attr.aria-controls]="panelId()"
+            [class.is-active]="active() === index"
+            [disabled]="saving()"
+            (click)="stepChange.emit(index)"
+          >
+            {{ item.label }}
+          </button>
+        }
+      </div>
+    } @else {
+      <app-wizard-stepper
+        [steps]="steps()"
+        [active]="active()"
+        [passed]="passed()"
+        (picked)="stepChange.emit($event)"
+      />
+    }
+
+    <div class="editor-locale">
+      <app-locale-switch [value]="locale()" (picked)="localeChange.emit($event)" />
+    </div>
+
+    <div class="editor-card" [id]="panelId()" role="tabpanel">
+      <ng-content />
+    </div>
+
+    @if (mode() === 'create') {
+      <footer class="editor-footer">
+        @if (lastStep()) {
+          <p-button
+            class="editor-next"
+            styleClass="editor-nav editor-nav--next"
+            [disabled]="saving()"
+            [loading]="saving()"
+            [label]="labels().finish"
+            (onClick)="save.emit()"
+          />
+        } @else {
+          <p-button
+            class="editor-next"
+            styleClass="editor-nav editor-nav--next"
+            [disabled]="saving()"
+            [loading]="saving()"
+            [label]="labels().next"
+            (onClick)="next.emit()"
+          />
+        }
+        <p-button
+          class="editor-back"
+          styleClass="editor-nav editor-nav--back"
+          severity="secondary"
+          [outlined]="true"
+          [disabled]="saving()"
+          [label]="labels().previous"
+          (onClick)="previous.emit()"
+        />
+      </footer>
+    }
+  }
+</section>

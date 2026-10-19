@@ -12,7 +12,6 @@ import {
 import { takeUntilDestroyed, toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MessageService } from 'primeng/api';
-import { Button } from 'primeng/button';
 import { IconField } from 'primeng/iconfield';
 import { InputIcon } from 'primeng/inputicon';
 import { InputText } from 'primeng/inputtext';
@@ -21,12 +20,12 @@ import { catchError, finalize, map, of, switchMap } from 'rxjs';
 
 import type { AppLanguage } from '../../../../core/i18n/translations';
 import { LanguageService } from '../../../../core/services/language.service';
+import {
+  EditorShell,
+  type EditorShellLabels,
+} from '../../../../shared/components/editor-shell/editor-shell';
 import { FeatureCard } from '../../../../shared/components/feature-card/feature-card';
 import { FieldError } from '../../../../shared/components/field-error/field-error';
-import { LocaleSwitch } from '../../../../shared/components/locale-switch/locale-switch';
-import { PageHeader } from '../../../../shared/components/page-header/page-header';
-import { StateView } from '../../../../shared/components/state-view/state-view';
-import { WizardStepper } from '../../../../shared/components/wizard-stepper/wizard-stepper';
 import { ProductUpload } from '../../components/product-upload/product-upload';
 import {
   PRODUCT_STEPS,
@@ -48,14 +47,10 @@ type MediaList = 'sectors' | 'tools' | 'integrations' | 'identity';
 @Component({
   selector: 'app-product-editor',
   imports: [
-    PageHeader,
-    Button,
-    LocaleSwitch,
+    EditorShell,
     FieldError,
-    StateView,
     ProductUpload,
     FeatureCard,
-    WizardStepper,
     IconField,
     InputIcon,
     InputText,
@@ -95,6 +90,18 @@ export class ProductEditor {
   readonly wizardSteps = computed(() =>
     this.steps.map((item) => ({ id: item.id, label: this.lang.t(item.labelKey) })),
   );
+  readonly shellLabels = computed<EditorShellLabels>(() => ({
+    saveDraft: this.lang.t('product.saveDraft'),
+    publish: this.lang.t('product.publish'),
+    unpublish: this.lang.t('product.unpublish'),
+    save: this.lang.t('common.save'),
+    next: this.lang.t('product.next'),
+    previous: this.lang.t('product.previous'),
+    finish: this.lang.t('product.finish'),
+    loading: this.lang.t('common.loading'),
+    missing: this.lang.t('product.notFound'),
+    error: this.lang.t('common.error'),
+  }));
   readonly lastStep = computed(() => this.step() === PRODUCT_STEPS.length - 1);
 
   private readonly editRequest = computed(() =>

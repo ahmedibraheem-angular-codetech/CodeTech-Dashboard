@@ -648,8 +648,22 @@ app-product-editor .locale-switch__option.is-active::after {
   background: var(--app-surface);
 }
 
-.editor-section--wide {
+.editor-section.editor-section--wide {
+  align-items: center;
+  align-self: stretch;
+  gap: 12px;
+  height: 563px;
+  padding: 16px;
+  border: 1px solid var(--Foundation-grey-scale-Light, #f0f1f3);
+  border-radius: 16px;
+  background: #fff;
   grid-column: 1 / -1;
+}
+
+.editor-section.editor-section--wide > .editor-section__head,
+.editor-section.editor-section--wide > .editor-section__body {
+  align-self: stretch;
+  width: 100%;
 }
 
 .editor-section--wide .uploader,
@@ -695,6 +709,43 @@ app-product-editor .locale-switch__option.is-active::after {
   gap: 12px;
 }
 
+.editor-layout > .editor-section:nth-child(2),
+.editor-layout > .editor-section:nth-child(4) {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  align-self: stretch;
+  gap: 12px;
+  padding: 16px;
+  border: 1px solid var(--Foundation-grey-scale-Light, #f0f1f3);
+  border-radius: 16px;
+  background: #fff;
+}
+
+.editor-layout > .editor-section:nth-child(2) > .editor-section__head,
+.editor-layout > .editor-section:nth-child(2) > .editor-section__body,
+.editor-layout > .editor-section:nth-child(4) > .editor-section__head,
+.editor-layout > .editor-section:nth-child(4) > .editor-section__body {
+  align-self: stretch;
+  width: 100%;
+}
+
+.editor-layout > .editor-section:first-child > .editor-section__head,
+.editor-layout > .editor-section:nth-child(2) > .editor-section__head,
+.editor-layout > .editor-section:nth-child(4) > .editor-section__head {
+  justify-content: flex-start;
+  gap: 8px;
+}
+
+.editor-layout > .editor-section:first-child > .editor-section__head .icon-badge,
+.editor-layout > .editor-section:nth-child(2) > .editor-section__head .icon-badge,
+.editor-layout > .editor-section:nth-child(4) > .editor-section__head .icon-badge {
+  display: grid;
+  flex: none;
+  order: -1;
+  place-items: center;
+}
+
 .editor-section h2 {
   margin: 0;
   color: var(--app-secondary);
@@ -715,9 +766,34 @@ app-product-editor .locale-switch__option.is-active::after {
   display: flex;
   flex-direction: column;
   gap: 14px;
-  padding: 16px;
+  // padding: 16px;
   border-radius: 16px;
   // background: #f7f9fc;
+}
+
+.editor-layout > .editor-section:first-child > .editor-section__body,
+.editor-layout > .editor-section:nth-child(2) > .editor-section__body,
+.editor-layout > .editor-section:nth-child(4) > .editor-section__body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  align-self: stretch;
+  gap: 14px;
+  padding: 12px;
+  border: 1px solid #edeeee;
+  border-radius: 16px;
+  background: #f9fafb;
+}
+
+.editor-layout > .editor-section:first-child > .editor-section__body > .field,
+.editor-layout > .editor-section:first-child > .editor-section__body .p-iconfield,
+.editor-layout > .editor-section:nth-child(2) > .editor-section__body > .field,
+.editor-layout > .editor-section:nth-child(2) > .editor-section__body .p-iconfield,
+.editor-layout > .editor-section:nth-child(4) > .editor-section__body > .field,
+.editor-layout > .editor-section:nth-child(4) > .editor-section__body .p-iconfield {
+  align-self: stretch;
+  width: 100%;
 }
 
 .editor-card input:focus-visible,
