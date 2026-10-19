@@ -30,6 +30,7 @@ export class FeatureCard {
   readonly showIcon = input(true);
   readonly removeDisabled = input(false);
   readonly removeLabel = input('');
+  readonly removeIcon = input('pi-trash');
 
   readonly titleChange = output<Event>();
   readonly bodyChange = output<Event>();

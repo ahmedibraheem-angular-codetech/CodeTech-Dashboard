@@ -533,6 +533,10 @@ app-product-upload {
   --p-button-primary-hover-border-color: var(--app-primary);
 }
 
+.editor-footer .editor-back {
+  order: -1;
+}
+
 .editor-footer .editor-nav--back {
   --p-button-outlined-secondary-color: var(--app-muted);
   --p-button-outlined-secondary-border-color: #e3e8f2;
@@ -707,6 +711,135 @@ app-product-editor .locale-switch__option.is-active::after {
   align-items: center;
   justify-content: space-between;
   gap: 12px;
+}
+
+.editor-section.editor-section--soft {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  align-self: stretch;
+  gap: 12px;
+  padding: 16px;
+  border: 1px solid #edeeee;
+  border-radius: 16px;
+  background: #fff;
+}
+
+.editor-section.editor-section--soft > .editor-section__head,
+.editor-section.editor-section--soft > .editor-section__body,
+.editor-section.editor-section--soft > .add-row {
+  align-self: stretch;
+  width: 100%;
+}
+
+.editor-section.editor-section--soft > .editor-section__head {
+  justify-content: flex-start;
+  gap: 8px;
+}
+
+.editor-section.editor-section--soft > .editor-section__head .icon-badge {
+  display: grid;
+  flex: none;
+  order: -1;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  background: #f4f7fb;
+  color: #16324f;
+  font-size: 14px;
+}
+
+.editor-section.editor-section--soft > .editor-section__body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  padding: 12px;
+  border: 1px solid #edeeee;
+  border-radius: 16px;
+  background: #f9fafb;
+}
+
+.editor-section.editor-section--soft > .editor-section__body > .field,
+.editor-section--soft .soft-item {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-self: stretch;
+  gap: 12px;
+  width: 100%;
+  padding: 12px 12px 12px 44px;
+  border: 1px solid #edeeee;
+  border-radius: 16px;
+  background: #fff;
+}
+
+.editor-section--soft .feature-card__remove {
+  display: grid;
+  width: 28px;
+  height: 28px;
+  place-items: center;
+  border-radius: 50%;
+  background: #f4f6f8;
+  color: #64748b;
+  font-size: 12px;
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease;
+}
+
+.editor-section--soft .feature-card__remove:hover:not(:disabled) {
+  background: #fff1f2;
+  color: #e11d48;
+}
+
+.editor-section.editor-section--soft > .editor-section__body > .field > .feature-card__remove {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+}
+
+.editor-section--soft > .editor-section__body > .feature-card__tab {
+  display: none;
+}
+
+.editor-section--soft .feature-card__tab {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  display: flex;
+  width: auto;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+
+.editor-section--soft .feature-card__tab > span {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+}
+
+.editor-section--soft .feature-card__body {
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+}
+
+.editor-section--soft > .add-row {
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease;
+}
+
+.editor-section--soft > .add-row:hover {
+  background: #e7f3fc;
+  color: #1570b8;
 }
 
 .editor-layout > .editor-section:nth-child(2),

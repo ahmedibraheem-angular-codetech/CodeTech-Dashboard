@@ -203,7 +203,7 @@
       </div>
     }
     @case ('sectors') {
-      <section class="editor-section">
+      <section class="editor-section editor-section--soft">
         <header class="editor-section__head">
           <h2>{{ copy('product.sectors') }}</h2>
           <span class="icon-badge" aria-hidden="true"><i class="pi pi-globe"></i></span>
@@ -219,7 +219,7 @@
                 [attr.aria-label]="copy('product.deleteTitle')"
                 (click)="removeMedia('sectors', index)"
               >
-                <i class="pi pi-trash" aria-hidden="true"></i>
+                <i class="pi pi-times" aria-hidden="true"></i>
               </button>
               <app-product-upload
                 [locale]="locale()"
@@ -229,46 +229,49 @@
               />
             </div>
           }
-          <button type="button" class="add-row" (click)="addMedia('sectors')">
-            <span class="add-row__mark" aria-hidden="true"><i class="pi pi-plus"></i></span>
-            {{ copy('product.addSector') }}
-          </button>
         </div>
+        <button type="button" class="add-row" (click)="addMedia('sectors')">
+          <span class="add-row__mark" aria-hidden="true"><i class="pi pi-plus"></i></span>
+          {{ copy('product.addSector') }}
+        </button>
       </section>
-      <section class="editor-section">
+      <section class="editor-section editor-section--soft">
         <header class="editor-section__head">
           <h2>{{ copy('product.challenges') }}</h2>
           <span class="icon-badge" aria-hidden="true"><i class="pi pi-share-alt"></i></span>
         </header>
         <div class="editor-section__body">
           @for (item of draft().challenges; track item.id; let index = $index) {
-            <app-feature-card
-              [label]="copy('product.challenges') + ' ' + (index + 1)"
-              [title]="text(item.title)"
-              [titleLabel]="copy('product.challengeTitle')"
-              [titlePlaceholder]="copy('product.challengeTitlePh')"
-              [body]="text(item.body)"
-              [bodyLabel]="copy('product.challengeBody')"
-              [bodyPlaceholder]="copy('product.challengeBodyPh')"
-              [iconLabel]="copy('product.icon')"
-              [imageName]="item.imageName"
-              [imageUrl]="item.imageUrl"
-              [locale]="locale()"
-              [removeDisabled]="draft().challenges.length === 1"
-              [removeLabel]="copy('product.deleteTitle')"
-              (titleChange)="setPoint('challenges', index, 'title', $event)"
-              (bodyChange)="setPoint('challenges', index, 'body', $event)"
-              (imageChange)="setPointImage('challenges', index, $event)"
-              (removed)="removePoint('challenges', index)"
-            />
+            <div class="soft-item">
+              <app-feature-card
+                [label]="copy('product.challenges') + ' ' + (index + 1)"
+                [title]="text(item.title)"
+                [titleLabel]="copy('product.challengeTitle')"
+                [titlePlaceholder]="copy('product.challengeTitlePh')"
+                [body]="text(item.body)"
+                [bodyLabel]="copy('product.challengeBody')"
+                [bodyPlaceholder]="copy('product.challengeBodyPh')"
+                [iconLabel]="copy('product.icon')"
+                [imageName]="item.imageName"
+                [imageUrl]="item.imageUrl"
+                [locale]="locale()"
+                [removeDisabled]="draft().challenges.length === 1"
+                [removeLabel]="copy('product.deleteTitle')"
+                removeIcon="pi-times"
+                (titleChange)="setPoint('challenges', index, 'title', $event)"
+                (bodyChange)="setPoint('challenges', index, 'body', $event)"
+                (imageChange)="setPointImage('challenges', index, $event)"
+                (removed)="removePoint('challenges', index)"
+              />
+            </div>
           }
-          <button type="button" class="add-row" (click)="addPoint('challenges')">
-            <span class="add-row__mark" aria-hidden="true"><i class="pi pi-plus"></i></span>
-            {{ copy('product.addChallenge') }}
-          </button>
         </div>
+        <button type="button" class="add-row" (click)="addPoint('challenges')">
+          <span class="add-row__mark" aria-hidden="true"><i class="pi pi-plus"></i></span>
+          {{ copy('product.addChallenge') }}
+        </button>
       </section>
-      <section class="editor-section">
+      <section class="editor-section editor-section--soft">
         <header class="editor-section__head">
           <h2>{{ copy('product.solution') }}</h2>
           <span class="icon-badge" aria-hidden="true"><i class="pi pi-code"></i></span>
