@@ -1,23 +1,22 @@
 <section class="page seo-page">
   <app-page-header [title]="title()" [subtitle]="lang.t('seo.subtitle')">
-    <p-button
+    <app-button
       class="seo-save"
       styleClass="seo-btn"
       icon="pi pi-save"
       iconPos="right"
       [label]="lang.t('seo.save')"
-      (onClick)="save()"
+      (clicked)="save()"
     />
-    <p-button
+    <app-button
       class="seo-revert"
       styleClass="seo-btn"
       icon="pi pi-undo"
       iconPos="right"
-      severity="secondary"
-      [outlined]="true"
+      variant="outlined"
       [label]="lang.t('seo.revert')"
       [disabled]="!dirty()"
-      (onClick)="revert()"
+      (clicked)="revert()"
     />
   </app-page-header>
 

@@ -1,14 +1,13 @@
 <header class="topbar">
   <div class="topbar__trail">
-    <p-button
+    <app-button
       icon="pi pi-bars"
-      severity="secondary"
       variant="outlined"
       styleClass="topbar__btn"
       [ariaLabel]="lang.t('header.toggleSidebar')"
       [pTooltip]="lang.t('header.toggleSidebar')"
       tooltipPosition="bottom"
-      (onClick)="layout.toggleSidebar()"
+      (clicked)="layout.toggleSidebar()"
     />
     <app-breadcrumbs />
   </div>
@@ -42,14 +41,13 @@
         <span class="topbar__dot"></span>
       }
     </p-button>
-    <p-button
+    <app-button
       icon="pi pi-globe"
-      severity="secondary"
       variant="outlined"
       styleClass="topbar__btn topbar__lang"
       [label]="lang.t('header.languageName')"
       [ariaLabel]="lang.t('header.language')"
-      (onClick)="lang.toggle()"
+      (clicked)="lang.toggle()"
     />
     <a
       class="user-chip"
@@ -74,7 +72,7 @@
       (ngModelChange)="query.set($event)"
       name="q"
     />
-    <p-button type="submit" [label]="lang.t('header.search')" />
+    <app-button type="submit" [label]="lang.t('header.search')" />
   </form>
 }
 

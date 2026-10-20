@@ -15,10 +15,10 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { MessageService } from 'primeng/api';
-import { Button } from 'primeng/button';
 import { Textarea } from 'primeng/textarea';
 
 import { LanguageService } from '../../../../core/services/language.service';
+import { AppButton } from '../../../../shared/components/app-button/app-button';
 import { ConfirmDialog } from '../../../../shared/components/confirm-dialog/confirm-dialog';
 import { FieldError } from '../../../../shared/components/field-error/field-error';
 import { Modal } from '../../../../shared/components/modal/modal';
@@ -44,7 +44,7 @@ interface TimelineStep {
   imports: [
     NgTemplateOutlet,
     ReactiveFormsModule,
-    Button,
+    AppButton,
     Textarea,
     ConfirmDialog,
     FieldError,

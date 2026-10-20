@@ -17,7 +17,6 @@ import {
   Validators,
 } from '@angular/forms';
 import { MessageService } from 'primeng/api';
-import { Button } from 'primeng/button';
 import { IconField } from 'primeng/iconfield';
 import { InputIcon } from 'primeng/inputicon';
 import { InputText } from 'primeng/inputtext';
@@ -26,6 +25,7 @@ import { distinctUntilChanged, finalize, map } from 'rxjs';
 import { ProfileDraft } from '../../../../core/profile/profile.model';
 import { ProfileService } from '../../../../core/profile/profile.service';
 import { LanguageService } from '../../../../core/services/language.service';
+import { AppButton } from '../../../../shared/components/app-button/app-button';
 import { FieldError } from '../../../../shared/components/field-error/field-error';
 
 /** The editable profile fields; each one is a form control with the same name. */
@@ -140,7 +140,7 @@ function normalize(draft: ProfileDraft): ProfileDraft {
  */
 @Component({
   selector: 'app-personal-data',
-  imports: [ReactiveFormsModule, Button, IconField, InputIcon, InputText, FieldError],
+  imports: [ReactiveFormsModule, AppButton, IconField, InputIcon, InputText, FieldError],
   templateUrl: './personal-data.html',
   host: { class: 'd-block h-100' },
   changeDetection: ChangeDetectionStrategy.OnPush,

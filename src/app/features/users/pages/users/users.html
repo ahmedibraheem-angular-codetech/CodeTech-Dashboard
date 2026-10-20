@@ -1,6 +1,6 @@
 <section class="page">
   <app-page-header [title]="lang.t('users.title')" [subtitle]="lang.t('users.subtitle')">
-    <p-button icon="pi pi-plus" [label]="lang.t('users.add')" (onClick)="openCreate()" />
+    <app-button icon="pi pi-plus" [label]="lang.t('users.add')" (clicked)="openCreate()" />
   </app-page-header>
 
   <div class="filters">
@@ -88,35 +88,33 @@
           <td>{{ formatDate(user.joinedAt) }}</td>
           <td>
             <div class="table-actions">
-              <p-button
+              <app-button
                 icon="pi pi-eye"
-                severity="secondary"
                 variant="outlined"
                 size="small"
                 [ariaLabel]="lang.t('users.view')"
                 [pTooltip]="lang.t('users.view')"
                 tooltipPosition="top"
-                (onClick)="openView(user)"
+                (clicked)="openView(user)"
               />
-              <p-button
+              <app-button
                 icon="pi pi-pencil"
-                severity="secondary"
                 variant="outlined"
                 size="small"
                 [ariaLabel]="lang.t('users.edit')"
                 [pTooltip]="lang.t('users.edit')"
                 tooltipPosition="top"
-                (onClick)="openEdit(user)"
+                (clicked)="openEdit(user)"
               />
-              <p-button
+              <app-button
                 icon="pi pi-trash"
-                severity="danger"
-                variant="outlined"
+                variant="danger"
+                [outlined]="true"
                 size="small"
                 [ariaLabel]="lang.t('users.delete')"
                 [pTooltip]="lang.t('users.delete')"
                 tooltipPosition="top"
-                (onClick)="remove(user)"
+                (clicked)="remove(user)"
               />
             </div>
           </td>
@@ -213,7 +211,7 @@
         optionValue="value"
       />
     </label>
-    <p-button type="submit" [label]="lang.t('common.save')" [loading]="saving()" [fluid]="true" />
+    <app-button type="submit" [label]="lang.t('common.save')" [loading]="saving()" [fluid]="true" />
   </form>
 </p-dialog>
 

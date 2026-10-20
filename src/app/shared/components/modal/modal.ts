@@ -7,10 +7,10 @@ import {
   model,
   output,
 } from '@angular/core';
-import { Button } from 'primeng/button';
 import { Dialog } from 'primeng/dialog';
 
 import { LanguageService } from '../../../core/services/language.service';
+import { AppButton } from '../app-button/app-button';
 
 /**
  * The application's one modal: a PrimeNG dialog with a designed header, a projected body and
@@ -27,7 +27,7 @@ import { LanguageService } from '../../../core/services/language.service';
  */
 @Component({
   selector: 'app-modal',
-  imports: [Dialog, Button],
+  imports: [Dialog, AppButton],
   templateUrl: './modal.html',
   styleUrl: './modal.scss',
   encapsulation: ViewEncapsulation.None,

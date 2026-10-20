@@ -53,7 +53,8 @@
   line-height: 1.7;
 }
 
-p-button.app-confirm__action {
+p-button.app-confirm__action,
+app-button.app-confirm__action {
   display: block;
   flex: 1 1 0;
   min-width: 0;

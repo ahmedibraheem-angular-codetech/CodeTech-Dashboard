@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, ViewEncapsulation, signal } from '@angular/core';
-import { Button } from 'primeng/button';
 import { Dialog } from 'primeng/dialog';
+
+import { AppButton } from '../app-button/app-button';
 
 export interface ConfirmOptions {
   title: string;
@@ -14,7 +15,7 @@ let nextTitleId = 0;
 
 @Component({
   selector: 'app-confirm-dialog',
-  imports: [Button, Dialog],
+  imports: [AppButton, Dialog],
   templateUrl: './confirm-dialog.html',
   styleUrl: './confirm-dialog.scss',
   encapsulation: ViewEncapsulation.None,

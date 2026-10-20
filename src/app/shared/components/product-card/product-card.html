@@ -4,43 +4,43 @@
       <img [src]="imageUrl()" alt="" />
     }
     <span class="product-card__actions">
-      <p-button
+      <app-button
         type="button"
         icon="pi pi-trash"
         [rounded]="true"
-        [text]="true"
+        variant="ghost"
         styleClass="product-card__action product-card__action--danger"
         [ariaLabel]="deleteLabel()"
-        (onClick)="deleteRequested.emit()"
+        (clicked)="deleteRequested.emit()"
       />
-      <p-button
+      <app-button
         type="button"
         icon="pi pi-pencil"
         [rounded]="true"
-        [text]="true"
+        variant="ghost"
         styleClass="product-card__action product-card__action--edit"
         [ariaLabel]="editLabel()"
-        (onClick)="editRequested.emit()"
+        (clicked)="editRequested.emit()"
       />
-      <p-button
+      <app-button
         type="button"
         icon="pi pi-eye"
         [rounded]="true"
-        [text]="true"
+        variant="ghost"
         styleClass="product-card__action product-card__action--view"
         [ariaLabel]="viewLabel()"
-        (onClick)="viewRequested.emit()"
+        (clicked)="viewRequested.emit()"
       />
     </span>
-    <p-button
+    <app-button
       class="product-card__more"
       type="button"
       icon="pi pi-ellipsis-h"
       [rounded]="true"
-      [text]="true"
+      variant="ghost"
       styleClass="product-card__more-button"
       [ariaLabel]="moreLabel()"
-      (onClick)="moreRequested.emit($event)"
+      (clicked)="moreRequested.emit($event)"
     />
   </div>
 

@@ -10,11 +10,12 @@ import { failureMessageKey, isAuthError } from '../../../../core/auth/auth.error
 import { AuthService } from '../../../../core/auth/auth.service';
 import { LanguageService } from '../../../../core/services/language.service';
 import { AuthShell } from '../../../../layout/auth-layout/auth-shell';
+import { AppButton } from '../../../../shared/components/app-button/app-button';
 import { FieldError } from '../../../../shared/components/field-error/field-error';
 
 @Component({
   selector: 'app-verify',
-  imports: [ReactiveFormsModule, Button, AuthShell, InputOtp, FieldError],
+  imports: [ReactiveFormsModule, Button, AppButton, AuthShell, InputOtp, FieldError],
   templateUrl: './verify.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

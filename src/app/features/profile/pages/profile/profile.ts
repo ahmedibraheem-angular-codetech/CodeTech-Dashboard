@@ -1,11 +1,11 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
-import { Button } from 'primeng/button';
 import { Tag } from 'primeng/tag';
 
 import { AuthService } from '../../../../core/auth/auth.service';
 import { ProfileService } from '../../../../core/profile/profile.service';
 import { LanguageService } from '../../../../core/services/language.service';
+import { AppButton } from '../../../../shared/components/app-button/app-button';
 import { PageTabs, type PageTab } from '../../../../shared/components/page-tabs/page-tabs';
 import { UserAvatar } from '../../../../shared/components/user-avatar/user-avatar';
 import { AvatarCard } from '../../components/avatar-card/avatar-card';
@@ -14,7 +14,7 @@ import { PersonalData } from '../../components/personal-data/personal-data';
 
 @Component({
   selector: 'app-profile-page',
-  imports: [Button, Tag, PageTabs, UserAvatar, PersonalData, AvatarCard, PasswordChange],
+  imports: [AppButton, Tag, PageTabs, UserAvatar, PersonalData, AvatarCard, PasswordChange],
   templateUrl: './profile.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

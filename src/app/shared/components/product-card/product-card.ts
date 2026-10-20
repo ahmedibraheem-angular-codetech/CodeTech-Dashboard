@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
-import { Button } from 'primeng/button';
+import { AppButton } from '../app-button/app-button';
 
 export interface ProductCardFeature {
   id: string;
@@ -9,7 +9,7 @@ export interface ProductCardFeature {
 
 @Component({
   selector: 'app-product-card',
-  imports: [Button],
+  imports: [AppButton],
   templateUrl: './product-card.html',
   styleUrl: './product-card.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

@@ -13,17 +13,17 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { MessageService } from 'primeng/api';
-import { Button } from 'primeng/button';
 import { map } from 'rxjs';
 
 import { LanguageService } from '../../../../core/services/language.service';
+import { AppButton } from '../../../../shared/components/app-button/app-button';
 import { PageHeader } from '../../../../shared/components/page-header/page-header';
 import { StateView } from '../../../../shared/components/state-view/state-view';
 import { ProjectsService } from '../../services/projects.service';
 
 @Component({
   selector: 'app-project-editor',
-  imports: [ReactiveFormsModule, PageHeader, Button, RouterLink, StateView],
+  imports: [ReactiveFormsModule, PageHeader, AppButton, RouterLink, StateView],
   templateUrl: './project-editor.html',
   styleUrl: '../projects-list/projects-list.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

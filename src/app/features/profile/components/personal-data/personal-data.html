@@ -40,7 +40,7 @@
     </div>
 
     <div class="profile-actions">
-      <p-button
+      <app-button
         type="submit"
         class="profile-actions__save"
         styleClass="profile-btn"
@@ -50,16 +50,15 @@
         [label]="lang.t('profile.save')"
         [loading]="saving()"
       />
-      <p-button
+      <app-button
         type="button"
         class="profile-actions__cancel"
         styleClass="profile-btn"
-        severity="secondary"
-        [text]="true"
+        variant="ghost"
         [fluid]="true"
         [label]="lang.t('profile.cancel')"
         [disabled]="pristine()"
-        (onClick)="cancel()"
+        (clicked)="cancel()"
       />
     </div>
   </form>

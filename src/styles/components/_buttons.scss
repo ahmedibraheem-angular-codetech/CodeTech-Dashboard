@@ -1,6 +1,20 @@
-// Buttons are PrimeNG (`p-button` / `pButton`). Their look comes from the preset in
-// `app/core/theme/app-theme.ts`. This file only holds scoped design-token overrides for
-// the two designed-to-spec auth screens, set as CSS variables (no PrimeNG selectors are overridden).
+
+.app-button {
+  display: inline-flex;
+  align-items: stretch;
+  max-width: 100%;
+  vertical-align: middle;
+}
+
+.app-button p-button {
+  display: flex;
+  width: 100%;
+}
+
+.app-button--fluid {
+  display: flex;
+  width: 100%;
+}
 
 .auth-submit {
   --p-button-primary-background: #9ecff6;

@@ -23,47 +23,44 @@
       </div>
       <div class="page-header__actions inquiry__actions">
         @if (inquiry.status === 'new' && !inquiry.reply) {
-          <p-button
+          <app-button
+            variant="outlined"
             styleClass="inquiry-btn inquiry-btn--reply"
             icon="pi pi-send"
             iconPos="right"
-            severity="secondary"
-            variant="outlined"
             [label]="lang.t('inquiry.sendReply')"
             [disabled]="saving()"
-            (onClick)="openComposer('reply')"
+            (clicked)="openComposer('reply')"
           />
         } @else if (inquiry.status !== 'closed') {
-          <p-button
+          <app-button
+            variant="outlined"
             styleClass="inquiry-btn inquiry-btn--reply"
             icon="pi pi-times-circle"
             iconPos="right"
-            severity="secondary"
-            variant="outlined"
             [label]="lang.t('inquiry.closeRequest')"
             [disabled]="saving()"
-            (onClick)="closeRequest()"
+            (clicked)="closeRequest()"
           />
         }
-        <p-button
+        <app-button
+          variant="outlined"
           styleClass="inquiry-btn"
           icon="pi pi-file-edit"
           iconPos="right"
-          severity="secondary"
-          variant="outlined"
           [label]="lang.t('inquiry.addNote')"
           [disabled]="saving()"
-          (onClick)="openComposer('note')"
+          (clicked)="openComposer('note')"
         />
-        <p-button
+        <app-button
+          variant="danger"
+          [outlined]="true"
           styleClass="inquiry-btn inquiry-btn--danger"
           icon="pi pi-trash"
           iconPos="right"
-          severity="danger"
-          variant="outlined"
           [label]="lang.t('inquiry.deleteRequest')"
           [disabled]="saving()"
-          (onClick)="remove()"
+          (clicked)="remove()"
         />
       </div>
     </header>

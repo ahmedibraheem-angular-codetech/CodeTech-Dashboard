@@ -2,24 +2,22 @@
   <div class="section-head">
     <h2>{{ lang.t('about.team') }} ({{ team().length }})</h2>
     @if (team().length) {
-      <p-button
+      <app-button
+        variant="outlined"
         icon="pi pi-plus"
         [label]="lang.t('about.memberAdd')"
-        severity="secondary"
-        variant="outlined"
-        (onClick)="open()"
+        (clicked)="open()"
       />
     }
   </div>
 
   @if (team().length === 0) {
     <app-section-empty [title]="lang.t('about.teamEmpty')" [hint]="lang.t('about.teamEmptyHint')">
-      <p-button
+      <app-button
+        variant="outlined"
         icon="pi pi-plus"
         [label]="lang.t('about.teamAdd')"
-        severity="secondary"
-        variant="outlined"
-        (onClick)="open()"
+        (clicked)="open()"
       />
     </app-section-empty>
   } @else {
@@ -30,25 +28,25 @@
             <div class="about-member__photo">
               <img src="images/avatar-placeholder.svg" [alt]="member.name" />
               <div class="partner-card__tools">
-                <p-button
+                <app-button
+                  variant="secondary"
                   styleClass="partner-card__tool partner-card__tool--download"
                   icon="pi pi-download"
-                  severity="secondary"
                   size="small"
                   [ariaLabel]="lang.t('home.download')"
                   [pTooltip]="lang.t('home.download')"
                   tooltipPosition="top"
-                  (onClick)="download(member)"
+                  (clicked)="download(member)"
                 />
-                <p-button
+                <app-button
+                  variant="secondary"
                   styleClass="partner-card__tool partner-card__tool--delete"
                   icon="pi pi-trash"
-                  severity="secondary"
                   size="small"
                   [ariaLabel]="lang.t('users.delete')"
                   [pTooltip]="lang.t('users.delete')"
                   tooltipPosition="top"
-                  (onClick)="remove(member)"
+                  (clicked)="remove(member)"
                 />
               </div>
             </div>
@@ -106,13 +104,13 @@
               ><bdi>{{ imageSize() }}</bdi> · <bdi>{{ imageDate() }}</bdi></small
             >
           </div>
-          <p-button
+          <app-button
+            variant="secondary"
             styleClass="block-form__delete"
             icon="pi pi-trash"
-            severity="secondary"
             size="small"
             [ariaLabel]="lang.t('home.deleteImage')"
-            (onClick)="removeImage()"
+            (clicked)="removeImage()"
           />
         </div>
       }

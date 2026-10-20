@@ -2,12 +2,12 @@
   <div class="section-head">
     <h2>{{ lang.t('about.ceo') }}</h2>
     @if (filled()) {
-      <p-button
+      <app-button
         styleClass="block-edit"
         icon="pi pi-pen-to-square"
         iconPos="right"
         [label]="lang.t('home.edit')"
-        (onClick)="open()"
+        (clicked)="open()"
       />
     }
   </div>
@@ -32,12 +32,11 @@
     </app-content-panel>
   } @else {
     <app-section-empty [title]="lang.t('about.ceoEmpty')" [hint]="lang.t('about.ceoEmptyHint')">
-      <p-button
+      <app-button
+        variant="outlined"
         icon="pi pi-file"
         [label]="lang.t('about.ceoAdd')"
-        severity="secondary"
-        variant="outlined"
-        (onClick)="open()"
+        (clicked)="open()"
       />
     </app-section-empty>
   }
@@ -135,13 +134,13 @@
               ><bdi>{{ imageSize() }}</bdi> · <bdi>{{ imageDate() }}</bdi></small
             >
           </div>
-          <p-button
+          <app-button
+            variant="secondary"
             styleClass="block-form__delete"
             icon="pi pi-trash"
-            severity="secondary"
             size="small"
             [ariaLabel]="lang.t('home.deleteImage')"
-            (onClick)="removeImage()"
+            (clicked)="removeImage()"
           />
         </div>
       }

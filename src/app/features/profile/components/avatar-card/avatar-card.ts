@@ -1,11 +1,11 @@
 import { ChangeDetectionStrategy, Component, DestroyRef, inject, viewChild } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MessageService } from 'primeng/api';
-import { Button } from 'primeng/button';
 import { Tooltip } from 'primeng/tooltip';
 
 import { ProfileService } from '../../../../core/profile/profile.service';
 import { LanguageService } from '../../../../core/services/language.service';
+import { AppButton } from '../../../../shared/components/app-button/app-button';
 import { ConfirmDialog } from '../../../../shared/components/confirm-dialog/confirm-dialog';
 import { UserAvatar } from '../../../../shared/components/user-avatar/user-avatar';
 
@@ -14,7 +14,7 @@ const MAX_BYTES = 2 * 1024 * 1024;
 
 @Component({
   selector: 'app-avatar-card',
-  imports: [Button, Tooltip, UserAvatar, ConfirmDialog],
+  imports: [AppButton, Tooltip, UserAvatar, ConfirmDialog],
   templateUrl: './avatar-card.html',
   host: { class: 'd-block h-100' },
   changeDetection: ChangeDetectionStrategy.OnPush,

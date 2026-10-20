@@ -49,16 +49,15 @@
           "
         />
         <!-- p-password's own toggle is a click-only SVG (no keyboard, no label), so keep a real button. -->
-        <p-button
+        <app-button
           class="field__toggle"
           type="button"
-          severity="secondary"
-          [text]="true"
+          variant="ghost"
           [rounded]="true"
           size="small"
           [icon]="showPassword() ? 'pi pi-eye-slash' : 'pi pi-eye'"
           [ariaLabel]="lang.t(showPassword() ? 'auth.hidePassword' : 'auth.showPassword')"
-          (onClick)="showPassword.set(!showPassword())"
+          (clicked)="showPassword.set(!showPassword())"
         />
       </p-iconfield>
       @if (credentialError()) {
@@ -91,7 +90,7 @@
       </label>
     </div>
 
-    <p-button
+    <app-button
       styleClass="auth-submit"
       type="submit"
       icon="pi pi-angle-left"
@@ -121,7 +120,7 @@
         <span class="field__label">{{ lang.t('auth.email') }}</span>
         <input pInputText [fluid]="true" type="email" formControlName="email" />
       </label>
-      <p-button type="submit" [label]="lang.t('auth.send')" [fluid]="true" />
+      <app-button type="submit" [label]="lang.t('auth.send')" [fluid]="true" />
     </form>
   }
 </p-dialog>

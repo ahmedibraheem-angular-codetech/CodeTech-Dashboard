@@ -1,7 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
-import { Button } from 'primeng/button';
-
 import { LanguageService } from '../../../../core/services/language.service';
+import { AppButton } from '../../../../shared/components/app-button/app-button';
 import { PageHeader } from '../../../../shared/components/page-header/page-header';
 import { PageTabs } from '../../../../shared/components/page-tabs/page-tabs';
 import { MetaCard } from '../../components/meta-card/meta-card';
@@ -11,7 +10,7 @@ import { SeoService } from '../../services/seo.service';
 
 @Component({
   selector: 'app-seo-page',
-  imports: [PageHeader, Button, PageTabs, ThumbnailCard, MetaCard],
+  imports: [PageHeader, AppButton, PageTabs, ThumbnailCard, MetaCard],
   templateUrl: './seo.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

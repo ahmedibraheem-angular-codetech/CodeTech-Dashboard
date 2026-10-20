@@ -1,7 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
-import { Button } from 'primeng/button';
-
 import type { AppLanguage } from '../../../core/i18n/language';
+import { AppButton } from '../app-button/app-button';
 import { LocaleSwitch } from '../locale-switch/locale-switch';
 import { PageHeader } from '../page-header/page-header';
 import { PageTabs, type PageTab } from '../page-tabs/page-tabs';
@@ -28,7 +27,7 @@ export interface EditorShellLabels {
  */
 @Component({
   selector: 'app-editor-shell',
-  imports: [PageHeader, Button, LocaleSwitch, StateView, WizardStepper, PageTabs],
+  imports: [PageHeader, AppButton, LocaleSwitch, StateView, WizardStepper, PageTabs],
   templateUrl: './editor-shell.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

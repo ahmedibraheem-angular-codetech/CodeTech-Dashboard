@@ -23,14 +23,14 @@
           [invalidFileTypeMessageDetail]="lang.t('home.invalidVideoDetail')"
           (onSelect)="onSelected($event)"
         />
-        <p-button
+        <app-button
+          variant="danger"
+          [outlined]="true"
           icon="pi pi-trash"
-          severity="danger"
-          variant="outlined"
           [ariaLabel]="lang.t('home.deleteVideo')"
           [pTooltip]="lang.t('home.deleteVideo')"
           tooltipPosition="top"
-          (onClick)="remove()"
+          (clicked)="remove()"
         />
       </div>
     }

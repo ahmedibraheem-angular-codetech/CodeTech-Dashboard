@@ -8,12 +8,12 @@ import {
   Validators,
 } from '@angular/forms';
 import { MessageService } from 'primeng/api';
-import { Button } from 'primeng/button';
 import { IconField } from 'primeng/iconfield';
 import { InputText } from 'primeng/inputtext';
 
 import { ProfileService } from '../../../../core/profile/profile.service';
 import { LanguageService } from '../../../../core/services/language.service';
+import { AppButton } from '../../../../shared/components/app-button/app-button';
 import { FieldError } from '../../../../shared/components/field-error/field-error';
 
 type FieldName = 'current' | 'next' | 'confirm';
@@ -72,7 +72,7 @@ export function passwordRules(group: AbstractControl): ValidationErrors | null {
 
 @Component({
   selector: 'app-password-change',
-  imports: [ReactiveFormsModule, Button, IconField, InputText, FieldError],
+  imports: [ReactiveFormsModule, AppButton, IconField, InputText, FieldError],
   templateUrl: './password-change.html',
   host: { class: 'd-block' },
   changeDetection: ChangeDetectionStrategy.OnPush,

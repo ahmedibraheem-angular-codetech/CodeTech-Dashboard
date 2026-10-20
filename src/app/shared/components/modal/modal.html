@@ -25,25 +25,24 @@
 
   <ng-template #footer>
     @if (showSave()) {
-      <p-button
+      <app-button
         class="app-modal__action"
         [icon]="saveIcon() || undefined"
         [label]="saveLabel() ?? lang.t('common.saveChanges')"
         [fluid]="true"
         [loading]="saving()"
         [disabled]="saveDisabled()"
-        (onClick)="onSave()"
+        (clicked)="onSave()"
       />
     }
     @if (showCancel()) {
-      <p-button
+      <app-button
         class="app-modal__action"
-        severity="secondary"
         variant="outlined"
         [label]="cancelLabel() ?? lang.t('common.cancel')"
         [fluid]="true"
         [disabled]="saving()"
-        (onClick)="requestClose()"
+        (clicked)="requestClose()"
       />
     }
   </ng-template>

@@ -8,7 +8,8 @@
   [showHeader]="false"
   [closable]="false"
   [dismissableMask]="false"
-[attr.aria-labelledby]="titleId">
+  [attr.aria-labelledby]="titleId"
+>
   <div class="app-confirm__body">
     @if (danger()) {
       <span class="app-confirm__badge" aria-hidden="true"><i class="pi pi-trash"></i></span>
@@ -17,22 +18,21 @@
     <p class="app-confirm__message">{{ message() }}</p>
   </div>
   <ng-template #footer>
-    <p-button
+    <app-button
       class="app-confirm__action"
       [styleClass]="
         danger() ? 'app-confirm__action app-confirm__action--danger' : 'app-confirm__action'
       "
       [label]="confirmLabel()"
-      [severity]="danger() ? 'danger' : null"
-      (onClick)="confirm()"
+      [variant]="danger() ? 'danger' : 'primary'"
+      (clicked)="confirm()"
     />
-    <p-button
+    <app-button
       class="app-confirm__action"
       styleClass="app-confirm__action app-confirm__action--back"
       [label]="cancelLabel()"
-      severity="secondary"
       variant="outlined"
-      (onClick)="cancel()"
+      (clicked)="cancel()"
     />
   </ng-template>
 </p-dialog>

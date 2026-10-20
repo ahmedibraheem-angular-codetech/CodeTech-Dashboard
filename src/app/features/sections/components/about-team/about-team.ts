@@ -12,11 +12,11 @@ import {
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MessageService } from 'primeng/api';
-import { Button } from 'primeng/button';
 import { InputText } from 'primeng/inputtext';
 import { Tooltip } from 'primeng/tooltip';
 
 import { LanguageService } from '../../../../core/services/language.service';
+import { AppButton } from '../../../../shared/components/app-button/app-button';
 import { ConfirmDialog } from '../../../../shared/components/confirm-dialog/confirm-dialog';
 import { ContentPanel } from '../../../../shared/components/content-panel/content-panel';
 import { Modal } from '../../../../shared/components/modal/modal';
@@ -39,7 +39,7 @@ function control(value: string): FormControl<string> {
   selector: 'app-about-team',
   imports: [
     ReactiveFormsModule,
-    Button,
+    AppButton,
     InputText,
     Tooltip,
     ConfirmDialog,

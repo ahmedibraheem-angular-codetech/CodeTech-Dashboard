@@ -11,19 +11,19 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { MessageService } from 'primeng/api';
-import { Button } from 'primeng/button';
 import { FileSelectEvent, FileUpload } from 'primeng/fileupload';
 import { ToggleSwitch } from 'primeng/toggleswitch';
 import { Tooltip } from 'primeng/tooltip';
 
 import { LanguageService } from '../../../../core/services/language.service';
+import { AppButton } from '../../../../shared/components/app-button/app-button';
 import { ConfirmDialog } from '../../../../shared/components/confirm-dialog/confirm-dialog';
 import { SectionEmpty } from '../../../../shared/components/section-empty/section-empty';
 import { HomepageService } from '../../services/homepage.service';
 
 @Component({
   selector: 'app-video-section',
-  imports: [FormsModule, Button, FileUpload, ToggleSwitch, Tooltip, SectionEmpty, ConfirmDialog],
+  imports: [FormsModule, AppButton, FileUpload, ToggleSwitch, Tooltip, SectionEmpty, ConfirmDialog],
   templateUrl: './video-section.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

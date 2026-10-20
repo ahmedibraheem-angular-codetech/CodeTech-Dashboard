@@ -16,6 +16,7 @@ import { Tooltip } from 'primeng/tooltip';
 import { Breadcrumbs } from '../breadcrumbs/breadcrumbs';
 import { LanguageService } from '../../../core/services/language.service';
 import { LayoutService } from '../../../core/services/layout.service';
+import { AppButton } from '../../../shared/components/app-button/app-button';
 import { UserAvatar } from '../../../shared/components/user-avatar/user-avatar';
 
 interface Notice {
@@ -30,6 +31,7 @@ interface Notice {
   imports: [
     FormsModule,
     Button,
+    AppButton,
     ButtonDirective,
     ButtonIcon,
     InputText,

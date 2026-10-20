@@ -29,15 +29,15 @@
           }
         </div>
       </div>
-      <p-button
+      <app-button
         class="profile-head__logout"
         styleClass="profile-btn"
         icon="pi pi-sign-out"
         iconPos="right"
-        severity="danger"
+        variant="danger"
         [text]="true"
         [label]="lang.t('header.logout')"
-        (onClick)="logout()"
+        (clicked)="logout()"
       />
     </header>
 

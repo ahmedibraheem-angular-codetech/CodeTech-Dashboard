@@ -13,12 +13,12 @@ import {
   signal,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Button } from 'primeng/button';
 import { Checkbox } from 'primeng/checkbox';
 import { Popover } from 'primeng/popover';
 import { TableModule } from 'primeng/table';
 
 import { LanguageService } from '../../../core/services/language.service';
+import { AppButton } from '../app-button/app-button';
 import {
   DataTableBadgeValue,
   DataTableCellContext,
@@ -39,7 +39,7 @@ export class DataTableCellTemplate<T = unknown> {
 
 @Component({
   selector: 'app-data-table',
-  imports: [FormsModule, NgTemplateOutlet, TableModule, Button, Popover, Checkbox],
+  imports: [FormsModule, NgTemplateOutlet, TableModule, AppButton, Popover, Checkbox],
   templateUrl: './data-table.html',
   styleUrl: './data-table.scss',
   encapsulation: ViewEncapsulation.None,

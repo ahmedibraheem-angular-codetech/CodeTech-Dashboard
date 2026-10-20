@@ -11,7 +11,6 @@ import {
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormArray, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MessageService } from 'primeng/api';
-import { Button } from 'primeng/button';
 import { IconField } from 'primeng/iconfield';
 import { InputIcon } from 'primeng/inputicon';
 import { InputText } from 'primeng/inputtext';
@@ -19,6 +18,7 @@ import { Textarea } from 'primeng/textarea';
 
 import type { AppLanguage } from '../../../../core/i18n/language';
 import { LanguageService } from '../../../../core/services/language.service';
+import { AppButton } from '../../../../shared/components/app-button/app-button';
 import { ContentPanel } from '../../../../shared/components/content-panel/content-panel';
 import { LocaleSwitch } from '../../../../shared/components/locale-switch/locale-switch';
 import { Modal } from '../../../../shared/components/modal/modal';
@@ -65,7 +65,7 @@ function textGroup(required: boolean): TextGroup {
   selector: 'app-content-block-card',
   imports: [
     ReactiveFormsModule,
-    Button,
+    AppButton,
     IconField,
     InputIcon,
     InputText,

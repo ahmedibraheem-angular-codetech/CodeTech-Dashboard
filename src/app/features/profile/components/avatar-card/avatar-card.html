@@ -4,17 +4,17 @@
       <span class="icon-badge" aria-hidden="true"><i class="pi pi-image"></i></span>
       <h2>{{ lang.t('profile.photoTitle') }}</h2>
     </div>
-    <p-button
+    <app-button
       class="profile-trash"
       styleClass="profile-btn profile-btn--icon"
       icon="pi pi-trash"
-      severity="danger"
+      variant="danger"
       [text]="true"
       [disabled]="!user()?.avatarUrl"
       [ariaLabel]="lang.t('profile.removePhoto')"
       [pTooltip]="lang.t('profile.removePhoto')"
       tooltipPosition="bottom"
-      (onClick)="remove()"
+      (clicked)="remove()"
     />
   </div>
 
@@ -22,7 +22,7 @@
     <div class="profile-photo">
       <div class="profile-photo__frame">
         <app-user-avatar [size]="128" />
-        <p-button
+        <app-button
           class="profile-photo__edit"
           icon="pi pi-pencil"
           size="small"
@@ -30,7 +30,7 @@
           [ariaLabel]="lang.t('profile.changePhoto')"
           [pTooltip]="lang.t('profile.changePhoto')"
           tooltipPosition="top"
-          (onClick)="picker.click()"
+          (clicked)="picker.click()"
         />
         <input
           #picker

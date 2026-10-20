@@ -7,7 +7,7 @@
       </h2>
     </div>
     @if (partners().length) {
-      <p-button icon="pi pi-plus" [label]="lang.t('home.addPartner')" (onClick)="open()" />
+      <app-button icon="pi pi-plus" [label]="lang.t('home.addPartner')" (clicked)="open()" />
     }
   </div>
   @if (partners().length === 0) {
@@ -15,12 +15,11 @@
       [title]="lang.t('home.partnersEmpty')"
       [hint]="lang.t('home.partnersEmptyHint')"
     >
-      <p-button
+      <app-button
+        variant="outlined"
         icon="pi pi-plus"
         [label]="lang.t('home.addPartner')"
-        severity="secondary"
-        variant="outlined"
-        (onClick)="open()"
+        (clicked)="open()"
       />
     </app-section-empty>
   } @else {
@@ -29,25 +28,25 @@
         @for (partner of partners(); track partner.id) {
           <article class="partner-card" [attr.aria-label]="partner.name">
             <div class="partner-card__tools">
-              <p-button
+              <app-button
+                variant="secondary"
                 styleClass="partner-card__tool partner-card__tool--download"
                 icon="pi pi-download"
-                severity="secondary"
                 size="small"
                 [ariaLabel]="lang.t('home.download')"
                 [pTooltip]="lang.t('home.download')"
                 tooltipPosition="top"
-                (onClick)="download(partner)"
+                (clicked)="download(partner)"
               />
-              <p-button
+              <app-button
+                variant="secondary"
                 styleClass="partner-card__tool partner-card__tool--delete"
                 icon="pi pi-trash"
-                severity="secondary"
                 size="small"
                 [ariaLabel]="lang.t('users.delete')"
                 [pTooltip]="lang.t('users.delete')"
                 tooltipPosition="top"
-                (onClick)="remove(partner)"
+                (clicked)="remove(partner)"
               />
             </div>
             <span class="visually-hidden">{{ partner.monogram }}</span>
@@ -97,13 +96,13 @@
             ><bdi>{{ imageSize() }}</bdi> · <bdi>{{ imageDate() }}</bdi></small
           >
         </div>
-        <p-button
+        <app-button
+          variant="secondary"
           styleClass="block-form__delete"
           icon="pi pi-trash"
-          severity="secondary"
           size="small"
           [ariaLabel]="lang.t('home.deleteImage')"
-          (onClick)="removeImage()"
+          (clicked)="removeImage()"
         />
       </div>
     }

@@ -2,12 +2,12 @@
   <div class="section-head">
     <h2>{{ view().title }}</h2>
     @if (filled()) {
-      <p-button
+      <app-button
         styleClass="block-edit"
         icon="pi pi-pen-to-square"
         iconPos="right"
         [label]="lang.t('home.edit')"
-        (onClick)="open()"
+        (clicked)="open()"
       />
     }
   </div>
@@ -58,12 +58,11 @@
       [title]="lang.t(kind() === 'about' ? 'home.aboutEmpty' : 'home.visionEmpty')"
       [hint]="lang.t(kind() === 'about' ? 'home.aboutEmptyHint' : 'home.visionEmptyHint')"
     >
-      <p-button
+      <app-button
+        variant="outlined"
         icon="pi pi-file"
         [label]="lang.t(kind() === 'about' ? 'home.aboutAdd' : 'home.visionAdd')"
-        severity="secondary"
-        variant="outlined"
-        (onClick)="open()"
+        (clicked)="open()"
       />
     </app-section-empty>
   }
@@ -133,26 +132,26 @@
                       [attr.aria-required]="code === 'ar'"
                       [placeholder]="text('home.pointPh', code)"
                     />
-                    <p-button
+                    <app-button
+                      variant="secondary"
                       styleClass="block-form__delete"
                       class="point-row__delete"
                       icon="pi pi-trash"
-                      severity="secondary"
                       size="small"
                       [ariaLabel]="text('home.deletePoint', code) + ' ' + (i + 1)"
-                      (onClick)="removePoint(code, i)"
+                      (clicked)="removePoint(code, i)"
                     />
                   </div>
                 </div>
               }
-              <p-button
+              <app-button
+                variant="secondary"
                 class="points__add"
                 icon="pi pi-plus-circle"
                 iconPos="right"
-                severity="secondary"
                 [fluid]="true"
                 [label]="text('home.addPoint', code)"
-                (onClick)="addPoint(code)"
+                (clicked)="addPoint(code)"
               />
             </div>
           </app-content-panel>
@@ -185,13 +184,13 @@
               ><bdi>{{ imageSize() }}</bdi> · <bdi>{{ imageDate() }}</bdi></small
             >
           </div>
-          <p-button
+          <app-button
+            variant="secondary"
             styleClass="block-form__delete"
             icon="pi pi-trash"
-            severity="secondary"
             size="small"
             [ariaLabel]="lang.t('home.deleteImage')"
-            (onClick)="removeImage()"
+            (clicked)="removeImage()"
           />
         </div>
       }

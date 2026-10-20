@@ -1,44 +1,41 @@
 <section class="page">
   <app-page-header [title]="title()">
     @if (mode() === 'edit') {
-      <p-button
+      <app-button
         class="editor-draft"
         styleClass="editor-draft__button"
         icon="pi pi-file"
         iconPos="right"
-        severity="secondary"
-        [outlined]="true"
+        variant="outlined"
         [disabled]="saving()"
         [label]="labels().saveDraft"
-        (onClick)="saveDraft.emit()"
+        (clicked)="saveDraft.emit()"
       />
-      <p-button
+      <app-button
         class="editor-draft"
         styleClass="editor-draft__button"
-        severity="secondary"
-        [outlined]="true"
+        variant="outlined"
         [disabled]="saving()"
         [label]="published() ? labels().unpublish : labels().publish"
-        (onClick)="publishChange.emit(!published())"
+        (clicked)="publishChange.emit(!published())"
       />
-      <p-button
+      <app-button
         [disabled]="saving()"
         [loading]="saving()"
         [label]="labels().save"
-        (onClick)="save.emit()"
+        (clicked)="save.emit()"
       />
     } @else {
-      <p-button
+      <app-button
         class="editor-draft"
         styleClass="editor-draft__button"
         icon="pi pi-file"
         iconPos="right"
-        severity="secondary"
-        [outlined]="true"
+        variant="outlined"
         [disabled]="saving()"
         [loading]="saving()"
         [label]="labels().saveDraft"
-        (onClick)="saveDraft.emit()"
+        (clicked)="saveDraft.emit()"
       />
     }
   </app-page-header>
@@ -82,32 +79,31 @@
     @if (mode() === 'create') {
       <footer class="editor-footer">
         @if (lastStep()) {
-          <p-button
+          <app-button
             class="editor-next"
             styleClass="editor-nav editor-nav--next"
             [disabled]="saving()"
             [loading]="saving()"
             [label]="labels().finish"
-            (onClick)="save.emit()"
+            (clicked)="save.emit()"
           />
         } @else {
-          <p-button
+          <app-button
             class="editor-next"
             styleClass="editor-nav editor-nav--next"
             [disabled]="saving()"
             [loading]="saving()"
             [label]="labels().next"
-            (onClick)="next.emit()"
+            (clicked)="next.emit()"
           />
         }
-        <p-button
+        <app-button
           class="editor-back"
           styleClass="editor-nav editor-nav--back"
-          severity="secondary"
-          [outlined]="true"
+          variant="outlined"
           [disabled]="saving()"
           [label]="labels().previous"
-          (onClick)="previous.emit()"
+          (clicked)="previous.emit()"
         />
       </footer>
     }

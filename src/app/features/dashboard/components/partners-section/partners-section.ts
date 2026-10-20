@@ -11,10 +11,10 @@ import {
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MessageService } from 'primeng/api';
-import { Button } from 'primeng/button';
 import { Tooltip } from 'primeng/tooltip';
 
 import { LanguageService } from '../../../../core/services/language.service';
+import { AppButton } from '../../../../shared/components/app-button/app-button';
 import { ConfirmDialog } from '../../../../shared/components/confirm-dialog/confirm-dialog';
 import { ContentPanel } from '../../../../shared/components/content-panel/content-panel';
 import { Modal } from '../../../../shared/components/modal/modal';
@@ -31,7 +31,7 @@ import { HomepageService } from '../../services/homepage.service';
 
 @Component({
   selector: 'app-partners-section',
-  imports: [Button, Tooltip, SectionEmpty, ContentPanel, Modal, ConfirmDialog],
+  imports: [AppButton, Tooltip, SectionEmpty, ContentPanel, Modal, ConfirmDialog],
   templateUrl: './partners-section.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

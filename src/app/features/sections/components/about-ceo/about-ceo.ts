@@ -11,12 +11,12 @@ import {
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MessageService } from 'primeng/api';
-import { Button } from 'primeng/button';
 import { InputText } from 'primeng/inputtext';
 import { Textarea } from 'primeng/textarea';
 
 import type { AppLanguage } from '../../../../core/i18n/language';
 import { LanguageService } from '../../../../core/services/language.service';
+import { AppButton } from '../../../../shared/components/app-button/app-button';
 import { ContentPanel } from '../../../../shared/components/content-panel/content-panel';
 import { LocaleSwitch } from '../../../../shared/components/locale-switch/locale-switch';
 import { Modal } from '../../../../shared/components/modal/modal';
@@ -63,7 +63,7 @@ function hasCopy(text: AboutCeoText): boolean {
   selector: 'app-about-ceo',
   imports: [
     ReactiveFormsModule,
-    Button,
+    AppButton,
     InputText,
     Textarea,
     ContentPanel,
