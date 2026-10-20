@@ -64,9 +64,17 @@
 
 .editor-section--features .feature-card__tab,
 .editor-section--stats .feature-card__tab {
+  flex: 1 1 0;
   width: auto;
-  min-width: 96px;
+  min-width: 0;
   cursor: pointer;
+}
+
+.editor-section--features .feature-card__tab span,
+.editor-section--stats .feature-card__tab span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .editor-section--features .feature-card.is-active .feature-card__tab,
@@ -266,30 +274,32 @@ app-product-editor .locale-switch__option.is-active {
   display: grid;
   grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr);
   grid-template-areas:
-    'info cover'
-    'features thumb'
+    'main side'
     'stats stats';
   gap: 16px;
   align-items: start;
 }
 
-.editor-section--info {
-  grid-area: info;
+.editor-layout__main,
+.editor-layout__side {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
 }
 
-.editor-section--cover {
-  grid-area: cover;
+.editor-layout__main {
+  grid-area: main;
+}
+
+.editor-layout__side {
+  grid-area: side;
 }
 
 .editor-section--features {
-  grid-area: features;
   padding: 16px;
   border: 1px solid var(--Foundation-grey-scale-Light, #f0f1f3);
   border-radius: 16px;
-}
-
-.editor-section--thumb {
-  grid-area: thumb;
 }
 
 .editor-section--stats {
@@ -724,10 +734,8 @@ app-product-editor .locale-switch__option.is-active {
 
   .editor-layout {
     grid-template-areas:
-      'info'
-      'cover'
-      'features'
-      'thumb'
+      'main'
+      'side'
       'stats';
   }
 }
