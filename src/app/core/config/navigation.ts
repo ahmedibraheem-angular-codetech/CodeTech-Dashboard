@@ -11,25 +11,18 @@ export const NAV_ITEMS: NavItem[] = [
   { id: 'home', labelKey: 'nav.home', icon: 'pi pi-home', route: '/', exact: true },
   { id: 'about', labelKey: 'nav.about', icon: 'pi pi-building', route: '/about' },
   {
-    id: 'contact',
-    labelKey: 'nav.contact',
-    icon: 'pi pi-envelope',
-    children: [
-      {
-        id: 'contact-inquiries',
-        labelKey: 'nav.inquiries',
-        icon: 'pi pi-comments',
-        route: '/contact/inquiries',
-        exact: false,
-      },
-      {
-        id: 'contact-start',
-        labelKey: 'nav.startProjects',
-        icon: 'pi pi-flag',
-        route: '/contact/start',
-        exact: false,
-      },
-    ],
+    id: 'inquiries',
+    labelKey: 'nav.inquiries',
+    icon: 'pi pi-comments',
+    route: '/contact/inquiries',
+    exact: false,
+  },
+  {
+    id: 'start-projects',
+    labelKey: 'nav.startProjects',
+    icon: 'pi pi-flag',
+    route: '/contact/start',
+    exact: false,
   },
   {
     id: 'products',
