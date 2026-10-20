@@ -92,7 +92,14 @@ export const routes: Routes = [
       },
       section('contact/new', 'nav.contactNew'),
       section('contact/done', 'nav.contactDone'),
-      section('products/page', 'nav.productsPage'),
+      {
+        path: 'products/page',
+        loadComponent: () =>
+          import('./features/products/pages/products-page/products-page').then(
+            (m) => m.ProductsPageManage,
+          ),
+        data: { breadcrumb: 'nav.productsPage', titleKey: 'nav.productsPage' },
+      },
       section('products/categories', 'nav.categories'),
       {
         path: 'products',

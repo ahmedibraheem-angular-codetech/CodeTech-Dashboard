@@ -532,13 +532,130 @@ app-product-detail app-page-tabs .p-tab {
   cursor: pointer;
 }
 
-.sector-card__actions a {
+.sector-card__actions a,
+.sector-card__actions button:first-child {
   color: #1c81d3;
 }
 
 .sector-card__actions button:disabled {
   opacity: 0.4;
   cursor: default;
+}
+
+.products-manage {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.products-manage__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.products-manage__title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.products-manage__title h2 {
+  margin: 0;
+  color: #16324f;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.products-manage__add {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 40px;
+  padding: 0 16px;
+  border: 0;
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--app-primary) 10%, #fff);
+  color: var(--app-primary);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.manage-feature-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.manage-feature-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  min-height: 180px;
+  padding: 18px 16px 20px;
+  border: 1px solid #edeeee;
+  border-radius: 16px;
+  background: #f9fafb;
+  text-align: center;
+}
+
+.manage-feature-card__actions {
+  position: absolute;
+  top: 10px;
+  inset-inline-start: 10px;
+  display: flex;
+  gap: 6px;
+}
+
+.manage-tool {
+  display: grid;
+  width: 28px;
+  height: 28px;
+  place-items: center;
+  border: 0;
+  border-radius: 8px;
+  background: #fff;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.manage-tool--edit {
+  color: #1c81d3;
+}
+
+.manage-tool--delete {
+  color: #e11d48;
+}
+
+.manage-feature-card .detail-features__icon {
+  margin-top: 8px;
+}
+
+.manage-feature-card .detail-features__icon img {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+}
+
+.manage-feature-card strong {
+  color: #16324f;
+  font-size: 15px;
+}
+
+.manage-feature-card p {
+  margin: 0;
+  color: #94a3b8;
+  font-size: 12px;
+  line-height: 1.7;
+}
+
+.detail-panel.is-off {
+  opacity: 0.55;
 }
 
 .challenge-grid {
@@ -1443,7 +1560,8 @@ app-product-editor .locale-switch__option.is-active {
   }
 
   .sector-grid,
-  .logo-grid {
+  .logo-grid,
+  .manage-feature-grid {
     grid-template-columns: 1fr 1fr;
   }
 }

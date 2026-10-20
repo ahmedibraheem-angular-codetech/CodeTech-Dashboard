@@ -1,0 +1,182 @@
+<section class="page products-manage">
+  <app-page-header
+    [title]="lang.t('nav.productsPage')"
+    [subtitle]="lang.t('product.page.subtitle')"
+  />
+
+  @if (status() === 'loading' || !content()) {
+    <app-state-view mode="loading" [message]="lang.t('common.loading')" />
+  } @else if (content(); as page) {
+    <article class="detail-panel" [class.is-off]="!page.featuresEnabled">
+      <header class="products-manage__head">
+        <div class="products-manage__title">
+          <h2>{{ lang.t('product.page.why') }}</h2>
+          <p-toggleswitch
+            [ngModel]="page.featuresEnabled"
+            (ngModelChange)="toggleFeatures($event)"
+            [ariaLabel]="lang.t('product.page.why')"
+          />
+        </div>
+        <button type="button" class="products-manage__add" (click)="openFeature()">
+          <i class="pi pi-plus" aria-hidden="true"></i>
+          {{ lang.t('product.page.addFeature') }}
+        </button>
+      </header>
+      <div class="manage-feature-grid">
+        @for (feature of page.features; track feature.id) {
+          <article class="manage-feature-card">
+            <span class="manage-feature-card__actions">
+              <button
+                type="button"
+                class="manage-tool manage-tool--edit"
+                [attr.aria-label]="lang.t('product.editAction')"
+                (click)="openFeature(feature)"
+              >
+                <i class="pi pi-pen-to-square" aria-hidden="true"></i>
+              </button>
+              <button
+                type="button"
+                class="manage-tool manage-tool--delete"
+                [attr.aria-label]="lang.t('about.delete')"
+                (click)="removeFeature(feature)"
+              >
+                <i class="pi pi-trash" aria-hidden="true"></i>
+              </button>
+            </span>
+            <span class="detail-features__icon">
+              @if (feature.imageUrl && !feature.imageUrl.startsWith('icon:')) {
+                <img [src]="feature.imageUrl" alt="" />
+              } @else {
+                <i [class]="'pi ' + feature.icon" aria-hidden="true"></i>
+              }
+            </span>
+            <strong>{{ display(feature.title) }}</strong>
+            <p>{{ display(feature.body) }}</p>
+          </article>
+        }
+      </div>
+    </article>
+
+    <article class="detail-panel" [class.is-off]="!page.sectorsEnabled">
+      <header class="products-manage__head">
+        <div class="products-manage__title">
+          <h2>{{ lang.t('product.sectors') }}</h2>
+          <p-toggleswitch
+            [ngModel]="page.sectorsEnabled"
+            (ngModelChange)="toggleSectors($event)"
+            [ariaLabel]="lang.t('product.sectors')"
+          />
+        </div>
+        <button type="button" class="products-manage__add" (click)="openSector()">
+          <i class="pi pi-plus" aria-hidden="true"></i>
+          {{ lang.t('product.page.addSector') }}
+        </button>
+      </header>
+      <div class="sector-grid">
+        @for (sector of page.sectors; track sector.id) {
+          <article class="sector-card">
+            @if (sector.imageUrl) {
+              <img [src]="sector.imageUrl" alt="" />
+            }
+            <strong>{{ display(sector.title) }}</strong>
+            <span class="sector-card__actions">
+              <button
+                type="button"
+                [attr.aria-label]="lang.t('product.editAction')"
+                (click)="openSector(sector)"
+              >
+                <i class="pi pi-pen-to-square" aria-hidden="true"></i>
+              </button>
+              <button
+                type="button"
+                [attr.aria-label]="lang.t('about.delete')"
+                (click)="removeSector(sector)"
+              >
+                <i class="pi pi-trash" aria-hidden="true"></i>
+              </button>
+            </span>
+          </article>
+        }
+      </div>
+    </article>
+  }
+
+  <app-modal
+    [(visible)]="editorOpen"
+    [title]="editorTitle()"
+    [icon]="editorKind() === 'feature' ? 'pi pi-plus-circle' : 'pi pi-image'"
+    [saving]="saving()"
+    [saveDisabled]="
+      editorKind() === 'feature'
+        ? !text(draftFeature().title).trim()
+        : !text(draftSector().title).trim() || !draftSector().imageUrl
+    "
+    [saveLabel]="saveLabel()"
+    saveIcon=""
+    (save)="saveEditor()"
+  >
+    <div class="block-form" [attr.dir]="locale() === 'ar' ? 'rtl' : 'ltr'">
+      <app-locale-switch [value]="locale()" (picked)="locale.set($event)" />
+      @if (editorKind() === 'feature') {
+        <label class="field">
+          <span class="field__label">{{ lang.t('product.featureTitle') }}</span>
+          <p-iconfield>
+            <input
+              pInputText
+              [fluid]="true"
+              [value]="text(draftFeature().title)"
+              [placeholder]="lang.t('product.featureTitlePh')"
+              (input)="setFeatureText('title', $event)"
+            />
+            <p-inputicon class="pi pi-pen-to-square" />
+          </p-iconfield>
+        </label>
+        <label class="field">
+          <span class="field__label">{{ lang.t('product.page.featureBody') }}</span>
+          <textarea
+            pTextarea
+            [fluid]="true"
+            rows="4"
+            [value]="text(draftFeature().body)"
+            [placeholder]="lang.t('product.page.featureBodyPh')"
+            (input)="setFeatureText('body', $event)"
+          ></textarea>
+        </label>
+        <div class="field">
+          <span class="field__label">{{ lang.t('product.uploadIcon') }}</span>
+          <app-product-upload
+            [locale]="locale()"
+            [name]="draftFeature().imageName"
+            [url]="draftFeature().imageUrl"
+            (picked)="setFeatureImage($event)"
+          />
+        </div>
+      } @else {
+        <label class="field">
+          <span class="field__label">{{ lang.t('product.page.sectorTitle') }}</span>
+          <p-iconfield>
+            <input
+              pInputText
+              [fluid]="true"
+              [value]="text(draftSector().title)"
+              [placeholder]="lang.t('product.page.sectorTitlePh')"
+              (input)="setSectorTitle($event)"
+            />
+            <p-inputicon class="pi pi-pen-to-square" />
+          </p-iconfield>
+        </label>
+        <div class="field">
+          <span class="field__label">{{ lang.t('product.sectorImage') }}</span>
+          <app-product-upload
+            [locale]="locale()"
+            [name]="draftSector().imageUrl ? 'sector.jpg' : ''"
+            [url]="draftSector().imageUrl"
+            (picked)="setSectorImage($event)"
+          />
+        </div>
+      }
+    </div>
+  </app-modal>
+
+  <app-confirm-dialog />
+</section>
