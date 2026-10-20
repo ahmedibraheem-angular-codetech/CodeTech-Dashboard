@@ -142,12 +142,18 @@
 
 .feature-grid article {
   display: flex;
+  flex-direction: row;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-start;
   gap: 12px;
   min-height: 86px;
   padding: 14px 16px;
   background: #fff;
+}
+
+.feature-grid article > div {
+  min-width: 0;
+  text-align: start;
 }
 
 .feature-grid article:nth-child(odd) {

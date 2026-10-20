@@ -52,10 +52,6 @@
     <div class="feature-grid">
       @for (feature of features(); track feature.id; let featureIndex = $index) {
         <article>
-          <div>
-            <strong>{{ feature.title }}</strong>
-            <span>{{ feature.body }}</span>
-          </div>
           <span class="feature-icon" aria-hidden="true">
             @switch (featureIndex) {
               @case (0) {
@@ -88,6 +84,10 @@
               }
             }
           </span>
+          <div>
+            <strong>{{ feature.title }}</strong>
+            <span>{{ feature.body }}</span>
+          </div>
         </article>
       }
     </div>
