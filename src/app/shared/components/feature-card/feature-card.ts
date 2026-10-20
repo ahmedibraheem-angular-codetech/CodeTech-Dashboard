@@ -32,9 +32,12 @@ export class FeatureCard {
   readonly removeDisabled = input(false);
   readonly removeLabel = input('');
   readonly removeIcon = input('pi-trash');
+  /** When false, only the tab stays visible so a parent can show one panel at a time. */
+  readonly active = input(true);
 
   readonly titleChange = output<Event>();
   readonly bodyChange = output<Event>();
   readonly imageChange = output<{ name: string; url: string }>();
   readonly removed = output<void>();
+  readonly selected = output<void>();
 }

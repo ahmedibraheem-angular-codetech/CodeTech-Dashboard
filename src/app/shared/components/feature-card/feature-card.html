@@ -1,12 +1,12 @@
-<article class="feature-card">
-  <header class="feature-card__tab">
+<article class="feature-card" [class.is-active]="active()">
+  <header class="feature-card__tab" (click)="selected.emit()">
     <span>{{ label() }}</span>
     <button
       type="button"
       class="feature-card__remove"
       [disabled]="removeDisabled()"
       [attr.aria-label]="removeLabel()"
-      (click)="removed.emit()"
+      (click)="removed.emit(); $event.stopPropagation()"
     >
       <i [class]="'pi ' + removeIcon()" aria-hidden="true"></i>
     </button>

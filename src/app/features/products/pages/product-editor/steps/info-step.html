@@ -1,5 +1,5 @@
 <div class="editor-layout">
-  <section class="editor-section">
+  <section class="editor-section editor-section--info">
     <header class="editor-section__head">
       <h2>{{ editor.copy('product.info') }}</h2>
       <span class="icon-badge" aria-hidden="true"><i class="pi pi-box"></i></span>
@@ -34,7 +34,7 @@
       </label>
     </div>
   </section>
-  <section class="editor-section">
+  <section class="editor-section editor-section--cover">
     <header class="editor-section__head">
       <h2>{{ editor.copy('product.cover') }}</h2>
       <span class="icon-badge" aria-hidden="true"><i class="pi pi-upload"></i></span>
@@ -90,21 +90,23 @@
           [imageName]="feature.imageName"
           [imageUrl]="feature.imageUrl"
           [locale]="editor.locale()"
+          [active]="featureTab() === index"
           [removeDisabled]="editor.draft().features.length === 1"
           [removeLabel]="editor.copy('product.deleteTitle')"
+          (selected)="selectFeature(index)"
           (titleChange)="editor.setPoint('features', index, 'title', $event)"
           (bodyChange)="editor.setPoint('features', index, 'body', $event)"
           (imageChange)="editor.setPointImage('features', index, $event)"
-          (removed)="editor.removePoint('features', index)"
+          (removed)="removeFeature(index)"
         />
       }
-      <button type="button" class="add-row" (click)="editor.addPoint('features')">
+      <button type="button" class="add-row" (click)="addFeature()">
         <span class="add-row__mark" aria-hidden="true"><i class="pi pi-plus"></i></span>
         {{ editor.copy('product.addFeature') }}
       </button>
     </div>
   </section>
-  <section class="editor-section">
+  <section class="editor-section editor-section--thumb">
     <header class="editor-section__head">
       <h2>{{ editor.copy('product.thumb') }}</h2>
       <span class="icon-badge" aria-hidden="true"><i class="pi pi-upload"></i></span>
@@ -141,7 +143,7 @@
       </label>
     </div>
   </section>
-  <section class="editor-section editor-section--wide">
+  <section class="editor-section editor-section--stats">
     <header class="editor-section__head">
       <h2>{{ editor.copy('product.stats') }}</h2>
       <span class="icon-badge" aria-hidden="true"><i class="pi pi-bolt"></i></span>
@@ -161,15 +163,17 @@
           [imageUrl]="stat.imageUrl"
           [locale]="editor.locale()"
           [actions]="false"
+          [active]="statTab() === index"
           [removeDisabled]="editor.draft().stats.length === 1"
           [removeLabel]="editor.copy('product.deleteTitle')"
+          (selected)="selectStat(index)"
           (titleChange)="editor.setStat(index, 'label', $event)"
           (bodyChange)="editor.setStat(index, 'body', $event)"
           (imageChange)="editor.setStatImage(index, $event)"
-          (removed)="editor.removeStat(index)"
+          (removed)="removeStat(index)"
         />
       }
-      <button type="button" class="add-row" (click)="editor.addStat()">
+      <button type="button" class="add-row" (click)="addStat()">
         <span class="add-row__mark" aria-hidden="true"><i class="pi pi-plus"></i></span>
         {{ editor.copy('product.addBlock') }}
       </button>
