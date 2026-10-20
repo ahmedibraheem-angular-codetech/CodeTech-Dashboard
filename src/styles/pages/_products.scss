@@ -307,6 +307,7 @@ app-product-detail .page-header__actions {
 }
 
 .detail-panel__head .icon-badge {
+  order: -1;
   width: 32px;
   height: 32px;
   border: 0;
@@ -449,7 +450,7 @@ app-product-detail app-page-tabs .p-tab {
 .detail-features li {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-start;
   gap: 12px;
   padding: 12px 14px;
   border: 1px solid #edeeee;
@@ -473,6 +474,7 @@ app-product-detail app-page-tabs .p-tab {
 }
 
 .detail-features__icon {
+  order: -1;
   display: grid;
   flex-shrink: 0;
   width: 40px;
@@ -689,12 +691,16 @@ app-product-detail app-page-tabs .p-tab {
 .challenge-grid li {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-start;
   gap: 12px;
   padding: 14px;
   border: 1px solid #edeeee;
   border-radius: 14px;
   background: #f9fafb;
+}
+
+.challenge-grid .detail-features__icon {
+  order: -1;
 }
 
 .challenge-grid strong,

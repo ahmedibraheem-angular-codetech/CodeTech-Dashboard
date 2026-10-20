@@ -32,7 +32,6 @@
               <div class="detail-field">
                 <span>ID</span>
                 <strong>
-                  {{ product.id }}
                   <button
                     type="button"
                     (click)="copyCode(product.id)"
@@ -40,20 +39,21 @@
                   >
                     <i class="pi pi-copy" aria-hidden="true"></i>
                   </button>
+                  {{ product.id }}
                 </strong>
               </div>
               <div class="detail-field">
                 <span>{{ lang.t('product.productName') }}</span>
                 <strong class="detail-field__lead">
-                  {{ text(product.name) }}
                   <i class="pi pi-user" aria-hidden="true"></i>
+                  {{ text(product.name) }}
                 </strong>
               </div>
               <div class="detail-field">
                 <span>{{ lang.t('product.summary') }}</span>
                 <p class="detail-field__lead">
-                  {{ text(product.summary) }}
                   <i class="pi pi-building" aria-hidden="true"></i>
+                  {{ text(product.summary) }}
                 </p>
               </div>
             </div>
@@ -101,15 +101,15 @@
                 <div class="detail-field">
                   <span>{{ lang.t('product.statLabel') }}</span>
                   <strong>
-                    {{ text(stat.label) }}
                     <i class="pi pi-user" aria-hidden="true"></i>
+                    {{ text(stat.label) }}
                   </strong>
                 </div>
                 <div class="detail-field">
                   <span>{{ lang.t('product.statValue') }}</span>
                   <strong>
-                    <bdi dir="ltr">{{ stat.value }}</bdi>
                     <i class="pi pi-user" aria-hidden="true"></i>
+                    <bdi dir="ltr">{{ stat.value }}</bdi>
                   </strong>
                 </div>
               </div>
@@ -203,15 +203,15 @@
                 <div class="detail-field">
                   <span>{{ lang.t('product.solutionTitle') }}</span>
                   <strong class="detail-field__lead">
-                    {{ text(product.solution.title) }}
                     <i class="pi pi-user" aria-hidden="true"></i>
+                    {{ text(product.solution.title) }}
                   </strong>
                 </div>
                 <div class="detail-field">
                   <span>{{ lang.t('product.solutionBody') }}</span>
                   <p class="detail-field__lead">
-                    {{ text(product.solution.body) }}
                     <i class="pi pi-align-left" aria-hidden="true"></i>
+                    {{ text(product.solution.body) }}
                   </p>
                 </div>
               </div>
@@ -324,15 +324,15 @@
                   <div class="detail-field">
                     <span>{{ lang.t('product.unitTitle') }}</span>
                     <strong class="detail-field__lead">
-                      {{ text(unit.title) }}
                       <i class="pi pi-user" aria-hidden="true"></i>
+                      {{ text(unit.title) }}
                     </strong>
                   </div>
                   <div class="detail-field">
                     <span>{{ lang.t('product.unitBody') }}</span>
                     <p class="detail-field__lead">
-                      {{ text(unit.body) }}
                       <i class="pi pi-align-left" aria-hidden="true"></i>
+                      {{ text(unit.body) }}
                     </p>
                   </div>
                 </div>
@@ -413,15 +413,15 @@
                   <div class="detail-field">
                     <span>{{ lang.t('product.unitTitle') }}</span>
                     <strong class="detail-field__lead">
-                      {{ text(item.title) }}
                       <i class="pi pi-user" aria-hidden="true"></i>
+                      {{ text(item.title) }}
                     </strong>
                   </div>
                   <div class="detail-field">
                     <span>{{ lang.t('product.unitBody') }}</span>
                     <p class="detail-field__lead">
-                      {{ text(item.body) }}
                       <i class="pi pi-align-left" aria-hidden="true"></i>
+                      {{ text(item.body) }}
                     </p>
                   </div>
                 </div>
