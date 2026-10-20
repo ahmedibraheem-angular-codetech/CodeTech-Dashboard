@@ -285,7 +285,7 @@ app-product-detail .page-header__actions {
 .detail-panel {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 14px;
   min-width: 0;
   padding: 16px;
   border: 1px solid #edeeee;
@@ -307,7 +307,13 @@ app-product-detail .page-header__actions {
 }
 
 .detail-panel__head .icon-badge {
-  order: -1;
+  width: 32px;
+  height: 32px;
+  border: 0;
+  border-radius: 50%;
+  background: #eef6fd;
+  color: #1c81d3;
+  font-size: 13px;
 }
 
 .detail-fields,
@@ -323,7 +329,7 @@ app-product-detail .page-header__actions {
 .detail-field {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 6px;
   padding: 12px 14px;
   border: 1px solid #edeeee;
   border-radius: 14px;
@@ -333,13 +339,14 @@ app-product-detail .page-header__actions {
 .detail-field span {
   color: #94a3b8;
   font-size: 12px;
+  font-weight: 500;
 }
 
 .detail-field strong,
 .detail-field p {
   display: flex;
   align-items: flex-start;
-  justify-content: space-between;
+  justify-content: flex-start;
   gap: 8px;
   margin: 0;
   color: #16324f;
@@ -348,8 +355,14 @@ app-product-detail .page-header__actions {
   line-height: 1.6;
 }
 
-.detail-field__lead {
-  justify-content: flex-start;
+.detail-field strong {
+  align-items: center;
+  flex-wrap: nowrap;
+}
+
+.detail-field strong > *,
+.detail-field p > i {
+  flex-shrink: 0;
 }
 
 .detail-field .pi,
@@ -370,7 +383,8 @@ app-product-detail .page-header__actions {
 
 .detail-photo {
   width: 100%;
-  height: 220px;
+  flex: 1;
+  min-height: 180px;
   object-fit: cover;
   display: block;
   border-radius: 14px;
@@ -378,16 +392,17 @@ app-product-detail .page-header__actions {
 
 .stat-tabs {
   display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
+  flex-wrap: nowrap;
+  gap: 6px;
 }
 
 .stat-tab {
   display: inline-flex;
+  flex: 0 1 auto;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   height: 36px;
-  padding: 0 12px;
+  padding: 0 10px;
   border: 1px solid #e6ebf2;
   border-radius: 12px;
   background: #fff;
@@ -395,19 +410,22 @@ app-product-detail .page-header__actions {
   font: inherit;
   font-size: 13px;
   font-weight: 700;
+  white-space: nowrap;
   cursor: pointer;
 }
 
 .stat-tab.is-active {
-  border-color: #d7e8f8;
+  border-color: #cfe4f8;
   background: #eef6fd;
   color: #1c81d3;
 }
 
 .stat-tab__remove {
   display: grid;
+  place-items: center;
   color: #e11d48;
   font-size: 12px;
+  line-height: 1;
 }
 
 .stat-tab__remove[aria-disabled='true'] {
@@ -457,10 +475,11 @@ app-product-detail app-page-tabs .p-tab {
 .detail-features__icon {
   display: grid;
   flex-shrink: 0;
-  width: 36px;
-  height: 36px;
+  width: 40px;
+  height: 40px;
   place-items: center;
-  border-radius: 10px;
+  border: 1px solid #e6ebf2;
+  border-radius: 12px;
   background: #fff;
   color: #64748b;
 }
@@ -694,7 +713,7 @@ app-product-detail app-page-tabs .p-tab {
 }
 
 .detail-photo--tall {
-  height: 280px;
+  min-height: 280px;
 }
 
 .step-grid {
