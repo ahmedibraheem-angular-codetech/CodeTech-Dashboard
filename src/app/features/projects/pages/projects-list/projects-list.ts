@@ -11,10 +11,11 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { MessageService } from 'primeng/api';
-import { Paginator, type PaginatorState } from 'primeng/paginator';
+import { type PaginatorState } from 'primeng/paginator';
 import { ToggleSwitch } from 'primeng/toggleswitch';
 
 import { LanguageService } from '../../../../core/services/language.service';
+import { AppPaginator } from '../../../../shared/components/app-paginator/app-paginator';
 import { ConfirmDialog } from '../../../../shared/components/confirm-dialog/confirm-dialog';
 import { PageHeader } from '../../../../shared/components/page-header/page-header';
 import { StateView } from '../../../../shared/components/state-view/state-view';
@@ -23,7 +24,15 @@ import { ProjectsService } from '../../services/projects.service';
 
 @Component({
   selector: 'app-projects-page',
-  imports: [FormsModule, PageHeader, RouterLink, ToggleSwitch, Paginator, ConfirmDialog, StateView],
+  imports: [
+    FormsModule,
+    PageHeader,
+    RouterLink,
+    ToggleSwitch,
+    AppPaginator,
+    ConfirmDialog,
+    StateView,
+  ],
   templateUrl: './projects-list.html',
   styleUrl: './projects-list.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

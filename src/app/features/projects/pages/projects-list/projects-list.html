@@ -62,15 +62,12 @@
         </article>
       }
     </div>
-    <p-paginator
+    <app-paginator
       [first]="first()"
       [rows]="rows()"
       [totalRecords]="items().length"
-      [rowsPerPageOptions]="[10, 20, 50]"
-      [showCurrentPageReport]="true"
       currentPageReportTemplate="{currentPage} من {totalPages}"
-      [alwaysShow]="true"
-      (onPageChange)="page($event)"
+      (pageChange)="page($event)"
     />
   }
   <app-confirm-dialog />

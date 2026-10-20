@@ -1,0 +1,13 @@
+<p-paginator
+  [first]="first()"
+  [rows]="rows()"
+  [totalRecords]="totalRecords()"
+  [rowsPerPageOptions]="rowsPerPageOptions()"
+  [showCurrentPageReport]="showCurrentPageReport()"
+  [showPageLinks]="showPageLinks()"
+  [showFirstLastIcon]="showFirstLastIcon()"
+  [alwaysShow]="alwaysShow()"
+  [currentPageReportTemplate]="currentPageReportTemplate()"
+  [styleClass]="styleClass() || undefined"
+  (onPageChange)="onPrimePageChange($event)"
+/>

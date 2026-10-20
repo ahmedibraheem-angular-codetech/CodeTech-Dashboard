@@ -11,11 +11,12 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { MessageService } from 'primeng/api';
-import { Paginator, type PaginatorState } from 'primeng/paginator';
+import { type PaginatorState } from 'primeng/paginator';
 import { Popover } from 'primeng/popover';
 import { ToggleSwitch } from 'primeng/toggleswitch';
 
 import { LanguageService } from '../../../../core/services/language.service';
+import { AppPaginator } from '../../../../shared/components/app-paginator/app-paginator';
 import { ConfirmDialog } from '../../../../shared/components/confirm-dialog/confirm-dialog';
 import { PageHeader } from '../../../../shared/components/page-header/page-header';
 import {
@@ -35,7 +36,7 @@ import { ProductsService } from '../../services/products.service';
     RouterLink,
     StateView,
     ToggleSwitch,
-    Paginator,
+    AppPaginator,
     Popover,
     ConfirmDialog,
   ],

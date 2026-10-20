@@ -1,0 +1,115 @@
+// Shared catalog paginator. Rules stay under `.app-paginator` so they do not
+// restyle PrimeNG table paginators (users, data-table).
+
+.app-paginator {
+  display: block;
+  width: 100%;
+}
+
+.app-paginator .p-paginator {
+  --p-paginator-background: transparent;
+  --p-paginator-padding: 8px 0 0;
+  --p-paginator-gap: 8px;
+  --p-paginator-nav-button-width: 40px;
+  --p-paginator-nav-button-height: 40px;
+  --p-paginator-nav-button-border-radius: 16px;
+  --p-paginator-nav-button-background: #f4f7fb;
+  --p-paginator-nav-button-hover-background: #eef3f8;
+  --p-paginator-nav-button-color: #6b7c8f;
+  --p-paginator-nav-button-hover-color: #3d5166;
+  --p-paginator-nav-button-selected-background: var(--app-primary);
+  --p-paginator-nav-button-selected-color: var(--app-primary-contrast);
+
+  display: flex;
+  direction: ltr;
+  align-items: center;
+  justify-content: flex-start;
+  margin-top: 4px;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.app-paginator .p-paginator-prev {
+  order: 1;
+}
+
+.app-paginator .p-paginator-pages {
+  display: inline-flex;
+  direction: rtl;
+  gap: 8px;
+  order: 2;
+}
+
+.app-paginator .p-paginator-next {
+  order: 3;
+}
+
+.app-paginator .p-paginator .p-select,
+.app-paginator .p-paginator-rpp-dropdown {
+  order: 4;
+  height: 40px;
+  min-width: 74px;
+  margin-left: auto;
+  border: 0;
+  border-radius: 16px;
+  background: #f4f7fb;
+  direction: rtl;
+  box-shadow: none;
+}
+
+.app-paginator .p-paginator .p-select-label {
+  padding-inline: 10px;
+  color: #3d5166;
+  font-size: 14px;
+}
+
+.app-paginator .p-paginator-current {
+  order: 5;
+  color: #8aa0b5;
+  font-size: 14px;
+}
+
+.app-paginator .p-paginator-page,
+.app-paginator .p-paginator-next,
+.app-paginator .p-paginator-prev {
+  width: 40px;
+  height: 40px;
+  min-width: 40px;
+  padding: 0;
+  border: 0;
+  border-radius: 16px;
+  background: #f4f7fb;
+  color: #6b7c8f;
+  font-size: 14px;
+  font-weight: 500;
+  box-shadow: none;
+}
+
+.app-paginator .p-paginator-page-selected {
+  border: 0;
+  background: var(--app-primary);
+  color: var(--app-primary-contrast);
+}
+
+.app-paginator .p-paginator-next svg,
+.app-paginator .p-paginator-prev svg {
+  width: 14px;
+  height: 14px;
+}
+
+.app-paginator .p-paginator .p-disabled {
+  opacity: 1;
+}
+
+@media (max-width: 640px) {
+  .app-paginator .p-paginator {
+    flex-wrap: wrap;
+    row-gap: 10px;
+  }
+
+  .app-paginator .p-paginator .p-select,
+  .app-paginator .p-paginator-rpp-dropdown {
+    margin-left: 0;
+  }
+}

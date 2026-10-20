@@ -94,4 +94,11 @@ describe('DataTable', () => {
     row.click();
     expect(fixture.componentInstance.opened()).toBe('1');
   });
+
+  it('does not paginate by default and never mounts app-paginator', () => {
+    const fixture = render();
+    const root: HTMLElement = fixture.nativeElement;
+    expect(root.querySelector('app-paginator')).toBeNull();
+    expect(root.querySelector('.p-paginator')).toBeNull();
+  });
 });

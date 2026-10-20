@@ -39,16 +39,11 @@
         }
       </div>
 
-      <p-paginator
+      <app-paginator
         [first]="first()"
         [rows]="rows()"
         [totalRecords]="total()"
-        [rowsPerPageOptions]="[10, 20, 50]"
-        [showCurrentPageReport]="true"
-        [showFirstLastIcon]="false"
-        currentPageReportTemplate="عرض {currentPage} من {rows}"
-        [alwaysShow]="true"
-        (onPageChange)="page($event)"
+        (pageChange)="page($event)"
       />
     }
   </section>
