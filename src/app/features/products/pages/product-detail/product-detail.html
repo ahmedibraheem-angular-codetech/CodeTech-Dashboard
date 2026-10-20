@@ -74,49 +74,53 @@
               <h2>{{ lang.t('product.stats') }}</h2>
               <span class="icon-badge"><i class="pi pi-bolt" aria-hidden="true"></i></span>
             </header>
-            <div class="stat-tabs">
-              @for (stat of product.stats; track stat.id; let index = $index) {
-                <button
-                  type="button"
-                  class="stat-tab"
-                  [class.is-active]="statIndex() === index"
-                  (click)="statIndex.set(index)"
-                >
-                  {{ lang.t('product.statItem') }} {{ index + 1 }}
-                  <span
-                    class="stat-tab__remove"
-                    role="button"
-                    tabindex="0"
-                    [attr.aria-disabled]="product.stats.length < 2"
-                    (click)="$event.stopPropagation(); removeItem('stats', index)"
-                    (keydown.enter)="$event.stopPropagation(); removeItem('stats', index)"
+            <div class="stat-block">
+              <div class="stat-tabs">
+                @for (stat of product.stats; track stat.id; let index = $index) {
+                  <button
+                    type="button"
+                    class="stat-tab"
+                    [class.is-active]="statIndex() === index"
+                    (click)="statIndex.set(index)"
                   >
-                    <i class="pi pi-trash" aria-hidden="true"></i>
-                  </span>
-                </button>
+                    {{ lang.t('product.statItem') }} {{ index + 1 }}
+                    <span
+                      class="stat-tab__remove"
+                      role="button"
+                      tabindex="0"
+                      [attr.aria-disabled]="product.stats.length < 2"
+                      (click)="$event.stopPropagation(); removeItem('stats', index)"
+                      (keydown.enter)="$event.stopPropagation(); removeItem('stats', index)"
+                    >
+                      <i class="pi pi-trash" aria-hidden="true"></i>
+                    </span>
+                  </button>
+                }
+              </div>
+              @if (product.stats[statIndex()]; as stat) {
+                <div class="stat-panel">
+                  <div class="stat-fields">
+                    <div class="detail-field">
+                      <span>{{ lang.t('product.statLabel') }}</span>
+                      <strong>
+                        <i class="pi pi-user" aria-hidden="true"></i>
+                        {{ text(stat.label) }}
+                      </strong>
+                    </div>
+                    <div class="detail-field">
+                      <span>{{ lang.t('product.statValue') }}</span>
+                      <strong>
+                        <i class="pi pi-user" aria-hidden="true"></i>
+                        <bdi dir="ltr">{{ stat.value }}</bdi>
+                      </strong>
+                    </div>
+                  </div>
+                  @if (stat.imageUrl) {
+                    <img class="detail-photo" [src]="stat.imageUrl" alt="" />
+                  }
+                </div>
               }
             </div>
-            @if (product.stats[statIndex()]; as stat) {
-              <div class="stat-fields">
-                <div class="detail-field">
-                  <span>{{ lang.t('product.statLabel') }}</span>
-                  <strong>
-                    <i class="pi pi-user" aria-hidden="true"></i>
-                    {{ text(stat.label) }}
-                  </strong>
-                </div>
-                <div class="detail-field">
-                  <span>{{ lang.t('product.statValue') }}</span>
-                  <strong>
-                    <i class="pi pi-user" aria-hidden="true"></i>
-                    <bdi dir="ltr">{{ stat.value }}</bdi>
-                  </strong>
-                </div>
-              </div>
-              @if (stat.imageUrl) {
-                <img class="detail-photo" [src]="stat.imageUrl" alt="" />
-              }
-            }
           </article>
 
           <article class="detail-panel">
@@ -297,48 +301,56 @@
                 <h2>{{ lang.t('product.units') }}</h2>
                 <span class="icon-badge"><i class="pi pi-cog" aria-hidden="true"></i></span>
               </header>
-              <div class="stat-tabs">
-                @for (unit of product.units; track unit.id; let index = $index) {
-                  <button
-                    type="button"
-                    class="stat-tab"
-                    [class.is-active]="unitIndex() === index"
-                    (click)="unitIndex.set(index)"
-                  >
-                    {{ text(unit.title) }}
-                    <span
-                      class="stat-tab__remove"
-                      role="button"
-                      tabindex="0"
-                      [attr.aria-disabled]="product.units.length < 2"
-                      (click)="$event.stopPropagation(); removeItem('units', index)"
-                      (keydown.enter)="$event.stopPropagation(); removeItem('units', index)"
+              <div class="stat-block">
+                <div class="stat-tabs">
+                  @for (unit of product.units; track unit.id; let index = $index) {
+                    <button
+                      type="button"
+                      class="stat-tab"
+                      [class.is-active]="unitIndex() === index"
+                      (click)="unitIndex.set(index)"
                     >
-                      <i class="pi pi-trash" aria-hidden="true"></i>
-                    </span>
-                  </button>
+                      {{ text(unit.title) }}
+                      <span
+                        class="stat-tab__remove"
+                        role="button"
+                        tabindex="0"
+                        [attr.aria-disabled]="product.units.length < 2"
+                        (click)="$event.stopPropagation(); removeItem('units', index)"
+                        (keydown.enter)="$event.stopPropagation(); removeItem('units', index)"
+                      >
+                        <i class="pi pi-trash" aria-hidden="true"></i>
+                      </span>
+                    </button>
+                  }
+                </div>
+                @if (product.units[unitIndex()]; as unit) {
+                  <div class="stat-panel">
+                    <div class="detail-fields">
+                      <div class="detail-field">
+                        <span>{{ lang.t('product.unitTitle') }}</span>
+                        <strong class="detail-field__lead">
+                          <i class="pi pi-user" aria-hidden="true"></i>
+                          {{ text(unit.title) }}
+                        </strong>
+                      </div>
+                      <div class="detail-field">
+                        <span>{{ lang.t('product.unitBody') }}</span>
+                        <p class="detail-field__lead">
+                          <i class="pi pi-align-left" aria-hidden="true"></i>
+                          {{ text(unit.body) }}
+                        </p>
+                      </div>
+                    </div>
+                    <h3 class="detail-subhead">{{ lang.t('product.unitFeatures') }}</h3>
+                    <app-detail-points
+                      [items]="unit.points"
+                      [locale]="locale()"
+                      fallback="pi-clock"
+                    />
+                  </div>
                 }
               </div>
-              @if (product.units[unitIndex()]; as unit) {
-                <div class="detail-fields">
-                  <div class="detail-field">
-                    <span>{{ lang.t('product.unitTitle') }}</span>
-                    <strong class="detail-field__lead">
-                      <i class="pi pi-user" aria-hidden="true"></i>
-                      {{ text(unit.title) }}
-                    </strong>
-                  </div>
-                  <div class="detail-field">
-                    <span>{{ lang.t('product.unitBody') }}</span>
-                    <p class="detail-field__lead">
-                      <i class="pi pi-align-left" aria-hidden="true"></i>
-                      {{ text(unit.body) }}
-                    </p>
-                  </div>
-                </div>
-                <h3 class="detail-subhead">{{ lang.t('product.unitFeatures') }}</h3>
-                <app-detail-points [items]="unit.points" [locale]="locale()" fallback="pi-clock" />
-              }
             </article>
             <article class="detail-panel">
               <header class="detail-panel__head">
@@ -386,46 +398,50 @@
                 <h2>{{ lang.t('product.identity') }}</h2>
                 <span class="icon-badge"><i class="pi pi-desktop" aria-hidden="true"></i></span>
               </header>
-              <div class="stat-tabs">
-                @for (item of product.identity; track item.id; let index = $index) {
-                  <button
-                    type="button"
-                    class="stat-tab"
-                    [class.is-active]="identityIndex() === index"
-                    (click)="identityIndex.set(index)"
-                  >
-                    {{ text(item.title) }}
-                    <span
-                      class="stat-tab__remove"
-                      role="button"
-                      tabindex="0"
-                      [attr.aria-disabled]="product.identity.length < 2"
-                      (click)="$event.stopPropagation(); removeItem('identity', index)"
-                      (keydown.enter)="$event.stopPropagation(); removeItem('identity', index)"
+              <div class="stat-block">
+                <div class="stat-tabs">
+                  @for (item of product.identity; track item.id; let index = $index) {
+                    <button
+                      type="button"
+                      class="stat-tab"
+                      [class.is-active]="identityIndex() === index"
+                      (click)="identityIndex.set(index)"
                     >
-                      <i class="pi pi-trash" aria-hidden="true"></i>
-                    </span>
-                  </button>
+                      {{ text(item.title) }}
+                      <span
+                        class="stat-tab__remove"
+                        role="button"
+                        tabindex="0"
+                        [attr.aria-disabled]="product.identity.length < 2"
+                        (click)="$event.stopPropagation(); removeItem('identity', index)"
+                        (keydown.enter)="$event.stopPropagation(); removeItem('identity', index)"
+                      >
+                        <i class="pi pi-trash" aria-hidden="true"></i>
+                      </span>
+                    </button>
+                  }
+                </div>
+                @if (product.identity[identityIndex()]; as item) {
+                  <div class="stat-panel">
+                    <div class="detail-fields">
+                      <div class="detail-field">
+                        <span>{{ lang.t('product.unitTitle') }}</span>
+                        <strong class="detail-field__lead">
+                          <i class="pi pi-user" aria-hidden="true"></i>
+                          {{ text(item.title) }}
+                        </strong>
+                      </div>
+                      <div class="detail-field">
+                        <span>{{ lang.t('product.unitBody') }}</span>
+                        <p class="detail-field__lead">
+                          <i class="pi pi-align-left" aria-hidden="true"></i>
+                          {{ text(item.body) }}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
                 }
               </div>
-              @if (product.identity[identityIndex()]; as item) {
-                <div class="detail-fields">
-                  <div class="detail-field">
-                    <span>{{ lang.t('product.unitTitle') }}</span>
-                    <strong class="detail-field__lead">
-                      <i class="pi pi-user" aria-hidden="true"></i>
-                      {{ text(item.title) }}
-                    </strong>
-                  </div>
-                  <div class="detail-field">
-                    <span>{{ lang.t('product.unitBody') }}</span>
-                    <p class="detail-field__lead">
-                      <i class="pi pi-align-left" aria-hidden="true"></i>
-                      {{ text(item.body) }}
-                    </p>
-                  </div>
-                </div>
-              }
             </article>
             <article class="detail-panel">
               <header class="detail-panel__head">
