@@ -9,25 +9,18 @@ import {
   viewChild,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { FormsModule } from '@angular/forms';
 import { MessageService } from 'primeng/api';
-import { IconField } from 'primeng/iconfield';
-import { InputIcon } from 'primeng/inputicon';
-import { InputText } from 'primeng/inputtext';
-import { Textarea } from 'primeng/textarea';
-import { ToggleSwitch } from 'primeng/toggleswitch';
 
 import type { AppLanguage } from '../../../../core/i18n/language';
 import { LanguageService } from '../../../../core/services/language.service';
-import { AppButton } from '../../../../shared/components/app-button/app-button';
 import { ConfirmDialog } from '../../../../shared/components/confirm-dialog/confirm-dialog';
-import { SectorCard } from '../../../../shared/components/sector-card/sector-card';
-import { LocaleSwitch } from '../../../../shared/components/locale-switch/locale-switch';
 import { Modal } from '../../../../shared/components/modal/modal';
 import { PageHeader } from '../../../../shared/components/page-header/page-header';
 import { StateView } from '../../../../shared/components/state-view/state-view';
-import { ProductUpload } from '../../components/product-upload/product-upload';
-import { readLocale, type LocaleText } from '../../models/product.model';
+import { ProductsPageEditorForm } from '../../components/products-page-editor-form/products-page-editor-form';
+import { ProductsPageFeatures } from '../../components/products-page-features/products-page-features';
+import { ProductsPageSectors } from '../../components/products-page-sectors/products-page-sectors';
+import { readLocale } from '../../models/product.model';
 import {
   productsPageFeature,
   productsPageSector,
@@ -39,23 +32,20 @@ import { ProductsPageService } from '../../services/products-page.service';
 
 type EditorKind = 'feature' | 'sector';
 
+/**
+ * Products landing-page manager: loads content, owns CRUD/API, and composes
+ * feature/sector panels plus the shared modal editor shell.
+ */
 @Component({
   selector: 'app-products-page-manage',
   imports: [
-    FormsModule,
-    AppButton,
-    SectorCard,
-    PageHeader,
-    ToggleSwitch,
-    StateView,
     ConfirmDialog,
     Modal,
-    LocaleSwitch,
-    ProductUpload,
-    IconField,
-    InputIcon,
-    InputText,
-    Textarea,
+    PageHeader,
+    StateView,
+    ProductsPageFeatures,
+    ProductsPageSectors,
+    ProductsPageEditorForm,
   ],
   templateUrl: './products-page.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -83,12 +73,8 @@ export class ProductsPageManage {
     });
   }
 
-  protected text(value: LocaleText): string {
+  protected text(value: { ar: string; en: string }): string {
     return readLocale(value, this.locale());
-  }
-
-  protected display(value: LocaleText): string {
-    return readLocale(value, this.lang.language());
   }
 
   protected openFeature(feature?: ProductsPageFeature): void {
@@ -111,43 +97,6 @@ export class ProductsPageManage {
       sector ? this.lang.t('product.page.editSector') : this.lang.t('product.page.addSector'),
     );
     this.editorOpen.set(true);
-  }
-
-  protected setFeatureText(field: 'title' | 'body', event: Event): void {
-    const value = this.read(event);
-    if (value === undefined) {
-      return;
-    }
-    const language = this.locale();
-    this.draftFeature.update((current) => ({
-      ...current,
-      [field]: { ...current[field], [language]: value } satisfies LocaleText,
-    }));
-  }
-
-  protected setFeatureImage(file: { name: string; url: string }): void {
-    this.draftFeature.update((current) => ({
-      ...current,
-      imageName: file.name,
-      imageUrl: file.url,
-      icon: file.url.startsWith('icon:') ? file.url.slice(5) : current.icon,
-    }));
-  }
-
-  protected setSectorTitle(event: Event): void {
-    const value = this.read(event);
-    if (value === undefined) {
-      return;
-    }
-    const language = this.locale();
-    this.draftSector.update((current) => ({
-      ...current,
-      title: { ...current.title, [language]: value },
-    }));
-  }
-
-  protected setSectorImage(file: { name: string; url: string }): void {
-    this.draftSector.update((current) => ({ ...current, imageUrl: file.url }));
   }
 
   protected saveLabel(): string {
@@ -308,13 +257,5 @@ export class ProductsPageManage {
         this.content.set(content);
         this.status.set('ready');
       });
-  }
-
-  private read(event: Event): string | undefined {
-    const target = event.target;
-    if (target instanceof HTMLInputElement || target instanceof HTMLTextAreaElement) {
-      return target.value;
-    }
-    return undefined;
   }
 }

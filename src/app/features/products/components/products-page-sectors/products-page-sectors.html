@@ -1,0 +1,33 @@
+<article class="detail-panel" [class.is-off]="!enabled()">
+  <header class="products-manage__head">
+    <div class="products-manage__title">
+      <h2>{{ lang.t('product.sectors') }}</h2>
+      <p-toggleswitch
+        [ngModel]="enabled()"
+        (ngModelChange)="enabledChange.emit($event)"
+        [ariaLabel]="lang.t('product.sectors')"
+      />
+    </div>
+    <app-button
+      variant="outlined"
+      icon="pi pi-plus"
+      iconPos="end"
+      [rounded]="true"
+      styleClass="products-manage__add"
+      [label]="lang.t('product.page.addSector')"
+      (clicked)="add.emit()"
+    />
+  </header>
+  <div class="app-sector-grid">
+    @for (sector of sectors(); track sector.id) {
+      <app-sector-card
+        [imageUrl]="sector.imageUrl"
+        [title]="text(sector.title)"
+        [editLabel]="lang.t('product.editAction')"
+        [deleteLabel]="lang.t('about.delete')"
+        (editRequested)="edit.emit(sector)"
+        (deleteRequested)="remove.emit(sector)"
+      />
+    }
+  </div>
+</article>
