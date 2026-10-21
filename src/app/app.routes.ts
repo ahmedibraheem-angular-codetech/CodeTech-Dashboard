@@ -181,7 +181,14 @@ export const routes: Routes = [
       section('services', 'nav.services'),
       section('knowledge', 'nav.knowledge'),
       section('reviews', 'nav.reviews'),
-      section('settings/permissions', 'nav.permissions'),
+      {
+        path: 'settings/permissions',
+        loadComponent: () =>
+          import('./features/settings/pages/permissions/permissions').then(
+            (m) => m.PermissionsPage,
+          ),
+        data: { breadcrumb: 'nav.permissions', titleKey: 'nav.permissions' },
+      },
       section('settings/social', 'nav.social'),
       section('support/terms', 'nav.terms'),
       section('support/privacy', 'nav.privacy'),

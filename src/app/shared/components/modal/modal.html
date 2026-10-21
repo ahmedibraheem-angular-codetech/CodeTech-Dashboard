@@ -28,6 +28,7 @@
       <app-button
         class="app-modal__action"
         [icon]="saveIcon() || undefined"
+        [iconPos]="saveIconPos()"
         [label]="saveLabel() ?? lang.t('common.saveChanges')"
         [fluid]="true"
         [loading]="saving()"

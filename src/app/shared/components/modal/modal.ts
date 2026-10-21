@@ -10,7 +10,7 @@ import {
 import { Dialog } from 'primeng/dialog';
 
 import { LanguageService } from '../../../core/services/language.service';
-import { AppButton } from '../app-button/app-button';
+import { AppButton, type AppButtonIconPos } from '../app-button/app-button';
 
 /**
  * The application's one modal: a PrimeNG dialog with a designed header, a projected body and
@@ -52,6 +52,8 @@ export class Modal {
   readonly saveLabel = input<string>();
   /** Icon on the save button. Pass an empty string to show the label alone. */
   readonly saveIcon = input('pi pi-save');
+  /** Icon side on the save button. Defaults to `start` (existing modal behaviour). */
+  readonly saveIconPos = input<AppButtonIconPos>('start');
   /** Defaults to "Cancel". */
   readonly cancelLabel = input<string>();
   readonly showSave = input(true);

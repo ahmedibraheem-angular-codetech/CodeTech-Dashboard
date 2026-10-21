@@ -1,0 +1,327 @@
+// Roles and permissions matrix. Tokens follow the RTL reference screen.
+
+.permissions-page {
+  gap: 16px;
+}
+
+.permissions-page app-page-header .page-header {
+  width: 100%;
+  min-height: 0;
+  gap: 16px;
+  padding: 16px;
+  border: 1px solid #edeeee;
+  border-radius: 16px;
+  background: #fff;
+}
+
+.permissions-page app-page-header .page-header h1 {
+  color: #0f2744;
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.permissions-page app-page-header .page-header p,
+.permissions-page app-page-header .page-header .mt-3 {
+  margin-top: 4px !important;
+  color: #64748b;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.permissions-add.p-button {
+  height: 40px;
+  padding-inline: 16px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.permissions-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+  border: 1px solid #edeeee;
+  border-radius: 16px;
+  background: #fff;
+}
+
+.permissions-panel h2 {
+  margin: 0;
+  color: #0f2744;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.5;
+}
+
+.permissions-toolbar {
+  display: flex;
+  box-sizing: border-box;
+  align-items: center;
+  align-self: stretch;
+  justify-content: space-between;
+  width: 100%;
+  height: 64px;
+  gap: 8px;
+  padding: 8px;
+  border: 1px solid #f0f1f3;
+  border-radius: 16px;
+  background: #f9fafb;
+}
+
+.permissions-toolbar__actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.permissions-role {
+  display: inline-flex;
+  align-items: stretch;
+  height: 40px;
+  overflow: hidden;
+  border: 1px solid #e6edf5;
+  border-radius: 12px;
+  background: #fff;
+}
+
+.permissions-role__tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 12px;
+  border-inline-end: 1px solid #e6edf5;
+  background: #f4f7fb;
+  color: #12324f;
+  font-size: 14px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.permissions-role__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #e8eef6;
+  color: #5a6f8f;
+  font-size: 11px;
+}
+
+.permissions-role .p-select {
+  min-width: 168px;
+  height: 100%;
+  border: 0;
+  box-shadow: none;
+  background: transparent;
+}
+
+.permissions-role .p-select-label {
+  display: flex;
+  align-items: center;
+  padding-inline: 12px;
+  color: #12324f;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.permissions-role .p-select-dropdown {
+  width: 32px;
+  color: #94a3b8;
+}
+
+.permissions-save.p-button,
+.permissions-delete.p-button {
+  height: 40px;
+  padding-inline: 14px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.permissions-save.p-button {
+  --p-button-outlined-primary-color: #1c81d3;
+  --p-button-outlined-primary-border-color: #d7e2f0;
+  --p-button-outlined-primary-hover-background: #f5f9fd;
+  --p-button-outlined-primary-active-background: #eef5fb;
+  background: #fff;
+}
+
+.permissions-delete.p-button {
+  --p-button-outlined-danger-color: #e11d48;
+  --p-button-outlined-danger-border-color: #f3c7c7;
+  --p-button-outlined-danger-hover-background: #fff8f8;
+  background: #fff;
+}
+
+.permissions-table {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid #edeeee;
+  border-radius: 12px;
+}
+
+.permissions-table__head,
+.permissions-table__row {
+  display: grid;
+  grid-template-columns: minmax(200px, 1.6fr) repeat(3, minmax(110px, 1fr));
+  align-items: center;
+  min-height: 52px;
+  padding: 0 16px;
+}
+
+.permissions-table__head {
+  background: #f4f7fb;
+  color: #12324f;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.permissions-table__row {
+  border-top: 1px solid #edeeee;
+  background: #fff;
+  color: #12324f;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.permissions-table__head span:not(:first-child),
+.permissions-table__row span:not(:first-child) {
+  display: flex;
+  justify-content: center;
+}
+
+.permissions-table__row span:first-child {
+  text-align: start;
+}
+
+.permissions-page .p-toggleswitch {
+  --p-toggleswitch-width: 36px;
+  --p-toggleswitch-height: 20px;
+  --p-toggleswitch-handle-size: 14px;
+  --p-toggleswitch-gap: 3px;
+  --p-toggleswitch-border-radius: 999px;
+  --p-toggleswitch-background: #e2e8f0;
+  --p-toggleswitch-hover-background: #cbd5e1;
+  --p-toggleswitch-checked-background: #2f6fed;
+  --p-toggleswitch-checked-hover-background: #2563eb;
+  width: 36px;
+  height: 20px;
+}
+
+@media (max-width: 800px) {
+  .permissions-toolbar {
+    flex-wrap: wrap;
+    height: auto;
+    min-height: 64px;
+  }
+
+  .permissions-table {
+    overflow-x: auto;
+  }
+
+  .permissions-table__head,
+  .permissions-table__row {
+    min-width: 560px;
+  }
+}
+
+// Add-role dialog body (projected into shared `app-modal`).
+.p-dialog.app-modal:has(.permissions-role-form) {
+  width: min(760px, calc(100vw - 32px));
+}
+
+.p-dialog.app-modal:has(.permissions-role-form) .app-modal__action .p-button {
+  height: 48px;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.permissions-role-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding-block: 8px 4px;
+}
+
+.permissions-role-form .field__label {
+  color: #64748b;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.permissions-role-form .p-inputtext {
+  min-height: 48px;
+  border-color: #edeeee;
+  border-radius: 12px;
+  font-size: 14px;
+}
+
+.permissions-role-form .p-inputtext::placeholder {
+  color: #94a3b8;
+}
+
+.permissions-module-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  padding: 12px;
+  border: 1px solid #edeeee;
+  border-radius: 16px;
+  background: #f9fafb;
+}
+
+.permissions-module-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  min-height: 52px;
+  margin: 0;
+  padding: 10px 12px;
+  border: 1px solid #edeeee;
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+  cursor: pointer;
+}
+
+.permissions-module-card__label {
+  min-width: 0;
+  color: #12324f;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.35;
+  text-align: start;
+}
+
+.permissions-role-form .p-toggleswitch {
+  --p-toggleswitch-width: 36px;
+  --p-toggleswitch-height: 20px;
+  --p-toggleswitch-handle-size: 14px;
+  --p-toggleswitch-gap: 3px;
+  --p-toggleswitch-border-radius: 999px;
+  --p-toggleswitch-background: #e2e8f0;
+  --p-toggleswitch-checked-background: #2f6fed;
+  --p-toggleswitch-checked-hover-background: #2563eb;
+  flex: none;
+  width: 36px;
+  height: 20px;
+}
+
+@media (max-width: 720px) {
+  .permissions-module-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 480px) {
+  .permissions-module-grid {
+    grid-template-columns: 1fr;
+  }
+}
