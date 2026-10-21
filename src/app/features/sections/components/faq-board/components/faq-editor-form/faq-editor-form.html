@@ -1,0 +1,87 @@
+<form class="faq-editor-form" [formGroup]="form()" (ngSubmit)="onSubmit()">
+  <label class="field">
+    <span class="field__label">{{ lang.t('faq.questionAr') }}</span>
+    <input
+      pInputText
+      [fluid]="true"
+      formControlName="questionAr"
+      [invalid]="form().controls.questionAr.touched && form().controls.questionAr.invalid"
+    />
+    @if (form().controls.questionAr.touched && form().controls.questionAr.invalid) {
+      <app-field-error>{{ lang.t('faq.required') }}</app-field-error>
+    }
+  </label>
+
+  <label class="field">
+    <span class="field__label">{{ lang.t('faq.questionEn') }}</span>
+    <input
+      pInputText
+      [fluid]="true"
+      formControlName="questionEn"
+      [invalid]="form().controls.questionEn.touched && form().controls.questionEn.invalid"
+    />
+    @if (form().controls.questionEn.touched && form().controls.questionEn.invalid) {
+      <app-field-error>{{ lang.t('faq.required') }}</app-field-error>
+    }
+  </label>
+
+  <label class="field">
+    <span class="field__label">{{ lang.t('faq.answerAr') }}</span>
+    <textarea
+      pTextarea
+      [fluid]="true"
+      rows="4"
+      formControlName="answerAr"
+      [invalid]="form().controls.answerAr.touched && form().controls.answerAr.invalid"
+    ></textarea>
+    @if (form().controls.answerAr.touched && form().controls.answerAr.invalid) {
+      <app-field-error>{{ lang.t('faq.required') }}</app-field-error>
+    }
+  </label>
+
+  <label class="field">
+    <span class="field__label">{{ lang.t('faq.answerEn') }}</span>
+    <textarea
+      pTextarea
+      [fluid]="true"
+      rows="4"
+      formControlName="answerEn"
+      [invalid]="form().controls.answerEn.touched && form().controls.answerEn.invalid"
+    ></textarea>
+    @if (form().controls.answerEn.touched && form().controls.answerEn.invalid) {
+      <app-field-error>{{ lang.t('faq.required') }}</app-field-error>
+    }
+  </label>
+
+  <div class="faq-editor-form__row">
+    <label class="field">
+      <span class="field__label">{{ lang.t('faq.category') }}</span>
+      <p-select
+        [fluid]="true"
+        formControlName="categoryId"
+        [options]="categoryOptions()"
+        optionLabel="label"
+        optionValue="value"
+      />
+    </label>
+
+    <label class="field">
+      <span class="field__label">{{ lang.t('faq.order') }}</span>
+      <input
+        pInputText
+        [fluid]="true"
+        type="number"
+        formControlName="order"
+        [invalid]="form().controls.order.touched && form().controls.order.invalid"
+      />
+      @if (form().controls.order.touched && form().controls.order.invalid) {
+        <app-field-error>{{ lang.t('faq.required') }}</app-field-error>
+      }
+    </label>
+  </div>
+
+  <label class="faq-editor-form__publish">
+    <span>{{ lang.t('faq.publishStatus') }}</span>
+    <p-toggleswitch formControlName="published" [ariaLabel]="lang.t('faq.publishStatus')" />
+  </label>
+</form>

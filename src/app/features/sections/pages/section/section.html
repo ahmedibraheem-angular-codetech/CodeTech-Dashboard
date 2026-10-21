@@ -2,6 +2,8 @@
   <app-about-page />
 } @else if (isInquiries() || isStart()) {
   <app-inquiries-board [pageTitle]="boardTitle()" [detailPath]="detailPath()" />
+} @else if (isFaq()) {
+  <app-faq-board />
 } @else {
   <section class="page">
     <app-page-header [title]="lang.t(titleKey())" [subtitle]="lang.t('sections.ready')" />

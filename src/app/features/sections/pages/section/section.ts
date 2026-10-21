@@ -7,11 +7,12 @@ import { LanguageService } from '../../../../core/services/language.service';
 import { PageHeader } from '../../../../shared/components/page-header/page-header';
 import { StateView } from '../../../../shared/components/state-view/state-view';
 import { AboutPage } from '../../components/about-page/about-page';
+import { FaqBoard } from '../../components/faq-board/faq-board';
 import { InquiriesBoard } from '../../components/inquiries-board/inquiries-board';
 
 @Component({
   selector: 'app-section-page',
-  imports: [PageHeader, StateView, AboutPage, InquiriesBoard],
+  imports: [PageHeader, StateView, AboutPage, FaqBoard, InquiriesBoard],
   templateUrl: './section.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -27,6 +28,7 @@ export class SectionPage {
   readonly isInquiries = computed(() => this.titleKey() === 'nav.inquiries');
   /** Same board as inquiries. Only the page and table title change. */
   readonly isStart = computed(() => this.titleKey() === 'nav.startProjects');
+  readonly isFaq = computed(() => this.titleKey() === 'nav.faq');
   readonly boardTitle = computed(() => (this.isStart() ? this.lang.t('nav.startProjects') : ''));
   readonly detailPath = computed(() => (this.isStart() ? '/contact/start' : '/contact/inquiries'));
 }

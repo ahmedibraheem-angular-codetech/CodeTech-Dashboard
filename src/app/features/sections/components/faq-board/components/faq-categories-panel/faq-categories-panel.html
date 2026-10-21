@@ -1,0 +1,34 @@
+<article class="faq-board__panel">
+  <header class="faq-board__panel-head">
+    <h2>{{ countLabel() }}</h2>
+  </header>
+
+  <div class="faq-board__list">
+    @for (category of sorted(); track category.id) {
+      <article class="faq-card faq-card--category">
+        <div class="faq-card__top">
+          <div class="faq-card__main">
+            <h3 class="faq-card__question">{{ text(category.name) }}</h3>
+            <p class="faq-card__answer">{{ questionsLabel(category.id) }}</p>
+          </div>
+        </div>
+        <footer class="faq-card__foot">
+          <label class="faq-card__publish">
+            <span>{{ lang.t('faq.publishStatus') }}</span>
+            <p-toggleswitch
+              [ngModel]="category.published"
+              (ngModelChange)="onPublished(category, $event)"
+              [ariaLabel]="lang.t('faq.publishStatus')"
+            />
+          </label>
+          <div class="faq-card__meta-group">
+            <div class="faq-card__meta-item">
+              <span class="faq-card__meta-label">{{ lang.t('faq.order') }}</span>
+              <strong class="faq-card__order">{{ orderLabel(category.order) }}</strong>
+            </div>
+          </div>
+        </footer>
+      </article>
+    }
+  </div>
+</article>

@@ -14,6 +14,21 @@ function route(titleKey: string): ActivatedRoute {
 }
 
 describe('SectionPage', () => {
+  beforeEach(() => {
+    // PrimeNG TabList uses ResizeObserver; jsdom does not provide it.
+    globalThis.ResizeObserver ??= class {
+      observe(): void {
+        /* no-op */
+      }
+      unobserve(): void {
+        /* no-op */
+      }
+      disconnect(): void {
+        /* no-op */
+      }
+    };
+  });
+
   async function render(titleKey: string) {
     TestBed.configureTestingModule({
       imports: [SectionPage],
@@ -58,11 +73,20 @@ describe('SectionPage', () => {
     expect(root.textContent).toContain('إدارة الاستفسارات المستقبلة');
   });
 
+  it('renders the FAQ board on the faq route', async () => {
+    const fixture = await render('nav.faq');
+    const root: HTMLElement = fixture.nativeElement;
+
+    expect(root.querySelector('app-faq-board')).not.toBeNull();
+    expect(root.querySelector('h1')?.textContent).toContain('الأسئلة الشائعة');
+  });
+
   it('keeps every other section route as a placeholder', async () => {
     const fixture = await render('nav.productsItem');
     const root: HTMLElement = fixture.nativeElement;
 
     expect(root.querySelector('app-about-page')).toBeNull();
+    expect(root.querySelector('app-faq-board')).toBeNull();
     expect(root.querySelector('app-state-view')).not.toBeNull();
   });
 });
