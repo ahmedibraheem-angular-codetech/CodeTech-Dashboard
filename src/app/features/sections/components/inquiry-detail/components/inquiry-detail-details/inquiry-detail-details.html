@@ -1,0 +1,38 @@
+<article class="inquiry-card inquiry-card--details">
+  <header class="inquiry-card__head">
+    <h2>{{ lang.t('inquiry.details') }}</h2>
+    <span class="inquiry-card__icon" aria-hidden="true"><i class="pi pi-circle"></i></span>
+  </header>
+  <div class="inquiry-fields">
+    <div class="inquiry-field">
+      <span class="inquiry-field__label">ID</span>
+      <strong dir="ltr">{{ inquiry().id }} <i class="pi pi-id-card" aria-hidden="true"></i></strong>
+    </div>
+    <div class="inquiry-field">
+      <span class="inquiry-field__label">{{ lang.t('inquiry.customer') }}</span>
+      <strong>{{ inquiry().customer }} <i class="pi pi-user" aria-hidden="true"></i></strong>
+    </div>
+    <div class="inquiry-field">
+      <span class="inquiry-field__label">{{ lang.t('inquiry.orgName') }}</span>
+      <strong>{{ inquiry().org }} <i class="pi pi-building" aria-hidden="true"></i></strong>
+    </div>
+    <div class="inquiry-field">
+      <span class="inquiry-field__label">{{ lang.t('inquiry.product') }}</span>
+      <strong>{{ inquiry().product }}</strong>
+    </div>
+    <div class="inquiry-pair">
+      <div class="inquiry-field">
+        <span class="inquiry-field__label">{{ lang.t('inquiry.phone') }}</span>
+        <strong dir="ltr"
+          >{{ inquiry().phone }} <i class="pi pi-phone" aria-hidden="true"></i
+        ></strong>
+      </div>
+      <div class="inquiry-field">
+        <span class="inquiry-field__label">{{ lang.t('inquiry.email') }}</span>
+        <strong dir="ltr"
+          >{{ inquiry().email }} <i class="pi pi-envelope" aria-hidden="true"></i
+        ></strong>
+      </div>
+    </div>
+  </div>
+</article>

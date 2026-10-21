@@ -1,0 +1,64 @@
+<app-data-table
+  class="users-table"
+  [title]="title()"
+  [rows]="rows()"
+  [columns]="columns()"
+  [exportLabel]="lang.t('users.export')"
+  [searchLabel]="lang.t('users.search')"
+  [emptyMessage]="lang.t('users.empty')"
+  [rowClickable]="true"
+  [(query)]="query"
+  (export)="exportRows.emit($event)"
+  (rowClick)="rowClick.emit($event)"
+>
+  <div dtTools class="users-table__selects">
+    <p-select
+      styleClass="users-table__select"
+      [options]="roleOptions()"
+      optionLabel="label"
+      optionValue="value"
+      [ngModel]="role()"
+      (ngModelChange)="role.set($event)"
+      [ariaLabel]="lang.t('users.role')"
+    />
+    <p-select
+      styleClass="users-table__select"
+      [options]="statusOptions()"
+      optionLabel="label"
+      optionValue="value"
+      [ngModel]="status()"
+      (ngModelChange)="status.set($event)"
+      [ariaLabel]="lang.t('users.status')"
+    />
+  </div>
+
+  <ng-template appDataCell="actions" let-row>
+    <app-button
+      styleClass="users-table__more"
+      icon="pi pi-ellipsis-v"
+      variant="outlined"
+      [ariaLabel]="lang.t('users.actions')"
+      (clicked)="openMenu($event, row.source)"
+    />
+  </ng-template>
+
+  <app-paginator
+    dtFooter
+    [first]="first()"
+    [rows]="pageSize()"
+    [totalRecords]="totalRecords()"
+    (pageChange)="page($event)"
+  />
+</app-data-table>
+
+<p-popover #actions appendTo="body" styleClass="users-menu">
+  @if (menuUser(); as current) {
+    <div class="users-menu__list">
+      <button type="button" (click)="onView(current)">{{ lang.t('users.view') }}</button>
+      <button type="button" (click)="onEdit(current)">{{ lang.t('users.edit') }}</button>
+      <button type="button" class="users-menu__danger" (click)="onRemove(current)">
+        {{ lang.t('users.delete') }}
+      </button>
+    </div>
+  }
+</p-popover>

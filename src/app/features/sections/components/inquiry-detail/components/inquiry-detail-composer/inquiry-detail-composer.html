@@ -1,0 +1,12 @@
+<label class="field inquiry-composer">
+  <span class="field__label">{{ fieldLabel() }}</span>
+  <textarea
+    pTextarea
+    rows="7"
+    [formControl]="control()"
+    [attr.aria-invalid]="control().invalid && control().touched"
+  ></textarea>
+  @if (control().invalid && control().touched) {
+    <app-field-error>{{ errorMessage() }}</app-field-error>
+  }
+</label>

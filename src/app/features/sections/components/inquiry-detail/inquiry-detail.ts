@@ -12,44 +12,42 @@ import {
   viewChild,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormControl, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { MessageService } from 'primeng/api';
-import { Textarea } from 'primeng/textarea';
 
 import { LanguageService } from '../../../../core/services/language.service';
-import { AppButton } from '../../../../shared/components/app-button/app-button';
 import { ConfirmDialog } from '../../../../shared/components/confirm-dialog/confirm-dialog';
-import { FieldError } from '../../../../shared/components/field-error/field-error';
 import { Modal } from '../../../../shared/components/modal/modal';
 import { StateView } from '../../../../shared/components/state-view/state-view';
 import { Inquiry, InquiryStatus } from '../../models/inquiry.model';
 import { InquiriesService } from '../../services/inquiries.service';
+import { InquiryDetailComposer } from './components/inquiry-detail-composer/inquiry-detail-composer';
+import { InquiryDetailDetails } from './components/inquiry-detail-details/inquiry-detail-details';
+import { InquiryDetailHeader } from './components/inquiry-detail-header/inquiry-detail-header';
+import {
+  InquiryDetailTimeline,
+  type InquiryTimelineStep,
+} from './components/inquiry-detail-timeline/inquiry-detail-timeline';
 
 type Status = 'loading' | 'ready' | 'error' | 'missing';
 type Composer = 'note' | 'reply';
-type StepState = 'done' | 'current' | 'todo';
 
-interface TimelineStep {
-  id: string;
-  title: string;
-  hint: string;
-  state: StepState;
-  date: string;
-  time: string;
-}
-
+/**
+ * Inquiry detail container: loads the request, owns note/reply/close/delete
+ * workflows, and composes header, details, timeline, and composer panels.
+ */
 @Component({
   selector: 'app-inquiry-detail',
   imports: [
     NgTemplateOutlet,
-    ReactiveFormsModule,
-    AppButton,
-    Textarea,
     ConfirmDialog,
-    FieldError,
     Modal,
     StateView,
+    InquiryDetailHeader,
+    InquiryDetailDetails,
+    InquiryDetailTimeline,
+    InquiryDetailComposer,
   ],
   templateUrl: './inquiry-detail.html',
   styleUrl: './inquiry-detail.scss',
@@ -212,7 +210,7 @@ export class InquiryDetailPage {
     return this.lang.t('inquiry.statusNew');
   }
 
-  private buildSteps(item: Inquiry | null): TimelineStep[] {
+  private buildSteps(item: Inquiry | null): InquiryTimelineStep[] {
     if (!item) {
       return [];
     }

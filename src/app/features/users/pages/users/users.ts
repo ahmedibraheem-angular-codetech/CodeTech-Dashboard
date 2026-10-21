@@ -10,28 +10,15 @@ import {
   viewChild,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { FormsModule, FormBuilder, Validators } from '@angular/forms';
+import { FormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { MessageService } from 'primeng/api';
-import { type PaginatorState } from 'primeng/paginator';
-import { Popover } from 'primeng/popover';
-import { Select } from 'primeng/select';
 
 import type { AppLanguage } from '../../../../core/i18n/language';
 import { LanguageService } from '../../../../core/services/language.service';
 import { AppButton } from '../../../../shared/components/app-button/app-button';
-import { AppPaginator } from '../../../../shared/components/app-paginator/app-paginator';
 import { ConfirmDialog } from '../../../../shared/components/confirm-dialog/confirm-dialog';
-import {
-  DataTable,
-  DataTableCellTemplate,
-} from '../../../../shared/components/data-table/data-table';
-import {
-  DataTableBadgeValue,
-  DataTableColumn,
-  DataTableDateValue,
-  DataTableIconValue,
-} from '../../../../shared/components/data-table/data-table.model';
+import type { DataTableColumn } from '../../../../shared/components/data-table/data-table.model';
 import { Modal } from '../../../../shared/components/modal/modal';
 import { PageHeader } from '../../../../shared/components/page-header/page-header';
 import { StateView } from '../../../../shared/components/state-view/state-view';
@@ -39,37 +26,26 @@ import { StatisticsCard } from '../../../../shared/components/statistics-cards/s
 import { StatisticsCards } from '../../../../shared/components/statistics-cards/statistics-cards';
 import { formatIsoDate, toIsoDate } from '../../../../shared/utils/date';
 import { UserEditorForm } from '../../components/user-editor-form/user-editor-form';
+import { UsersTable, type UsersTableRow } from '../../components/users-table/users-table';
 import { User, UserDraft, UserRole, UserStatus } from '../../models/user.model';
 import { UsersService } from '../../services/users.service';
 
 type LoadState = 'loading' | 'ready' | 'error';
 
-interface UserRow {
-  id: string;
-  code: string;
-  name: DataTableIconValue;
-  role: DataTableBadgeValue;
-  email: string;
-  status: DataTableBadgeValue;
-  activity: DataTableDateValue;
-  source: User;
-}
-
+/**
+ * Users list page: loads users, owns filters/CRUD/editor modal, and composes
+ * stats + table panel + shared editor form.
+ */
 @Component({
   selector: 'app-users-page',
   imports: [
-    FormsModule,
     AppButton,
-    Select,
-    Popover,
     PageHeader,
     StateView,
     ConfirmDialog,
     Modal,
     StatisticsCards,
-    DataTable,
-    DataTableCellTemplate,
-    AppPaginator,
+    UsersTable,
     UserEditorForm,
   ],
   templateUrl: './users.html',
@@ -83,7 +59,6 @@ export class UsersPage {
   private readonly destroyRef = inject(DestroyRef);
   private readonly fb = inject(FormBuilder);
   private readonly confirm = viewChild.required(ConfirmDialog);
-  private readonly menu = viewChild.required(Popover);
   private readonly editorForm = viewChild.required(UserEditorForm);
   readonly lang = inject(LanguageService);
   readonly q = input<string>();
@@ -98,7 +73,6 @@ export class UsersPage {
   readonly pageSize = signal(10);
   readonly editor = signal<'create' | 'edit' | null>(null);
   readonly selected = signal<User | null>(null);
-  readonly menuUser = signal<User | null>(null);
   /** Locale for the add/edit modal only — does not change the page language. */
   readonly editorLocale = signal<AppLanguage>('ar');
 
@@ -197,7 +171,7 @@ export class UsersPage {
     ];
   });
 
-  readonly columns = computed<DataTableColumn<UserRow>[]>(() => {
+  readonly columns = computed<DataTableColumn<UsersTableRow>[]>(() => {
     this.lang.language();
     return [
       { key: 'code', header: 'ID', field: 'code', width: '120px' },
@@ -255,11 +229,6 @@ export class UsersPage {
     this.load();
   }
 
-  protected page(event: PaginatorState): void {
-    this.first.set(event.first ?? 0);
-    this.pageSize.set(event.rows ?? this.pageSize());
-  }
-
   load(): void {
     this.state.set('loading');
     this.usersApi
@@ -306,7 +275,6 @@ export class UsersPage {
   }
 
   openEdit(user: User): void {
-    this.closeMenu();
     this.editorForm().clearPhoto();
     this.editorLocale.set(this.lang.language());
     this.selected.set(user);
@@ -315,11 +283,10 @@ export class UsersPage {
   }
 
   openView(user: User): void {
-    this.closeMenu();
     void this.router.navigate(['/users', user.id]);
   }
 
-  protected openDetail(row: UserRow): void {
+  protected openDetail(row: UsersTableRow): void {
     void this.router.navigate(['/users', row.source.id]);
   }
 
@@ -367,7 +334,6 @@ export class UsersPage {
   }
 
   async remove(user: User): Promise<void> {
-    this.closeMenu();
     const accepted = await this.confirm().ask({
       title: this.lang.t('users.deleteTitle'),
       message: this.lang.t('users.deleteMessage'),
@@ -390,25 +356,14 @@ export class UsersPage {
       });
   }
 
-  protected exported(rows: readonly UserRow[]): void {
+  protected exported(rows: readonly UsersTableRow[]): void {
     this.messages.add({
       severity: 'success',
       summary: `${this.lang.t('users.export')} ${rows.length}`,
     });
   }
 
-  protected openMenu(event: Event, user: User): void {
-    event.stopPropagation();
-    this.menuUser.set(user);
-    this.menu().toggle(event);
-  }
-
-  protected closeMenu(): void {
-    this.menuUser.set(null);
-    this.menu().hide();
-  }
-
-  private toRow(user: User): UserRow {
+  private toRow(user: User): UsersTableRow {
     return {
       id: user.id,
       code: this.codeOf(user.id),

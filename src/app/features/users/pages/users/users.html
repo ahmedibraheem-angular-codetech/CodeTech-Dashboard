@@ -16,72 +16,26 @@
   } @else {
     <app-statistics-cards [cards]="cards()" />
 
-    <app-data-table
-      class="users-table"
+    <app-users-table
       [title]="tableTitle()"
       [rows]="tableRows()"
       [columns]="columns()"
-      [exportLabel]="lang.t('users.export')"
-      [searchLabel]="lang.t('users.search')"
-      [emptyMessage]="lang.t('users.empty')"
-      [rowClickable]="true"
+      [totalRecords]="filtered().length"
+      [roleOptions]="roleOptions()"
+      [statusOptions]="statusOptions()"
       [(query)]="query"
-      (export)="exported($event)"
+      [(role)]="role"
+      [(status)]="status"
+      [(first)]="first"
+      [(pageSize)]="pageSize"
       (rowClick)="openDetail($event)"
-    >
-      <div dtTools class="users-table__selects">
-        <p-select
-          styleClass="users-table__select"
-          [options]="roleOptions()"
-          optionLabel="label"
-          optionValue="value"
-          [ngModel]="role()"
-          (ngModelChange)="role.set($event)"
-          [ariaLabel]="lang.t('users.role')"
-        />
-        <p-select
-          styleClass="users-table__select"
-          [options]="statusOptions()"
-          optionLabel="label"
-          optionValue="value"
-          [ngModel]="status()"
-          (ngModelChange)="status.set($event)"
-          [ariaLabel]="lang.t('users.status')"
-        />
-      </div>
-
-      <ng-template appDataCell="actions" let-row>
-        <app-button
-          styleClass="users-table__more"
-          icon="pi pi-ellipsis-v"
-          variant="outlined"
-          [ariaLabel]="lang.t('users.actions')"
-          (clicked)="openMenu($event, row.source)"
-        />
-      </ng-template>
-
-      <app-paginator
-        dtFooter
-        [first]="first()"
-        [rows]="pageSize()"
-        [totalRecords]="filtered().length"
-        (pageChange)="page($event)"
-      />
-    </app-data-table>
+      (exportRows)="exported($event)"
+      (view)="openView($event)"
+      (edit)="openEdit($event)"
+      (remove)="remove($event)"
+    />
   }
 </section>
-
-<p-popover #actions appendTo="body" styleClass="users-menu">
-  @if (menuUser(); as current) {
-    <div class="users-menu__list">
-      <button type="button" (click)="openView(current)">{{ lang.t('users.view') }}</button>
-      <button type="button" (click)="openEdit(current)">{{ lang.t('users.edit') }}</button>
-      <button type="button" class="users-menu__danger" (click)="remove(current)">
-        {{ lang.t('users.delete') }}
-      </button>
-    </div>
-  }
-</p-popover>
 
 <app-modal
   [visible]="editor() !== null"

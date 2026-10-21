@@ -1,0 +1,59 @@
+<header class="page-header inquiry__head">
+  <div class="inquiry__title">
+    <div class="inquiry__heading">
+      <h1>{{ lang.t('inquiry.request') }} #{{ inquiry().id }}</h1>
+      @if (badge(); as badge) {
+        <span [class]="'inquiry-badge inquiry-badge--' + badge.tone">{{ badge.label }}</span>
+      }
+    </div>
+    <p class="inquiry__when">
+      <span class="inquiry__when">
+        <span><i class="pi pi-clock" aria-hidden="true"></i>{{ inquiry().time }}</span>
+        <span class="inquiry__sep">-</span>
+        <span><i class="pi pi-calendar" aria-hidden="true"></i>{{ inquiry().date }}</span>
+      </span>
+    </p>
+  </div>
+  <div class="page-header__actions inquiry__actions">
+    @if (inquiry().status === 'new' && !inquiry().reply) {
+      <app-button
+        variant="outlined"
+        styleClass="inquiry-btn inquiry-btn--reply"
+        icon="pi pi-send"
+        iconPos="right"
+        [label]="lang.t('inquiry.sendReply')"
+        [disabled]="saving()"
+        (clicked)="sendReply.emit()"
+      />
+    } @else if (inquiry().status !== 'closed') {
+      <app-button
+        variant="outlined"
+        styleClass="inquiry-btn inquiry-btn--reply"
+        icon="pi pi-times-circle"
+        iconPos="right"
+        [label]="lang.t('inquiry.closeRequest')"
+        [disabled]="saving()"
+        (clicked)="closeRequest.emit()"
+      />
+    }
+    <app-button
+      variant="outlined"
+      styleClass="inquiry-btn"
+      icon="pi pi-file-edit"
+      iconPos="right"
+      [label]="lang.t('inquiry.addNote')"
+      [disabled]="saving()"
+      (clicked)="addNote.emit()"
+    />
+    <app-button
+      variant="danger"
+      [outlined]="true"
+      styleClass="inquiry-btn inquiry-btn--danger"
+      icon="pi pi-trash"
+      iconPos="right"
+      [label]="lang.t('inquiry.deleteRequest')"
+      [disabled]="saving()"
+      (clicked)="remove.emit()"
+    />
+  </div>
+</header>

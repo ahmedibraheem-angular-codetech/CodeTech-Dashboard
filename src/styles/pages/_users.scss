@@ -1,3 +1,130 @@
+// Users board: page header, stats, table toolbar, and row-actions menu.
+
+.users-page {
+  gap: 16px;
+}
+
+.users-page app-page-header .page-header {
+  width: 100%;
+  min-height: 0;
+  gap: 16px;
+  padding: 16px;
+  border: 1px solid #edeeee;
+  border-radius: 16px;
+  background: #fff;
+}
+
+.users-page app-page-header .page-header h1 {
+  color: #0f2744;
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.users-page app-page-header .page-header p,
+.users-page app-page-header .page-header .mt-3 {
+  margin-top: 4px !important;
+  color: #64748b;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.users-add.p-button {
+  height: 40px;
+  padding-inline: 16px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.users-page app-statistics-cards .stats {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.users-table__selects {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.users-table__select.p-select {
+  min-width: 148px;
+  height: 40px;
+  border: 1px solid var(--app-border);
+  border-radius: 12px;
+  background: #fff;
+}
+
+.users-table__select .p-select-label {
+  display: flex;
+  align-items: center;
+  padding-inline: 12px;
+  color: #334155;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.users-table__more.p-button {
+  --p-button-icon-only-width: 36px;
+  --p-button-outlined-secondary-border-color: transparent;
+  --p-button-outlined-secondary-color: #94a3b8;
+
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+}
+
+.users-menu.p-popover {
+  border: 1px solid #edeeee;
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: 0 12px 32px rgb(15 23 42 / 8%);
+}
+
+.users-menu .p-popover-content {
+  padding: 8px;
+}
+
+.users-menu__list {
+  display: flex;
+  flex-direction: column;
+  min-width: 148px;
+}
+
+.users-menu__list button {
+  padding: 10px 12px;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--app-text);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  text-align: start;
+  cursor: pointer;
+}
+
+.users-menu__list button:hover {
+  background: #f8fafc;
+}
+
+.users-menu__danger {
+  color: #e11d48 !important;
+}
+
+@media (max-width: 1100px) {
+  .users-page app-statistics-cards .stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .users-page app-statistics-cards .stats {
+    grid-template-columns: 1fr;
+  }
+}
+
 // Users add / edit dialog (projected into shared `app-modal`).
 .p-dialog.app-modal:has(.users-editor-form) {
   width: min(640px, calc(100vw - 32px));

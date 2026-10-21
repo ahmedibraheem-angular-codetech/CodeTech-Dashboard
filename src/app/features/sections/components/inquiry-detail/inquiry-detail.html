@@ -6,157 +6,20 @@
   <app-state-view mode="empty" [message]="lang.t('inquiry.notFound')" />
 } @else if (item(); as inquiry) {
   <section class="page inquiry">
-    <header class="page-header inquiry__head">
-      <div class="inquiry__title">
-        <div class="inquiry__heading">
-          <h1>{{ lang.t('inquiry.request') }} #{{ inquiry.id }}</h1>
-          @if (badge(); as badge) {
-            <span [class]="'inquiry-badge inquiry-badge--' + badge.tone">{{ badge.label }}</span>
-          }
-        </div>
-        <p class="inquiry__when">
-          <ng-container
-            [ngTemplateOutlet]="stamp"
-            [ngTemplateOutletContext]="{ date: inquiry.date, time: inquiry.time }"
-          />
-        </p>
-      </div>
-      <div class="page-header__actions inquiry__actions">
-        @if (inquiry.status === 'new' && !inquiry.reply) {
-          <app-button
-            variant="outlined"
-            styleClass="inquiry-btn inquiry-btn--reply"
-            icon="pi pi-send"
-            iconPos="right"
-            [label]="lang.t('inquiry.sendReply')"
-            [disabled]="saving()"
-            (clicked)="openComposer('reply')"
-          />
-        } @else if (inquiry.status !== 'closed') {
-          <app-button
-            variant="outlined"
-            styleClass="inquiry-btn inquiry-btn--reply"
-            icon="pi pi-times-circle"
-            iconPos="right"
-            [label]="lang.t('inquiry.closeRequest')"
-            [disabled]="saving()"
-            (clicked)="closeRequest()"
-          />
-        }
-        <app-button
-          variant="outlined"
-          styleClass="inquiry-btn"
-          icon="pi pi-file-edit"
-          iconPos="right"
-          [label]="lang.t('inquiry.addNote')"
-          [disabled]="saving()"
-          (clicked)="openComposer('note')"
-        />
-        <app-button
-          variant="danger"
-          [outlined]="true"
-          styleClass="inquiry-btn inquiry-btn--danger"
-          icon="pi pi-trash"
-          iconPos="right"
-          [label]="lang.t('inquiry.deleteRequest')"
-          [disabled]="saving()"
-          (clicked)="remove()"
-        />
-      </div>
-    </header>
+    <app-inquiry-detail-header
+      [inquiry]="inquiry"
+      [badge]="badge()"
+      [saving]="saving()"
+      (sendReply)="openComposer('reply')"
+      (closeRequest)="closeRequest()"
+      (addNote)="openComposer('note')"
+      (remove)="remove()"
+    />
 
     <div class="inquiry-layout" [class.has-notes]="inquiry.notes.length > 0">
-      <article class="inquiry-card inquiry-card--details">
-        <header class="inquiry-card__head">
-          <h2>{{ lang.t('inquiry.details') }}</h2>
-          <span class="inquiry-card__icon" aria-hidden="true"><i class="pi pi-circle"></i></span>
-        </header>
-        <div class="inquiry-fields">
-          <div class="inquiry-field">
-            <span class="inquiry-field__label">ID</span>
-            <strong dir="ltr"
-              >{{ inquiry.id }} <i class="pi pi-id-card" aria-hidden="true"></i
-            ></strong>
-          </div>
-          <div class="inquiry-field">
-            <span class="inquiry-field__label">{{ lang.t('inquiry.customer') }}</span>
-            <strong>{{ inquiry.customer }} <i class="pi pi-user" aria-hidden="true"></i></strong>
-          </div>
-          <div class="inquiry-field">
-            <span class="inquiry-field__label">{{ lang.t('inquiry.orgName') }}</span>
-            <strong>{{ inquiry.org }} <i class="pi pi-building" aria-hidden="true"></i></strong>
-          </div>
-          <div class="inquiry-field">
-            <span class="inquiry-field__label">{{ lang.t('inquiry.product') }}</span>
-            <strong>{{ inquiry.product }}</strong>
-          </div>
-          <div class="inquiry-pair">
-            <div class="inquiry-field">
-              <span class="inquiry-field__label">{{ lang.t('inquiry.phone') }}</span>
-              <strong dir="ltr"
-                >{{ inquiry.phone }} <i class="pi pi-phone" aria-hidden="true"></i
-              ></strong>
-            </div>
-            <div class="inquiry-field">
-              <span class="inquiry-field__label">{{ lang.t('inquiry.email') }}</span>
-              <strong dir="ltr"
-                >{{ inquiry.email }} <i class="pi pi-envelope" aria-hidden="true"></i
-              ></strong>
-            </div>
-          </div>
-        </div>
-      </article>
+      <app-inquiry-detail-details [inquiry]="inquiry" />
 
-      <article class="inquiry-card inquiry-card--timeline">
-        <header class="inquiry-card__head">
-          <h2>{{ lang.t('inquiry.timeline') }}</h2>
-          <span class="inquiry-card__icon" aria-hidden="true"><i class="pi pi-comments"></i></span>
-        </header>
-        <ol class="inquiry-steps">
-          @for (step of steps(); track step.id) {
-            <li [class]="'inquiry-step inquiry-step--' + step.state">
-              <span class="inquiry-step__mark" aria-hidden="true">
-                @if (step.state === 'done') {
-                  <svg
-                    class="inquiry-step__check"
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="8"
-                    height="6"
-                    viewBox="0 0 8 6"
-                    fill="none"
-                  >
-                    <path
-                      d="M2.86343 6C2.70335 6 2.55128 5.93303 2.43922 5.81583L0.174087 3.44681C-0.058029 3.20405 -0.058029 2.80223 0.174087 2.55947C0.406203 2.31671 0.790395 2.31671 1.02251 2.55947L2.86343 4.48483L6.97749 0.182072C7.2096 -0.0606906 7.5938 -0.0606906 7.82591 0.182072C8.05803 0.424834 8.05803 0.826648 7.82591 1.06941L3.28764 5.81583C3.17559 5.93303 3.02351 6 2.86343 6Z"
-                    />
-                  </svg>
-                } @else if (step.state === 'current') {
-                  <svg
-                    class="inquiry-step__dot"
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="4"
-                    height="4"
-                    viewBox="0 0 4 4"
-                    fill="none"
-                  >
-                    <circle cx="2" cy="2" r="2" transform="matrix(-1 0 0 1 4 0)" />
-                  </svg>
-                }
-              </span>
-              <div class="inquiry-step__body">
-                <strong>{{ step.title }}</strong>
-                <p>{{ step.hint }}</p>
-                <span class="inquiry-step__when">
-                  <span><i class="pi pi-calendar" aria-hidden="true"></i>{{ step.date }}</span>
-                  <i class="pi pi-arrow-left inquiry-step__arrow" aria-hidden="true"></i>
-                  <span dir="ltr"
-                    ><i class="pi pi-clock" aria-hidden="true"></i>{{ step.time }}</span
-                  >
-                </span>
-              </div>
-            </li>
-          }
-        </ol>
-      </article>
+      <app-inquiry-detail-timeline [steps]="steps()" />
 
       <article class="inquiry-card inquiry-card--message">
         <header class="inquiry-card__head">
@@ -237,18 +100,11 @@
   (save)="saveComposer()"
   (cancel)="composer.set(null)"
 >
-  <label class="field inquiry-composer">
-    <span class="field__label">{{ composerCopy().field }}</span>
-    <textarea
-      pTextarea
-      rows="7"
-      [formControl]="draft"
-      [attr.aria-invalid]="draft.invalid && draft.touched"
-    ></textarea>
-    @if (draft.invalid && draft.touched) {
-      <app-field-error>{{ composerCopy().error }}</app-field-error>
-    }
-  </label>
+  <app-inquiry-detail-composer
+    [control]="draft"
+    [fieldLabel]="composerCopy().field"
+    [errorMessage]="composerCopy().error"
+  />
 </app-modal>
 
 <app-confirm-dialog />
