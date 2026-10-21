@@ -1,126 +1,18 @@
 <app-auth-shell>
-  <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
-    <h1>{{ lang.t('auth.loginTitle') }}</h1>
-
-    <label class="field">
-      <span class="field__label">{{ lang.t('auth.email') }}</span>
-      <p-iconfield>
-        <input
-          pInputText
-          [fluid]="true"
-          id="email"
-          type="email"
-          formControlName="email"
-          autocomplete="username"
-          [invalid]="form.controls.email.touched && form.controls.email.invalid"
-          [attr.aria-invalid]="form.controls.email.invalid"
-          [attr.aria-describedby]="
-            form.controls.email.touched && form.controls.email.invalid ? 'email-error' : null
-          "
-        />
-        <p-inputicon class="pi pi-envelope" />
-      </p-iconfield>
-      @if (form.controls.email.touched && form.controls.email.hasError('required')) {
-        <app-field-error id="email-error">{{ lang.t('auth.emailRequired') }}</app-field-error>
-      } @else if (form.controls.email.touched && form.controls.email.hasError('email')) {
-        <app-field-error id="email-error">{{ lang.t('auth.emailInvalid') }}</app-field-error>
-      }
-    </label>
-
-    <label class="field">
-      <span class="field__label">{{ lang.t('auth.password') }}</span>
-      <p-iconfield>
-        <input
-          pInputText
-          [fluid]="true"
-          id="password"
-          [type]="showPassword() ? 'text' : 'password'"
-          formControlName="password"
-          autocomplete="current-password"
-          [placeholder]="lang.t('auth.passwordPlaceholder')"
-          [invalid]="
-            credentialError() || (form.controls.password.touched && form.controls.password.invalid)
-          "
-          [attr.aria-invalid]="credentialError() || form.controls.password.invalid"
-          [attr.aria-describedby]="
-            credentialError() || (form.controls.password.touched && form.controls.password.invalid)
-              ? 'password-error'
-              : null
-          "
-        />
-        <!-- p-password's own toggle is a click-only SVG (no keyboard, no label), so keep a real button. -->
-        <app-button
-          class="field__toggle"
-          type="button"
-          variant="ghost"
-          [rounded]="true"
-          size="small"
-          [icon]="showPassword() ? 'pi pi-eye-slash' : 'pi pi-eye'"
-          [ariaLabel]="lang.t(showPassword() ? 'auth.hidePassword' : 'auth.showPassword')"
-          (clicked)="showPassword.set(!showPassword())"
-        />
-      </p-iconfield>
-      @if (credentialError()) {
-        <app-field-error id="password-error" [icon]="true">{{
-          lang.t('auth.invalidPassword')
-        }}</app-field-error>
-      } @else if (form.controls.password.touched && form.controls.password.hasError('required')) {
-        <app-field-error id="password-error">{{ lang.t('auth.passwordRequired') }}</app-field-error>
-      } @else if (form.controls.password.touched && form.controls.password.hasError('minlength')) {
-        <app-field-error id="password-error">{{ lang.t('auth.passwordShort') }}</app-field-error>
-      }
-    </label>
-
-    <div class="login-row">
-      <p-button
-        type="button"
-        [link]="true"
-        size="small"
-        [label]="lang.t('auth.forgot')"
-        (onClick)="resetOpen.set(true)"
-      />
-      <label class="remember" for="remember">
-        <span>{{ lang.t('auth.remember') }}</span>
-        <p-toggleswitch
-          inputId="remember"
-          [ngModel]="remember()"
-          (ngModelChange)="remember.set($event)"
-          [ngModelOptions]="{ standalone: true }"
-        />
-      </label>
-    </div>
-
-    <app-button
-      styleClass="auth-submit"
-      type="submit"
-      icon="pi pi-angle-left"
-      iconPos="right"
-      size="large"
-      [fluid]="true"
-      [label]="lang.t('auth.submit')"
-      [loading]="submitting()"
-    />
-  </form>
+  <app-login-form
+    [form]="form"
+    [submitting]="submitting()"
+    [credentialError]="credentialError()"
+    [(showPassword)]="showPassword"
+    [(remember)]="remember"
+    (forgot)="resetOpen.set(true)"
+    (submitted)="submit()"
+  />
 </app-auth-shell>
 
-<p-dialog
-  [header]="lang.t('auth.forgotTitle')"
-  [visible]="resetOpen()"
-  (visibleChange)="resetOpen.set($event)"
-  [modal]="true"
-  [draggable]="false"
-  [style]="{ width: 'min(28rem, 94vw)' }"
->
-  @if (resetSent()) {
-    <p>{{ lang.t('auth.forgotSent') }}</p>
-  } @else {
-    <form class="form-grid" [formGroup]="resetForm" (ngSubmit)="sendReset()">
-      <p class="muted">{{ lang.t('auth.forgotHint') }}</p>
-      <label class="field">
-        <span class="field__label">{{ lang.t('auth.email') }}</span>
-        <input pInputText [fluid]="true" type="email" formControlName="email" />
-      </label>
-      <app-button type="submit" [label]="lang.t('auth.send')" [fluid]="true" />
-    </form>
-  }
-</p-dialog>
+<app-login-reset-dialog
+  [(visible)]="resetOpen"
+  [sent]="resetSent()"
+  [form]="resetForm"
+  (send)="sendReset()"
+/>

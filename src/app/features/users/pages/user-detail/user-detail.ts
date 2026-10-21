@@ -14,34 +14,36 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { MessageService } from 'primeng/api';
-import { Avatar } from 'primeng/avatar';
-import { Popover } from 'primeng/popover';
 
 import type { AppLanguage } from '../../../../core/i18n/language';
 import { DEFAULT_AVATAR_URL } from '../../../../core/profile/profile.model';
 import { BreadcrumbService } from '../../../../core/services/breadcrumb.service';
 import { LanguageService } from '../../../../core/services/language.service';
-import { AppButton } from '../../../../shared/components/app-button/app-button';
 import { ConfirmDialog } from '../../../../shared/components/confirm-dialog/confirm-dialog';
-import { ContentPanel } from '../../../../shared/components/content-panel/content-panel';
 import { Modal } from '../../../../shared/components/modal/modal';
 import { StateView } from '../../../../shared/components/state-view/state-view';
+import { UserDetailBan } from '../../components/user-detail-ban/user-detail-ban';
+import { UserDetailFields } from '../../components/user-detail-fields/user-detail-fields';
+import { UserDetailProfile } from '../../components/user-detail-profile/user-detail-profile';
 import { UserEditorForm } from '../../components/user-editor-form/user-editor-form';
 import { User, UserDraft, UserRole, UserStatus } from '../../models/user.model';
 import { UsersService } from '../../services/users.service';
 
 type LoadState = 'loading' | 'ready' | 'error' | 'missing';
 
+/**
+ * User detail container: loads the user, owns edit/status/delete workflows,
+ * and composes profile, fields, and ban panels plus the shared editor modal.
+ */
 @Component({
   selector: 'app-user-detail',
   imports: [
-    Avatar,
-    AppButton,
     ConfirmDialog,
-    ContentPanel,
     Modal,
-    Popover,
     StateView,
+    UserDetailProfile,
+    UserDetailFields,
+    UserDetailBan,
     UserEditorForm,
   ],
   templateUrl: './user-detail.html',
@@ -56,7 +58,6 @@ export class UserDetailPage {
   private readonly destroyRef = inject(DestroyRef);
   private readonly fb = inject(FormBuilder);
   private readonly confirm = viewChild.required(ConfirmDialog);
-  private readonly statusMenu = viewChild.required(Popover);
   private readonly editorForm = viewChild.required(UserEditorForm);
   readonly lang = inject(LanguageService);
 
@@ -187,17 +188,11 @@ export class UserDetailPage {
     this.editorForm().clearPhoto();
   }
 
-  protected openStatusMenu(event: Event): void {
-    this.statusMenu().toggle(event);
-  }
-
   protected setStatus(next: UserStatus): void {
     const current = this.user();
     if (!current || current.status === next || this.saving()) {
-      this.statusMenu().hide();
       return;
     }
-    this.statusMenu().hide();
     const draft: UserDraft = { ...current, status: next };
     this.persist(draft);
   }

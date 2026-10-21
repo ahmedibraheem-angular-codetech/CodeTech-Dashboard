@@ -1,37 +1,23 @@
 import { ChangeDetectionStrategy, Component, DestroyRef, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { FormBuilder, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { MessageService } from 'primeng/api';
-import { Button } from 'primeng/button';
-import { Dialog } from 'primeng/dialog';
-import { IconField } from 'primeng/iconfield';
-import { InputIcon } from 'primeng/inputicon';
-import { InputText } from 'primeng/inputtext';
-import { ToggleSwitch } from 'primeng/toggleswitch';
 
 import { failureMessageKey, isAuthError } from '../../../../core/auth/auth.error';
 import { AuthService } from '../../../../core/auth/auth.service';
 import { LanguageService } from '../../../../core/services/language.service';
 import { AuthShell } from '../../../../layout/auth-layout/auth-shell';
-import { AppButton } from '../../../../shared/components/app-button/app-button';
-import { FieldError } from '../../../../shared/components/field-error/field-error';
+import { LoginForm } from '../../components/login-form/login-form';
+import { LoginResetDialog } from '../../components/login-reset-dialog/login-reset-dialog';
 
+/**
+ * Login page container: owns AuthService login/reset flows and composes
+ * the credentials form plus forgot-password dialog.
+ */
 @Component({
   selector: 'app-login',
-  imports: [
-    ReactiveFormsModule,
-    FormsModule,
-    Button,
-    AppButton,
-    Dialog,
-    IconField,
-    InputIcon,
-    InputText,
-    ToggleSwitch,
-    AuthShell,
-    FieldError,
-  ],
+  imports: [AuthShell, LoginForm, LoginResetDialog],
   templateUrl: './login.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

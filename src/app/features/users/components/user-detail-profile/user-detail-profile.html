@@ -1,0 +1,73 @@
+<article class="user-detail__profile">
+  <div class="user-detail__profile-main">
+    <p-avatar
+      shape="circle"
+      [image]="avatarUrl()"
+      [label]="avatarUrl() ? undefined : user().name.slice(0, 1)"
+      styleClass="user-detail__avatar"
+    />
+    <div class="user-detail__identity">
+      <div class="user-detail__title-row">
+        <h1>{{ user().name }}</h1>
+        <span class="user-detail__badge user-detail__badge--role">{{ roleLabel() }}</span>
+        <span
+          class="user-detail__badge"
+          [class.user-detail__badge--blocked]="isBlocked()"
+          [class.user-detail__badge--active]="!isBlocked()"
+        >
+          {{ statusLabel() }}
+        </span>
+      </div>
+      <p class="user-detail__when">
+        <span class="user-detail__when-item">
+          <i class="pi pi-clock" aria-hidden="true"></i>
+          <span>{{ timeLabel() }}</span>
+        </span>
+        <span class="user-detail__when-item">
+          <i class="pi pi-calendar" aria-hidden="true"></i>
+          <span dir="ltr">{{ user().joinedAt }}</span>
+        </span>
+      </p>
+    </div>
+  </div>
+
+  <div class="user-detail__actions">
+    <!-- DOM end → visual left in RTL: Delete | Change status | Edit -->
+    <app-button
+      variant="outlined"
+      styleClass="user-detail__btn user-detail__btn--edit"
+      icon="pi pi-pencil"
+      iconPos="end"
+      [label]="lang.t('users.edit')"
+      [disabled]="saving()"
+      (clicked)="edit.emit()"
+    />
+    <app-button
+      variant="outlined"
+      styleClass="user-detail__btn"
+      icon="pi pi-angle-down"
+      iconPos="end"
+      [label]="lang.t('users.changeStatus')"
+      [disabled]="saving()"
+      (clicked)="openStatusMenu($event)"
+    />
+    <app-button
+      variant="danger"
+      [outlined]="true"
+      styleClass="user-detail__btn user-detail__btn--danger"
+      icon="pi pi-trash"
+      iconPos="end"
+      [label]="lang.t('users.deleteUser')"
+      [disabled]="saving()"
+      (clicked)="remove.emit()"
+    />
+  </div>
+</article>
+
+<p-popover #statusMenu appendTo="body" styleClass="user-detail-status-menu">
+  <div class="user-detail-status-menu__list">
+    @for (option of statusChoices(); track option.value) {
+      <button type="button" (click)="setStatus(option.value)">{{ option.label }}</button>
+    }
+  </div>
+</p-popover>

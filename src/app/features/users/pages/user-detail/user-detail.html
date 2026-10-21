@@ -6,183 +6,34 @@
   <app-state-view mode="empty" [message]="lang.t('users.notFound')" />
 } @else if (user(); as current) {
   <section class="page user-detail">
-    <article class="user-detail__profile">
-      <div class="user-detail__profile-main">
-        <p-avatar
-          shape="circle"
-          [image]="avatarUrl"
-          [label]="avatarUrl ? undefined : current.name.slice(0, 1)"
-          styleClass="user-detail__avatar"
-        />
-        <div class="user-detail__identity">
-          <div class="user-detail__title-row">
-            <h1>{{ current.name }}</h1>
-            <span class="user-detail__badge user-detail__badge--role">{{ roleLabel() }}</span>
-            <span
-              class="user-detail__badge"
-              [class.user-detail__badge--blocked]="isBlocked()"
-              [class.user-detail__badge--active]="!isBlocked()"
-            >
-              {{ statusLabel() }}
-            </span>
-          </div>
-          <p class="user-detail__when">
-            <span class="user-detail__when-item">
-              <i class="pi pi-clock" aria-hidden="true"></i>
-              <span>{{ timeLabel() }}</span>
-            </span>
-            <span class="user-detail__when-item">
-              <i class="pi pi-calendar" aria-hidden="true"></i>
-              <span dir="ltr">{{ current.joinedAt }}</span>
-            </span>
-          </p>
-        </div>
-      </div>
+    <app-user-detail-profile
+      [user]="current"
+      [avatarUrl]="avatarUrl"
+      [roleLabel]="roleLabel()"
+      [statusLabel]="statusLabel()"
+      [timeLabel]="timeLabel()"
+      [isBlocked]="isBlocked()"
+      [saving]="saving()"
+      [statusChoices]="statusChoices()"
+      (edit)="openEdit()"
+      (remove)="remove()"
+      (statusChange)="setStatus($event)"
+    />
 
-      <div class="user-detail__actions">
-        <!-- DOM end → visual left in RTL: Delete | Change status | Edit -->
-        <app-button
-          variant="outlined"
-          styleClass="user-detail__btn user-detail__btn--edit"
-          icon="pi pi-pencil"
-          iconPos="end"
-          [label]="lang.t('users.edit')"
-          [disabled]="saving()"
-          (clicked)="openEdit()"
-        />
-        <app-button
-          variant="outlined"
-          styleClass="user-detail__btn"
-          icon="pi pi-angle-down"
-          iconPos="end"
-          [label]="lang.t('users.changeStatus')"
-          [disabled]="saving()"
-          (clicked)="openStatusMenu($event)"
-        />
-        <app-button
-          variant="danger"
-          [outlined]="true"
-          styleClass="user-detail__btn user-detail__btn--danger"
-          icon="pi pi-trash"
-          iconPos="end"
-          [label]="lang.t('users.deleteUser')"
-          [disabled]="saving()"
-          (clicked)="remove()"
-        />
-      </div>
-    </article>
-
-    <article class="user-detail__card">
-      <header class="user-detail__card-head">
-        <span class="user-detail__card-icon" aria-hidden="true">
-          <i class="pi pi-eye"></i>
-        </span>
-        <h2>{{ lang.t('users.details') }}</h2>
-      </header>
-
-      <div class="user-detail__grid">
-        <app-content-panel>
-          <span class="user-detail__label">{{ lang.t('users.username') }}</span>
-          <strong class="user-detail__value">
-            <i class="pi pi-user" aria-hidden="true"></i>
-            <span>{{ current.name }}</span>
-          </strong>
-        </app-content-panel>
-
-        <app-content-panel>
-          <span class="user-detail__label">ID</span>
-          <strong class="user-detail__value">
-            <i class="pi pi-copy" aria-hidden="true"></i>
-            <span dir="ltr">{{ displayCode() }}</span>
-          </strong>
-        </app-content-panel>
-
-        <app-content-panel>
-          <span class="user-detail__label">{{ lang.t('users.phoneNumber') }}</span>
-          <strong class="user-detail__value">
-            <i class="pi pi-phone" aria-hidden="true"></i>
-            <span dir="ltr">{{ current.phone }}</span>
-          </strong>
-        </app-content-panel>
-
-        <app-content-panel>
-          <span class="user-detail__label">{{ lang.t('users.email') }}</span>
-          <strong class="user-detail__value">
-            <i class="pi pi-envelope" aria-hidden="true"></i>
-            <span dir="ltr">{{ current.email }}</span>
-          </strong>
-        </app-content-panel>
-
-        <app-content-panel>
-          <span class="user-detail__label">{{ lang.t('users.role') }}</span>
-          <strong class="user-detail__value user-detail__value--link">
-            <i class="pi pi-circle-fill" aria-hidden="true"></i>
-            <span>{{ roleLabel() }}</span>
-          </strong>
-        </app-content-panel>
-
-        <app-content-panel>
-          <span class="user-detail__label">{{ lang.t('users.status') }}</span>
-          <strong
-            class="user-detail__value"
-            [class.user-detail__value--danger]="isBlocked()"
-            [class.user-detail__value--success]="!isBlocked()"
-          >
-            <i class="pi pi-circle-fill" aria-hidden="true"></i>
-            <span>{{ statusLabel() }}</span>
-          </strong>
-        </app-content-panel>
-
-        <app-content-panel>
-          <span class="user-detail__label">{{ lang.t('users.lastActivity') }}</span>
-          <strong class="user-detail__value">
-            <i class="pi pi-clock" aria-hidden="true"></i>
-            <span dir="ltr">{{ stamp() }}</span>
-          </strong>
-        </app-content-panel>
-
-        <app-content-panel>
-          <span class="user-detail__label">{{ lang.t('users.joined') }}</span>
-          <strong class="user-detail__value">
-            <i class="pi pi-calendar" aria-hidden="true"></i>
-            <span dir="ltr">{{ stamp() }}</span>
-          </strong>
-        </app-content-panel>
-      </div>
-    </article>
+    <app-user-detail-fields
+      [user]="current"
+      [displayCode]="displayCode()"
+      [roleLabel]="roleLabel()"
+      [statusLabel]="statusLabel()"
+      [stamp]="stamp()"
+      [isBlocked]="isBlocked()"
+    />
 
     @if (isBlocked()) {
-      <article class="user-detail__card">
-        <header class="user-detail__card-head">
-          <span class="user-detail__card-icon" aria-hidden="true">
-            <i class="pi pi-user-minus"></i>
-          </span>
-          <h2>{{ lang.t('users.banReason') }}</h2>
-        </header>
-
-        <app-content-panel class="user-detail__ban-body">
-          <p class="user-detail__ban-text">{{ lang.t('users.banReasonDemo') }}</p>
-        </app-content-panel>
-
-        <app-content-panel class="user-detail__ban-date">
-          <span class="user-detail__label">{{ lang.t('users.banDate') }}</span>
-          <strong class="user-detail__value">
-            <i class="pi pi-calendar" aria-hidden="true"></i>
-            <span dir="ltr">{{ stamp() }}</span>
-          </strong>
-        </app-content-panel>
-      </article>
+      <app-user-detail-ban [stamp]="stamp()" />
     }
   </section>
 }
-
-<p-popover #statusMenu appendTo="body" styleClass="user-detail-status-menu">
-  <div class="user-detail-status-menu__list">
-    @for (option of statusChoices(); track option.value) {
-      <button type="button" (click)="setStatus(option.value)">{{ option.label }}</button>
-    }
-  </div>
-</p-popover>
 
 <app-modal
   [visible]="editing()"

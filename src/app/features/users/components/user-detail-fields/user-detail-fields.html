@@ -1,0 +1,78 @@
+<article class="user-detail__card">
+  <header class="user-detail__card-head">
+    <span class="user-detail__card-icon" aria-hidden="true">
+      <i class="pi pi-eye"></i>
+    </span>
+    <h2>{{ lang.t('users.details') }}</h2>
+  </header>
+
+  <div class="user-detail__grid">
+    <app-content-panel>
+      <span class="user-detail__label">{{ lang.t('users.username') }}</span>
+      <strong class="user-detail__value">
+        <i class="pi pi-user" aria-hidden="true"></i>
+        <span>{{ user().name }}</span>
+      </strong>
+    </app-content-panel>
+
+    <app-content-panel>
+      <span class="user-detail__label">ID</span>
+      <strong class="user-detail__value">
+        <i class="pi pi-copy" aria-hidden="true"></i>
+        <span dir="ltr">{{ displayCode() }}</span>
+      </strong>
+    </app-content-panel>
+
+    <app-content-panel>
+      <span class="user-detail__label">{{ lang.t('users.phoneNumber') }}</span>
+      <strong class="user-detail__value">
+        <i class="pi pi-phone" aria-hidden="true"></i>
+        <span dir="ltr">{{ user().phone }}</span>
+      </strong>
+    </app-content-panel>
+
+    <app-content-panel>
+      <span class="user-detail__label">{{ lang.t('users.email') }}</span>
+      <strong class="user-detail__value">
+        <i class="pi pi-envelope" aria-hidden="true"></i>
+        <span dir="ltr">{{ user().email }}</span>
+      </strong>
+    </app-content-panel>
+
+    <app-content-panel>
+      <span class="user-detail__label">{{ lang.t('users.role') }}</span>
+      <strong class="user-detail__value user-detail__value--link">
+        <i class="pi pi-circle-fill" aria-hidden="true"></i>
+        <span>{{ roleLabel() }}</span>
+      </strong>
+    </app-content-panel>
+
+    <app-content-panel>
+      <span class="user-detail__label">{{ lang.t('users.status') }}</span>
+      <strong
+        class="user-detail__value"
+        [class.user-detail__value--danger]="isBlocked()"
+        [class.user-detail__value--success]="!isBlocked()"
+      >
+        <i class="pi pi-circle-fill" aria-hidden="true"></i>
+        <span>{{ statusLabel() }}</span>
+      </strong>
+    </app-content-panel>
+
+    <app-content-panel>
+      <span class="user-detail__label">{{ lang.t('users.lastActivity') }}</span>
+      <strong class="user-detail__value">
+        <i class="pi pi-clock" aria-hidden="true"></i>
+        <span dir="ltr">{{ stamp() }}</span>
+      </strong>
+    </app-content-panel>
+
+    <app-content-panel>
+      <span class="user-detail__label">{{ lang.t('users.joined') }}</span>
+      <strong class="user-detail__value">
+        <i class="pi pi-calendar" aria-hidden="true"></i>
+        <span dir="ltr">{{ stamp() }}</span>
+      </strong>
+    </app-content-panel>
+  </div>
+</article>

@@ -1,0 +1,21 @@
+<p-dialog
+  [header]="lang.t('auth.forgotTitle')"
+  [visible]="visible()"
+  (visibleChange)="visible.set($event)"
+  [modal]="true"
+  [draggable]="false"
+  [style]="{ width: 'min(28rem, 94vw)' }"
+>
+  @if (sent()) {
+    <p>{{ lang.t('auth.forgotSent') }}</p>
+  } @else {
+    <form class="form-grid" [formGroup]="form()" (ngSubmit)="onSubmit()">
+      <p class="muted">{{ lang.t('auth.forgotHint') }}</p>
+      <label class="field">
+        <span class="field__label">{{ lang.t('auth.email') }}</span>
+        <input pInputText [fluid]="true" type="email" formControlName="email" />
+      </label>
+      <app-button type="submit" [label]="lang.t('auth.send')" [fluid]="true" />
+    </form>
+  }
+</p-dialog>

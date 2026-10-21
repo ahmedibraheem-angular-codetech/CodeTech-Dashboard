@@ -1,0 +1,20 @@
+<article class="user-detail__card">
+  <header class="user-detail__card-head">
+    <span class="user-detail__card-icon" aria-hidden="true">
+      <i class="pi pi-user-minus"></i>
+    </span>
+    <h2>{{ lang.t('users.banReason') }}</h2>
+  </header>
+
+  <app-content-panel class="user-detail__ban-body">
+    <p class="user-detail__ban-text">{{ lang.t('users.banReasonDemo') }}</p>
+  </app-content-panel>
+
+  <app-content-panel class="user-detail__ban-date">
+    <span class="user-detail__label">{{ lang.t('users.banDate') }}</span>
+    <strong class="user-detail__value">
+      <i class="pi pi-calendar" aria-hidden="true"></i>
+      <span dir="ltr">{{ stamp() }}</span>
+    </strong>
+  </app-content-panel>
+</article>

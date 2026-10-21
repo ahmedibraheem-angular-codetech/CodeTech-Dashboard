@@ -1,0 +1,65 @@
+<article class="permissions-panel">
+  <h2>{{ lang.t('settings.roles') }}</h2>
+
+  <div class="permissions-toolbar">
+    <label class="permissions-role">
+      <span class="permissions-role__tag">
+        <span class="permissions-role__icon" aria-hidden="true">
+          <i class="pi pi-user"></i>
+        </span>
+        {{ lang.t('users.role') }}
+      </span>
+      <p-select
+        [options]="roleOptions()"
+        optionLabel="label"
+        optionValue="value"
+        [ngModel]="selectedId()"
+        (ngModelChange)="selectedId.set($event)"
+        [ariaLabel]="lang.t('users.role')"
+      />
+    </label>
+    <div class="permissions-toolbar__actions">
+      <app-button
+        [outlined]="true"
+        icon="pi pi-save"
+        iconPos="end"
+        styleClass="permissions-save"
+        [label]="lang.t('common.saveChanges')"
+        (clicked)="save.emit()"
+      />
+      <app-button
+        variant="danger"
+        [outlined]="true"
+        icon="pi pi-trash"
+        iconPos="end"
+        styleClass="permissions-delete"
+        [label]="lang.t('settings.deleteRole')"
+        [disabled]="!canDelete()"
+        (clicked)="remove.emit()"
+      />
+    </div>
+  </div>
+
+  <div class="permissions-table" role="table">
+    <div class="permissions-table__head" role="row">
+      <span role="columnheader">{{ lang.t('settings.resource') }}</span>
+      @for (action of actions(); track action) {
+        <span role="columnheader">{{ actionLabel(action) }}</span>
+      }
+    </div>
+    @for (resource of resources(); track resource.id) {
+      <div class="permissions-table__row" role="row">
+        <span role="cell">{{ resourceLabel(resource) }}</span>
+        @for (action of actions(); track action) {
+          <span role="cell">
+            <p-toggleswitch
+              [ngModel]="granted(resource.id, action)"
+              (ngModelChange)="setGrant(resource.id, action, $event)"
+              [ariaLabel]="resourceLabel(resource) + ' ' + actionLabel(action)"
+            />
+          </span>
+        }
+      </div>
+    }
+  </div>
+</article>

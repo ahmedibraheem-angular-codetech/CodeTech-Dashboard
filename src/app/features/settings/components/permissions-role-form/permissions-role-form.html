@@ -1,0 +1,32 @@
+<div class="permissions-role-form">
+  <label class="field">
+    <span class="field__label">{{ lang.t('settings.roleName') }}</span>
+    <input
+      pInputText
+      [fluid]="true"
+      [value]="draftName()"
+      [placeholder]="lang.t('settings.roleNamePlaceholder')"
+      (input)="setDraftName($event)"
+    />
+  </label>
+
+  <div class="field">
+    <span class="field__label">{{ lang.t('settings.permissions') }}</span>
+    <div
+      class="permissions-module-grid"
+      role="group"
+      [attr.aria-label]="lang.t('settings.permissions')"
+    >
+      @for (mod of modules(); track mod.id) {
+        <label class="permissions-module-card">
+          <span class="permissions-module-card__label">{{ lang.t(mod.labelKey) }}</span>
+          <p-toggleswitch
+            [ngModel]="moduleOn(mod.id)"
+            (ngModelChange)="setModule(mod.id, $event)"
+            [ariaLabel]="lang.t(mod.labelKey)"
+          />
+        </label>
+      }
+    </div>
+  </div>
+</div>
