@@ -11,15 +11,11 @@ import {
   viewChild,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { MessageService } from 'primeng/api';
 import { Avatar } from 'primeng/avatar';
-import { IconField } from 'primeng/iconfield';
-import { InputIcon } from 'primeng/inputicon';
-import { InputText } from 'primeng/inputtext';
 import { Popover } from 'primeng/popover';
-import { Select } from 'primeng/select';
 
 import type { AppLanguage } from '../../../../core/i18n/language';
 import { DEFAULT_AVATAR_URL } from '../../../../core/profile/profile.model';
@@ -28,39 +24,25 @@ import { LanguageService } from '../../../../core/services/language.service';
 import { AppButton } from '../../../../shared/components/app-button/app-button';
 import { ConfirmDialog } from '../../../../shared/components/confirm-dialog/confirm-dialog';
 import { ContentPanel } from '../../../../shared/components/content-panel/content-panel';
-import { FieldError } from '../../../../shared/components/field-error/field-error';
-import { LocaleSwitch } from '../../../../shared/components/locale-switch/locale-switch';
 import { Modal } from '../../../../shared/components/modal/modal';
 import { StateView } from '../../../../shared/components/state-view/state-view';
+import { UserEditorForm } from '../../components/user-editor-form/user-editor-form';
 import { User, UserDraft, UserRole, UserStatus } from '../../models/user.model';
 import { UsersService } from '../../services/users.service';
 
 type LoadState = 'loading' | 'ready' | 'error' | 'missing';
 
-interface PhotoPreview {
-  name: string;
-  url: string;
-  sizeLabel: string;
-  dateLabel: string;
-}
-
 @Component({
   selector: 'app-user-detail',
   imports: [
-    ReactiveFormsModule,
     Avatar,
     AppButton,
     ConfirmDialog,
     ContentPanel,
-    FieldError,
-    IconField,
-    InputIcon,
-    InputText,
-    LocaleSwitch,
     Modal,
     Popover,
-    Select,
     StateView,
+    UserEditorForm,
   ],
   templateUrl: './user-detail.html',
   styleUrl: './user-detail.scss',
@@ -75,7 +57,7 @@ export class UserDetailPage {
   private readonly fb = inject(FormBuilder);
   private readonly confirm = viewChild.required(ConfirmDialog);
   private readonly statusMenu = viewChild.required(Popover);
-  private photoObjectUrl = '';
+  private readonly editorForm = viewChild.required(UserEditorForm);
   readonly lang = inject(LanguageService);
 
   /** Bound from `/users/:id`. */
@@ -85,7 +67,6 @@ export class UserDetailPage {
   readonly user = signal<User | null>(null);
   readonly saving = signal(false);
   readonly editing = signal(false);
-  readonly photo = signal<PhotoPreview | null>(null);
   /** Locale for the edit modal only — does not change the page language. */
   readonly editorLocale = signal<AppLanguage>('ar');
   readonly avatarUrl = DEFAULT_AVATAR_URL;
@@ -99,20 +80,12 @@ export class UserDetailPage {
     joinedAt: ['', Validators.required],
   });
 
-  readonly formRoles = computed(() => {
-    this.editorLocale();
+  /** Page-language status choices for the profile status menu (not the editor form). */
+  readonly statusChoices = computed(() => {
+    this.lang.language();
     return [
-      { label: this.editorT('roles.superAdmin'), value: 'super-admin' as const },
-      { label: this.editorT('roles.editor'), value: 'editor' as const },
-      { label: this.editorT('roles.viewer'), value: 'viewer' as const },
-    ];
-  });
-
-  readonly formStatuses = computed(() => {
-    this.editorLocale();
-    return [
-      { label: this.editorT('status.active'), value: 'active' as const },
-      { label: this.editorT('status.suspended'), value: 'suspended' as const },
+      { label: this.lang.t('status.active'), value: 'active' as const },
+      { label: this.lang.t('status.suspended'), value: 'suspended' as const },
     ];
   });
 
@@ -180,7 +153,6 @@ export class UserDetailPage {
     });
     this.destroyRef.onDestroy(() => {
       this.breadcrumbs.clearLabel(`/users/${this.id()}`);
-      this.clearPhoto();
     });
   }
 
@@ -198,7 +170,7 @@ export class UserDetailPage {
     if (!current) {
       return;
     }
-    this.clearPhoto();
+    this.editorForm().clearPhoto();
     this.editorLocale.set(this.lang.language());
     this.form.reset(current);
     this.editing.set(true);
@@ -212,29 +184,7 @@ export class UserDetailPage {
 
   protected closeEditor(): void {
     this.editing.set(false);
-    this.clearPhoto();
-  }
-
-  protected onPhotoPick(event: Event): void {
-    const input = event.target;
-    const file = input instanceof HTMLInputElement ? input.files?.[0] : undefined;
-    this.applyPhoto(file);
-    if (input instanceof HTMLInputElement) {
-      input.value = '';
-    }
-  }
-
-  protected onPhotoDrop(event: DragEvent): void {
-    event.preventDefault();
-    this.applyPhoto(event.dataTransfer?.files?.[0]);
-  }
-
-  protected clearPhoto(): void {
-    if (this.photoObjectUrl.startsWith('blob:')) {
-      URL.revokeObjectURL(this.photoObjectUrl);
-    }
-    this.photoObjectUrl = '';
-    this.photo.set(null);
+    this.editorForm().clearPhoto();
   }
 
   protected openStatusMenu(event: Event): void {
@@ -262,34 +212,6 @@ export class UserDetailPage {
     }
     const draft = this.form.getRawValue() satisfies UserDraft;
     this.persist(draft, () => this.closeEditor());
-  }
-
-  private applyPhoto(file: File | undefined): void {
-    if (!file?.type.startsWith('image/') || file.size > 5 * 1024 * 1024) {
-      return;
-    }
-    this.clearPhoto();
-    this.photoObjectUrl = URL.createObjectURL(file);
-    this.photo.set({
-      name: file.name,
-      url: this.photoObjectUrl,
-      sizeLabel: this.formatBytes(file.size),
-      dateLabel: new Date().toLocaleDateString(this.lang.language() === 'ar' ? 'ar' : 'en', {
-        day: '2-digit',
-        month: 'short',
-        year: 'numeric',
-      }),
-    });
-  }
-
-  private formatBytes(bytes: number): string {
-    if (bytes < 1024) {
-      return `${bytes} B`;
-    }
-    if (bytes < 1024 * 1024) {
-      return `${Math.round(bytes / 1024)} KB`;
-    }
-    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
   }
 
   protected async remove(): Promise<void> {

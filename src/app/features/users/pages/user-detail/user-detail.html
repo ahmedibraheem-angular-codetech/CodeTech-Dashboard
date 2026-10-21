@@ -178,7 +178,7 @@
 
 <p-popover #statusMenu appendTo="body" styleClass="user-detail-status-menu">
   <div class="user-detail-status-menu__list">
-    @for (option of formStatuses(); track option.value) {
+    @for (option of statusChoices(); track option.value) {
       <button type="button" (click)="setStatus(option.value)">{{ option.label }}</button>
     }
   </div>
@@ -197,130 +197,7 @@
   (save)="save()"
   (cancel)="closeEditor()"
 >
-  <form
-    class="users-editor-form"
-    [attr.dir]="editorLocale() === 'ar' ? 'rtl' : 'ltr'"
-    [formGroup]="form"
-    (ngSubmit)="save()"
-  >
-    <app-locale-switch [value]="editorLocale()" (picked)="editorLocale.set($event)" />
-
-    <label class="field">
-      <span class="field__label">{{ editorT('users.username') }}</span>
-      <p-iconfield>
-        <p-inputicon class="pi pi-user" />
-        <input
-          pInputText
-          [fluid]="true"
-          formControlName="name"
-          [invalid]="form.controls.name.touched && form.controls.name.invalid"
-        />
-      </p-iconfield>
-      @if (form.controls.name.touched && form.controls.name.invalid) {
-        <app-field-error>{{ editorT('users.required') }}</app-field-error>
-      }
-    </label>
-
-    <div class="users-editor-form__row">
-      <label class="field">
-        <span class="field__label">{{ editorT('users.email') }}</span>
-        <p-iconfield>
-          <p-inputicon class="pi pi-envelope" />
-          <input
-            pInputText
-            [fluid]="true"
-            type="email"
-            formControlName="email"
-            [invalid]="form.controls.email.touched && form.controls.email.invalid"
-          />
-        </p-iconfield>
-        @if (form.controls.email.touched && form.controls.email.hasError('required')) {
-          <app-field-error>{{ editorT('users.required') }}</app-field-error>
-        } @else if (form.controls.email.touched && form.controls.email.invalid) {
-          <app-field-error>{{ editorT('users.invalidEmail') }}</app-field-error>
-        }
-      </label>
-
-      <label class="field">
-        <span class="field__label">{{ editorT('users.phoneOptional') }}</span>
-        <p-iconfield>
-          <p-inputicon class="pi pi-phone" />
-          <input
-            pInputText
-            [fluid]="true"
-            formControlName="phone"
-            [invalid]="form.controls.phone.touched && form.controls.phone.invalid"
-          />
-        </p-iconfield>
-        @if (form.controls.phone.touched && form.controls.phone.hasError('required')) {
-          <app-field-error>{{ editorT('users.required') }}</app-field-error>
-        } @else if (form.controls.phone.touched && form.controls.phone.invalid) {
-          <app-field-error>{{ editorT('users.invalidPhone') }}</app-field-error>
-        }
-      </label>
-    </div>
-
-    <div class="users-editor-form__row">
-      <label class="field">
-        <span class="field__label">{{ editorT('users.userStatus') }}</span>
-        <p-select
-          [fluid]="true"
-          formControlName="status"
-          [options]="formStatuses()"
-          optionLabel="label"
-          optionValue="value"
-        />
-      </label>
-
-      <label class="field">
-        <span class="field__label">{{ editorT('users.role') }}</span>
-        <p-select
-          [fluid]="true"
-          formControlName="role"
-          [options]="formRoles()"
-          optionLabel="label"
-          optionValue="value"
-        />
-      </label>
-    </div>
-
-    <div class="field">
-      <span class="field__label">{{ editorT('users.uploadPhoto') }}</span>
-      <label
-        class="users-editor-form__drop"
-        (dragover)="$event.preventDefault()"
-        (drop)="onPhotoDrop($event)"
-      >
-        <i class="pi pi-file-arrow-up" aria-hidden="true"></i>
-        <strong>{{ editorT('users.uploadHint') }}</strong>
-        <small>{{ editorT('users.uploadTypes') }}</small>
-        <input
-          type="file"
-          accept="image/png,image/jpeg"
-          [attr.aria-label]="editorT('users.uploadPhoto')"
-          (change)="onPhotoPick($event)"
-        />
-      </label>
-
-      @if (photo(); as file) {
-        <div class="users-editor-form__file">
-          <img class="users-editor-form__thumb" [src]="file.url" alt="" />
-          <div class="users-editor-form__file-meta">
-            <strong>{{ file.name }}</strong>
-            <span>{{ file.sizeLabel }} · {{ file.dateLabel }}</span>
-          </div>
-          <app-button
-            variant="danger"
-            [outlined]="true"
-            styleClass="users-editor-form__file-remove"
-            icon="pi pi-trash"
-            [ariaLabel]="editorT('users.removePhoto')"
-            (clicked)="clearPhoto()"
-          />
-        </div>
-      }
-    </div>
-  </form>
+  <app-user-editor-form [form]="form" [(locale)]="editorLocale" (submitted)="save()" />
 </app-modal>
 
 <app-confirm-dialog />
