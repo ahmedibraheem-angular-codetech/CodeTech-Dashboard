@@ -19,7 +19,9 @@ import { ToggleSwitch } from 'primeng/toggleswitch';
 
 import type { AppLanguage } from '../../../../core/i18n/language';
 import { LanguageService } from '../../../../core/services/language.service';
+import { AppButton } from '../../../../shared/components/app-button/app-button';
 import { ConfirmDialog } from '../../../../shared/components/confirm-dialog/confirm-dialog';
+import { SectorCard } from '../../../../shared/components/sector-card/sector-card';
 import { LocaleSwitch } from '../../../../shared/components/locale-switch/locale-switch';
 import { Modal } from '../../../../shared/components/modal/modal';
 import { PageHeader } from '../../../../shared/components/page-header/page-header';
@@ -41,6 +43,8 @@ type EditorKind = 'feature' | 'sector';
   selector: 'app-products-page-manage',
   imports: [
     FormsModule,
+    AppButton,
+    SectorCard,
     PageHeader,
     ToggleSwitch,
     StateView,

@@ -157,30 +157,17 @@
               <h2>{{ lang.t('product.sectors') }}</h2>
               <span class="icon-badge"><i class="pi pi-heart" aria-hidden="true"></i></span>
             </header>
-            <div class="sector-grid">
+            <div class="app-sector-grid">
               @for (sector of product.sectors; track sector.id; let index = $index) {
-                <article class="sector-card">
-                  @if (sector.imageUrl) {
-                    <img [src]="sector.imageUrl" alt="" />
-                  }
-                  <strong>{{ text(sector.title) }}</strong>
-                  <span class="sector-card__actions">
-                    <a
-                      [routerLink]="['/products', product.id, 'edit']"
-                      [attr.aria-label]="lang.t('product.editAction')"
-                    >
-                      <i class="pi pi-pen-to-square" aria-hidden="true"></i>
-                    </a>
-                    <button
-                      type="button"
-                      [disabled]="product.sectors.length < 2"
-                      [attr.aria-label]="lang.t('about.delete')"
-                      (click)="removeItem('sectors', index)"
-                    >
-                      <i class="pi pi-trash" aria-hidden="true"></i>
-                    </button>
-                  </span>
-                </article>
+                <app-sector-card
+                  [imageUrl]="sector.imageUrl"
+                  [title]="text(sector.title)"
+                  [editLabel]="lang.t('product.editAction')"
+                  [deleteLabel]="lang.t('about.delete')"
+                  [deleteDisabled]="product.sectors.length < 2"
+                  (editRequested)="openEditor()"
+                  (deleteRequested)="removeItem('sectors', index)"
+                />
               }
             </div>
           </article>

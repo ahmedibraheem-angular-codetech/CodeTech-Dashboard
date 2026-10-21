@@ -1,0 +1,27 @@
+// Shared sector gallery. 4-up fill width, hug height.
+
+.app-sector-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  box-sizing: border-box;
+  align-content: start;
+  width: 100%;
+  height: auto;
+  gap: 8px;
+  padding: 12px;
+  border: 1px solid #edeeee;
+  border-radius: 16px;
+  background: #f9fafb;
+}
+
+@media (max-width: 900px) {
+  .app-sector-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .app-sector-grid {
+    grid-template-columns: 1fr;
+  }
+}

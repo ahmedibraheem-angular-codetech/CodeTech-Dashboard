@@ -18,6 +18,7 @@ import type { AppLanguage } from '../../../../core/i18n/translations';
 import { LanguageService } from '../../../../core/services/language.service';
 import { ConfirmDialog } from '../../../../shared/components/confirm-dialog/confirm-dialog';
 import { PageHeader } from '../../../../shared/components/page-header/page-header';
+import { SectorCard } from '../../../../shared/components/sector-card/sector-card';
 import { PageTabs, type PageTab } from '../../../../shared/components/page-tabs/page-tabs';
 import { StateView } from '../../../../shared/components/state-view/state-view';
 import { DetailPoints } from '../../components/detail-points/detail-points';
@@ -28,7 +29,7 @@ type DetailList = 'stats' | 'sectors' | 'integrations' | 'units' | 'identity';
 
 @Component({
   selector: 'app-product-detail',
-  imports: [RouterLink, PageHeader, PageTabs, StateView, ConfirmDialog, DetailPoints],
+  imports: [RouterLink, PageHeader, PageTabs, StateView, ConfirmDialog, DetailPoints, SectorCard],
   templateUrl: './product-detail.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -79,6 +80,14 @@ export class ProductDetailPage {
 
   protected async copyCode(code: string): Promise<void> {
     await navigator.clipboard.writeText(code);
+  }
+
+  protected openEditor(): void {
+    const product = this.item();
+    if (!product) {
+      return;
+    }
+    void this.router.navigate(['/products', product.id, 'edit']);
   }
 
   protected removeItem(key: DetailList, index: number): void {
