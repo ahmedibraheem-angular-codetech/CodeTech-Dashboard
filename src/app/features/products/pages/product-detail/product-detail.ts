@@ -18,18 +18,33 @@ import type { AppLanguage } from '../../../../core/i18n/translations';
 import { LanguageService } from '../../../../core/services/language.service';
 import { ConfirmDialog } from '../../../../shared/components/confirm-dialog/confirm-dialog';
 import { PageHeader } from '../../../../shared/components/page-header/page-header';
-import { SectorCard } from '../../../../shared/components/sector-card/sector-card';
 import { PageTabs, type PageTab } from '../../../../shared/components/page-tabs/page-tabs';
 import { StateView } from '../../../../shared/components/state-view/state-view';
-import { DetailPoints } from '../../components/detail-points/detail-points';
+import { ProductDetailFaq } from '../../components/product-detail-faq/product-detail-faq';
+import { ProductDetailIdentity } from '../../components/product-detail-identity/product-detail-identity';
+import { ProductDetailInfo } from '../../components/product-detail-info/product-detail-info';
+import { ProductDetailOffer } from '../../components/product-detail-offer/product-detail-offer';
+import { ProductDetailSectors } from '../../components/product-detail-sectors/product-detail-sectors';
+import { ProductDetailUnits } from '../../components/product-detail-units/product-detail-units';
 import { readLocale, type LocaleText, type Product } from '../../models/product.model';
 import { ProductsService } from '../../services/products.service';
-
-type DetailList = 'stats' | 'sectors' | 'integrations' | 'units' | 'identity';
+import type { ProductDetailRemovable, ProductDetailRemoveEvent } from './product-detail.types';
 
 @Component({
   selector: 'app-product-detail',
-  imports: [RouterLink, PageHeader, PageTabs, StateView, ConfirmDialog, DetailPoints, SectorCard],
+  imports: [
+    RouterLink,
+    PageHeader,
+    PageTabs,
+    StateView,
+    ConfirmDialog,
+    ProductDetailInfo,
+    ProductDetailSectors,
+    ProductDetailOffer,
+    ProductDetailUnits,
+    ProductDetailIdentity,
+    ProductDetailFaq,
+  ],
   templateUrl: './product-detail.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -74,10 +89,6 @@ export class ProductDetailPage {
     }
   }
 
-  protected iconClass(url: string): string {
-    return url.startsWith('icon:') ? `pi ${url.slice(5)}` : '';
-  }
-
   protected async copyCode(code: string): Promise<void> {
     await navigator.clipboard.writeText(code);
   }
@@ -90,7 +101,11 @@ export class ProductDetailPage {
     void this.router.navigate(['/products', product.id, 'edit']);
   }
 
-  protected removeItem(key: DetailList, index: number): void {
+  protected onRemoveItem(event: ProductDetailRemoveEvent): void {
+    this.removeItem(event.list, event.index);
+  }
+
+  protected removeItem(key: ProductDetailRemovable, index: number): void {
     const product = this.item();
     const list = product?.[key];
     if (!product || !list || list.length < 2) {
@@ -110,7 +125,7 @@ export class ProductDetailPage {
     this.api.save(next).pipe(takeUntilDestroyed(this.destroyRef)).subscribe();
   }
 
-  private selection(key: DetailList): WritableSignal<number> | undefined {
+  private selection(key: ProductDetailRemovable): WritableSignal<number> | undefined {
     if (key === 'stats') {
       return this.statIndex;
     }

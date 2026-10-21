@@ -1,0 +1,63 @@
+<div class="detail-stack">
+  <article class="detail-panel">
+    <header class="detail-panel__head">
+      <h2>{{ lang.t('product.sectors') }}</h2>
+      <span class="icon-badge"><i class="pi pi-heart" aria-hidden="true"></i></span>
+    </header>
+    <div class="app-sector-grid">
+      @for (sector of product().sectors; track sector.id; let index = $index) {
+        <app-sector-card
+          [imageUrl]="sector.imageUrl"
+          [title]="text(sector.title)"
+          [editLabel]="lang.t('product.editAction')"
+          [deleteLabel]="lang.t('about.delete')"
+          [deleteDisabled]="product().sectors.length < 2"
+          (editRequested)="openEditor.emit()"
+          (deleteRequested)="removeItem.emit({ list: 'sectors', index })"
+        />
+      }
+    </div>
+  </article>
+
+  <article class="detail-panel">
+    <header class="detail-panel__head">
+      <h2>{{ lang.t('product.challenges') }}</h2>
+      <span class="icon-badge"><i class="pi pi-bullseye" aria-hidden="true"></i></span>
+    </header>
+    <app-detail-points [items]="product().challenges" [locale]="locale()" fallback="pi-share-alt" />
+  </article>
+
+  <div class="detail-overview">
+    <article class="detail-panel">
+      <header class="detail-panel__head">
+        <h2>{{ lang.t('product.solution') }}</h2>
+        <span class="icon-badge"><i class="pi pi-share-alt" aria-hidden="true"></i></span>
+      </header>
+      <div class="detail-fields">
+        <div class="detail-field">
+          <span>{{ lang.t('product.solutionTitle') }}</span>
+          <strong class="detail-field__lead">
+            <i class="pi pi-user" aria-hidden="true"></i>
+            {{ text(product().solution.title) }}
+          </strong>
+        </div>
+        <div class="detail-field">
+          <span>{{ lang.t('product.solutionBody') }}</span>
+          <p class="detail-field__lead">
+            <i class="pi pi-align-left" aria-hidden="true"></i>
+            {{ text(product().solution.body) }}
+          </p>
+        </div>
+      </div>
+    </article>
+    <article class="detail-panel">
+      <header class="detail-panel__head">
+        <h2>{{ lang.t('product.adImage') }}</h2>
+        <span class="icon-badge"><i class="pi pi-image" aria-hidden="true"></i></span>
+      </header>
+      @if (product().solution.imageUrl) {
+        <img class="detail-photo detail-photo--tall" [src]="product().solution.imageUrl" alt="" />
+      }
+    </article>
+  </div>
+</div>

@@ -1,0 +1,26 @@
+<div class="detail-stack">
+  <article class="detail-panel">
+    <header class="detail-panel__head">
+      <h2>{{ lang.t('product.whyChoose') }}</h2>
+      <span class="icon-badge"><i class="pi pi-star" aria-hidden="true"></i></span>
+    </header>
+    <app-detail-points [items]="product().highlights" [locale]="locale()" />
+  </article>
+  <article class="detail-panel">
+    <header class="detail-panel__head">
+      <h2>{{ lang.t('product.faq') }}</h2>
+      <span class="icon-badge"><i class="pi pi-question-circle" aria-hidden="true"></i></span>
+    </header>
+    <div class="faq-list">
+      @for (faq of product().faqs; track faq.id; let index = $index) {
+        <article class="faq-item">
+          <header>
+            <strong>{{ text(faq.question) }}</strong>
+            <span>{{ (index + 1).toString().padStart(2, '0') }}</span>
+          </header>
+          <p>{{ text(faq.answer) }}</p>
+        </article>
+      }
+    </div>
+  </article>
+</div>
