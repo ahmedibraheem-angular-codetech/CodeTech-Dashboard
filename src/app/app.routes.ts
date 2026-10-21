@@ -34,8 +34,23 @@ export const routes: Routes = [
       },
       {
         path: 'users',
-        loadComponent: () => import('./features/users/pages/users/users').then((m) => m.UsersPage),
-        data: { breadcrumb: 'users.title', titleKey: 'users.title' },
+        data: { breadcrumb: 'nav.manageUsers' },
+        children: [
+          {
+            path: '',
+            loadComponent: () =>
+              import('./features/users/pages/users/users').then((m) => m.UsersPage),
+            data: { titleKey: 'nav.manageUsers' },
+          },
+          {
+            path: ':id',
+            loadComponent: () =>
+              import('./features/users/pages/user-detail/user-detail').then(
+                (m) => m.UserDetailPage,
+              ),
+            data: { breadcrumb: ':id', titleKey: 'nav.manageUsers' },
+          },
+        ],
       },
       {
         path: 'settings',

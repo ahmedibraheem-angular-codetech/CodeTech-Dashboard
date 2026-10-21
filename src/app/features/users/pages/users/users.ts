@@ -11,13 +11,16 @@ import {
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule, FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
 import { MessageService } from 'primeng/api';
-import { Dialog } from 'primeng/dialog';
+import { IconField } from 'primeng/iconfield';
+import { InputIcon } from 'primeng/inputicon';
 import { InputText } from 'primeng/inputtext';
 import { type PaginatorState } from 'primeng/paginator';
 import { Popover } from 'primeng/popover';
 import { Select } from 'primeng/select';
 
+import type { AppLanguage } from '../../../../core/i18n/language';
 import { LanguageService } from '../../../../core/services/language.service';
 import { AppButton } from '../../../../shared/components/app-button/app-button';
 import { AppPaginator } from '../../../../shared/components/app-paginator/app-paginator';
@@ -33,9 +36,10 @@ import {
   DataTableIconValue,
 } from '../../../../shared/components/data-table/data-table.model';
 import { FieldError } from '../../../../shared/components/field-error/field-error';
+import { LocaleSwitch } from '../../../../shared/components/locale-switch/locale-switch';
+import { Modal } from '../../../../shared/components/modal/modal';
 import { PageHeader } from '../../../../shared/components/page-header/page-header';
 import { StateView } from '../../../../shared/components/state-view/state-view';
-import { StatusBadge } from '../../../../shared/components/status-badge/status-badge';
 import { StatisticsCard } from '../../../../shared/components/statistics-cards/statistics-card.model';
 import { StatisticsCards } from '../../../../shared/components/statistics-cards/statistics-cards';
 import { formatIsoDate, toIsoDate } from '../../../../shared/utils/date';
@@ -55,21 +59,30 @@ interface UserRow {
   source: User;
 }
 
+interface PhotoPreview {
+  name: string;
+  url: string;
+  sizeLabel: string;
+  dateLabel: string;
+}
+
 @Component({
   selector: 'app-users-page',
   imports: [
     ReactiveFormsModule,
     FormsModule,
     AppButton,
-    Dialog,
+    IconField,
+    InputIcon,
     InputText,
     Select,
     Popover,
     PageHeader,
     StateView,
-    StatusBadge,
     ConfirmDialog,
     FieldError,
+    LocaleSwitch,
+    Modal,
     StatisticsCards,
     DataTable,
     DataTableCellTemplate,
@@ -82,10 +95,12 @@ interface UserRow {
 export class UsersPage {
   private readonly usersApi = inject(UsersService);
   private readonly messages = inject(MessageService);
+  private readonly router = inject(Router);
   private readonly destroyRef = inject(DestroyRef);
   private readonly fb = inject(FormBuilder);
   private readonly confirm = viewChild.required(ConfirmDialog);
   private readonly menu = viewChild.required(Popover);
+  private photoObjectUrl = '';
   readonly lang = inject(LanguageService);
   readonly q = input<string>();
 
@@ -97,9 +112,12 @@ export class UsersPage {
   readonly status = signal<UserStatus | 'all'>('all');
   readonly first = signal(0);
   readonly pageSize = signal(10);
-  readonly editor = signal<'create' | 'edit' | 'view' | null>(null);
+  readonly editor = signal<'create' | 'edit' | null>(null);
   readonly selected = signal<User | null>(null);
   readonly menuUser = signal<User | null>(null);
+  readonly photo = signal<PhotoPreview | null>(null);
+  /** Locale for the add/edit modal only — does not change the page language. */
+  readonly editorLocale = signal<AppLanguage>('ar');
 
   readonly form = this.fb.nonNullable.group({
     name: ['', Validators.required],
@@ -129,13 +147,31 @@ export class UsersPage {
     ];
   });
 
-  readonly formRoles = computed(() =>
-    this.roleOptions().filter((option) => option.value !== 'all'),
-  );
-  readonly formStatuses = computed(() => [
-    { label: this.lang.t('status.active'), value: 'active' as const },
-    { label: this.lang.t('status.suspended'), value: 'suspended' as const },
-  ]);
+  readonly formRoles = computed(() => {
+    this.editorLocale();
+    return [
+      { label: this.editorT('roles.superAdmin'), value: 'super-admin' as const },
+      { label: this.editorT('roles.editor'), value: 'editor' as const },
+      { label: this.editorT('roles.viewer'), value: 'viewer' as const },
+    ];
+  });
+  readonly formStatuses = computed(() => {
+    this.editorLocale();
+    return [
+      { label: this.editorT('status.active'), value: 'active' as const },
+      { label: this.editorT('status.suspended'), value: 'suspended' as const },
+    ];
+  });
+
+  readonly editorTitle = computed(() => {
+    this.editorLocale();
+    return this.editorT(this.editor() === 'create' ? 'users.createTitle' : 'users.editTitle');
+  });
+
+  readonly editorSaveLabel = computed(() => {
+    this.editorLocale();
+    return this.editorT(this.editor() === 'create' ? 'users.addSubmit' : 'common.saveChanges');
+  });
 
   readonly filtered = computed(() => {
     const query = this.query().trim().toLowerCase();
@@ -249,6 +285,7 @@ export class UsersPage {
       this.status();
       this.first.set(0);
     });
+    this.destroyRef.onDestroy(() => this.clearPhoto());
     this.load();
   }
 
@@ -282,8 +319,15 @@ export class UsersPage {
     return this.lang.t(role === 'editor' ? 'roles.editor' : 'roles.viewer');
   }
 
+  /** Copy for the editor modal only (follows `editorLocale`, not the page language). */
+  editorT(key: string): string {
+    return this.lang.lookup(key, this.editorLocale()) ?? key;
+  }
+
   openCreate(): void {
     this.selected.set(null);
+    this.clearPhoto();
+    this.editorLocale.set(this.lang.language());
     this.form.reset({
       name: '',
       email: '',
@@ -297,6 +341,8 @@ export class UsersPage {
 
   openEdit(user: User): void {
     this.closeMenu();
+    this.clearPhoto();
+    this.editorLocale.set(this.lang.language());
     this.selected.set(user);
     this.form.reset(user);
     this.editor.set('edit');
@@ -304,8 +350,44 @@ export class UsersPage {
 
   openView(user: User): void {
     this.closeMenu();
-    this.selected.set(user);
-    this.editor.set('view');
+    void this.router.navigate(['/users', user.id]);
+  }
+
+  protected openDetail(row: UserRow): void {
+    void this.router.navigate(['/users', row.source.id]);
+  }
+
+  protected setEditorVisible(open: boolean): void {
+    if (!open) {
+      this.closeEditor();
+    }
+  }
+
+  protected closeEditor(): void {
+    this.editor.set(null);
+    this.clearPhoto();
+  }
+
+  protected onPhotoPick(event: Event): void {
+    const input = event.target;
+    const file = input instanceof HTMLInputElement ? input.files?.[0] : undefined;
+    this.applyPhoto(file);
+    if (input instanceof HTMLInputElement) {
+      input.value = '';
+    }
+  }
+
+  protected onPhotoDrop(event: DragEvent): void {
+    event.preventDefault();
+    this.applyPhoto(event.dataTransfer?.files?.[0]);
+  }
+
+  protected clearPhoto(): void {
+    if (this.photoObjectUrl.startsWith('blob:')) {
+      URL.revokeObjectURL(this.photoObjectUrl);
+    }
+    this.photoObjectUrl = '';
+    this.photo.set(null);
   }
 
   save(): void {
@@ -327,7 +409,7 @@ export class UsersPage {
           const exists = list.some((item) => item.id === user.id);
           return exists ? list.map((item) => (item.id === user.id ? user : item)) : [user, ...list];
         });
-        this.editor.set(null);
+        this.closeEditor();
         this.messages.add({
           severity: 'success',
           summary: this.lang.t(current ? 'users.updated' : 'users.created'),
@@ -338,6 +420,34 @@ export class UsersPage {
         this.notifyFailure();
       },
     });
+  }
+
+  private applyPhoto(file: File | undefined): void {
+    if (!file?.type.startsWith('image/') || file.size > 5 * 1024 * 1024) {
+      return;
+    }
+    this.clearPhoto();
+    this.photoObjectUrl = URL.createObjectURL(file);
+    this.photo.set({
+      name: file.name,
+      url: this.photoObjectUrl,
+      sizeLabel: this.formatBytes(file.size),
+      dateLabel: new Date().toLocaleDateString(this.lang.language() === 'ar' ? 'ar' : 'en', {
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric',
+      }),
+    });
+  }
+
+  private formatBytes(bytes: number): string {
+    if (bytes < 1024) {
+      return `${bytes} B`;
+    }
+    if (bytes < 1024 * 1024) {
+      return `${Math.round(bytes / 1024)} KB`;
+    }
+    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
   }
 
   async remove(user: User): Promise<void> {

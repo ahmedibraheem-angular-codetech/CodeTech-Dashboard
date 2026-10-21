@@ -1,0 +1,207 @@
+// Users add / edit dialog (projected into shared `app-modal`).
+.p-dialog.app-modal:has(.users-editor-form) {
+  width: min(640px, calc(100vw - 32px));
+  max-height: calc(100vh - 32px);
+}
+
+.p-dialog.app-modal:has(.users-editor-form) .p-dialog-content {
+  overflow: auto;
+}
+
+.p-dialog.app-modal:has(.users-editor-form) .p-dialog-header {
+  position: relative;
+  justify-content: center;
+  min-height: 80px;
+}
+
+.p-dialog.app-modal:has(.users-editor-form) .app-modal__heading {
+  flex: 1;
+  justify-content: center;
+  gap: 0;
+  padding-inline: 64px;
+}
+
+.p-dialog.app-modal:has(.users-editor-form) .app-modal__icon {
+  position: absolute;
+  // Figma: action icon on the start edge (right in RTL).
+  inset-inline-start: 24px;
+  inset-block-start: 50%;
+  transform: translateY(-50%);
+}
+
+.p-dialog.app-modal:has(.users-editor-form) .p-dialog-close-button {
+  position: absolute;
+  // Figma: close on the end edge (left in RTL).
+  inset-inline-end: 24px;
+  inset-block-start: 50%;
+  z-index: 1;
+  margin: 0;
+  transform: translateY(-50%);
+}
+
+.p-dialog.app-modal:has(.users-editor-form) .app-modal__title {
+  text-align: center;
+}
+
+.p-dialog.app-modal:has(.users-editor-form) .app-modal__action .p-button {
+  height: 48px;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.users-editor-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-block: 4px;
+  --p-inputtext-border-radius: 12px;
+  --p-inputtext-padding-y: 12px;
+  --p-inputtext-padding-x: 14px;
+  --p-inputtext-border-color: #edeeee;
+  --p-iconfield-icon-color: #94a3b8;
+  --p-select-border-radius: 12px;
+  --p-select-padding-y: 12px;
+  --p-select-border-color: #edeeee;
+}
+
+.users-editor-form .field__label {
+  color: #64748b;
+  font-size: 13px;
+  font-weight: 600;
+  text-align: start;
+}
+
+.users-editor-form .p-inputtext,
+.users-editor-form .p-select {
+  min-height: 48px;
+  border-color: #edeeee;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.users-editor-form .p-inputtext,
+.users-editor-form .p-select-label {
+  text-align: start;
+}
+
+.users-editor-form .p-iconfield {
+  width: 100%;
+}
+
+.users-editor-form__row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px 16px;
+}
+
+.users-editor-form__drop {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 120px;
+  padding: 16px;
+  border: 1px dashed #b9cbe6;
+  border-radius: 16px;
+  background: #fff;
+  color: #16324f;
+  text-align: center;
+  cursor: pointer;
+}
+
+.users-editor-form__drop input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.users-editor-form__drop .pi {
+  color: #94a3b8;
+  font-size: 28px;
+}
+
+.users-editor-form__drop strong {
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.users-editor-form__drop small {
+  color: #94a3b8;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.users-editor-form__file {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  border: 1px solid #edeeee;
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: 0 1px 2px rgb(15 23 42 / 4%);
+}
+
+.users-editor-form__thumb {
+  flex: 0 0 auto;
+  width: 48px;
+  height: 48px;
+  object-fit: cover;
+  border-radius: 50%;
+  background: #e8eef6;
+}
+
+.users-editor-form__file-meta {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  flex-direction: column;
+  gap: 4px;
+  text-align: start;
+}
+
+.users-editor-form__file-meta strong {
+  color: #16324f;
+  font-size: 14px;
+  font-weight: 700;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.users-editor-form__file-meta span {
+  color: #94a3b8;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.users-editor-form__file-remove.p-button {
+  --p-button-outlined-danger-border-color: #f9d5dc;
+  --p-button-outlined-danger-color: #e11d48;
+  --p-button-icon-only-width: 40px;
+
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+}
+
+@media (max-width: 640px) {
+  .users-editor-form__row {
+    grid-template-columns: 1fr;
+  }
+
+  .p-dialog.app-modal:has(.users-editor-form) .app-modal__icon {
+    inset-inline-start: 16px;
+  }
+
+  .p-dialog.app-modal:has(.users-editor-form) .p-dialog-close-button {
+    inset-inline-end: 16px;
+  }
+}

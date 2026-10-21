@@ -79,8 +79,8 @@ export const USERS_SEED: User[] = [
     email: 'yousef@codetech.sa',
     phone: '0551111009',
     role: 'editor',
-    status: 'active',
-    joinedAt: '2024-04-08',
+    status: 'suspended',
+    joinedAt: '2026-03-18',
   },
   {
     id: 'u10',

@@ -24,8 +24,10 @@
       [exportLabel]="lang.t('users.export')"
       [searchLabel]="lang.t('users.search')"
       [emptyMessage]="lang.t('users.empty')"
+      [rowClickable]="true"
       [(query)]="query"
       (export)="exported($event)"
+      (rowClick)="openDetail($event)"
     >
       <div dtTools class="users-table__selects">
         <p-select
@@ -81,128 +83,155 @@
   }
 </p-popover>
 
-<p-dialog
-  [header]="lang.t(editor() === 'create' ? 'users.createTitle' : 'users.editTitle')"
-  [visible]="editor() === 'create' || editor() === 'edit'"
-  (visibleChange)="!$event && editor.set(null)"
-  [modal]="true"
-  [draggable]="false"
-  [style]="{ width: 'min(34rem, 94vw)' }"
+<app-modal
+  [visible]="editor() !== null"
+  (visibleChange)="setEditorVisible($event)"
+  [title]="editorTitle()"
+  [icon]="editor() === 'create' ? 'pi pi-user-plus' : 'pi pi-user-edit'"
+  [saveLabel]="editorSaveLabel()"
+  [saveIcon]="editor() === 'create' ? 'pi pi-plus' : 'pi pi-save'"
+  saveIconPos="start"
+  [cancelLabel]="editorT('common.cancel')"
+  [saving]="saving()"
+  (save)="save()"
+  (cancel)="closeEditor()"
 >
-  <form class="form-grid" [formGroup]="form" (ngSubmit)="save()">
-    <label class="field">
-      <span class="field__label">{{ lang.t('users.name') }}</span>
-      <input
-        pInputText
-        [fluid]="true"
-        formControlName="name"
-        [invalid]="form.controls.name.touched && form.controls.name.invalid"
-        [attr.aria-invalid]="form.controls.name.touched && form.controls.name.invalid"
-        [attr.aria-describedby]="
-          form.controls.name.touched && form.controls.name.invalid ? 'user-name-error' : null
-        "
-      />
-      @if (form.controls.name.touched && form.controls.name.invalid) {
-        <app-field-error id="user-name-error">{{ lang.t('users.required') }}</app-field-error>
-      }
-    </label>
-    <label class="field">
-      <span class="field__label">{{ lang.t('users.email') }}</span>
-      <input
-        pInputText
-        [fluid]="true"
-        type="email"
-        formControlName="email"
-        [invalid]="form.controls.email.touched && form.controls.email.invalid"
-        [attr.aria-invalid]="form.controls.email.touched && form.controls.email.invalid"
-        [attr.aria-describedby]="
-          form.controls.email.touched && form.controls.email.invalid ? 'user-email-error' : null
-        "
-      />
-      @if (form.controls.email.touched && form.controls.email.hasError('required')) {
-        <app-field-error id="user-email-error">{{ lang.t('users.required') }}</app-field-error>
-      } @else if (form.controls.email.touched && form.controls.email.invalid) {
-        <app-field-error id="user-email-error">{{ lang.t('users.invalidEmail') }}</app-field-error>
-      }
-    </label>
-    <label class="field">
-      <span class="field__label">{{ lang.t('users.phone') }}</span>
-      <input
-        pInputText
-        [fluid]="true"
-        formControlName="phone"
-        [invalid]="form.controls.phone.touched && form.controls.phone.invalid"
-        [attr.aria-invalid]="form.controls.phone.touched && form.controls.phone.invalid"
-        [attr.aria-describedby]="
-          form.controls.phone.touched && form.controls.phone.invalid ? 'user-phone-error' : null
-        "
-      />
-      @if (form.controls.phone.touched && form.controls.phone.hasError('required')) {
-        <app-field-error id="user-phone-error">{{ lang.t('users.required') }}</app-field-error>
-      } @else if (form.controls.phone.touched && form.controls.phone.invalid) {
-        <app-field-error id="user-phone-error">{{ lang.t('users.invalidPhone') }}</app-field-error>
-      }
-    </label>
-    <label class="field">
-      <span class="field__label">{{ lang.t('users.role') }}</span>
-      <p-select
-        [fluid]="true"
-        formControlName="role"
-        [options]="formRoles()"
-        optionLabel="label"
-        optionValue="value"
-      />
-    </label>
-    <label class="field">
-      <span class="field__label">{{ lang.t('users.status') }}</span>
-      <p-select
-        [fluid]="true"
-        formControlName="status"
-        [options]="formStatuses()"
-        optionLabel="label"
-        optionValue="value"
-      />
-    </label>
-    <app-button type="submit" [label]="lang.t('common.save')" [loading]="saving()" [fluid]="true" />
-  </form>
-</p-dialog>
+  <form
+    class="users-editor-form"
+    [attr.dir]="editorLocale() === 'ar' ? 'rtl' : 'ltr'"
+    [formGroup]="form"
+    (ngSubmit)="save()"
+  >
+    <app-locale-switch [value]="editorLocale()" (picked)="editorLocale.set($event)" />
 
-<p-dialog
-  [header]="lang.t('users.viewTitle')"
-  [visible]="editor() === 'view'"
-  (visibleChange)="!$event && editor.set(null)"
-  [modal]="true"
-  [draggable]="false"
-  [style]="{ width: 'min(28rem, 94vw)' }"
->
-  @if (selected(); as user) {
-    <dl class="detail-list">
-      <div>
-        <dt>{{ lang.t('users.name') }}</dt>
-        <dd>{{ user.name }}</dd>
-      </div>
-      <div>
-        <dt>{{ lang.t('users.email') }}</dt>
-        <dd>{{ user.email }}</dd>
-      </div>
-      <div>
-        <dt>{{ lang.t('users.phone') }}</dt>
-        <dd>{{ user.phone }}</dd>
-      </div>
-      <div>
-        <dt>{{ lang.t('users.role') }}</dt>
-        <dd>{{ roleLabel(user.role) }}</dd>
-      </div>
-      <div>
-        <dt>{{ lang.t('users.status') }}</dt>
-        <dd><app-status-badge [status]="user.status" /></dd>
-      </div>
-      <div>
-        <dt>{{ lang.t('users.joined') }}</dt>
-        <dd>{{ formatDate(user.joinedAt) }}</dd>
-      </div>
-    </dl>
-  }
-</p-dialog>
+    <label class="field">
+      <span class="field__label">{{ editorT('users.username') }}</span>
+      <p-iconfield>
+        <p-inputicon class="pi pi-user" />
+        <input
+          pInputText
+          [fluid]="true"
+          formControlName="name"
+          [invalid]="form.controls.name.touched && form.controls.name.invalid"
+          [attr.aria-invalid]="form.controls.name.touched && form.controls.name.invalid"
+          [attr.aria-describedby]="
+            form.controls.name.touched && form.controls.name.invalid ? 'user-name-error' : null
+          "
+        />
+      </p-iconfield>
+      @if (form.controls.name.touched && form.controls.name.invalid) {
+        <app-field-error id="user-name-error">{{ editorT('users.required') }}</app-field-error>
+      }
+    </label>
+
+    <div class="users-editor-form__row">
+      <label class="field">
+        <span class="field__label">{{ editorT('users.email') }}</span>
+        <p-iconfield>
+          <p-inputicon class="pi pi-envelope" />
+          <input
+            pInputText
+            [fluid]="true"
+            type="email"
+            formControlName="email"
+            [invalid]="form.controls.email.touched && form.controls.email.invalid"
+            [attr.aria-invalid]="form.controls.email.touched && form.controls.email.invalid"
+            [attr.aria-describedby]="
+              form.controls.email.touched && form.controls.email.invalid ? 'user-email-error' : null
+            "
+          />
+        </p-iconfield>
+        @if (form.controls.email.touched && form.controls.email.hasError('required')) {
+          <app-field-error id="user-email-error">{{ editorT('users.required') }}</app-field-error>
+        } @else if (form.controls.email.touched && form.controls.email.invalid) {
+          <app-field-error id="user-email-error">{{ editorT('users.invalidEmail') }}</app-field-error>
+        }
+      </label>
+
+      <label class="field">
+        <span class="field__label">{{ editorT('users.phoneOptional') }}</span>
+        <p-iconfield>
+          <p-inputicon class="pi pi-phone" />
+          <input
+            pInputText
+            [fluid]="true"
+            formControlName="phone"
+            [invalid]="form.controls.phone.touched && form.controls.phone.invalid"
+            [attr.aria-invalid]="form.controls.phone.touched && form.controls.phone.invalid"
+            [attr.aria-describedby]="
+              form.controls.phone.touched && form.controls.phone.invalid ? 'user-phone-error' : null
+            "
+          />
+        </p-iconfield>
+        @if (form.controls.phone.touched && form.controls.phone.hasError('required')) {
+          <app-field-error id="user-phone-error">{{ editorT('users.required') }}</app-field-error>
+        } @else if (form.controls.phone.touched && form.controls.phone.invalid) {
+          <app-field-error id="user-phone-error">{{ editorT('users.invalidPhone') }}</app-field-error>
+        }
+      </label>
+    </div>
+
+    <div class="users-editor-form__row">
+      <label class="field">
+        <span class="field__label">{{ editorT('users.userStatus') }}</span>
+        <p-select
+          [fluid]="true"
+          formControlName="status"
+          [options]="formStatuses()"
+          optionLabel="label"
+          optionValue="value"
+        />
+      </label>
+
+      <label class="field">
+        <span class="field__label">{{ editorT('users.role') }}</span>
+        <p-select
+          [fluid]="true"
+          formControlName="role"
+          [options]="formRoles()"
+          optionLabel="label"
+          optionValue="value"
+        />
+      </label>
+    </div>
+
+    <div class="field">
+      <span class="field__label">{{ editorT('users.uploadPhoto') }}</span>
+      <label
+        class="users-editor-form__drop"
+        (dragover)="$event.preventDefault()"
+        (drop)="onPhotoDrop($event)"
+      >
+        <i class="pi pi-file-arrow-up" aria-hidden="true"></i>
+        <strong>{{ editorT('users.uploadHint') }}</strong>
+        <small>{{ editorT('users.uploadTypes') }}</small>
+        <input
+          type="file"
+          accept="image/png,image/jpeg"
+          [attr.aria-label]="editorT('users.uploadPhoto')"
+          (change)="onPhotoPick($event)"
+        />
+      </label>
+
+      @if (photo(); as file) {
+        <div class="users-editor-form__file">
+          <img class="users-editor-form__thumb" [src]="file.url" alt="" />
+          <div class="users-editor-form__file-meta">
+            <strong>{{ file.name }}</strong>
+            <span>{{ file.sizeLabel }} · {{ file.dateLabel }}</span>
+          </div>
+          <app-button
+            variant="danger"
+            [outlined]="true"
+            styleClass="users-editor-form__file-remove"
+            icon="pi pi-trash"
+            [ariaLabel]="editorT('users.removePhoto')"
+            (clicked)="clearPhoto()"
+          />
+        </div>
+      }
+    </div>
+  </form>
+</app-modal>
 
 <app-confirm-dialog />

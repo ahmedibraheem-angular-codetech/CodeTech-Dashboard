@@ -5,7 +5,7 @@ import { TRANSLATIONS } from './translations';
 
 describe('translations', () => {
   it('keeps every key in Arabic and English', () => {
-    expect(Object.keys(TRANSLATIONS)).toHaveLength(545);
+    expect(Object.keys(TRANSLATIONS)).toHaveLength(562);
     for (const [key, value] of Object.entries(TRANSLATIONS)) {
       expect(value.ar, key).not.toBe('');
       expect(value.en, key).not.toBe('');

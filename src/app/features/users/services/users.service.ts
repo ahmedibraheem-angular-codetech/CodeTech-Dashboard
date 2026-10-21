@@ -14,6 +14,15 @@ export class UsersService {
     return timer(this.latency).pipe(map(() => this.users().map((user) => ({ ...user }))));
   }
 
+  get(id: string): Observable<User | null> {
+    return timer(this.latency).pipe(
+      map(() => {
+        const user = this.users().find((item) => item.id === id);
+        return user ? { ...user } : null;
+      }),
+    );
+  }
+
   create(draft: UserDraft): Observable<User> {
     const user: User = { ...draft, id: crypto.randomUUID() };
     return timer(this.latency).pipe(

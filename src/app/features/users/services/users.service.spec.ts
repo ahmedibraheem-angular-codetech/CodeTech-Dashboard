@@ -19,6 +19,16 @@ describe('UsersService', () => {
     expect(users.length).toBeGreaterThan(0);
   });
 
+  it('loads a user by id', async () => {
+    const users = await firstValueFrom(service.list());
+    const first = users[0];
+    expect(first).toBeTruthy();
+    const found = await firstValueFrom(service.get(first!.id));
+    expect(found?.id).toBe(first!.id);
+    const missing = await firstValueFrom(service.get('missing-id'));
+    expect(missing).toBeNull();
+  });
+
   it('creates and removes a user', async () => {
     const created = await firstValueFrom(
       service.create({
