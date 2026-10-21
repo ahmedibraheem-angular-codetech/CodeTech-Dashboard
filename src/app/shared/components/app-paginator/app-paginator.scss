@@ -7,26 +7,32 @@
 }
 
 .app-paginator .p-paginator {
-  --p-paginator-background: transparent;
-  --p-paginator-padding: 8px 0 0;
+  --p-paginator-background: #fff;
+  --p-paginator-padding: 12px 16px;
   --p-paginator-gap: 8px;
   --p-paginator-nav-button-width: 40px;
   --p-paginator-nav-button-height: 40px;
-  --p-paginator-nav-button-border-radius: 16px;
+  --p-paginator-nav-button-border-radius: 10px;
   --p-paginator-nav-button-background: #f4f7fb;
-  --p-paginator-nav-button-hover-background: #eef3f8;
+  --p-paginator-nav-button-hover-background: #e8eef6;
   --p-paginator-nav-button-color: #6b7c8f;
   --p-paginator-nav-button-hover-color: #3d5166;
   --p-paginator-nav-button-selected-background: var(--app-primary);
   --p-paginator-nav-button-selected-color: var(--app-primary-contrast);
 
   display: flex;
+  // Keep LTR flex so nav stays on the visual left and the report on the right,
+  // matching the Figma footer (page links left, "عرض …" + rpp right).
   direction: ltr;
   align-items: center;
   justify-content: flex-start;
-  margin-top: 4px;
-  border: 0;
-  background: transparent;
+  gap: 8px;
+  box-sizing: border-box;
+  width: 100%;
+  margin: 0;
+  border: 1px solid #f0f1f3;
+  border-radius: 16px;
+  background: #fff;
   box-shadow: none;
 }
 
@@ -49,25 +55,36 @@
 .app-paginator .p-paginator-rpp-dropdown {
   order: 4;
   height: 40px;
-  min-width: 74px;
+  min-width: 72px;
   margin-left: auto;
-  border: 0;
-  border-radius: 16px;
-  background: #f4f7fb;
+  border: 1px solid #edeeee;
+  border-radius: 12px;
+  background: #fff;
   direction: rtl;
   box-shadow: none;
 }
 
 .app-paginator .p-paginator .p-select-label {
-  padding-inline: 10px;
+  display: flex;
+  align-items: center;
+  padding-inline: 12px;
   color: #3d5166;
   font-size: 14px;
+  font-weight: 600;
+}
+
+.app-paginator .p-paginator .p-select-dropdown {
+  width: 28px;
+  color: #94a3b8;
 }
 
 .app-paginator .p-paginator-current {
   order: 5;
-  color: #8aa0b5;
+  margin: 0;
+  color: #64748b;
   font-size: 14px;
+  font-weight: 500;
+  white-space: nowrap;
 }
 
 .app-paginator .p-paginator-page,
@@ -78,12 +95,19 @@
   min-width: 40px;
   padding: 0;
   border: 0;
-  border-radius: 16px;
+  border-radius: 10px;
   background: #f4f7fb;
   color: #6b7c8f;
   font-size: 14px;
-  font-weight: 500;
+  font-weight: 600;
   box-shadow: none;
+}
+
+.app-paginator .p-paginator-page:not(.p-paginator-page-selected):hover,
+.app-paginator .p-paginator-next:not(.p-disabled):hover,
+.app-paginator .p-paginator-prev:not(.p-disabled):hover {
+  background: #e8eef6;
+  color: #3d5166;
 }
 
 .app-paginator .p-paginator-page-selected {
@@ -100,6 +124,7 @@
 
 .app-paginator .p-paginator .p-disabled {
   opacity: 1;
+  color: #c5d0dc;
 }
 
 @media (max-width: 640px) {
@@ -110,6 +135,6 @@
 
   .app-paginator .p-paginator .p-select,
   .app-paginator .p-paginator-rpp-dropdown {
-    margin-left: 0;
+    margin-inline-start: 0;
   }
 }

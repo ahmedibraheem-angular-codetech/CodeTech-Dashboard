@@ -1,133 +1,85 @@
-<section class="page">
-  <app-page-header [title]="lang.t('users.title')" [subtitle]="lang.t('users.subtitle')">
-    <app-button icon="pi pi-plus" [label]="lang.t('users.add')" (clicked)="openCreate()" />
+<section class="page users-page">
+  <app-page-header [title]="lang.t('nav.manageUsers')" [subtitle]="lang.t('users.pageSubtitle')">
+    <app-button
+      icon="pi pi-plus"
+      iconPos="end"
+      styleClass="users-add"
+      [label]="lang.t('users.addNew')"
+      (clicked)="openCreate()"
+    />
   </app-page-header>
-
-  <div class="filters">
-    <label class="field">
-      <span class="field__label">{{ lang.t('users.search') }}</span>
-      <p-iconfield>
-        <input
-          pInputText
-          [fluid]="true"
-          [value]="query()"
-          (input)="onSearch($event)"
-          [placeholder]="lang.t('users.search')"
-        />
-        <p-inputicon class="pi pi-search" />
-      </p-iconfield>
-    </label>
-    <label class="field">
-      <span class="field__label">{{ lang.t('users.role') }}</span>
-      <p-select
-        [fluid]="true"
-        [options]="roleOptions()"
-        optionLabel="label"
-        optionValue="value"
-        [ngModel]="role()"
-        (ngModelChange)="role.set($event)"
-      />
-    </label>
-    <label class="field">
-      <span class="field__label">{{ lang.t('users.status') }}</span>
-      <p-select
-        [fluid]="true"
-        [options]="statusOptions()"
-        optionLabel="label"
-        optionValue="value"
-        [ngModel]="status()"
-        (ngModelChange)="status.set($event)"
-      />
-    </label>
-    <label class="field">
-      <span class="field__label">{{ lang.t('users.from') }}</span>
-      <p-datepicker
-        [fluid]="true"
-        [ngModel]="from()"
-        (ngModelChange)="from.set($event)"
-        [showIcon]="true"
-        dateFormat="yy-mm-dd"
-        [showButtonBar]="true"
-      />
-    </label>
-  </div>
 
   @if (state() === 'loading') {
     <app-state-view mode="loading" />
   } @else if (state() === 'error') {
     <app-state-view mode="error" [message]="lang.t('users.loadError')" (retry)="load()" />
   } @else {
-    <p-table
-      styleClass="app-table"
-      [value]="filtered()"
-      dataKey="id"
-      [paginator]="true"
-      [rows]="5"
-      [rowsPerPageOptions]="[5, 10, 20]"
-      sortMode="single"
-      [rowHover]="true"
+    <app-statistics-cards [cards]="cards()" />
+
+    <app-data-table
+      class="users-table"
+      [title]="tableTitle()"
+      [rows]="tableRows()"
+      [columns]="columns()"
+      [exportLabel]="lang.t('users.export')"
+      [searchLabel]="lang.t('users.search')"
+      [emptyMessage]="lang.t('users.empty')"
+      [(query)]="query"
+      (export)="exported($event)"
     >
-      <ng-template #header>
-        <tr>
-          <th pSortableColumn="name">{{ lang.t('users.name') }} <p-sortIcon field="name" /></th>
-          <th pSortableColumn="email">{{ lang.t('users.email') }} <p-sortIcon field="email" /></th>
-          <th>{{ lang.t('users.role') }}</th>
-          <th>{{ lang.t('users.status') }}</th>
-          <th pSortableColumn="joinedAt">
-            {{ lang.t('users.joined') }} <p-sortIcon field="joinedAt" />
-          </th>
-          <th>{{ lang.t('users.actions') }}</th>
-        </tr>
+      <div dtTools class="users-table__selects">
+        <p-select
+          styleClass="users-table__select"
+          [options]="roleOptions()"
+          optionLabel="label"
+          optionValue="value"
+          [ngModel]="role()"
+          (ngModelChange)="role.set($event)"
+          [ariaLabel]="lang.t('users.role')"
+        />
+        <p-select
+          styleClass="users-table__select"
+          [options]="statusOptions()"
+          optionLabel="label"
+          optionValue="value"
+          [ngModel]="status()"
+          (ngModelChange)="status.set($event)"
+          [ariaLabel]="lang.t('users.status')"
+        />
+      </div>
+
+      <ng-template appDataCell="actions" let-row>
+        <app-button
+          styleClass="users-table__more"
+          icon="pi pi-ellipsis-v"
+          variant="outlined"
+          [ariaLabel]="lang.t('users.actions')"
+          (clicked)="openMenu($event, row.source)"
+        />
       </ng-template>
-      <ng-template #body let-user>
-        <tr>
-          <td>{{ user.name }}</td>
-          <td>{{ user.email }}</td>
-          <td>{{ roleLabel(user.role) }}</td>
-          <td><app-status-badge [status]="user.status" /></td>
-          <td>{{ formatDate(user.joinedAt) }}</td>
-          <td>
-            <div class="table-actions">
-              <app-button
-                icon="pi pi-eye"
-                variant="outlined"
-                size="small"
-                [ariaLabel]="lang.t('users.view')"
-                [pTooltip]="lang.t('users.view')"
-                tooltipPosition="top"
-                (clicked)="openView(user)"
-              />
-              <app-button
-                icon="pi pi-pencil"
-                variant="outlined"
-                size="small"
-                [ariaLabel]="lang.t('users.edit')"
-                [pTooltip]="lang.t('users.edit')"
-                tooltipPosition="top"
-                (clicked)="openEdit(user)"
-              />
-              <app-button
-                icon="pi pi-trash"
-                variant="danger"
-                [outlined]="true"
-                size="small"
-                [ariaLabel]="lang.t('users.delete')"
-                [pTooltip]="lang.t('users.delete')"
-                tooltipPosition="top"
-                (clicked)="remove(user)"
-              />
-            </div>
-          </td>
-        </tr>
-      </ng-template>
-      <ng-template #emptymessage>
-        <tr>
-          <td colspan="6"><app-state-view mode="empty" [message]="lang.t('users.empty')" /></td>
-        </tr>
-      </ng-template>
-    </p-table>
+
+      <app-paginator
+        dtFooter
+        [first]="first()"
+        [rows]="pageSize()"
+        [totalRecords]="filtered().length"
+        (pageChange)="page($event)"
+      />
+    </app-data-table>
   }
 </section>
+
+<p-popover #actions appendTo="body" styleClass="users-menu">
+  @if (menuUser(); as current) {
+    <div class="users-menu__list">
+      <button type="button" (click)="openView(current)">{{ lang.t('users.view') }}</button>
+      <button type="button" (click)="openEdit(current)">{{ lang.t('users.edit') }}</button>
+      <button type="button" class="users-menu__danger" (click)="remove(current)">
+        {{ lang.t('users.delete') }}
+      </button>
+    </div>
+  }
+</p-popover>
 
 <p-dialog
   [header]="lang.t(editor() === 'create' ? 'users.createTitle' : 'users.editTitle')"

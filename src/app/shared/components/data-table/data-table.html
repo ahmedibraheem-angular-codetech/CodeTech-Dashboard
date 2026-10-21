@@ -23,6 +23,7 @@
           (clicked)="toggleSearch()"
         />
       }
+      <ng-content select="[dtTools]" />
       @if (filters().length) {
         <button
           type="button"
@@ -178,4 +179,6 @@
       </ng-template>
     </p-table>
   </div>
+
+  <ng-content select="[dtFooter]" />
 </section>
