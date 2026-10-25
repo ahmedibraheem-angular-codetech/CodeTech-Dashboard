@@ -1,10 +1,10 @@
 <section class="page faq-board">
-  <app-page-header [title]="lang.t('nav.faq')" [subtitle]="lang.t('faq.subtitle')">
+  <app-page-header [title]="pageTitle()" [subtitle]="pageSubtitle()">
     <app-button
       icon="pi pi-plus"
       iconPos="end"
       styleClass="faq-board__add"
-      [label]="lang.t('faq.add')"
+      [label]="addLabel()"
       (clicked)="openCreate()"
     />
   </app-page-header>
@@ -29,6 +29,8 @@
       <app-faq-categories-panel
         [categories]="categories()"
         [items]="items()"
+        (edit)="openEditCategory($event)"
+        (remove)="removeCategory($event)"
         (publishedChange)="setCategoryPublished($event.category, $event.published)"
       />
     </div>
@@ -39,16 +41,20 @@
   [visible]="editor() !== null"
   (visibleChange)="setEditorVisible($event)"
   [title]="editorTitle()"
-  [icon]="editor() === 'create' ? 'pi pi-plus' : 'pi pi-pencil'"
-  [saveLabel]="editor() === 'create' ? lang.t('faq.addQuestion') : lang.t('common.saveChanges')"
-  [saveIcon]="editor() === 'create' ? 'pi pi-plus' : 'pi pi-save'"
-  [saveIconPos]="editor() === 'create' ? 'end' : 'start'"
+  [icon]="editorIcon()"
+  [saveLabel]="editorSaveLabel()"
+  [saveIcon]="editorSaveIcon()"
+  [saveIconPos]="editorSaveIconPos()"
   [cancelLabel]="lang.t('common.cancel')"
   [saving]="saving()"
   (save)="save()"
   (cancel)="closeEditor()"
 >
-  <app-faq-editor-form [form]="form" [categoryOptions]="categoryOptions()" (submitted)="save()" />
+  @if (editor() === 'create' || editor() === 'edit') {
+    <app-faq-editor-form [form]="form" [categoryOptions]="categoryOptions()" (submitted)="save()" />
+  } @else if (editor() === 'create-category' || editor() === 'edit-category') {
+    <app-faq-category-form [form]="categoryForm" (submitted)="save()" />
+  }
 </app-modal>
 
 <app-confirm-dialog />

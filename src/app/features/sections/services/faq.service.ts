@@ -3,7 +3,7 @@ import { Observable, map, timer } from 'rxjs';
 
 import { API_LATENCY_MS } from '../../../core/config/latency';
 import { toIsoDate } from '../../../shared/utils/date';
-import type { FaqCategory, FaqDraft, FaqItem } from '../models/faq.model';
+import type { FaqCategory, FaqCategoryDraft, FaqDraft, FaqItem } from '../models/faq.model';
 import { FAQ_CATEGORIES_SEED, FAQ_ITEMS_SEED } from './faq.mock';
 
 @Injectable({ providedIn: 'root' })
@@ -18,6 +18,41 @@ export class FaqService {
 
   listCategories(): Observable<FaqCategory[]> {
     return timer(this.latency).pipe(map(() => structuredClone(this.categories())));
+  }
+
+  createCategory(draft: FaqCategoryDraft): Observable<FaqCategory> {
+    return timer(this.latency).pipe(
+      map(() => {
+        const category: FaqCategory = {
+          ...structuredClone(draft),
+          id: `cat${crypto.randomUUID().slice(0, 8)}`,
+        };
+        this.categories.update((list) => [...list, category]);
+        return structuredClone(category);
+      }),
+    );
+  }
+
+  updateCategory(id: string, draft: FaqCategoryDraft): Observable<FaqCategory> {
+    return timer(this.latency).pipe(
+      map(() => {
+        const current = this.categories().find((item) => item.id === id);
+        if (!current) {
+          throw new Error('missing-category');
+        }
+        const next: FaqCategory = { ...structuredClone(draft), id: current.id };
+        this.categories.update((list) => list.map((item) => (item.id === id ? next : item)));
+        return structuredClone(next);
+      }),
+    );
+  }
+
+  removeCategory(id: string): Observable<void> {
+    return timer(this.latency).pipe(
+      map(() => {
+        this.categories.update((list) => list.filter((item) => item.id !== id));
+      }),
+    );
   }
 
   create(draft: FaqDraft): Observable<FaqItem> {

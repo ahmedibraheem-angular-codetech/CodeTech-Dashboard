@@ -3,14 +3,19 @@ export interface FaqLocaleText {
   en: string;
 }
 
-export type FaqCategoryId = 'general' | 'services' | 'products' | 'support' | 'billing';
+export type FaqCategoryId = string;
 
 export interface FaqCategory {
   id: FaqCategoryId;
   name: FaqLocaleText;
   order: number;
   published: boolean;
+  /** Display code shown as `#255663 ID` on category cards. */
+  code: string;
+  createdAt: string;
 }
+
+export type FaqCategoryDraft = Omit<FaqCategory, 'id'>;
 
 export interface FaqItem {
   id: string;

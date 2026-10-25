@@ -1,32 +1,136 @@
 <article class="faq-board__panel">
   <header class="faq-board__panel-head">
     <h2>{{ countLabel() }}</h2>
+    <div class="faq-board__head-tools">
+      @if (searchOpen()) {
+        <input
+          class="faq-board__query"
+          type="search"
+          [value]="query()"
+          [attr.aria-label]="lang.t('faq.search')"
+          [placeholder]="lang.t('faq.search')"
+          (input)="onQuery($event)"
+        />
+      }
+      <app-button
+        styleClass="faq-board__search-btn"
+        icon="pi pi-search"
+        variant="outlined"
+        [rounded]="true"
+        [ariaLabel]="lang.t('faq.search')"
+        (clicked)="toggleSearch()"
+      />
+      <button
+        type="button"
+        class="faq-board__filter"
+        [class.faq-board__filter--open]="filterOpen()"
+        [attr.aria-expanded]="filterOpen()"
+        [attr.aria-label]="filterLabel()"
+        (click)="filterMenu.toggle($event)"
+      >
+        <i class="pi pi-filter" aria-hidden="true"></i>
+        <span>{{ filterLabel() }}</span>
+        <i
+          class="pi"
+          [class.pi-chevron-up]="filterOpen()"
+          [class.pi-chevron-down]="!filterOpen()"
+          aria-hidden="true"
+        ></i>
+      </button>
+      <p-popover
+        #filterMenu
+        styleClass="faq-board-filter-menu"
+        appendTo="body"
+        [dismissable]="true"
+        [focusOnShow]="false"
+        (onShow)="filterOpen.set(true)"
+        (onHide)="filterOpen.set(false)"
+      >
+        <ul class="faq-board-filter-menu__list">
+          @for (option of statusFilters(); track option.value) {
+            <li>
+              <label class="faq-board-filter-option">
+                <p-checkbox
+                  [binary]="true"
+                  [inputId]="'faq-cat-filter-' + option.value"
+                  [ariaLabel]="option.label"
+                  [ngModel]="checked(option)"
+                  (ngModelChange)="setOption(option, $event)"
+                />
+                <span>{{ option.label }}</span>
+              </label>
+            </li>
+          }
+        </ul>
+      </p-popover>
+    </div>
   </header>
 
-  <div class="faq-board__list">
-    @for (category of sorted(); track category.id) {
-      <article class="faq-card faq-card--category">
-        <div class="faq-card__top">
-          <div class="faq-card__heading">
-            <h3 class="faq-card__question">{{ text(category.name) }}</h3>
+  @if (filtered().length === 0) {
+    <app-state-view mode="empty" [message]="lang.t('faq.emptyCategories')" />
+  } @else {
+    <div class="faq-board__grid">
+      @for (category of filtered(); track category.id) {
+        <article class="faq-cat-card">
+          <header class="faq-cat-card__head">
+            <div class="faq-cat-card__title-block">
+              <h3 class="faq-cat-card__title">{{ text(category.name) }}</h3>
+              <p class="faq-cat-card__id">#{{ category.code }} {{ lang.t('faq.idLabel') }}</p>
+            </div>
+            <span
+              class="faq-cat-card__badge"
+              [class.faq-cat-card__badge--active]="category.published"
+              [class.faq-cat-card__badge--inactive]="!category.published"
+            >
+              {{ category.published ? lang.t('faq.active') : lang.t('faq.inactive') }}
+            </span>
+          </header>
+
+          <div class="faq-cat-card__body">
+            <div class="faq-cat-card__row">
+              <span class="faq-cat-card__label">{{ lang.t('faq.questionCount') }}</span>
+              <strong class="faq-cat-card__value">{{ questionsCount(category.id) }}</strong>
+            </div>
+            <div class="faq-cat-card__row">
+              <span class="faq-cat-card__label">{{ lang.t('faq.publishStatus') }}</span>
+              <p-toggleswitch
+                [ngModel]="category.published"
+                (ngModelChange)="onPublished(category, $event)"
+                [ariaLabel]="lang.t('faq.publishStatus')"
+              />
+            </div>
+            <div class="faq-cat-card__row">
+              <span class="faq-cat-card__label">{{ lang.t('faq.createdAt') }}</span>
+              <span class="faq-cat-card__when">
+                <i class="pi pi-calendar" aria-hidden="true"></i>
+                <span>{{ stamp(category) }}</span>
+              </span>
+            </div>
           </div>
-        </div>
-        <p class="faq-card__answer">{{ questionsLabel(category.id) }}</p>
-        <footer class="faq-card__foot faq-card__foot--category">
-          <div class="faq-card__cell">
-            <span class="faq-card__meta-label">{{ lang.t('faq.order') }}</span>
-            <strong class="faq-card__order">{{ orderLabel(category.order) }}</strong>
-          </div>
-          <label class="faq-card__cell faq-card__publish">
-            <span class="faq-card__meta-label">{{ lang.t('faq.publishStatus') }}</span>
-            <p-toggleswitch
-              [ngModel]="category.published"
-              (ngModelChange)="onPublished(category, $event)"
-              [ariaLabel]="lang.t('faq.publishStatus')"
+
+          <footer class="faq-cat-card__foot">
+            <app-button
+              [fluid]="true"
+              variant="outlined"
+              styleClass="faq-cat-card__btn faq-cat-card__btn--edit"
+              icon="pi pi-pencil"
+              iconPos="end"
+              [label]="lang.t('faq.edit')"
+              (clicked)="edit.emit(category)"
             />
-          </label>
-        </footer>
-      </article>
-    }
-  </div>
+            <app-button
+              [fluid]="true"
+              variant="danger"
+              [outlined]="true"
+              styleClass="faq-cat-card__btn faq-cat-card__btn--danger"
+              icon="pi pi-trash"
+              iconPos="end"
+              [label]="lang.t('faq.delete')"
+              (clicked)="remove.emit(category)"
+            />
+          </footer>
+        </article>
+      }
+    </div>
+  }
 </article>

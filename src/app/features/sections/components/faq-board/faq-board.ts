@@ -22,11 +22,13 @@ import { toIsoDate } from '../../../../shared/utils/date';
 import type { FaqCategory, FaqCategoryId, FaqItem } from '../../models/faq.model';
 import { FaqService } from '../../services/faq.service';
 import { FaqCategoriesPanel } from './components/faq-categories-panel/faq-categories-panel';
+import { FaqCategoryForm } from './components/faq-category-form/faq-category-form';
 import { FaqEditorForm } from './components/faq-editor-form/faq-editor-form';
 import { FaqQuestionsPanel } from './components/faq-questions-panel/faq-questions-panel';
 
 type LoadState = 'loading' | 'ready' | 'error';
 type BoardTab = 'questions' | 'categories';
+type EditorMode = 'create' | 'edit' | 'create-category' | 'edit-category' | null;
 
 /**
  * FAQ page container: header, tabs, load/error, API orchestration, and editor modal.
@@ -38,6 +40,7 @@ type BoardTab = 'questions' | 'categories';
     AppButton,
     ConfirmDialog,
     FaqCategoriesPanel,
+    FaqCategoryForm,
     FaqEditorForm,
     FaqQuestionsPanel,
     Modal,
@@ -62,8 +65,9 @@ export class FaqBoard {
   readonly items = signal<FaqItem[]>([]);
   readonly categories = signal<FaqCategory[]>([]);
   readonly tab = signal<BoardTab>('questions');
-  readonly editor = signal<'create' | 'edit' | null>(null);
+  readonly editor = signal<EditorMode>(null);
   readonly selected = signal<FaqItem | null>(null);
+  readonly selectedCategory = signal<FaqCategory | null>(null);
 
   readonly form = this.fb.nonNullable.group({
     questionAr: ['', Validators.required],
@@ -75,12 +79,33 @@ export class FaqBoard {
     published: this.fb.nonNullable.control(true),
   });
 
+  readonly categoryForm = this.fb.nonNullable.group({
+    nameAr: ['', Validators.required],
+    nameEn: ['', Validators.required],
+    published: this.fb.nonNullable.control(true),
+  });
+
   readonly tabs = computed<readonly PageTab[]>(() => {
     this.lang.language();
     return [
       { id: 'questions', labelKey: 'faq.questionsTab', icon: 'pi pi-question-circle' },
       { id: 'categories', labelKey: 'faq.categoriesTab', icon: 'pi pi-th-large' },
     ];
+  });
+
+  readonly pageTitle = computed(() => {
+    this.lang.language();
+    return this.lang.t(this.tab() === 'categories' ? 'faq.categoriesTitle' : 'nav.faq');
+  });
+
+  readonly pageSubtitle = computed(() => {
+    this.lang.language();
+    return this.lang.t(this.tab() === 'categories' ? 'faq.categoriesSubtitle' : 'faq.subtitle');
+  });
+
+  readonly addLabel = computed(() => {
+    this.lang.language();
+    return this.lang.t(this.tab() === 'categories' ? 'faq.addCategory' : 'faq.add');
   });
 
   readonly categoryOptions = computed(() => {
@@ -94,8 +119,53 @@ export class FaqBoard {
 
   readonly editorTitle = computed(() => {
     this.lang.language();
-    return this.lang.t(this.editor() === 'create' ? 'faq.createTitle' : 'faq.editTitle');
+    switch (this.editor()) {
+      case 'create':
+        return this.lang.t('faq.createTitle');
+      case 'edit':
+        return this.lang.t('faq.editTitle');
+      case 'create-category':
+        return this.lang.t('faq.createCategoryTitle');
+      case 'edit-category':
+        return this.lang.t('faq.editCategoryTitle');
+      default:
+        return '';
+    }
   });
+
+  readonly editorIcon = computed(() => {
+    const mode = this.editor();
+    if (mode === 'edit' || mode === 'edit-category') {
+      return 'pi pi-pencil';
+    }
+    if (mode === 'create-category') {
+      return 'pi pi-th-large';
+    }
+    return 'pi pi-plus';
+  });
+
+  readonly editorSaveLabel = computed(() => {
+    this.lang.language();
+    const mode = this.editor();
+    if (mode === 'create') {
+      return this.lang.t('faq.addQuestion');
+    }
+    if (mode === 'create-category') {
+      return this.lang.t('faq.addCategoryAction');
+    }
+    if (mode === 'edit-category') {
+      return this.lang.t('faq.saveCategory');
+    }
+    return this.lang.t('common.saveChanges');
+  });
+
+  readonly editorSaveIcon = computed(() =>
+    this.editor() === 'create' || this.editor() === 'create-category' ? 'pi pi-plus' : 'pi pi-save',
+  );
+
+  readonly editorSaveIconPos = computed<'start' | 'end'>(() =>
+    this.editor() === 'create' || this.editor() === 'create-category' ? 'end' : 'start',
+  );
 
   constructor() {
     this.load();
@@ -108,7 +178,12 @@ export class FaqBoard {
   }
 
   protected openCreate(): void {
+    if (this.tab() === 'categories') {
+      this.openCreateCategory();
+      return;
+    }
     this.selected.set(null);
+    this.selectedCategory.set(null);
     this.form.reset({
       questionAr: '',
       questionEn: '',
@@ -123,6 +198,7 @@ export class FaqBoard {
 
   protected openEdit(item: FaqItem): void {
     this.selected.set(item);
+    this.selectedCategory.set(null);
     this.form.reset({
       questionAr: item.question.ar,
       questionEn: item.question.en,
@@ -135,6 +211,28 @@ export class FaqBoard {
     this.editor.set('edit');
   }
 
+  protected openCreateCategory(): void {
+    this.selected.set(null);
+    this.selectedCategory.set(null);
+    this.categoryForm.reset({
+      nameAr: '',
+      nameEn: '',
+      published: false,
+    });
+    this.editor.set('create-category');
+  }
+
+  protected openEditCategory(category: FaqCategory): void {
+    this.selected.set(null);
+    this.selectedCategory.set(category);
+    this.categoryForm.reset({
+      nameAr: category.name.ar,
+      nameEn: category.name.en,
+      published: category.published,
+    });
+    this.editor.set('edit-category');
+  }
+
   protected setEditorVisible(open: boolean): void {
     if (!open) {
       this.closeEditor();
@@ -144,9 +242,15 @@ export class FaqBoard {
   protected closeEditor(): void {
     this.editor.set(null);
     this.selected.set(null);
+    this.selectedCategory.set(null);
   }
 
   protected save(): void {
+    const mode = this.editor();
+    if (mode === 'create-category' || mode === 'edit-category') {
+      this.saveCategory();
+      return;
+    }
     if (this.form.invalid) {
       this.form.markAllAsTouched();
       return;
@@ -240,8 +344,71 @@ export class FaqBoard {
       });
   }
 
+  protected async removeCategory(category: FaqCategory): Promise<void> {
+    const accepted = await this.confirm().ask({
+      title: this.lang.t('faq.deleteCategoryTitle'),
+      message: this.lang.t('faq.deleteCategoryMessage'),
+      confirmLabel: this.lang.t('faq.delete'),
+      cancelLabel: this.lang.t('common.cancel'),
+      danger: true,
+    });
+    if (!accepted) {
+      return;
+    }
+    this.api
+      .removeCategory(category.id)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => {
+          this.categories.update((list) => list.filter((row) => row.id !== category.id));
+          this.messages.add({ severity: 'success', summary: this.lang.t('faq.categoryDeleted') });
+        },
+        error: () => this.fail(),
+      });
+  }
+
   protected reload(): void {
     this.load();
+  }
+
+  private saveCategory(): void {
+    if (this.categoryForm.invalid) {
+      this.categoryForm.markAllAsTouched();
+      return;
+    }
+    if (this.saving()) {
+      return;
+    }
+    const raw = this.categoryForm.getRawValue();
+    const current = this.selectedCategory();
+    const draft = {
+      name: { ar: raw.nameAr.trim(), en: raw.nameEn.trim() },
+      order: current?.order ?? this.categories().length + 1,
+      published: raw.published,
+      code: current?.code ?? `${Math.floor(100000 + Math.random() * 900000)}`,
+      createdAt: current?.createdAt ?? toIsoDate(new Date()),
+    };
+    const request = current
+      ? this.api.updateCategory(current.id, draft)
+      : this.api.createCategory(draft);
+    this.saving.set(true);
+    request.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: (category) => {
+        this.saving.set(false);
+        this.categories.update((list) => {
+          const exists = list.some((row) => row.id === category.id);
+          return exists
+            ? list.map((row) => (row.id === category.id ? category : row))
+            : [...list, category];
+        });
+        this.closeEditor();
+        this.messages.add({
+          severity: 'success',
+          summary: this.lang.t(current ? 'faq.categoryUpdated' : 'faq.categoryCreated'),
+        });
+      },
+      error: () => this.fail(),
+    });
   }
 
   private load(): void {
