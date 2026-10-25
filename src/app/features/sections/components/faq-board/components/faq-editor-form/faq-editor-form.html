@@ -1,57 +1,76 @@
-<form class="faq-editor-form" [formGroup]="form()" (ngSubmit)="onSubmit()">
-  <label class="field">
-    <span class="field__label">{{ lang.t('faq.questionAr') }}</span>
-    <input
-      pInputText
-      [fluid]="true"
-      formControlName="questionAr"
-      [invalid]="form().controls.questionAr.touched && form().controls.questionAr.invalid"
-    />
-    @if (form().controls.questionAr.touched && form().controls.questionAr.invalid) {
-      <app-field-error>{{ lang.t('faq.required') }}</app-field-error>
-    }
-  </label>
+<form
+  class="faq-editor-form"
+  [attr.dir]="locale() === 'ar' ? 'rtl' : 'ltr'"
+  [formGroup]="form()"
+  (ngSubmit)="onSubmit()"
+>
+  <app-locale-switch [value]="locale()" (picked)="locale.set($event)" />
 
-  <label class="field">
-    <span class="field__label">{{ lang.t('faq.questionEn') }}</span>
-    <input
-      pInputText
-      [fluid]="true"
-      formControlName="questionEn"
-      [invalid]="form().controls.questionEn.touched && form().controls.questionEn.invalid"
-    />
-    @if (form().controls.questionEn.touched && form().controls.questionEn.invalid) {
-      <app-field-error>{{ lang.t('faq.required') }}</app-field-error>
-    }
-  </label>
+  @if (locale() === 'ar') {
+    <label class="field">
+      <span class="field__label">{{ lang.t('faq.question') }}</span>
+      <p-iconfield>
+        <input
+          pInputText
+          [fluid]="true"
+          formControlName="questionAr"
+          [placeholder]="lang.t('faq.questionPlaceholder')"
+          [invalid]="form().controls.questionAr.touched && form().controls.questionAr.invalid"
+        />
+        <p-inputicon class="pi pi-question-circle" />
+      </p-iconfield>
+      @if (form().controls.questionAr.touched && form().controls.questionAr.invalid) {
+        <app-field-error>{{ lang.t('faq.required') }}</app-field-error>
+      }
+    </label>
 
-  <label class="field">
-    <span class="field__label">{{ lang.t('faq.answerAr') }}</span>
-    <textarea
-      pTextarea
-      [fluid]="true"
-      rows="4"
-      formControlName="answerAr"
-      [invalid]="form().controls.answerAr.touched && form().controls.answerAr.invalid"
-    ></textarea>
-    @if (form().controls.answerAr.touched && form().controls.answerAr.invalid) {
-      <app-field-error>{{ lang.t('faq.required') }}</app-field-error>
-    }
-  </label>
+    <label class="field">
+      <span class="field__label">{{ lang.t('faq.answer') }}</span>
+      <textarea
+        pTextarea
+        [fluid]="true"
+        rows="5"
+        formControlName="answerAr"
+        [placeholder]="lang.t('faq.answerPlaceholder')"
+        [invalid]="form().controls.answerAr.touched && form().controls.answerAr.invalid"
+      ></textarea>
+      @if (form().controls.answerAr.touched && form().controls.answerAr.invalid) {
+        <app-field-error>{{ lang.t('faq.required') }}</app-field-error>
+      }
+    </label>
+  } @else {
+    <label class="field">
+      <span class="field__label">{{ lang.t('faq.question') }}</span>
+      <p-iconfield>
+        <input
+          pInputText
+          [fluid]="true"
+          formControlName="questionEn"
+          [placeholder]="lang.t('faq.questionPlaceholder')"
+          [invalid]="form().controls.questionEn.touched && form().controls.questionEn.invalid"
+        />
+        <p-inputicon class="pi pi-question-circle" />
+      </p-iconfield>
+      @if (form().controls.questionEn.touched && form().controls.questionEn.invalid) {
+        <app-field-error>{{ lang.t('faq.required') }}</app-field-error>
+      }
+    </label>
 
-  <label class="field">
-    <span class="field__label">{{ lang.t('faq.answerEn') }}</span>
-    <textarea
-      pTextarea
-      [fluid]="true"
-      rows="4"
-      formControlName="answerEn"
-      [invalid]="form().controls.answerEn.touched && form().controls.answerEn.invalid"
-    ></textarea>
-    @if (form().controls.answerEn.touched && form().controls.answerEn.invalid) {
-      <app-field-error>{{ lang.t('faq.required') }}</app-field-error>
-    }
-  </label>
+    <label class="field">
+      <span class="field__label">{{ lang.t('faq.answer') }}</span>
+      <textarea
+        pTextarea
+        [fluid]="true"
+        rows="5"
+        formControlName="answerEn"
+        [placeholder]="lang.t('faq.answerPlaceholder')"
+        [invalid]="form().controls.answerEn.touched && form().controls.answerEn.invalid"
+      ></textarea>
+      @if (form().controls.answerEn.touched && form().controls.answerEn.invalid) {
+        <app-field-error>{{ lang.t('faq.required') }}</app-field-error>
+      }
+    </label>
+  }
 
   <div class="faq-editor-form__row">
     <label class="field">
@@ -62,17 +81,19 @@
         [options]="categoryOptions()"
         optionLabel="label"
         optionValue="value"
+        [placeholder]="lang.t('faq.selectCategory')"
       />
     </label>
 
     <label class="field">
       <span class="field__label">{{ lang.t('faq.order') }}</span>
-      <input
-        pInputText
+      <p-select
         [fluid]="true"
-        type="number"
         formControlName="order"
-        [invalid]="form().controls.order.touched && form().controls.order.invalid"
+        [options]="orderOptions"
+        optionLabel="label"
+        optionValue="value"
+        [placeholder]="lang.t('faq.selectOrder')"
       />
       @if (form().controls.order.touched && form().controls.order.invalid) {
         <app-field-error>{{ lang.t('faq.required') }}</app-field-error>

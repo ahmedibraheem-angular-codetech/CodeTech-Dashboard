@@ -7,26 +7,24 @@
     @for (category of sorted(); track category.id) {
       <article class="faq-card faq-card--category">
         <div class="faq-card__top">
-          <div class="faq-card__main">
+          <div class="faq-card__heading">
             <h3 class="faq-card__question">{{ text(category.name) }}</h3>
-            <p class="faq-card__answer">{{ questionsLabel(category.id) }}</p>
           </div>
         </div>
-        <footer class="faq-card__foot">
-          <label class="faq-card__publish">
-            <span>{{ lang.t('faq.publishStatus') }}</span>
+        <p class="faq-card__answer">{{ questionsLabel(category.id) }}</p>
+        <footer class="faq-card__foot faq-card__foot--category">
+          <div class="faq-card__cell">
+            <span class="faq-card__meta-label">{{ lang.t('faq.order') }}</span>
+            <strong class="faq-card__order">{{ orderLabel(category.order) }}</strong>
+          </div>
+          <label class="faq-card__cell faq-card__publish">
+            <span class="faq-card__meta-label">{{ lang.t('faq.publishStatus') }}</span>
             <p-toggleswitch
               [ngModel]="category.published"
               (ngModelChange)="onPublished(category, $event)"
               [ariaLabel]="lang.t('faq.publishStatus')"
             />
           </label>
-          <div class="faq-card__meta-group">
-            <div class="faq-card__meta-item">
-              <span class="faq-card__meta-label">{{ lang.t('faq.order') }}</span>
-              <strong class="faq-card__order">{{ orderLabel(category.order) }}</strong>
-            </div>
-          </div>
         </footer>
       </article>
     }

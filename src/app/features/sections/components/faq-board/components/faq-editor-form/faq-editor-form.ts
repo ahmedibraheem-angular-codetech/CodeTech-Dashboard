@@ -1,12 +1,16 @@
-import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, input, output, signal } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { IconField } from 'primeng/iconfield';
+import { InputIcon } from 'primeng/inputicon';
 import { InputText } from 'primeng/inputtext';
 import { Select } from 'primeng/select';
 import { Textarea } from 'primeng/textarea';
 import { ToggleSwitch } from 'primeng/toggleswitch';
 
+import type { AppLanguage } from '../../../../../../core/i18n/language';
 import { LanguageService } from '../../../../../../core/services/language.service';
 import { FieldError } from '../../../../../../shared/components/field-error/field-error';
+import { LocaleSwitch } from '../../../../../../shared/components/locale-switch/locale-switch';
 import type { FaqCategoryId } from '../../../../models/faq.model';
 
 export type FaqEditorFormGroup = FormGroup<{
@@ -26,11 +30,21 @@ export interface FaqCategoryOption {
 
 /**
  * Create/edit FAQ form body. The parent owns the FormGroup, validation, API save,
- * and wraps this in `app-modal`.
+ * and wraps this in `app-modal`. Locale switch only toggles which bilingual fields are shown.
  */
 @Component({
   selector: 'app-faq-editor-form',
-  imports: [ReactiveFormsModule, FieldError, InputText, Select, Textarea, ToggleSwitch],
+  imports: [
+    ReactiveFormsModule,
+    FieldError,
+    IconField,
+    InputIcon,
+    InputText,
+    LocaleSwitch,
+    Select,
+    Textarea,
+    ToggleSwitch,
+  ],
   templateUrl: './faq-editor-form.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -39,7 +53,12 @@ export class FaqEditorForm {
   readonly categoryOptions = input.required<FaqCategoryOption[]>();
   readonly submitted = output<void>();
 
-  constructor(readonly lang: LanguageService) {}
+  readonly lang = inject(LanguageService);
+  readonly locale = signal<AppLanguage>(this.lang.language());
+  readonly orderOptions = Array.from({ length: 50 }, (_, index) => {
+    const value = index + 1;
+    return { value, label: `${value}`.padStart(2, '0') };
+  });
 
   protected onSubmit(): void {
     this.submitted.emit();

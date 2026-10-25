@@ -79,7 +79,7 @@ export class FaqBoard {
     this.lang.language();
     return [
       { id: 'questions', labelKey: 'faq.questionsTab', icon: 'pi pi-question-circle' },
-      { id: 'categories', labelKey: 'faq.categoriesTab', icon: 'pi pi-tags' },
+      { id: 'categories', labelKey: 'faq.categoriesTab', icon: 'pi pi-th-large' },
     ];
   });
 

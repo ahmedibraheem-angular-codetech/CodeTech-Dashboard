@@ -1,35 +1,41 @@
 <article class="faq-board__panel">
   <header class="faq-board__panel-head">
     <h2>{{ countLabel() }}</h2>
+    <div class="faq-board__head-tools">
+      @if (searchOpen()) {
+        <input
+          class="faq-board__query"
+          type="search"
+          [value]="query()"
+          [attr.aria-label]="lang.t('faq.search')"
+          [placeholder]="lang.t('faq.search')"
+          (input)="onQuery($event)"
+        />
+      }
+      <app-button
+        styleClass="faq-board__search-btn"
+        icon="pi pi-search"
+        variant="outlined"
+        [rounded]="true"
+        [ariaLabel]="lang.t('faq.search')"
+        (clicked)="toggleSearch()"
+      />
+    </div>
   </header>
 
-  <div class="faq-board__toolbar">
-    <div class="faq-board__chips" role="tablist" [attr.aria-label]="lang.t('faq.category')">
-      @for (chip of filterChips(); track chip.value) {
-        <button
-          type="button"
-          class="faq-board__chip"
-          role="tab"
-          [class.faq-board__chip--active]="categoryFilter() === chip.value"
-          [attr.aria-selected]="categoryFilter() === chip.value"
-          (click)="setFilter(chip.value)"
-        >
-          {{ chip.label }}
-        </button>
-      }
-    </div>
-
-    <p-iconfield class="faq-board__search">
-      <p-inputicon class="pi pi-search" />
-      <input
-        pInputText
-        [fluid]="true"
-        [ngModel]="query()"
-        (ngModelChange)="setQuery($event)"
-        [placeholder]="lang.t('faq.search')"
-        [attr.aria-label]="lang.t('faq.search')"
-      />
-    </p-iconfield>
+  <div class="faq-board__chips" role="tablist" [attr.aria-label]="lang.t('faq.category')">
+    @for (chip of filterChips(); track chip.value) {
+      <button
+        type="button"
+        class="faq-board__chip"
+        role="tab"
+        [class.faq-board__chip--active]="categoryFilter() === chip.value"
+        [attr.aria-selected]="categoryFilter() === chip.value"
+        (click)="setFilter(chip.value)"
+      >
+        {{ chip.label }}
+      </button>
+    }
   </div>
 
   @if (paged().length === 0) {
@@ -39,27 +45,24 @@
       @for (item of paged(); track item.id) {
         <article class="faq-card">
           <div class="faq-card__top">
-            <div class="faq-card__main">
+            <div class="faq-card__heading">
               <h3 class="faq-card__question">{{ text(item.question) }}</h3>
               <p class="faq-card__meta">
-                <i class="pi pi-clock" aria-hidden="true"></i>
+                <i class="pi pi-calendar" aria-hidden="true"></i>
                 <span>{{ stamp(item) }}</span>
               </p>
-              <p class="faq-card__answer">{{ text(item.answer) }}</p>
             </div>
 
             <div class="faq-card__actions">
               <app-button
-                [rounded]="true"
-                variant="ghost"
+                variant="outlined"
                 styleClass="faq-card__action faq-card__action--edit"
                 icon="pi pi-pencil"
                 [ariaLabel]="lang.t('faq.edit')"
                 (clicked)="edit.emit(item)"
               />
               <app-button
-                [rounded]="true"
-                variant="ghost"
+                variant="outlined"
                 styleClass="faq-card__action faq-card__action--danger"
                 icon="pi pi-trash"
                 [ariaLabel]="lang.t('faq.delete')"
@@ -68,29 +71,28 @@
             </div>
           </div>
 
+          <p class="faq-card__answer">{{ text(item.answer) }}</p>
+
           <footer class="faq-card__foot">
-            <label class="faq-card__publish">
-              <span>{{ lang.t('faq.publishStatus') }}</span>
+            <div class="faq-card__cell">
+              <span class="faq-card__meta-label">{{ lang.t('faq.order') }}</span>
+              <strong class="faq-card__order">{{ orderLabel(item.order) }}</strong>
+            </div>
+            <div class="faq-card__cell">
+              <span class="faq-card__meta-label">{{ lang.t('faq.category') }}</span>
+              <span class="faq-card__badge">
+                <i class="pi pi-circle-fill" aria-hidden="true"></i>
+                {{ categoryLabel(item.categoryId) }}
+              </span>
+            </div>
+            <label class="faq-card__cell faq-card__publish">
+              <span class="faq-card__meta-label">{{ lang.t('faq.publishStatus') }}</span>
               <p-toggleswitch
                 [ngModel]="item.published"
                 (ngModelChange)="publishedChange.emit({ item, published: $event })"
                 [ariaLabel]="lang.t('faq.publishStatus')"
               />
             </label>
-
-            <div class="faq-card__meta-group">
-              <div class="faq-card__meta-item">
-                <span class="faq-card__meta-label">{{ lang.t('faq.category') }}</span>
-                <span class="faq-card__badge">
-                  <i class="pi pi-circle-fill" aria-hidden="true"></i>
-                  {{ categoryLabel(item.categoryId) }}
-                </span>
-              </div>
-              <div class="faq-card__meta-item">
-                <span class="faq-card__meta-label">{{ lang.t('faq.order') }}</span>
-                <strong class="faq-card__order">{{ orderLabel(item.order) }}</strong>
-              </div>
-            </div>
           </footer>
         </article>
       }

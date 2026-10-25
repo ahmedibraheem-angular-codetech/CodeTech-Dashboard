@@ -8,9 +8,6 @@ import {
   signal,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { IconField } from 'primeng/iconfield';
-import { InputIcon } from 'primeng/inputicon';
-import { InputText } from 'primeng/inputtext';
 import { type PaginatorState } from 'primeng/paginator';
 import { ToggleSwitch } from 'primeng/toggleswitch';
 
@@ -28,16 +25,7 @@ import type { FaqCategory, FaqCategoryId, FaqItem, FaqLocaleText } from '../../.
  */
 @Component({
   selector: 'app-faq-questions-panel',
-  imports: [
-    FormsModule,
-    AppButton,
-    AppPaginator,
-    IconField,
-    InputIcon,
-    InputText,
-    StateView,
-    ToggleSwitch,
-  ],
+  imports: [FormsModule, AppButton, AppPaginator, StateView, ToggleSwitch],
   templateUrl: './faq-questions-panel.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -52,6 +40,7 @@ export class FaqQuestionsPanel {
   readonly publishedChange = output<{ item: FaqItem; published: boolean }>();
 
   readonly query = signal('');
+  readonly searchOpen = signal(false);
   readonly categoryFilter = signal<'all' | FaqCategoryId>('all');
   readonly first = signal(0);
   readonly pageSize = signal(10);
@@ -114,6 +103,16 @@ export class FaqQuestionsPanel {
   protected setFilter(value: 'all' | FaqCategoryId): void {
     this.categoryFilter.set(value);
     this.first.set(0);
+  }
+
+  protected toggleSearch(): void {
+    this.searchOpen.update((open) => !open);
+  }
+
+  protected onQuery(event: Event): void {
+    const target = event.target;
+    const value = target instanceof HTMLInputElement ? target.value : '';
+    this.setQuery(value);
   }
 
   protected setQuery(value: string): void {
