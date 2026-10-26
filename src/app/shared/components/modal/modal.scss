@@ -17,6 +17,14 @@
   padding-bottom: 24px;
 }
 
+.p-dialog.app-modal.app-modal--rtl {
+  direction: rtl;
+}
+
+.p-dialog.app-modal.app-modal--ltr {
+  direction: ltr;
+}
+
 // The header is a full-bleed band; it follows the dialog's rounded top corners.
 .app-modal .p-dialog-header {
   border-bottom: 1px solid #edeeee;

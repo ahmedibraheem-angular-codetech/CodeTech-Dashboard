@@ -1,5 +1,5 @@
 <p-dialog
-  styleClass="app-modal"
+  [styleClass]="dialogStyleClass()"
   [visible]="visible()"
   (visibleChange)="!$event && requestClose()"
   [modal]="true"

@@ -2,6 +2,7 @@ import {
   ChangeDetectionStrategy,
   Component,
   ViewEncapsulation,
+  computed,
   inject,
   input,
   model,
@@ -59,8 +60,19 @@ export class Modal {
   readonly showSave = input(true);
   readonly showCancel = input(true);
 
+  /**
+   * Optional content direction for form-scoped locale switches. When set, the dialog
+   * panel flips independently of the global UI language.
+   */
+  readonly dir = input<'rtl' | 'ltr'>();
+
   /** Whether the close icon and Escape dismiss the modal. The Cancel button always works. */
   readonly dismissible = input(true);
+
+  protected readonly dialogStyleClass = computed(() => {
+    const dir = this.dir();
+    return dir ? `app-modal app-modal--${dir}` : 'app-modal';
+  });
   /**
    * Set to false when the feature must confirm before closing (unsaved changes). Cancel then
    * only emits `cancel` and the parent closes by setting `visible` itself. The close icon and

@@ -3,13 +3,16 @@
 } @else if (state() === 'error') {
   <app-state-view mode="error" [message]="lang.t('social.loadError')" (retry)="reload()" />
 } @else {
-  <section class="page social-page">
-    <app-page-header [title]="lang.t('nav.social')">
+  <section
+    class="page social-page"
+    [attr.dir]="locale() === 'ar' ? 'rtl' : 'ltr'"
+  >
+    <app-page-header [title]="t('nav.social')">
       <app-button
         icon="pi pi-plus"
         iconPos="end"
         styleClass="social-page__add"
-        [label]="lang.t('social.addChannel')"
+        [label]="t('social.addChannel')"
         (clicked)="openAdd()"
       />
     </app-page-header>
@@ -191,6 +194,7 @@
 <app-social-link-editor
   [platforms]="editorPlatforms()"
   [saving]="editorSaving()"
+  [contentLocale]="locale()"
   (saved)="onEditorSaved($event)"
 />
 <app-confirm-dialog />

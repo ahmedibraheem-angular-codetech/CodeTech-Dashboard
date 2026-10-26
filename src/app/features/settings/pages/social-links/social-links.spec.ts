@@ -113,7 +113,7 @@ describe('SocialLinksPage', () => {
     expect(toast).toHaveBeenCalledWith(expect.objectContaining({ severity: 'error' }));
   });
 
-  it('switches section copy and bilingual drafts without changing page chrome', async () => {
+  it('switches section direction, copy, and bilingual drafts with the locale switch', async () => {
     const fixture = await render();
     const root: HTMLElement = fixture.nativeElement;
     const page = fixture.componentInstance as unknown as {
@@ -123,6 +123,8 @@ describe('SocialLinksPage', () => {
       t: (key: string) => string;
     };
 
+    const section = root.querySelector('.social-page');
+    expect(section?.getAttribute('dir')).toBe('rtl');
     expect(root.querySelector('h1')?.textContent).toContain('روابط التواصل الاجتماعي');
     expect(page.locale()).toBe('ar');
     expect(page.t('social.siteDetails')).toBe('تفاصيل الموقع');
@@ -131,12 +133,11 @@ describe('SocialLinksPage', () => {
     fixture.detectChanges();
 
     expect(page.locale()).toBe('en');
+    expect(section?.getAttribute('dir')).toBe('ltr');
     expect(page.t('social.siteDetails')).toBe('Site details');
     expect(page.form.controls.description.value).toMatch(/CodeTech/);
     expect(page.form.controls.locationName.value).toBe('Kingdom of Saudi Arabia');
-    // Page chrome stays on the global UI language.
-    expect(root.querySelector('h1')?.textContent).toContain('روابط التواصل الاجتماعي');
-    expect(root.textContent).toContain('إضافة وسيلة تواصل');
+    expect(root.querySelector('h1')?.textContent).toContain('Social links');
     expect(root.textContent).toContain('Site details');
     expect(root.textContent).toContain('Edit');
   });

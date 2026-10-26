@@ -2,19 +2,25 @@
   [(visible)]="visible"
   [title]="title()"
   icon="pi pi-pencil"
+  [dir]="locale() === 'ar' ? 'rtl' : 'ltr'"
   [saving]="saving()"
   [saveDisabled]="form.invalid"
-  [saveLabel]="lang.t('common.saveChanges')"
-  [cancelLabel]="lang.t('common.cancel')"
+  [saveLabel]="saveLabel()"
+  [cancelLabel]="cancelLabel()"
   saveIconPos="start"
   (save)="onSave()"
   (cancel)="onCancel()"
 >
-  <form class="social-editor" [formGroup]="form" (ngSubmit)="onSave()">
+  <form
+    class="social-editor"
+    [formGroup]="form"
+    [attr.dir]="locale() === 'ar' ? 'rtl' : 'ltr'"
+    (ngSubmit)="onSave()"
+  >
     <app-locale-switch [value]="locale()" (picked)="setLocale($event)" />
 
     <label class="field">
-      <span class="field__label">{{ lang.t('social.platform') }}</span>
+      <span class="field__label">{{ t('social.platform') }}</span>
       <p-select
         [options]="platformOptions()"
         formControlName="platform"
@@ -26,7 +32,7 @@
     </label>
 
     <label class="field">
-      <span class="field__label">{{ lang.t('social.publishStatus') }}</span>
+      <span class="field__label">{{ t('social.publishStatus') }}</span>
       <p-select
         [options]="statusOptions()"
         formControlName="status"
@@ -38,7 +44,7 @@
     </label>
 
     <label class="field">
-      <span class="field__label">{{ lang.t('social.link') }}</span>
+      <span class="field__label">{{ t('social.link') }}</span>
       <div class="social-editor__link">
         <span class="social-editor__link-badge" aria-hidden="true">
           <i class="pi pi-link"></i>
@@ -47,7 +53,7 @@
           class="social-editor__link-input"
           type="url"
           formControlName="url"
-          [placeholder]="lang.t('social.linkPlaceholder')"
+          [placeholder]="t('social.linkPlaceholder')"
           autocomplete="off"
           dir="ltr"
         />
