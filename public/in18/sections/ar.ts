@@ -293,6 +293,7 @@ export const ar: { [K in keyof typeof en]: string } = {
   'knowledge.linkCopied': 'تم نسخ رابط المقال',
   'knowledge.shareWhatsapp': 'مشاركة عبر واتساب',
   'knowledge.shareLinkedin': 'مشاركة عبر لينكدإن',
+  'knowledge.shareX': 'مشاركة عبر X',
   'knowledge.keywordsPh': 'اكتب كلمة واضغط Enter',
   'knowledge.thumbnailCard': 'الصورة المصغرة',
   'knowledge.coverCard': 'صورة الغلاف',

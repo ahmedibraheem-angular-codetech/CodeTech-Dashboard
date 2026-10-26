@@ -1,9 +1,13 @@
 <header class="page-header">
-  <div>
-    <h1>{{ title() }}</h1>
+  <div class="page-header__main">
+    <div class="page-header__title-row">
+      <h1>{{ title() }}</h1>
+      <ng-content select="[pageHeaderBadge]" />
+    </div>
     @if (subtitle()) {
       <p class="muted mt-3">{{ subtitle() }}</p>
     }
+    <ng-content select="[pageHeaderSub]" />
   </div>
   <div class="page-header__actions">
     <ng-content />

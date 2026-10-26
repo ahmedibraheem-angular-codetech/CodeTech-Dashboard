@@ -30,8 +30,24 @@ app-page-header {
   border-radius: 16px;
 }
 
+.page-header__main {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.page-header__title-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
 // Tight title lines so the content fits the 100px card.
 .page-header h1 {
+  margin: 0;
   line-height: 1.25;
 }
 

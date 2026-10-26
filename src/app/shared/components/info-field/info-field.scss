@@ -1,0 +1,35 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  box-sizing: border-box;
+  min-width: 0;
+  padding: 12px 14px;
+  border: 1px solid #edeeee;
+  border-radius: 14px;
+  background: #f9fafb;
+}
+
+:host(.info-field--wide) {
+  grid-column: 1 / -1;
+}
+
+.info-field__label {
+  color: #6f8bac;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.info-field__value {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  color: var(--app-text, #0f2744);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}

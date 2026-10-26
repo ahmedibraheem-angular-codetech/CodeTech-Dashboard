@@ -298,6 +298,7 @@ export const en = {
   'knowledge.linkCopied': 'Article link copied',
   'knowledge.shareWhatsapp': 'Share on WhatsApp',
   'knowledge.shareLinkedin': 'Share on LinkedIn',
+  'knowledge.shareX': 'Share on X',
   'knowledge.keywordsPh': 'Type a keyword and press Enter',
   'knowledge.thumbnailCard': 'Thumbnail',
   'knowledge.coverCard': 'Cover image',

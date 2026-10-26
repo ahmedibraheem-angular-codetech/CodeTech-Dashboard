@@ -16,12 +16,11 @@ import { MessageService } from 'primeng/api';
 import { Popover } from 'primeng/popover';
 import { forkJoin } from 'rxjs';
 
-import type { AppLanguage } from '../../../../core/i18n/language';
 import { BreadcrumbService } from '../../../../core/services/breadcrumb.service';
 import { LanguageService } from '../../../../core/services/language.service';
 import { AppButton } from '../../../../shared/components/app-button/app-button';
 import { ConfirmDialog } from '../../../../shared/components/confirm-dialog/confirm-dialog';
-import { LocaleSwitch } from '../../../../shared/components/locale-switch/locale-switch';
+import { InfoField } from '../../../../shared/components/info-field/info-field';
 import { PageHeader } from '../../../../shared/components/page-header/page-header';
 import { StateView } from '../../../../shared/components/state-view/state-view';
 import {
@@ -47,7 +46,7 @@ type LoadStatus = 'loading' | 'ready' | 'missing' | 'error';
 /** Read-only preview of one article with the quick actions (edit, feature, status, delete). */
 @Component({
   selector: 'app-article-detail',
-  imports: [AppButton, ConfirmDialog, LocaleSwitch, PageHeader, Popover, StateView],
+  imports: [AppButton, ConfirmDialog, InfoField, PageHeader, Popover, StateView],
   templateUrl: './article-detail.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -66,8 +65,8 @@ export class ArticleDetail {
   readonly status = signal<LoadStatus>('loading');
   readonly article = signal<Article | null>(null);
   readonly category = signal<ArticleCategory | null>(null);
-  /** Language of the previewed content. Starts on the interface language. */
-  readonly locale = signal<AppLanguage>(this.lang.language());
+  /** Content language follows the UI language (Figma detail has no content locale switch). */
+  readonly locale = computed(() => this.lang.language());
 
   readonly title = computed(() => this.text('titleAr', 'titleEn'));
   readonly excerpt = computed(() => this.text('excerptAr', 'excerptEn'));
@@ -89,11 +88,18 @@ export class ArticleDetail {
     const stamp = this.article()?.publishedAt ?? '';
     const date = formatStampDate(stamp, this.locale());
     const time = formatStampTime(stamp, this.locale());
-    return [time, date].filter(Boolean).join(' - ') || '—';
+    return [date, time].filter(Boolean).join(' | ') || '—';
   });
 
-  /** Header meta line under the title (clock + stamp), matching the detail Figma. */
-  readonly headerMeta = computed(() => this.published());
+  readonly headerDate = computed(() => {
+    const stamp = this.article()?.publishedAt ?? '';
+    return formatStampDate(stamp, this.locale()) || '—';
+  });
+
+  readonly headerTime = computed(() => {
+    const stamp = this.article()?.publishedAt ?? '';
+    return formatStampTime(stamp, this.locale()) || '—';
+  });
 
   readonly reading = computed(() =>
     this.lang.t('knowledge.minutes').replace('{count}', `${this.article()?.readingMinutes ?? 0}`),
@@ -149,10 +155,6 @@ export class ArticleDetail {
     return article ? pick(article[`${base}Ar`], article[`${base}En`], this.locale()) || '—' : '—';
   }
 
-  protected setLocale(value: AppLanguage): void {
-    this.locale.set(value);
-  }
-
   protected retry(): void {
     this.load(this.id());
   }
@@ -196,6 +198,16 @@ export class ArticleDetail {
     const url = encodeURIComponent(this.shareUrl());
     window.open(
       `https://www.linkedin.com/sharing/share-offsite/?url=${url}`,
+      '_blank',
+      'noopener,noreferrer',
+    );
+  }
+
+  protected shareX(): void {
+    const url = encodeURIComponent(this.shareUrl());
+    const text = encodeURIComponent(this.title());
+    window.open(
+      `https://twitter.com/intent/tweet?url=${url}&text=${text}`,
       '_blank',
       'noopener,noreferrer',
     );

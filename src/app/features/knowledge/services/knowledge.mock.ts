@@ -244,8 +244,44 @@ const SEEDS: Seed[] = [
 
 function article(seed: Seed, index: number): Article {
   const image = IMAGES[index % IMAGES.length] ?? IMAGES[0];
-  const bodyAr = `<h3>${seed.ar}</h3><p>${seed.excerptAr}</p><p>يستعرض هذا المقال الأفكار الأساسية مع أمثلة عملية يمكن تطبيقها مباشرة داخل فريقك.</p><ul><li>ابدأ بتحديد الهدف بوضوح.</li><li>قِس النتائج بشكل دوري.</li><li>طوّر الحل بناء على الملاحظات.</li></ul>`;
-  const bodyEn = `<h3>${seed.en}</h3><p>${seed.excerptEn}</p><p>This article walks through the core ideas with practical examples your team can apply right away.</p><ul><li>Start by defining a clear goal.</li><li>Measure results regularly.</li><li>Improve the solution from feedback.</li></ul>`;
+  const g1 = IMAGES[(index + 1) % IMAGES.length] ?? image;
+  const g2 = IMAGES[(index + 2) % IMAGES.length] ?? image;
+  const g3 = IMAGES[(index + 3) % IMAGES.length] ?? image;
+  const g4 = IMAGES[(index + 4) % IMAGES.length] ?? image;
+  const bodyAr = [
+    '<h4>مقدمة</h4>',
+    `<p>${seed.excerptAr}</p>`,
+    '<p>يستعرض هذا المقال الأفكار الأساسية مع أمثلة عملية يمكن تطبيقها مباشرة داخل فريقك، مع التركيز على الخطوات التي تحقق أثرًا قابلاً للقياس.</p>',
+    '<hr />',
+    '<h2>مراحل تطوير حل رقمي ناجح</h2>',
+    '<ol>',
+    '<li><strong>تحليل احتياجات المشروع</strong><p>ابدأ بفهم أهداف العمل والجمهور المستهدف والقيود التقنية قبل اختيار الأدوات.</p></li>',
+    '<li><strong>تصميم التجربة والواجهة</strong><p>حوّل المتطلبات إلى تدفقات واضحة ونماذج أولية قابلة للاختبار مع الفريق وأصحاب المصلحة.</p></li>',
+    '<li><strong>البناء والقياس والتحسين</strong><p>نفّذ الحل على دفعات قصيرة، وقِس النتائج، ثم حسّن بناءً على الملاحظات الفعلية.</p></li>',
+    '</ol>',
+    '<blockquote><p>التحول الرقمي الناجح يبدأ بقرار واضح وينمو بالقياس المستمر.</p><footer>— تقرير كودتيك السنوي للتحول الرقمي 2024</footer></blockquote>',
+    `<div class="kb-gallery"><img class="kb-gallery__hero" src="${image}" alt="" /><div class="kb-gallery__grid"><img src="${g1}" alt="" /><img src="${g2}" alt="" /><img src="${g3}" alt="" /><img src="${g4}" alt="" /></div></div>`,
+    '<hr />',
+    '<h4>خاتمة</h4>',
+    '<p>اختر مسارًا واحدًا واضحًا، وابدأ بخطوة قابلة للتنفيذ هذا الأسبوع، ثم راجع التقدم مع فريقك بشكل دوري.</p>',
+  ].join('');
+  const bodyEn = [
+    '<h4>Introduction</h4>',
+    `<p>${seed.excerptEn}</p>`,
+    '<p>This article walks through the core ideas with practical examples your team can apply right away, focusing on steps that create measurable impact.</p>',
+    '<hr />',
+    '<h2>Stages of building a successful digital solution</h2>',
+    '<ol>',
+    '<li><strong>Analyze project needs</strong><p>Start by understanding business goals, audience, and technical constraints before choosing tools.</p></li>',
+    '<li><strong>Design the experience</strong><p>Turn requirements into clear flows and prototypes that stakeholders can review early.</p></li>',
+    '<li><strong>Build, measure, improve</strong><p>Ship in short cycles, measure outcomes, and refine from real feedback.</p></li>',
+    '</ol>',
+    '<blockquote><p>Successful digital transformation starts with a clear decision and grows through continuous measurement.</p><footer>— CodeTech Digital Transformation Report 2024</footer></blockquote>',
+    `<div class="kb-gallery"><img class="kb-gallery__hero" src="${image}" alt="" /><div class="kb-gallery__grid"><img src="${g1}" alt="" /><img src="${g2}" alt="" /><img src="${g3}" alt="" /><img src="${g4}" alt="" /></div></div>`,
+    '<hr />',
+    '<h4>Conclusion</h4>',
+    '<p>Pick one clear path, take an actionable step this week, and review progress with your team regularly.</p>',
+  ].join('');
   return {
     id: seed.id,
     titleAr: seed.ar,

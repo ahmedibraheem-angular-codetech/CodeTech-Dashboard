@@ -6,23 +6,32 @@
   } @else if (status() === 'error') {
     <app-state-view mode="error" [message]="lang.t('common.error')" (retry)="retry()" />
   } @else if (article(); as current) {
-    <app-page-header [title]="title()" [subtitle]="headerMeta()">
+    <app-page-header [title]="title()">
+      <span
+        pageHeaderBadge
+        class="kb-status"
+        [class]="'kb-status kb-status--' + current.status"
+      >
+        {{ lang.t(readStatusKey(current.status)) }}
+      </span>
+      <div pageHeaderSub class="kb-detail__meta-line">
+        <span>
+          <i class="pi pi-calendar" aria-hidden="true"></i>
+          {{ headerDate() }}
+        </span>
+        <span>
+          <i class="pi pi-clock" aria-hidden="true"></i>
+          {{ headerTime() }}
+        </span>
+      </div>
+
       <app-button
-        styleClass="kb-editor__action"
-        variant="danger"
-        [outlined]="true"
-        icon="pi pi-trash"
-        iconPos="end"
-        [label]="lang.t('knowledge.delete')"
-        (clicked)="remove()"
-      />
-      <app-button
-        styleClass="kb-editor__action"
+        styleClass="kb-detail__edit"
         variant="outlined"
-        icon="pi pi-sync"
+        icon="pi pi-pencil"
         iconPos="end"
-        [label]="lang.t('knowledge.changeStatus')"
-        (clicked)="toggleStatusMenu($event)"
+        [label]="lang.t('knowledge.edit')"
+        (clicked)="edit()"
       />
       <app-button
         styleClass="kb-editor__action"
@@ -33,27 +42,22 @@
         (clicked)="toggleFeatured()"
       />
       <app-button
-        styleClass="kb-editor__primary"
-        icon="pi pi-pencil"
+        styleClass="kb-editor__action"
+        variant="outlined"
+        icon="pi pi-angle-down"
         iconPos="end"
-        [label]="lang.t('knowledge.edit')"
-        (clicked)="edit()"
+        [label]="lang.t('knowledge.changeStatus')"
+        (clicked)="toggleStatusMenu($event)"
+      />
+      <app-button
+        styleClass="kb-detail__icon-btn"
+        variant="danger"
+        [outlined]="true"
+        icon="pi pi-trash"
+        [ariaLabel]="lang.t('knowledge.delete')"
+        (clicked)="remove()"
       />
     </app-page-header>
-
-    <div class="kb-detail__status-row" [attr.dir]="dir()">
-      <span class="kb-status" [class]="'kb-status kb-status--' + current.status">
-        {{ lang.t(readStatusKey(current.status)) }}
-      </span>
-      @if (current.featured) {
-        <span class="kb-detail__featured">
-          <i class="pi pi-star-fill" aria-hidden="true"></i>
-          {{ lang.t('knowledge.featuredBadge') }}
-        </span>
-      }
-    </div>
-
-    <app-locale-switch [value]="locale()" (picked)="setLocale($event)" />
 
     <div class="kb-detail__layout" [attr.dir]="dir()">
       <div class="kb-detail__main">
@@ -62,61 +66,47 @@
             <span class="kb-card__icon" aria-hidden="true"><i class="pi pi-file-edit"></i></span>
             <h2>{{ lang.t('knowledge.dataCard') }}</h2>
           </header>
-          <div class="kb-card__body">
-            <dl class="kb-detail__fields">
-              <div class="kb-detail__field">
-                <dt>{{ lang.t('knowledge.idLabel') }}</dt>
-                <dd class="kb-detail__id" dir="ltr">
-                  <bdi>{{ displayId() }}</bdi>
-                  <button
-                    type="button"
-                    class="kb-detail__copy"
-                    [attr.aria-label]="lang.t('knowledge.copyId')"
-                    (click)="copyId()"
-                  >
-                    <i class="pi pi-copy" aria-hidden="true"></i>
-                  </button>
-                </dd>
-              </div>
-              <div class="kb-detail__field">
-                <dt>{{ lang.t('knowledge.fieldTitle') }}</dt>
-                <dd>{{ title() || '—' }}</dd>
-              </div>
-              <div class="kb-detail__field">
-                <dt>{{ lang.t('knowledge.fieldCategory') }}</dt>
-                <dd>
-                  <i class="pi pi-folder kb-detail__field-icon" aria-hidden="true"></i>
-                  {{ categoryLabel() }}
-                </dd>
-              </div>
-              <div class="kb-detail__field">
-                <dt>{{ lang.t('knowledge.fieldDate') }}</dt>
-                <dd>
-                  <i class="pi pi-calendar kb-detail__field-icon" aria-hidden="true"></i>
-                  {{ published() }}
-                </dd>
-              </div>
-              <div class="kb-detail__field">
-                <dt>{{ lang.t('knowledge.col.reading') }}</dt>
-                <dd>
-                  <i class="pi pi-clock kb-detail__field-icon" aria-hidden="true"></i>
-                  {{ reading() }}
-                </dd>
-              </div>
-              <div class="kb-detail__field kb-detail__field--wide">
-                <dt>{{ lang.t('knowledge.fieldExcerpt') }}</dt>
-                <dd>{{ excerpt() || '—' }}</dd>
-              </div>
-              <div class="kb-detail__field">
-                <dt>{{ lang.t('knowledge.fieldAuthor') }}</dt>
-                <dd class="kb-detail__author">
-                  @if (current.authorAvatarUrl) {
-                    <img [src]="current.authorAvatarUrl" alt="" />
-                  }
-                  <span>{{ author() || '—' }}</span>
-                </dd>
-              </div>
-            </dl>
+          <div class="kb-detail__fields">
+            <app-info-field [label]="lang.t('knowledge.idLabel')">
+              <span class="kb-detail__id" dir="ltr">
+                <bdi>{{ displayId() }}</bdi>
+                <button
+                  type="button"
+                  class="kb-detail__copy"
+                  [attr.aria-label]="lang.t('knowledge.copyId')"
+                  (click)="copyId()"
+                >
+                  <i class="pi pi-copy" aria-hidden="true"></i>
+                </button>
+              </span>
+            </app-info-field>
+            <app-info-field [label]="lang.t('knowledge.fieldTitle')">
+              <i class="pi pi-align-right kb-detail__field-icon" aria-hidden="true"></i>
+              <span>{{ title() || '—' }}</span>
+            </app-info-field>
+            <app-info-field [label]="lang.t('knowledge.fieldCategory')">
+              <i class="pi pi-folder kb-detail__field-icon" aria-hidden="true"></i>
+              <span>{{ categoryLabel() }}</span>
+            </app-info-field>
+            <app-info-field [label]="lang.t('knowledge.fieldDate')">
+              <i class="pi pi-calendar kb-detail__field-icon" aria-hidden="true"></i>
+              <span>{{ published() }}</span>
+            </app-info-field>
+            <app-info-field [label]="lang.t('knowledge.col.reading')">
+              <i class="pi pi-clock kb-detail__field-icon" aria-hidden="true"></i>
+              <span>{{ reading() }}</span>
+            </app-info-field>
+            <app-info-field [label]="lang.t('knowledge.fieldAuthor')">
+              <span class="kb-detail__author">
+                @if (current.authorAvatarUrl) {
+                  <img [src]="current.authorAvatarUrl" alt="" />
+                }
+                <span>{{ author() || '—' }}</span>
+              </span>
+            </app-info-field>
+            <app-info-field [label]="lang.t('knowledge.fieldExcerpt')" [wide]="true">
+              <span>{{ excerpt() || '—' }}</span>
+            </app-info-field>
           </div>
         </article>
 
@@ -125,36 +115,35 @@
             <span class="kb-card__icon" aria-hidden="true"><i class="pi pi-link"></i></span>
             <h2>{{ lang.t('knowledge.seoCard') }}</h2>
           </header>
-          <div class="kb-card__body">
-            <dl class="kb-detail__fields">
-              <div class="kb-detail__field">
-                <dt>{{ lang.t('knowledge.fieldSlug') }}</dt>
-                <dd dir="ltr">
-                  <i class="pi pi-link kb-detail__field-icon" aria-hidden="true"></i>
-                  <bdi>{{ current.slug || '—' }}</bdi>
-                </dd>
-              </div>
-              <div class="kb-detail__field">
-                <dt>{{ lang.t('knowledge.fieldSeoTitle') }}</dt>
-                <dd>{{ seoText('seoTitle') }}</dd>
-              </div>
-              <div class="kb-detail__field kb-detail__field--wide">
-                <dt>{{ lang.t('knowledge.fieldSeoKeywords') }}</dt>
-                <dd class="kb-detail__keywords">
-                  @if (keywordTags().length === 0) {
-                    <span>—</span>
-                  } @else {
-                    @for (tag of keywordTags(); track tag) {
-                      <span class="kb-keyword kb-keyword--static"><bdi>{{ tag }}</bdi></span>
+          <div class="kb-detail__fields kb-detail__fields--stack">
+            <app-info-field [label]="lang.t('knowledge.fieldSlug')">
+              <i class="pi pi-link kb-detail__field-icon" aria-hidden="true"></i>
+              <bdi dir="ltr">{{ current.slug || '—' }}</bdi>
+            </app-info-field>
+            <app-info-field [label]="lang.t('knowledge.fieldSeoTitle')">
+              <i class="pi pi-align-right kb-detail__field-icon" aria-hidden="true"></i>
+              <span>{{ seoText('seoTitle') }}</span>
+            </app-info-field>
+            <app-info-field [label]="lang.t('knowledge.fieldSeoKeywords')">
+              <div class="kb-detail__keywords">
+                @if (keywordTags().length === 0) {
+                  <span>—</span>
+                } @else {
+                  @for (tag of keywordTags(); track tag; let last = $last) {
+                    <span class="kb-keyword kb-keyword--static">
+                      <i class="pi pi-tag" aria-hidden="true"></i>
+                      <bdi>{{ tag }}</bdi>
+                    </span>
+                    @if (!last) {
+                      <span class="kb-keyword__sep" aria-hidden="true"></span>
                     }
                   }
-                </dd>
+                }
               </div>
-              <div class="kb-detail__field kb-detail__field--wide">
-                <dt>{{ lang.t('knowledge.fieldSeoDescription') }}</dt>
-                <dd>{{ seoText('seoDescription') }}</dd>
-              </div>
-            </dl>
+            </app-info-field>
+            <app-info-field [label]="lang.t('knowledge.fieldSeoDescription')">
+              <span>{{ seoText('seoDescription') }}</span>
+            </app-info-field>
           </div>
         </article>
       </div>
@@ -165,7 +154,7 @@
             <span class="kb-card__icon" aria-hidden="true"><i class="pi pi-images"></i></span>
             <h2>{{ lang.t('knowledge.coverCard') }}</h2>
           </header>
-          <div class="kb-card__body">
+          <div class="kb-detail__media">
             @if (current.coverUrl) {
               <img
                 class="kb-detail__media-img"
@@ -175,16 +164,16 @@
             } @else {
               <div class="kb-detail__media-empty">—</div>
             }
-            <dl class="kb-detail__fields">
-              <div class="kb-detail__field">
-                <dt>{{ lang.t('knowledge.fieldImageTitle') }}</dt>
-                <dd>{{ imageText('coverTitle') }}</dd>
-              </div>
-              <div class="kb-detail__field">
-                <dt>{{ lang.t('knowledge.fieldImageAlt') }}</dt>
-                <dd>{{ imageText('coverAlt') }}</dd>
-              </div>
-            </dl>
+            <div class="kb-detail__fields kb-detail__fields--stack">
+              <app-info-field [label]="lang.t('knowledge.fieldImageTitle')">
+                <i class="pi pi-align-right kb-detail__field-icon" aria-hidden="true"></i>
+                <span>{{ imageText('coverTitle') }}</span>
+              </app-info-field>
+              <app-info-field [label]="lang.t('knowledge.fieldImageAlt')">
+                <i class="pi pi-align-right kb-detail__field-icon" aria-hidden="true"></i>
+                <span>{{ imageText('coverAlt') }}</span>
+              </app-info-field>
+            </div>
           </div>
         </article>
 
@@ -193,7 +182,7 @@
             <span class="kb-card__icon" aria-hidden="true"><i class="pi pi-image"></i></span>
             <h2>{{ lang.t('knowledge.thumbnailCard') }}</h2>
           </header>
-          <div class="kb-card__body">
+          <div class="kb-detail__media">
             @if (current.thumbnailUrl) {
               <img
                 class="kb-detail__media-img"
@@ -203,16 +192,16 @@
             } @else {
               <div class="kb-detail__media-empty">—</div>
             }
-            <dl class="kb-detail__fields">
-              <div class="kb-detail__field">
-                <dt>{{ lang.t('knowledge.fieldImageTitle') }}</dt>
-                <dd>{{ imageText('thumbnailTitle') }}</dd>
-              </div>
-              <div class="kb-detail__field">
-                <dt>{{ lang.t('knowledge.fieldImageAlt') }}</dt>
-                <dd>{{ imageText('thumbnailAlt') }}</dd>
-              </div>
-            </dl>
+            <div class="kb-detail__fields kb-detail__fields--stack">
+              <app-info-field [label]="lang.t('knowledge.fieldImageTitle')">
+                <i class="pi pi-align-right kb-detail__field-icon" aria-hidden="true"></i>
+                <span>{{ imageText('thumbnailTitle') }}</span>
+              </app-info-field>
+              <app-info-field [label]="lang.t('knowledge.fieldImageAlt')">
+                <i class="pi pi-align-right kb-detail__field-icon" aria-hidden="true"></i>
+                <span>{{ imageText('thumbnailAlt') }}</span>
+              </app-info-field>
+            </div>
           </div>
         </article>
       </div>
@@ -248,6 +237,14 @@
             (click)="shareLinkedin()"
           >
             <i class="pi pi-linkedin" aria-hidden="true"></i>
+          </button>
+          <button
+            type="button"
+            class="kb-detail__share-btn"
+            [attr.aria-label]="lang.t('knowledge.shareX')"
+            (click)="shareX()"
+          >
+            <i class="pi pi-twitter" aria-hidden="true"></i>
           </button>
           <button
             type="button"
