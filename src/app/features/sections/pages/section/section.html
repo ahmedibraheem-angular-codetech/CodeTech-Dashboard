@@ -4,6 +4,17 @@
   <app-inquiries-board [pageTitle]="boardTitle()" [detailPath]="detailPath()" />
 } @else if (isFaq()) {
   <app-faq-board />
+} @else if (isLegal()) {
+  <app-legal-document-board
+    [kind]="legalKind()"
+    [titleKey]="titleKey()"
+    [subtitleKey]="legalPrefix() + '.subtitle'"
+    [contentTitleKey]="legalPrefix() + '.contentTitle'"
+    [emptyTitleKey]="legalPrefix() + '.emptyTitle'"
+    [emptyHintKey]="legalPrefix() + '.emptyHint'"
+    [writeLabelKey]="legalPrefix() + '.write'"
+    [placeholderKey]="legalPrefix() + '.placeholder'"
+  />
 } @else {
   <section class="page">
     <app-page-header [title]="lang.t(titleKey())" [subtitle]="lang.t('sections.ready')" />

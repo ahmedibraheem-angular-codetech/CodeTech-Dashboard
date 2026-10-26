@@ -1,0 +1,602 @@
+// Terms & Privacy shared board (support/terms, support/privacy).
+
+.legal-doc {
+  gap: 16px;
+}
+
+.legal-doc app-page-header .page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  min-height: 100px;
+  gap: 16px;
+  padding: 16px;
+  border: 1px solid #edeeee;
+  border-radius: 16px;
+  background: #fff;
+}
+
+.legal-doc app-page-header .page-header h1 {
+  color: #0f2744;
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.legal-doc app-page-header .page-header p,
+.legal-doc app-page-header .page-header .mt-3 {
+  margin-top: 4px !important;
+  color: #64748b;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.legal-doc .page-header__actions {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+.legal-doc__primary.p-button {
+  --p-button-primary-background: #1c81d3;
+  --p-button-primary-hover-background: #1874be;
+  --p-button-primary-active-background: #1669ab;
+  --p-button-primary-border-color: #eceff3;
+  --p-button-primary-hover-border-color: #eceff3;
+  --p-button-primary-active-border-color: #eceff3;
+  --p-button-gap: 10px;
+
+  box-sizing: border-box;
+  width: auto;
+  min-width: 179px;
+  height: 48px;
+  padding: 12px 16px;
+  border: 1px solid #eceff3;
+  border-radius: 16px;
+  background: #1c81d3;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.legal-doc__cancel.p-button {
+  --p-button-gap: 10px;
+  --p-button-outlined-secondary-border-color: #eceff3;
+  --p-button-outlined-secondary-color: #64748b;
+
+  box-sizing: border-box;
+  height: 48px;
+  padding: 12px 16px;
+  border-radius: 16px;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.legal-doc .locale-switch {
+  width: 100%;
+  margin: 0;
+  padding: 4px;
+  border: 1px solid #edeeee;
+  border-radius: 16px;
+  background: #fff;
+  gap: 8px;
+}
+
+.legal-doc .locale-switch__option {
+  height: 48px;
+  border-radius: 14px;
+}
+
+.legal-doc .locale-switch__option.is-active {
+  background: #f0f7fd;
+  color: #0f2744;
+  box-shadow: none;
+}
+
+// Outer content card — Figma: 1074×877, r16, pad 16, gap 12, border 1px
+.legal-doc__panel {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-height: 877px;
+  gap: 12px;
+  padding: 16px;
+  border: 1px solid #edeeee;
+  border-radius: 16px;
+  background: #fff;
+  overflow: visible;
+}
+
+.legal-doc__panel-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.legal-doc__panel-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #64748b;
+  font-size: 18px;
+}
+
+.legal-doc__panel-head h2 {
+  margin: 0;
+  color: #0f2744;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.5;
+}
+
+// Mid shell — Figma: 1042×785, r16, pad 12, gap 14, bg #F9FAFB, border #EDEEEE
+.legal-doc__shell {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-height: 785px;
+  gap: 14px;
+  padding: 12px;
+  border: 1px solid #edeeee;
+  border-radius: 16px;
+  background: #f9fafb;
+  overflow: visible;
+}
+
+.legal-doc__editor {
+  // Keep picker dropdowns (align / color / font) visible outside the bar.
+  overflow: visible;
+}
+
+// White text container — Figma: 994×~, gap 32, pad 20 40, bg #FFFFFF
+.legal-doc__text {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  width: 100%;
+  min-height: 0;
+  gap: 32px;
+  padding: 20px 40px;
+  border: 1px solid #edeeee;
+  border-radius: 12px;
+  background: #fff;
+  color: #475569;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.85;
+}
+
+.legal-doc__text h3,
+.legal-doc__editor .ql-editor h3 {
+  margin: 0;
+  color: #0f2744;
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.5;
+}
+
+.legal-doc__text h4,
+.legal-doc__editor .ql-editor h4 {
+  margin: 0;
+  color: #0f2744;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.legal-doc__text p,
+.legal-doc__editor .ql-editor p {
+  margin: 0;
+}
+
+.legal-doc__text ul,
+.legal-doc__editor .ql-editor ul {
+  margin: 0;
+  padding-inline-start: 1.2rem;
+}
+
+.legal-doc__text li,
+.legal-doc__editor .ql-editor li {
+  margin-block: 4px;
+}
+
+.legal-doc__columns {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.legal-doc__contact {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 !important;
+  color: #334155;
+  font-weight: 600;
+}
+
+.legal-doc__contact .pi {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #f0f7fd;
+  color: #1c81d3;
+  font-size: 12px;
+}
+
+// White editor surface (toolbar + canvas) sitting inside the grey shell.
+.legal-doc__editor .p-editor {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  min-height: 0;
+  gap: 14px;
+  padding: 0;
+  border: 1px solid #edeeee;
+  border-radius: 12px;
+  background: #fff;
+  overflow: visible;
+}
+
+// Toolbar bar — Figma: 994×44, r12, pad 8, space-between, bg #F6F8F9
+.legal-doc__editor .p-editor-toolbar,
+.legal-doc__editor .ql-toolbar.ql-snow {
+  --legal-toolbar-icon: #8898aa;
+
+  box-sizing: border-box;
+  position: relative;
+  z-index: 5;
+  display: flex;
+  flex: 0 0 auto;
+  flex-wrap: nowrap;
+  align-items: center;
+  justify-content: space-between;
+  // width: 100%;
+  // max-width: 994px;
+  // height: 44px;
+  // min-height: 44px;
+  margin: 12px 12px 0;
+  padding: 8px;
+  border: 0;
+  border-radius: 12px;
+  background: #f6f8f9;
+  direction: ltr;
+  overflow: visible;
+}
+
+// Inner p-header row — full toolbar width so the end group can sit flush right.
+.legal-doc__editor .p-editor-toolbar > p-header,
+.legal-doc__editor .ql-toolbar.ql-snow > p-header {
+  box-sizing: border-box;
+  display: flex;
+  flex: 1 1 auto;
+  flex-wrap: nowrap;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  max-width: none;
+  height: 100%;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  gap: 16px;
+  overflow: visible;
+}
+
+.legal-doc__editor .ql-toolbar.ql-snow .ql-formats {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 6px;
+  margin: 0 !important;
+  padding: 0;
+  border: 0;
+}
+
+.legal-doc__editor .ql-toolbar.ql-snow .ql-formats.legal-doc__toolbar-start {
+  gap: 8px;
+}
+
+.legal-doc__editor .ql-toolbar.ql-snow .ql-formats.legal-doc__toolbar-end {
+  // Toolbar is forced LTR — pin end group to the physical right edge.
+  margin-left: auto !important;
+  margin-right: 0 !important;
+  gap: 10px;
+}
+
+.legal-doc__editor .ql-toolbar.ql-snow .legal-doc__toolbar-end .ql-undo {
+  order: 1;
+}
+
+.legal-doc__editor .ql-toolbar.ql-snow .legal-doc__toolbar-end .ql-redo {
+  order: 2;
+}
+
+.legal-doc__editor .ql-toolbar.ql-snow .legal-doc__toolbar-end .ql-font {
+  order: 3;
+}
+
+.legal-doc__editor .ql-toolbar.ql-snow button,
+.legal-doc__editor .ql-toolbar.ql-snow .ql-picker {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: auto;
+  height: 28px;
+  min-height: 28px;
+  color: var(--legal-toolbar-icon);
+}
+
+.legal-doc__editor .ql-toolbar.ql-snow button {
+  width: 28px;
+  padding: 0;
+}
+
+// Icon glyphs ≈ 18px to match Figma stroke icons.
+.legal-doc__editor .ql-toolbar.ql-snow button svg,
+.legal-doc__editor .ql-toolbar.ql-snow .ql-picker-label svg {
+  width: 18px !important;
+  height: 18px !important;
+}
+
+.legal-doc__editor .ql-toolbar.ql-snow .ql-stroke {
+  stroke: var(--legal-toolbar-icon);
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.legal-doc__editor .ql-toolbar.ql-snow .ql-fill {
+  fill: var(--legal-toolbar-icon);
+}
+
+.legal-doc__editor .ql-toolbar.ql-snow .ql-thin {
+  stroke-width: 1;
+}
+
+.legal-doc__editor .ql-toolbar.ql-snow .ql-picker.ql-expanded {
+  z-index: 20;
+}
+
+.legal-doc__editor .ql-toolbar.ql-snow .ql-picker-options {
+  z-index: 30;
+  top: 100%;
+  margin-top: 4px;
+  padding: 6px;
+  border: 1px solid #edeeee;
+  border-radius: 10px;
+  background: #fff;
+  box-shadow: 0 8px 24px rgb(15 23 42 / 12%);
+}
+
+.legal-doc__editor .ql-toolbar.ql-snow .ql-color-picker .ql-picker-options {
+  width: 152px;
+  padding: 8px;
+}
+
+.legal-doc__editor .ql-toolbar.ql-snow .ql-color-picker .ql-picker-item {
+  width: 18px;
+  height: 18px;
+  margin: 2px;
+  border-radius: 4px;
+}
+
+.legal-doc__editor .ql-toolbar.ql-snow .ql-picker-label {
+  display: inline-flex;
+  align-items: center;
+  height: 28px;
+  padding: 0 2px;
+  border: 0 !important;
+}
+
+// Color picker → solid rounded square (Figma swatch), not Quill's "A".
+.legal-doc__editor .ql-toolbar.ql-snow .ql-color .ql-picker-label {
+  width: auto;
+  min-width: 28px;
+  justify-content: center;
+  gap: 4px;
+}
+
+.legal-doc__editor .ql-toolbar.ql-snow .ql-color .ql-picker-label svg {
+  display: none;
+}
+
+.legal-doc__editor .ql-toolbar.ql-snow .ql-color .ql-picker-label::before {
+  box-sizing: border-box;
+  content: '';
+  display: block;
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+  background: #8898aa;
+  box-shadow: inset 0 0 0 1px rgb(15 23 42 / 12%);
+}
+
+.legal-doc__editor .ql-toolbar.ql-snow .ql-color .ql-picker-label::after,
+.legal-doc__editor .ql-toolbar.ql-snow .ql-align .ql-picker-label::after {
+  content: '';
+  display: inline-block;
+  width: 0;
+  height: 0;
+  margin-inline-start: 3px;
+  border-inline: 3.5px solid transparent;
+  border-top: 4.5px solid var(--legal-toolbar-icon);
+  vertical-align: middle;
+}
+
+.legal-doc__editor .ql-toolbar.ql-snow .ql-align .ql-picker-label {
+  width: auto;
+  min-width: 28px;
+  padding-inline-end: 2px;
+  gap: 2px;
+}
+
+.legal-doc__editor .ql-toolbar.ql-snow .ql-picker.ql-font {
+  width: auto;
+  min-width: 0;
+  margin-inline-start: 0;
+}
+
+.legal-doc__editor .ql-toolbar.ql-snow .ql-picker.ql-font .ql-picker-label {
+  flex-direction: row;
+  justify-content: flex-end;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1;
+  color: var(--legal-toolbar-icon);
+}
+
+// Hide Quill's default dual caret; use a single chevron after the label (right side).
+.legal-doc__editor .ql-toolbar.ql-snow .ql-picker.ql-font .ql-picker-label svg {
+  display: none;
+}
+
+.legal-doc__editor .ql-toolbar.ql-snow .ql-picker.ql-font .ql-picker-label::before,
+.legal-doc__editor .ql-toolbar.ql-snow .ql-picker.ql-font .ql-picker-item::before {
+  content: 'thmanyah sans';
+  font-family: 'Thmanyah Sans', sans-serif;
+  line-height: 1;
+}
+
+.legal-doc__editor .ql-toolbar.ql-snow .ql-picker.ql-font .ql-picker-label::after {
+  content: '';
+  display: inline-block;
+  width: 0;
+  height: 0;
+  border-inline: 3.5px solid transparent;
+  border-top: 4.5px solid var(--legal-toolbar-icon);
+}
+
+.legal-doc__editor .ql-toolbar.ql-snow .ql-picker.ql-font .ql-picker-label[data-value='thmanyah-sans']::before,
+.legal-doc__editor .ql-toolbar.ql-snow .ql-picker.ql-font .ql-picker-item[data-value='thmanyah-sans']::before {
+  content: 'thmanyah sans';
+  font-family: 'Thmanyah Sans', sans-serif;
+}
+
+.legal-doc__editor .ql-font-thmanyah-sans {
+  font-family: 'Thmanyah Sans', sans-serif;
+}
+
+// Custom undo / redo / hr icons (not in Quill snow defaults).
+.legal-doc__editor .ql-toolbar.ql-snow button.ql-undo,
+.legal-doc__editor .ql-toolbar.ql-snow button.ql-redo,
+.legal-doc__editor .ql-toolbar.ql-snow button.ql-hr {
+  position: relative;
+}
+
+.legal-doc__editor .ql-toolbar.ql-snow button.ql-undo::before,
+.legal-doc__editor .ql-toolbar.ql-snow button.ql-redo::before,
+.legal-doc__editor .ql-toolbar.ql-snow button.ql-hr::before {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--legal-toolbar-icon);
+  font-family: 'primeicons';
+  font-size: 16px;
+  line-height: 1;
+}
+
+.legal-doc__editor .ql-toolbar.ql-snow button.ql-undo::before {
+  content: '\e994';
+}
+
+.legal-doc__editor .ql-toolbar.ql-snow button.ql-redo::before {
+  content: '\e994';
+  transform: scaleX(-1);
+}
+
+.legal-doc__editor .ql-toolbar.ql-snow button.ql-hr::before {
+  content: '\e90f';
+}
+
+.legal-doc__editor .p-editor-content,
+.legal-doc__editor .ql-container.ql-snow {
+  flex: 1 1 auto;
+  min-height: 0;
+  border: 0;
+  border-radius: 0;
+  background: #fff;
+  overflow: hidden;
+}
+
+.legal-doc__editor .ql-editor {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  min-height: 100%;
+  padding: 20px 40px;
+  background: #fff;
+  color: #334155;
+  font-family: var(--app-font);
+  font-size: 14px;
+  line-height: 1.8;
+  text-align: start;
+}
+
+.legal-doc__editor .ql-editor.ql-blank::before {
+  top: 20px !important;
+  right: 40px !important;
+  left: 40px !important;
+  color: #94a3b8 !important;
+  font-family: var(--app-font) !important;
+  font-size: 14px !important;
+  font-style: normal !important;
+  line-height: 1.8 !important;
+  text-align: start !important;
+}
+
+.legal-doc__empty {
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.legal-doc__empty-art {
+  display: block;
+  width: 120px;
+  height: 120px;
+  margin-bottom: 8px;
+  object-fit: contain;
+}
+
+.legal-doc__empty h3 {
+  margin: 0;
+  color: #0f2744;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.legal-doc__empty p {
+  margin: 0 0 8px;
+  max-width: 28rem;
+  color: #64748b;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+@media (max-width: 900px) {
+  .legal-doc__columns {
+    grid-template-columns: 1fr;
+  }
+
+  .legal-doc .page-header__actions {
+    width: 100%;
+  }
+
+  .legal-doc__primary.p-button,
+  .legal-doc__cancel.p-button {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+}

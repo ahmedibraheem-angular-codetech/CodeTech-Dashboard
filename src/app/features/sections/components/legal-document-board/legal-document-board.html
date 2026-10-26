@@ -1,0 +1,118 @@
+<section class="page legal-doc">
+  <app-page-header [title]="pageTitle()" [subtitle]="pageSubtitle()">
+    @if (mode() === 'edit') {
+      <app-button
+        variant="outlined"
+        styleClass="legal-doc__cancel"
+        [label]="lang.t('common.cancel')"
+        [disabled]="saving()"
+        (clicked)="cancelEdit()"
+      />
+      <app-button
+        icon="pi pi-save"
+        iconPos="end"
+        styleClass="legal-doc__primary"
+        [label]="lang.t('common.saveChanges')"
+        [loading]="saving()"
+        (clicked)="save()"
+      />
+    } @else if (hasContent()) {
+      <app-button
+        icon="pi pi-pencil"
+        iconPos="end"
+        styleClass="legal-doc__primary"
+        [label]="lang.t('legal.edit')"
+        (clicked)="startEdit()"
+      />
+    }
+  </app-page-header>
+
+  <app-locale-switch [value]="locale()" (picked)="setLocale($event)" />
+
+  @if (state() === 'loading') {
+    <app-state-view mode="loading" />
+  } @else if (state() === 'error') {
+    <app-state-view mode="error" [message]="lang.t('legal.loadError')" (retry)="reload()" />
+  } @else {
+    <article class="legal-doc__panel">
+      <header class="legal-doc__panel-head">
+        <span class="legal-doc__panel-icon" aria-hidden="true">
+          <i class="pi pi-file"></i>
+        </span>
+        <h2>{{ contentTitle() }}</h2>
+      </header>
+
+      @if (mode() === 'edit') {
+        <div class="legal-doc__shell legal-doc__editor" [attr.dir]="locale() === 'ar' ? 'rtl' : 'ltr'">
+          <p-editor
+            [ngModel]="draftHtml()"
+            (ngModelChange)="setDraft($event)"
+            [placeholder]="placeholder()"
+            styleClass="legal-doc__quill"
+            [style]="{ height: '100%', minHeight: '700px' }"
+            (onInit)="onEditorInit($event)"
+          >
+            <p-header>
+              <span class="ql-formats legal-doc__toolbar-start">
+                <select class="ql-align">
+                  <option selected></option>
+                  <option value="center"></option>
+                  <option value="right"></option>
+                  <option value="justify"></option>
+                </select>
+                <select class="ql-color"></select>
+                <button type="button" class="ql-bold" aria-label="Bold"></button>
+                <button type="button" class="ql-italic" aria-label="Italic"></button>
+                <button type="button" class="ql-underline" aria-label="Underline"></button>
+                <button type="button" class="ql-strike" aria-label="Strikethrough"></button>
+                <button type="button" class="ql-code" aria-label="Inline code"></button>
+                <button type="button" class="ql-clean" aria-label="Clear formatting"></button>
+                <button type="button" class="ql-list" value="bullet" aria-label="Bullet list"></button>
+                <button type="button" class="ql-list" value="ordered" aria-label="Numbered list"></button>
+                <button type="button" class="ql-link" aria-label="Link"></button>
+                <button type="button" class="ql-image" aria-label="Image"></button>
+                <button type="button" class="ql-code-block" aria-label="Code block"></button>
+                <button type="button" class="ql-blockquote" aria-label="Quote"></button>
+                <button type="button" class="ql-hr" aria-label="Horizontal line"></button>
+              </span>
+              <span class="ql-formats legal-doc__toolbar-end">
+                <button type="button" class="ql-undo" aria-label="Undo"></button>
+                <button type="button" class="ql-redo" aria-label="Redo"></button>
+                <select class="ql-font">
+                  <option selected value="thmanyah-sans">thmanyah sans</option>
+                </select>
+              </span>
+            </p-header>
+          </p-editor>
+        </div>
+      } @else if (viewingHtml(); as html) {
+        <div class="legal-doc__shell">
+          <div
+            class="legal-doc__text"
+            [attr.dir]="locale() === 'ar' ? 'rtl' : 'ltr'"
+            [innerHTML]="html"
+          ></div>
+        </div>
+      } @else {
+        <div class="legal-doc__shell legal-doc__empty">
+          <img
+            class="legal-doc__empty-art"
+            src="images/emptyStat.svg"
+            alt=""
+            width="120"
+            height="120"
+          />
+          <h3>{{ emptyTitle() }}</h3>
+          <p>{{ emptyHint() }}</p>
+          <app-button
+            icon="pi pi-plus"
+            iconPos="end"
+            styleClass="legal-doc__primary"
+            [label]="writeLabel()"
+            (clicked)="startEdit()"
+          />
+        </div>
+      }
+    </article>
+  }
+</section>

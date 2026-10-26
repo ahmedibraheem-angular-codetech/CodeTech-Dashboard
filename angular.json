@@ -37,7 +37,11 @@
                 "silenceDeprecations": ["import"]
               }
             },
-            "styles": ["node_modules/primeicons/primeicons.css", "src/styles.scss"]
+            "styles": [
+              "node_modules/primeicons/primeicons.css",
+              "node_modules/quill/dist/quill.snow.css",
+              "src/styles.scss"
+            ]
           },
           "configurations": {
             "production": {

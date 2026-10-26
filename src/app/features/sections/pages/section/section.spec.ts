@@ -81,12 +81,29 @@ describe('SectionPage', () => {
     expect(root.querySelector('h1')?.textContent).toContain('الأسئلة الشائعة');
   });
 
+  it('renders the legal board on the terms route', async () => {
+    const fixture = await render('nav.terms');
+    const root: HTMLElement = fixture.nativeElement;
+
+    expect(root.querySelector('app-legal-document-board')).not.toBeNull();
+    expect(root.querySelector('h1')?.textContent).toContain('الشروط والأحكام');
+  });
+
+  it('renders the legal board on the privacy route', async () => {
+    const fixture = await render('nav.privacy');
+    const root: HTMLElement = fixture.nativeElement;
+
+    expect(root.querySelector('app-legal-document-board')).not.toBeNull();
+    expect(root.querySelector('h1')?.textContent).toContain('سياسة الخصوصية');
+  });
+
   it('keeps every other section route as a placeholder', async () => {
     const fixture = await render('nav.productsItem');
     const root: HTMLElement = fixture.nativeElement;
 
     expect(root.querySelector('app-about-page')).toBeNull();
     expect(root.querySelector('app-faq-board')).toBeNull();
+    expect(root.querySelector('app-legal-document-board')).toBeNull();
     expect(root.querySelector('app-state-view')).not.toBeNull();
   });
 });
