@@ -8,8 +8,7 @@ import { InjectionToken } from '@angular/core';
 export const LEGAL_QUILL_FONT = 'thmanyah-sans';
 
 export type QuillFontRegistration =
-  | { readonly status: 'ready' }
-  | { readonly status: 'failed'; readonly error: unknown };
+  { readonly status: 'ready' } | { readonly status: 'failed'; readonly error: unknown };
 
 /** Injectable hook so tests can simulate font-registration failure without mocking Quill. */
 export const LEGAL_QUILL_FONT_REGISTRAR = new InjectionToken<() => Promise<QuillFontRegistration>>(
@@ -98,7 +97,10 @@ export function wireLegalToolbarHandlers(quill: LegalQuill): boolean {
   };
   const insertHr = (): void => {
     quill.focus?.();
-    const range = quill.getSelection(true) ?? { index: Math.max(quill.getLength() - 1, 0), length: 0 };
+    const range = quill.getSelection(true) ?? {
+      index: Math.max(quill.getLength() - 1, 0),
+      length: 0,
+    };
     // Quill 2 defaults this helper to sources.API. With History.userOnly=false
     // (Quill default), API edits are still recorded, so undo/redo remain valid.
     quill.clipboard.dangerouslyPasteHTML(range.index, '<hr>');

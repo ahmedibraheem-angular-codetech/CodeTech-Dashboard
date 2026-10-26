@@ -63,7 +63,8 @@ describe('SocialLinkCard', () => {
     fixture.detectChanges();
     await fixture.whenStable();
     fixture.detectChanges();
-    return fixture.debugElement.query(By.directive(SocialLinkCard)).componentInstance as SocialLinkCard;
+    return fixture.debugElement.query(By.directive(SocialLinkCard))
+      .componentInstance as SocialLinkCard;
   }
 
   afterEach(() => {
@@ -73,7 +74,9 @@ describe('SocialLinkCard', () => {
   });
 
   function iconButtons(): HTMLButtonElement[] {
-    return [...fixture.nativeElement.querySelectorAll('.social-card__icon-btn')] as HTMLButtonElement[];
+    return [
+      ...fixture.nativeElement.querySelectorAll('.social-card__icon-btn'),
+    ] as HTMLButtonElement[];
   }
 
   it('opens a valid https URL with noopener,noreferrer', async () => {

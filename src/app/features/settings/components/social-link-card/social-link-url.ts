@@ -1,7 +1,6 @@
 /** Result of a copy-to-clipboard attempt from SocialLinkCard. */
 export type SocialLinkCopyResult =
-  | { ok: true }
-  | { ok: false; reason: 'empty' | 'unsupported' | 'denied' };
+  { ok: true } | { ok: false; reason: 'empty' | 'unsupported' | 'denied' };
 
 /**
  * Returns a safe http(s) URL for window.open, or null when the value is empty,

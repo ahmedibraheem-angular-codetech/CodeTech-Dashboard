@@ -19,14 +19,10 @@ import { ConfirmDialog } from '../../../../shared/components/confirm-dialog/conf
 import { ContentPanel } from '../../../../shared/components/content-panel/content-panel';
 import { Modal } from '../../../../shared/components/modal/modal';
 import { SectionEmpty } from '../../../../shared/components/section-empty/section-empty';
-import { formatIsoDate, toIsoDate } from '../../../../shared/utils/date';
+import { formatIsoDate } from '../../../../shared/utils/date';
 import { formatFileSize } from '../../../../shared/utils/file-size';
-import {
-  BLOCK_IMAGE_MAX_BYTES,
-  BLOCK_IMAGE_TYPES,
-  BlockImage,
-  Partner,
-} from '../../models/homepage.model';
+import { parseUploadedImage } from '../../../../shared/utils/image-upload';
+import { BlockImage, Partner } from '../../models/homepage.model';
 import { HomepageService } from '../../services/homepage.service';
 
 @Component({
@@ -139,21 +135,21 @@ export class PartnersSection {
   }
 
   private takeImage(file: File | undefined): void {
+    const result = parseUploadedImage(file);
+    if (!result) {
+      return;
+    }
+    if (!result.ok) {
+      this.imageError.set(result.errorKey);
+      return;
+    }
     if (!file) {
-      return;
-    }
-    if (!BLOCK_IMAGE_TYPES.includes(file.type)) {
-      this.imageError.set('home.imageType');
-      return;
-    }
-    if (file.size > BLOCK_IMAGE_MAX_BYTES) {
-      this.imageError.set('home.imageSize');
       return;
     }
     this.clearImage();
     this.imageError.set('');
     this.preview.set(URL.createObjectURL(file));
-    this.image.set({ name: file.name, size: file.size, uploadedAt: toIsoDate(new Date()) });
+    this.image.set(result.image);
   }
 
   private clearImage(): void {

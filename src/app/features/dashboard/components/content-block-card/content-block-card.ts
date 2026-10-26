@@ -23,15 +23,10 @@ import { ContentPanel } from '../../../../shared/components/content-panel/conten
 import { LocaleSwitch } from '../../../../shared/components/locale-switch/locale-switch';
 import { Modal } from '../../../../shared/components/modal/modal';
 import { SectionEmpty } from '../../../../shared/components/section-empty/section-empty';
-import { formatIsoDate, toIsoDate } from '../../../../shared/utils/date';
+import { formatIsoDate } from '../../../../shared/utils/date';
 import { formatFileSize } from '../../../../shared/utils/file-size';
-import {
-  BLOCK_IMAGE_MAX_BYTES,
-  BLOCK_IMAGE_TYPES,
-  BlockImage,
-  ContentBlock,
-  ContentBlockText,
-} from '../../models/homepage.model';
+import { parseUploadedImage } from '../../../../shared/utils/image-upload';
+import { BlockImage, ContentBlock, ContentBlockText } from '../../models/homepage.model';
 import { HomepageService } from '../../services/homepage.service';
 
 export type ContentBlockKind = 'about' | 'vision';
@@ -212,18 +207,15 @@ export class ContentBlockCard {
   }
 
   private takeImage(file: File | undefined): void {
-    if (!file) {
+    const result = parseUploadedImage(file);
+    if (!result) {
       return;
     }
-    if (!BLOCK_IMAGE_TYPES.includes(file.type)) {
-      this.imageError.set('home.imageType');
-      return;
-    }
-    if (file.size > BLOCK_IMAGE_MAX_BYTES) {
-      this.imageError.set('home.imageSize');
+    if (!result.ok) {
+      this.imageError.set(result.errorKey);
       return;
     }
     this.imageError.set('');
-    this.image.set({ name: file.name, size: file.size, uploadedAt: toIsoDate(new Date()) });
+    this.image.set(result.image);
   }
 }

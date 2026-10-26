@@ -11,7 +11,6 @@ export type { PaginatorState as AppPaginatorState } from 'primeng/paginator';
 
 const DEFAULT_PAGE_SIZES: number[] = [10, 20, 50];
 
-
 @Component({
   selector: 'app-paginator',
   imports: [Paginator],

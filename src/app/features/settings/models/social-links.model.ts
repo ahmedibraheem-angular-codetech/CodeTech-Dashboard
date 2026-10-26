@@ -1,13 +1,7 @@
 import type { AppLanguage } from '../../../core/i18n/language';
 
 export type SocialPlatformId =
-  | 'linkedin'
-  | 'facebook'
-  | 'instagram'
-  | 'twitter'
-  | 'tiktok'
-  | 'snapchat'
-  | 'whatsapp';
+  'linkedin' | 'facebook' | 'instagram' | 'twitter' | 'tiktok' | 'snapchat' | 'whatsapp';
 
 export type SocialPublishStatus = 'published' | 'draft';
 

@@ -476,8 +476,14 @@
   border-top: 4.5px solid var(--legal-toolbar-icon);
 }
 
-.legal-doc__editor .ql-toolbar.ql-snow .ql-picker.ql-font .ql-picker-label[data-value='thmanyah-sans']::before,
-.legal-doc__editor .ql-toolbar.ql-snow .ql-picker.ql-font .ql-picker-item[data-value='thmanyah-sans']::before {
+.legal-doc__editor
+  .ql-toolbar.ql-snow
+  .ql-picker.ql-font
+  .ql-picker-label[data-value='thmanyah-sans']::before,
+.legal-doc__editor
+  .ql-toolbar.ql-snow
+  .ql-picker.ql-font
+  .ql-picker-item[data-value='thmanyah-sans']::before {
   content: 'thmanyah sans';
   font-family: 'Thmanyah Sans', sans-serif;
 }

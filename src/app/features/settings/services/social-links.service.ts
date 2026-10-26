@@ -105,7 +105,8 @@ export class SocialLinksService {
         .channels.filter((item) => item.id !== excludeId)
         .map((item) => item.platform),
     );
-    return (['linkedin', 'facebook', 'instagram', 'twitter', 'tiktok', 'snapchat', 'whatsapp'] as const)
-      .filter((platform) => !used.has(platform));
+    return (
+      ['linkedin', 'facebook', 'instagram', 'twitter', 'tiktok', 'snapchat', 'whatsapp'] as const
+    ).filter((platform) => !used.has(platform));
   }
 }

@@ -1,4 +1,9 @@
 import type { AppLanguage } from '../../../core/i18n/language';
+import {
+  IMAGE_UPLOAD_MAX_BYTES,
+  IMAGE_UPLOAD_TYPES,
+  type UploadedImageMeta,
+} from '../../../shared/utils/image-upload';
 
 export interface Partner {
   id: string;
@@ -13,19 +18,15 @@ export interface ContentBlockText {
   points: string[];
 }
 
-export interface BlockImage {
-  name: string;
-  size: number;
-  uploadedAt: string;
-}
+export type BlockImage = UploadedImageMeta;
 
 export interface ContentBlock {
   texts: Record<AppLanguage, ContentBlockText>;
   image: BlockImage | null;
 }
 
-export const BLOCK_IMAGE_TYPES: readonly string[] = ['image/png', 'image/jpeg'];
-export const BLOCK_IMAGE_MAX_BYTES = 5 * 1024 * 1024;
+export const BLOCK_IMAGE_TYPES = IMAGE_UPLOAD_TYPES;
+export const BLOCK_IMAGE_MAX_BYTES = IMAGE_UPLOAD_MAX_BYTES;
 
 export interface HomepageContent {
   partners: Partner[];

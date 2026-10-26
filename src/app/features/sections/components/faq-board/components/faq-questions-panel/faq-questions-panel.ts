@@ -17,7 +17,12 @@ import { AppButton } from '../../../../../../shared/components/app-button/app-bu
 import { AppPaginator } from '../../../../../../shared/components/app-paginator/app-paginator';
 import { StateView } from '../../../../../../shared/components/state-view/state-view';
 import { formatIsoDate } from '../../../../../../shared/utils/date';
-import type { FaqCategory, FaqCategoryId, FaqItem, FaqLocaleText } from '../../../../models/faq.model';
+import type {
+  FaqCategory,
+  FaqCategoryId,
+  FaqItem,
+  FaqLocaleText,
+} from '../../../../models/faq.model';
 
 /**
  * Questions tab panel. Owns search, category filter, and pagination UI state.

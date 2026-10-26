@@ -26,7 +26,7 @@ export class SectionPage {
     { initialValue: String(this.route.snapshot.data['titleKey'] ?? 'sections.ready') },
   );
   readonly isAbout = computed(() => this.titleKey() === 'nav.about');
-  /** Sample consumer for the shared statistics cards and data table. */
+  /** Inquiries board (shared statistics cards + data table). */
   readonly isInquiries = computed(() => this.titleKey() === 'nav.inquiries');
   /** Same board as inquiries. Only the page and table title change. */
   readonly isStart = computed(() => this.titleKey() === 'nav.startProjects');

@@ -12,7 +12,6 @@ import { HomepageService } from '../../services/homepage.service';
 
 type Status = 'loading' | 'ready' | 'error';
 
-
 @Component({
   selector: 'app-home',
   imports: [PageHeader, StateView, PartnersSection, VideoSection, ContentBlockCard],

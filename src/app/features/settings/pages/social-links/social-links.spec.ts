@@ -142,6 +142,3 @@ describe('SocialLinksPage', () => {
     expect(root.textContent).toContain('Edit');
   });
 });
-
-
-

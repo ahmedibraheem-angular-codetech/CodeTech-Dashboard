@@ -43,7 +43,10 @@
       </header>
 
       @if (mode() === 'edit') {
-        <div class="legal-doc__shell legal-doc__editor" [attr.dir]="locale() === 'ar' ? 'rtl' : 'ltr'">
+        <div
+          class="legal-doc__shell legal-doc__editor"
+          [attr.dir]="locale() === 'ar' ? 'rtl' : 'ltr'"
+        >
           <p-editor
             [ngModel]="draftHtml()"
             (ngModelChange)="setDraft($event)"
@@ -67,8 +70,18 @@
                 <button type="button" class="ql-strike" aria-label="Strikethrough"></button>
                 <button type="button" class="ql-code" aria-label="Inline code"></button>
                 <button type="button" class="ql-clean" aria-label="Clear formatting"></button>
-                <button type="button" class="ql-list" value="bullet" aria-label="Bullet list"></button>
-                <button type="button" class="ql-list" value="ordered" aria-label="Numbered list"></button>
+                <button
+                  type="button"
+                  class="ql-list"
+                  value="bullet"
+                  aria-label="Bullet list"
+                ></button>
+                <button
+                  type="button"
+                  class="ql-list"
+                  value="ordered"
+                  aria-label="Numbered list"
+                ></button>
                 <button type="button" class="ql-link" aria-label="Link"></button>
                 <button type="button" class="ql-image" aria-label="Image"></button>
                 <button type="button" class="ql-code-block" aria-label="Code block"></button>

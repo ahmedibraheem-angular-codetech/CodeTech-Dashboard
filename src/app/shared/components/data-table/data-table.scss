@@ -164,46 +164,46 @@
 }
 
 .app-data-table .dt-badge--new {
-border-radius: 96px;
-background: #F6F9FE;
-color: #0074D4;
-font-size: 12px;
-font-style: normal;
-font-weight: 500;
-line-height: normal;
-display: flex;
-width: 92px;
-height: 32px;
-padding: 4px 10px;
-justify-content: center;
-align-items: center;
-gap: 6px;
+  border-radius: 96px;
+  background: #f6f9fe;
+  color: #0074d4;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: normal;
+  display: flex;
+  width: 92px;
+  height: 32px;
+  padding: 4px 10px;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
 }
 
 .app-data-table .dt-badge--progress {
-display: flex;
-width: 92px;
-height: 32px;
-padding: 4px 10px;
-justify-content: center;
-align-items: center;
-gap: 6px;
-border-radius: 96px;
-background: var(--orange-50, #FFF7ED);  color: var(--orange-600, #EA580C);
-;
+  display: flex;
+  width: 92px;
+  height: 32px;
+  padding: 4px 10px;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+  border-radius: 96px;
+  background: var(--orange-50, #fff7ed);
+  color: var(--orange-600, #ea580c);
 }
 
 .app-data-table .dt-badge--closed {
-display: flex;
-width: 92px;
-height: 32px;
-padding: 4px 10px;
-justify-content: center;
-align-items: center;
-gap: 6px;
-border-radius: 96px;
-background: var(--Ken-Coral-Red-50, #FFF5F4);
-color: #E5001E;
+  display: flex;
+  width: 92px;
+  height: 32px;
+  padding: 4px 10px;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+  border-radius: 96px;
+  background: var(--Ken-Coral-Red-50, #fff5f4);
+  color: #e5001e;
 }
 
 .app-data-table .dt-badge--neutral {

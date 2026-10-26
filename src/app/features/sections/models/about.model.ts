@@ -1,11 +1,12 @@
 import type { AppLanguage } from '../../../core/i18n/language';
+import {
+  IMAGE_UPLOAD_MAX_BYTES,
+  IMAGE_UPLOAD_TYPES,
+  type UploadedImageMeta,
+} from '../../../shared/utils/image-upload';
 
 /** Metadata of an uploaded image. `uploadedAt` is an ISO date (`yyyy-mm-dd`). */
-export interface AboutImage {
-  name: string;
-  size: number;
-  uploadedAt: string;
-}
+export type AboutImage = UploadedImageMeta;
 
 /** One titled checklist. `highlight` is the tinted note under the points. */
 export interface AboutPointGroup {
@@ -47,5 +48,5 @@ export interface AboutContent {
   team: AboutMember[];
 }
 
-export const ABOUT_IMAGE_TYPES: readonly string[] = ['image/png', 'image/jpeg'];
-export const ABOUT_IMAGE_MAX_BYTES = 5 * 1024 * 1024;
+export const ABOUT_IMAGE_TYPES = IMAGE_UPLOAD_TYPES;
+export const ABOUT_IMAGE_MAX_BYTES = IMAGE_UPLOAD_MAX_BYTES;

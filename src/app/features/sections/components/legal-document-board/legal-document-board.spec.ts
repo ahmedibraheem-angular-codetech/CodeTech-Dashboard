@@ -55,7 +55,9 @@ describe('LegalDocumentBoard', () => {
   async function render(
     kind: LegalDocumentKind = 'terms',
     api: Partial<ApiMock> = {},
-    extras: { registerFont?: () => Promise<{ status: 'ready' } | { status: 'failed'; error: unknown }> } = {},
+    extras: {
+      registerFont?: () => Promise<{ status: 'ready' } | { status: 'failed'; error: unknown }>;
+    } = {},
   ): Promise<ComponentFixture<LegalDocumentBoard>> {
     const defaults: ApiMock = {
       get: (requested) => of(requested === 'privacy' ? privacyDoc : termsDoc),
@@ -322,12 +324,13 @@ describe('LegalDocumentBoard', () => {
     });
 
     it('saves both language drafts while English is selected', async () => {
-      const save = vi.fn((kind: LegalDocumentKind, draft: { content: { ar: string; en: string } }) =>
-        of({
-          kind,
-          content: draft.content,
-          updatedAt: '2026-10-26',
-        }),
+      const save = vi.fn(
+        (kind: LegalDocumentKind, draft: { content: { ar: string; en: string } }) =>
+          of({
+            kind,
+            content: draft.content,
+            updatedAt: '2026-10-26',
+          }),
       );
       const fixture = await render('terms', { save });
       enterEditWithoutQuill(fixture);
@@ -381,9 +384,7 @@ describe('LegalDocumentBoard', () => {
 
       expect(board(fixture).saving()).toBe(false);
       expect(board(fixture).mode()).toBe('edit');
-      expect(toast).toHaveBeenCalledWith(
-        expect.objectContaining({ severity: 'error' }),
-      );
+      expect(toast).toHaveBeenCalledWith(expect.objectContaining({ severity: 'error' }));
     });
 
     it('opens an empty draft when the document has no content', async () => {
