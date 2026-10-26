@@ -59,9 +59,69 @@ const STATUS_TONE: Record<ArticleStatus, DataTableBadgeValue['tone']> = {
   unpublished: 'closed',
 };
 
+/** Static KPI chrome; values are filled in `cards` from a single status pass. */
+interface ArticleStatDef {
+  readonly id: string;
+  readonly titleKey: string;
+  readonly icon: string;
+  readonly iconColor: string;
+  readonly iconBackground: string;
+  /** `total` uses the list length; otherwise the matching status count. */
+  readonly metric: 'total' | ArticleStatus;
+}
+
+const ARTICLE_STAT_DEFS: readonly ArticleStatDef[] = [
+  {
+    id: 'total',
+    titleKey: 'knowledge.stat.total',
+    icon: 'pi pi-file',
+    iconColor: '#e11d48',
+    iconBackground: '#ffe4e6',
+    metric: 'total',
+  },
+  {
+    id: 'published',
+    titleKey: 'knowledge.stat.published',
+    icon: 'pi pi-check-circle',
+    iconColor: '#f59e0b',
+    iconBackground: '#ffedd5',
+    metric: 'published',
+  },
+  {
+    id: 'draft',
+    titleKey: 'knowledge.stat.draft',
+    icon: 'pi pi-file-edit',
+    iconColor: '#3b82f6',
+    iconBackground: '#dbeafe',
+    metric: 'draft',
+  },
+  {
+    id: 'unpublished',
+    titleKey: 'knowledge.stat.unpublished',
+    icon: 'pi pi-eye-slash',
+    iconColor: '#16a34a',
+    iconBackground: '#dcfce7',
+    metric: 'unpublished',
+  },
+];
+
 export interface ArticleStatusChange {
   article: Article;
   status: ArticleStatus;
+}
+
+function countArticlesByStatus(
+  articles: readonly Article[],
+): Record<ArticleStatus, number> {
+  const counts: Record<ArticleStatus, number> = {
+    published: 0,
+    draft: 0,
+    unpublished: 0,
+  };
+  for (const item of articles) {
+    counts[item.status] += 1;
+  }
+  return counts;
 }
 
 /**
@@ -98,46 +158,14 @@ export class ArticlesPanel {
     this.lang.language();
     const all = this.articles();
     const caption = this.lang.t('knowledge.compared');
-    const count = (status: ArticleStatus): number =>
-      all.filter((item) => item.status === status).length;
-    return [
-      this.card(
-        'total',
-        'knowledge.stat.total',
-        all.length,
-        'pi pi-file',
-        '#e11d48',
-        '#ffe4e6',
+    const byStatus = countArticlesByStatus(all);
+    return ARTICLE_STAT_DEFS.map((def) =>
+      this.toStatCard(
+        def,
+        def.metric === 'total' ? all.length : byStatus[def.metric],
         caption,
       ),
-      this.card(
-        'published',
-        'knowledge.stat.published',
-        count('published'),
-        'pi pi-check-circle',
-        '#f59e0b',
-        '#ffedd5',
-        caption,
-      ),
-      this.card(
-        'draft',
-        'knowledge.stat.draft',
-        count('draft'),
-        'pi pi-file-edit',
-        '#3b82f6',
-        '#dbeafe',
-        caption,
-      ),
-      this.card(
-        'unpublished',
-        'knowledge.stat.unpublished',
-        count('unpublished'),
-        'pi pi-eye-slash',
-        '#16a34a',
-        '#dcfce7',
-        caption,
-      ),
-    ];
+    );
   });
 
   readonly filters = computed<DataTableFilterOption[]>(() => {
@@ -303,22 +331,14 @@ export class ArticlesPanel {
     return status === 'draft' ? 'knowledge.moveToDraft' : 'knowledge.unpublish';
   }
 
-  private card(
-    id: string,
-    titleKey: string,
-    value: number,
-    icon: string,
-    iconColor: string,
-    iconBackground: string,
-    caption: string,
-  ): StatisticsCard {
+  private toStatCard(def: ArticleStatDef, value: number, caption: string): StatisticsCard {
     return {
-      id,
-      title: this.lang.t(titleKey),
+      id: def.id,
+      title: this.lang.t(def.titleKey),
       value: value.toLocaleString('en-US'),
-      icon,
-      iconColor,
-      iconBackground,
+      icon: def.icon,
+      iconColor: def.iconColor,
+      iconBackground: def.iconBackground,
       trend: 12.5,
       caption,
     };
