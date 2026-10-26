@@ -194,7 +194,45 @@ export const routes: Routes = [
         ],
       },
       section('services', 'nav.services'),
-      section('knowledge', 'nav.knowledge'),
+      {
+        path: 'knowledge',
+        data: { breadcrumb: 'nav.knowledge' },
+        children: [
+          {
+            path: '',
+            loadComponent: () =>
+              import('./features/knowledge/pages/knowledge-board/knowledge-board').then(
+                (m) => m.KnowledgeBoard,
+              ),
+            // An empty child path inherits the parent's data; blank it so the crumb shows once.
+            data: { titleKey: 'nav.knowledge', breadcrumb: '' },
+          },
+          {
+            path: 'new',
+            loadComponent: () =>
+              import('./features/knowledge/pages/article-editor/article-editor').then(
+                (m) => m.ArticleEditor,
+              ),
+            data: { mode: 'create', titleKey: 'knowledge.add', breadcrumb: 'knowledge.add' },
+          },
+          {
+            path: ':id/edit',
+            loadComponent: () =>
+              import('./features/knowledge/pages/article-editor/article-editor').then(
+                (m) => m.ArticleEditor,
+              ),
+            data: { mode: 'edit', titleKey: 'knowledge.edit', breadcrumb: 'knowledge.edit' },
+          },
+          {
+            path: ':id',
+            loadComponent: () =>
+              import('./features/knowledge/pages/article-detail/article-detail').then(
+                (m) => m.ArticleDetail,
+              ),
+            data: { breadcrumb: ':id', titleKey: 'nav.knowledge' },
+          },
+        ],
+      },
       section('reviews', 'nav.reviews'),
       {
         path: 'settings/permissions',

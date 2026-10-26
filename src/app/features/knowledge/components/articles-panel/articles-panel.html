@@ -1,0 +1,93 @@
+<app-statistics-cards [cards]="cards()" />
+
+<app-data-table
+  class="knowledge-table"
+  [title]="title()"
+  [rows]="rows()"
+  [columns]="columns()"
+  [filters]="filters()"
+  [filterLabel]="lang.t('knowledge.allStatuses')"
+  [exportLabel]="lang.t('knowledge.export')"
+  [searchLabel]="lang.t('knowledge.search')"
+  [emptyMessage]="lang.t('knowledge.empty')"
+  [rowClickable]="true"
+  [query]="query()"
+  [selectedFilters]="selectedFilters()"
+  (queryChange)="setQuery($event)"
+  (selectedFiltersChange)="setFilters($event)"
+  (export)="exported.emit(total())"
+  (rowClick)="openRow($event)"
+>
+  <ng-template appDataCell="article" let-row>
+    <div class="kb-article">
+      @if (row.article.thumbnailUrl) {
+        <img class="kb-article__thumb" [src]="row.article.thumbnailUrl" alt="" />
+      } @else {
+        <span class="kb-article__thumb kb-article__thumb--empty" aria-hidden="true">
+          <i class="pi pi-image"></i>
+        </span>
+      }
+      <div class="kb-article__text">
+        <strong class="kb-article__title">
+          {{ row.article.title }}
+          @if (row.article.featured) {
+            <i
+              class="pi pi-star-fill kb-article__star"
+              [attr.title]="lang.t('knowledge.featuredBadge')"
+              aria-hidden="true"
+            ></i>
+          }
+        </strong>
+        <span class="kb-article__excerpt">{{ row.article.excerpt }}</span>
+      </div>
+    </div>
+  </ng-template>
+
+  <ng-template appDataCell="actions" let-row>
+    <app-button
+      styleClass="kb-more"
+      icon="pi pi-ellipsis-v"
+      variant="outlined"
+      [ariaLabel]="lang.t('knowledge.actions')"
+      (clicked)="openMenu($event, row)"
+    />
+  </ng-template>
+
+  <app-paginator
+    dtFooter
+    [first]="first()"
+    [rows]="pageSize()"
+    [totalRecords]="total()"
+    (pageChange)="page($event)"
+  />
+</app-data-table>
+
+<p-popover #actions appendTo="body" styleClass="kb-menu">
+  @if (menuArticle(); as current) {
+    <div class="kb-menu__list">
+      <button type="button" (click)="choose('open')">
+        <i class="pi pi-eye" aria-hidden="true"></i>{{ lang.t('knowledge.view') }}
+      </button>
+      <button type="button" (click)="choose('edit')">
+        <i class="pi pi-pencil" aria-hidden="true"></i>{{ lang.t('knowledge.editAction') }}
+      </button>
+      <button type="button" (click)="choose('feature')">
+        <i
+          class="pi"
+          [class.pi-star-fill]="current.featured"
+          [class.pi-star]="!current.featured"
+          aria-hidden="true"
+        ></i>
+        {{ lang.t(current.featured ? 'knowledge.unfeature' : 'knowledge.feature') }}
+      </button>
+      @for (status of otherStatuses(current); track status) {
+        <button type="button" (click)="changeStatus(status)">
+          <i class="pi pi-sync" aria-hidden="true"></i>{{ lang.t(statusActionKey(status)) }}
+        </button>
+      }
+      <button type="button" class="kb-menu__danger" (click)="choose('remove')">
+        <i class="pi pi-trash" aria-hidden="true"></i>{{ lang.t('knowledge.delete') }}
+      </button>
+    </div>
+  }
+</p-popover>

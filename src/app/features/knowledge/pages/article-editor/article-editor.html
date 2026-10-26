@@ -1,0 +1,360 @@
+<section class="page kb-editor">
+  <app-page-header [title]="title()" [subtitle]="lang.t('knowledge.editorSubtitle')">
+    @if (mode === 'edit') {
+      <app-button
+        styleClass="kb-editor__action"
+        variant="danger"
+        [outlined]="true"
+        icon="pi pi-trash"
+        iconPos="end"
+        [label]="lang.t('knowledge.delete')"
+        [disabled]="saving() || status() !== 'ready'"
+        (clicked)="remove()"
+      />
+      <app-button
+        styleClass="kb-editor__action"
+        variant="outlined"
+        [icon]="article()?.featured ? 'pi pi-star-fill' : 'pi pi-star'"
+        iconPos="end"
+        [label]="lang.t(article()?.featured ? 'knowledge.unfeature' : 'knowledge.feature')"
+        [disabled]="saving() || status() !== 'ready'"
+        (clicked)="toggleFeatured()"
+      />
+      <app-button
+        styleClass="kb-editor__action"
+        variant="outlined"
+        icon="pi pi-undo"
+        iconPos="end"
+        [label]="lang.t('knowledge.undo')"
+        [disabled]="saving() || status() !== 'ready'"
+        (clicked)="undo()"
+      />
+      <app-button
+        styleClass="kb-editor__primary"
+        icon="pi pi-save"
+        iconPos="end"
+        [label]="lang.t('common.save')"
+        [loading]="saving()"
+        [disabled]="status() !== 'ready'"
+        (clicked)="save()"
+      />
+    } @else {
+      <app-button
+        styleClass="kb-editor__action"
+        variant="outlined"
+        icon="pi pi-file"
+        iconPos="end"
+        [label]="lang.t('knowledge.saveDraft')"
+        [disabled]="saving()"
+        (clicked)="saveDraft()"
+      />
+      <app-button
+        styleClass="kb-editor__primary"
+        icon="pi pi-send"
+        iconPos="end"
+        [label]="lang.t('knowledge.publish')"
+        [loading]="saving()"
+        (clicked)="publish()"
+      />
+    }
+  </app-page-header>
+
+  @if (status() === 'loading') {
+    <app-state-view mode="loading" [message]="lang.t('common.loading')" />
+  } @else if (status() === 'missing') {
+    <app-state-view mode="empty" [message]="lang.t('knowledge.notFound')" />
+  } @else if (status() === 'error') {
+    <app-state-view mode="error" [message]="lang.t('common.error')" (retry)="retry()" />
+  } @else {
+    <app-locale-switch [value]="locale()" (picked)="setLocale($event)" />
+
+    <form class="kb-editor__form" [formGroup]="form" [attr.dir]="dir()">
+      <!-- Article data -->
+      <article class="kb-card">
+        <header class="kb-card__head">
+          <span class="kb-card__icon" aria-hidden="true"><i class="pi pi-file"></i></span>
+          <h2>{{ lang.t('knowledge.dataCard') }}</h2>
+        </header>
+
+        <div class="kb-editor__grid">
+          <label class="field kb-editor__wide">
+            <span class="field__label">{{ lang.t('knowledge.fieldTitle') }}</span>
+            <p-iconfield>
+              <input
+                pInputText
+                [fluid]="true"
+                [formControlName]="key('title')"
+                [placeholder]="lang.t('knowledge.fieldTitlePh')"
+                [invalid]="isInvalid('title')"
+              />
+              <p-inputicon class="pi pi-pencil" />
+            </p-iconfield>
+            @if (isInvalid('title')) {
+              <app-field-error>{{ lang.t('knowledge.required') }}</app-field-error>
+            }
+          </label>
+
+          <label class="field kb-editor__wide">
+            <span class="field__label">{{ lang.t('knowledge.fieldExcerpt') }}</span>
+            <textarea
+              pTextarea
+              [fluid]="true"
+              rows="3"
+              [formControlName]="key('excerpt')"
+              [placeholder]="lang.t('knowledge.fieldExcerptPh')"
+            ></textarea>
+          </label>
+
+          <label class="field">
+            <span class="field__label">{{ lang.t('knowledge.fieldCategory') }}</span>
+            <p-select
+              [fluid]="true"
+              formControlName="categoryId"
+              [options]="categoryOptions()"
+              optionLabel="label"
+              optionValue="value"
+              [placeholder]="lang.t('knowledge.fieldCategoryPh')"
+              [invalid]="flagged().has('categoryId') && !form.controls.categoryId.value"
+            />
+            @if (flagged().has('categoryId') && !form.controls.categoryId.value) {
+              <app-field-error>{{ lang.t('knowledge.required') }}</app-field-error>
+            }
+          </label>
+
+          <label class="field">
+            <span class="field__label">{{ lang.t('knowledge.fieldReading') }}</span>
+            <p-iconfield>
+              <input
+                pInputText
+                type="number"
+                min="1"
+                [fluid]="true"
+                formControlName="readingMinutes"
+              />
+              <p-inputicon class="pi pi-clock" />
+            </p-iconfield>
+          </label>
+
+          <label class="field">
+            <span class="field__label">{{ lang.t('knowledge.fieldDate') }}</span>
+            <input pInputText type="date" [fluid]="true" formControlName="publishedDate" />
+          </label>
+
+          <label class="field">
+            <span class="field__label">{{ lang.t('knowledge.fieldAuthor') }}</span>
+            <p-iconfield>
+              <input
+                pInputText
+                [fluid]="true"
+                [formControlName]="key('authorName')"
+                [placeholder]="lang.t('knowledge.fieldAuthorPh')"
+              />
+              <p-inputicon class="pi pi-user" />
+            </p-iconfield>
+          </label>
+
+          <div class="kb-editor__wide">
+            <ng-container
+              [ngTemplateOutlet]="uploader"
+              [ngTemplateOutletContext]="{
+                slot: 'avatar',
+                label: lang.t('knowledge.fieldAuthorPhoto'),
+              }"
+            />
+          </div>
+        </div>
+      </article>
+
+      <!-- SEO -->
+      <article class="kb-card">
+        <header class="kb-card__head">
+          <span class="kb-card__icon" aria-hidden="true"><i class="pi pi-search"></i></span>
+          <h2>{{ lang.t('knowledge.seoCard') }}</h2>
+        </header>
+
+        <div class="kb-editor__grid">
+          <label class="field">
+            <span class="field__label">{{ lang.t('knowledge.fieldSlug') }}</span>
+            <input pInputText dir="ltr" [fluid]="true" formControlName="slug" />
+          </label>
+
+          <label class="field">
+            <span class="field__label">{{ lang.t('knowledge.fieldSeoTitle') }}</span>
+            <input pInputText [fluid]="true" [formControlName]="key('seoTitle')" />
+          </label>
+
+          <label class="field kb-editor__wide">
+            <span class="field__label">{{ lang.t('knowledge.fieldSeoDescription') }}</span>
+            <textarea
+              pTextarea
+              [fluid]="true"
+              rows="3"
+              [formControlName]="key('seoDescription')"
+            ></textarea>
+          </label>
+
+          <label class="field kb-editor__wide">
+            <span class="field__label">{{ lang.t('knowledge.fieldSeoKeywords') }}</span>
+            <input pInputText [fluid]="true" [formControlName]="key('seoKeywords')" />
+          </label>
+        </div>
+      </article>
+
+      <!-- Thumbnail + cover -->
+      <div class="kb-editor__media">
+        <article class="kb-card">
+          <header class="kb-card__head">
+            <span class="kb-card__icon" aria-hidden="true"><i class="pi pi-image"></i></span>
+            <h2>{{ lang.t('knowledge.thumbnailCard') }}</h2>
+          </header>
+          <ng-container
+            [ngTemplateOutlet]="uploader"
+            [ngTemplateOutletContext]="{ slot: 'thumbnail', label: '' }"
+          />
+          <label class="field">
+            <span class="field__label">{{ lang.t('knowledge.fieldImageTitle') }}</span>
+            <input pInputText [fluid]="true" [formControlName]="key('thumbnailTitle')" />
+          </label>
+          <label class="field">
+            <span class="field__label">{{ lang.t('knowledge.fieldImageAlt') }}</span>
+            <input pInputText [fluid]="true" [formControlName]="key('thumbnailAlt')" />
+          </label>
+        </article>
+
+        <article class="kb-card">
+          <header class="kb-card__head">
+            <span class="kb-card__icon" aria-hidden="true"><i class="pi pi-images"></i></span>
+            <h2>{{ lang.t('knowledge.coverCard') }}</h2>
+          </header>
+          <ng-container
+            [ngTemplateOutlet]="uploader"
+            [ngTemplateOutletContext]="{ slot: 'cover', label: '' }"
+          />
+          <label class="field">
+            <span class="field__label">{{ lang.t('knowledge.fieldImageTitle') }}</span>
+            <input pInputText [fluid]="true" [formControlName]="key('coverTitle')" />
+          </label>
+          <label class="field">
+            <span class="field__label">{{ lang.t('knowledge.fieldImageAlt') }}</span>
+            <input pInputText [fluid]="true" [formControlName]="key('coverAlt')" />
+          </label>
+        </article>
+      </div>
+
+      <!-- Content -->
+      <article class="kb-card">
+        <header class="kb-card__head">
+          <span class="kb-card__icon" aria-hidden="true"><i class="pi pi-align-left"></i></span>
+          <h2>{{ lang.t('knowledge.contentCard') }}</h2>
+        </header>
+
+        @if (quillReady()) {
+          <div class="legal-doc__editor kb-editor__quill" [attr.dir]="dir()">
+            @if (locale() === 'ar') {
+              <p-editor
+                formControlName="contentAr"
+                styleClass="kb-editor__quill-root"
+                [placeholder]="lang.t('knowledge.fieldContentPh')"
+                [style]="{ minHeight: '420px' }"
+                (onInit)="onEditorInit($event)"
+              >
+                <p-header>
+                  <ng-container [ngTemplateOutlet]="toolbar" />
+                </p-header>
+              </p-editor>
+            } @else {
+              <p-editor
+                formControlName="contentEn"
+                styleClass="kb-editor__quill-root"
+                [placeholder]="lang.t('knowledge.fieldContentPh')"
+                [style]="{ minHeight: '420px' }"
+                (onInit)="onEditorInit($event)"
+              >
+                <p-header>
+                  <ng-container [ngTemplateOutlet]="toolbar" />
+                </p-header>
+              </p-editor>
+            }
+          </div>
+          @if (isInvalid('content')) {
+            <app-field-error>{{ lang.t('knowledge.required') }}</app-field-error>
+          }
+        } @else {
+          <app-state-view mode="loading" />
+        }
+      </article>
+    </form>
+  }
+</section>
+
+<app-confirm-dialog />
+
+<ng-template #uploader let-slot="slot" let-label="label">
+  <div class="field">
+    @if (label) {
+      <span class="field__label">{{ label }}</span>
+    }
+    <label class="image-drop" (dragover)="$event.preventDefault()" (drop)="onDrop($event, slot)">
+      <input type="file" tabindex="-1" [accept]="imageAccept" (change)="onPick($event, slot)" />
+      <span class="image-drop__icon"><i class="pi pi-cloud-upload" aria-hidden="true"></i></span>
+      <strong>{{ lang.t('knowledge.uploadHint') }}</strong>
+      <small>{{ lang.t('knowledge.uploadFormats') }}</small>
+    </label>
+    @if (errorOf(slot); as error) {
+      <p class="field__error" role="alert">{{ lang.t(error) }}</p>
+    }
+    @if (imageOf(slot); as file) {
+      <div class="image-file">
+        <img class="image-file__thumb" [src]="file.url" alt="" />
+        <div class="image-file__text">
+          <strong>{{ file.name }}</strong>
+          <small>
+            @if (size(file)) {
+              <bdi>{{ size(file) }}</bdi> ·
+            }
+            <bdi>{{ date(file) }}</bdi>
+          </small>
+        </div>
+        <app-button
+          variant="secondary"
+          icon="pi pi-trash"
+          size="small"
+          [ariaLabel]="lang.t('knowledge.removeImage')"
+          (clicked)="removeImage(slot)"
+        />
+      </div>
+    }
+  </div>
+</ng-template>
+
+<ng-template #toolbar>
+  <span class="ql-formats legal-doc__toolbar-start">
+    <select class="ql-align">
+      <option selected></option>
+      <option value="center"></option>
+      <option value="right"></option>
+      <option value="justify"></option>
+    </select>
+    <select class="ql-color"></select>
+    <button type="button" class="ql-bold" aria-label="Bold"></button>
+    <button type="button" class="ql-italic" aria-label="Italic"></button>
+    <button type="button" class="ql-underline" aria-label="Underline"></button>
+    <button type="button" class="ql-strike" aria-label="Strikethrough"></button>
+    <button type="button" class="ql-code" aria-label="Inline code"></button>
+    <button type="button" class="ql-clean" aria-label="Clear formatting"></button>
+    <button type="button" class="ql-list" value="bullet" aria-label="Bullet list"></button>
+    <button type="button" class="ql-list" value="ordered" aria-label="Numbered list"></button>
+    <button type="button" class="ql-link" aria-label="Link"></button>
+    <button type="button" class="ql-image" aria-label="Image"></button>
+    <button type="button" class="ql-code-block" aria-label="Code block"></button>
+    <button type="button" class="ql-blockquote" aria-label="Quote"></button>
+    <button type="button" class="ql-hr" aria-label="Horizontal line"></button>
+  </span>
+  <span class="ql-formats legal-doc__toolbar-end">
+    <select class="ql-font">
+      <option selected value="thmanyah-sans">thmanyah sans</option>
+    </select>
+    <button type="button" class="ql-undo" aria-label="Undo"></button>
+    <button type="button" class="ql-redo" aria-label="Redo"></button>
+  </span>
+</ng-template>

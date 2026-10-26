@@ -1,0 +1,134 @@
+<article class="kb-panel">
+  <header class="kb-panel__head">
+    <h2>{{ countLabel() }}</h2>
+    <div class="kb-panel__tools">
+      @if (searchOpen()) {
+        <input
+          class="kb-panel__query"
+          type="search"
+          [value]="query()"
+          [attr.aria-label]="lang.t('knowledge.search')"
+          [placeholder]="lang.t('knowledge.search')"
+          (input)="onQuery($event)"
+        />
+      }
+      <app-button
+        styleClass="kb-panel__search"
+        icon="pi pi-search"
+        variant="outlined"
+        [rounded]="true"
+        [ariaLabel]="lang.t('knowledge.search')"
+        (clicked)="toggleSearch()"
+      />
+      <button
+        type="button"
+        class="kb-panel__filter"
+        [class.kb-panel__filter--open]="filterOpen()"
+        [attr.aria-expanded]="filterOpen()"
+        [attr.aria-label]="filterLabel()"
+        (click)="filterMenu.toggle($event)"
+      >
+        <i class="pi pi-filter" aria-hidden="true"></i>
+        <span>{{ filterLabel() }}</span>
+        <i
+          class="pi"
+          [class.pi-chevron-up]="filterOpen()"
+          [class.pi-chevron-down]="!filterOpen()"
+          aria-hidden="true"
+        ></i>
+      </button>
+      <p-popover
+        #filterMenu
+        styleClass="kb-filter-menu"
+        appendTo="body"
+        [dismissable]="true"
+        [focusOnShow]="false"
+        (onShow)="filterOpen.set(true)"
+        (onHide)="filterOpen.set(false)"
+      >
+        <ul class="kb-filter-menu__list">
+          @for (option of statusOptions(); track option.value) {
+            <li>
+              <label class="kb-filter-option">
+                <p-checkbox
+                  [binary]="true"
+                  [inputId]="'kb-cat-filter-' + option.value"
+                  [ariaLabel]="option.label"
+                  [ngModel]="checked(option)"
+                  (ngModelChange)="setOption(option, $event)"
+                />
+                <span>{{ option.label }}</span>
+              </label>
+            </li>
+          }
+        </ul>
+      </p-popover>
+    </div>
+  </header>
+
+  @if (filtered().length === 0) {
+    <app-state-view mode="empty" [message]="lang.t('knowledge.emptyCategories')" />
+  } @else {
+    <div class="kb-panel__grid">
+      @for (category of filtered(); track category.id) {
+        <article class="kb-cat-card">
+          <header class="kb-cat-card__head">
+            <div class="kb-cat-card__title-block">
+              <h3 class="kb-cat-card__title">{{ name(category) }}</h3>
+              <p class="kb-cat-card__id">
+                <bdi>#{{ category.id }}</bdi> {{ lang.t('knowledge.idLabel') }}
+              </p>
+            </div>
+            <span
+              class="kb-cat-card__badge"
+              [class.kb-cat-card__badge--active]="category.published"
+              [class.kb-cat-card__badge--inactive]="!category.published"
+            >
+              {{ lang.t(category.published ? 'knowledge.active' : 'knowledge.inactive') }}
+            </span>
+          </header>
+
+          <div class="kb-cat-card__body">
+            <div class="kb-cat-card__row">
+              <span class="kb-cat-card__label">{{ lang.t('knowledge.order') }}</span>
+              <strong class="kb-cat-card__value">{{ padded(category.order) }}</strong>
+            </div>
+            <div class="kb-cat-card__row">
+              <span class="kb-cat-card__label">{{ lang.t('knowledge.articleCount') }}</span>
+              <strong class="kb-cat-card__value">{{ padded(category.articleCount) }}</strong>
+            </div>
+            <div class="kb-cat-card__row">
+              <span class="kb-cat-card__label">{{ lang.t('knowledge.createdAt') }}</span>
+              <span class="kb-cat-card__when">
+                <i class="pi pi-calendar" aria-hidden="true"></i>
+                <span>{{ created(category) }}</span>
+              </span>
+            </div>
+          </div>
+
+          <footer class="kb-cat-card__foot">
+            <app-button
+              [fluid]="true"
+              variant="outlined"
+              styleClass="kb-cat-card__btn kb-cat-card__btn--edit"
+              icon="pi pi-pencil"
+              iconPos="end"
+              [label]="lang.t('knowledge.editAction')"
+              (clicked)="edit.emit(category)"
+            />
+            <app-button
+              [fluid]="true"
+              variant="danger"
+              [outlined]="true"
+              styleClass="kb-cat-card__btn kb-cat-card__btn--danger"
+              icon="pi pi-trash"
+              iconPos="end"
+              [label]="lang.t('knowledge.delete')"
+              (clicked)="remove.emit(category)"
+            />
+          </footer>
+        </article>
+      }
+    </div>
+  }
+</article>

@@ -1,0 +1,170 @@
+<section class="page kb-detail">
+  @if (status() === 'loading') {
+    <app-state-view mode="loading" [message]="lang.t('common.loading')" />
+  } @else if (status() === 'missing') {
+    <app-state-view mode="empty" [message]="lang.t('knowledge.notFound')" />
+  } @else if (status() === 'error') {
+    <app-state-view mode="error" [message]="lang.t('common.error')" (retry)="retry()" />
+  } @else if (article(); as current) {
+    <app-page-header [title]="title()" [subtitle]="excerpt()">
+      <app-button
+        styleClass="kb-editor__action"
+        variant="danger"
+        [outlined]="true"
+        icon="pi pi-trash"
+        iconPos="end"
+        [label]="lang.t('knowledge.delete')"
+        (clicked)="remove()"
+      />
+      <app-button
+        styleClass="kb-editor__action"
+        variant="outlined"
+        icon="pi pi-sync"
+        iconPos="end"
+        [label]="lang.t('knowledge.changeStatus')"
+        (clicked)="toggleStatusMenu($event)"
+      />
+      <app-button
+        styleClass="kb-editor__action"
+        variant="outlined"
+        [icon]="current.featured ? 'pi pi-star-fill' : 'pi pi-star'"
+        iconPos="end"
+        [label]="lang.t(current.featured ? 'knowledge.unfeature' : 'knowledge.feature')"
+        (clicked)="toggleFeatured()"
+      />
+      <app-button
+        styleClass="kb-editor__primary"
+        icon="pi pi-pencil"
+        iconPos="end"
+        [label]="lang.t('knowledge.editAction')"
+        (clicked)="edit()"
+      />
+    </app-page-header>
+
+    <app-locale-switch [value]="locale()" (picked)="setLocale($event)" />
+
+    <article class="kb-card kb-detail__hero" [attr.dir]="dir()">
+      @if (current.coverUrl) {
+        <img class="kb-detail__cover" [src]="current.coverUrl" [alt]="imageText('coverAlt')" />
+      }
+
+      <div class="kb-detail__meta">
+        <div class="kb-detail__chips">
+          <span class="kb-status" [class]="'kb-status kb-status--' + current.status">
+            {{ lang.t(readStatusKey(current.status)) }}
+          </span>
+          @if (current.featured) {
+            <span class="kb-detail__featured">
+              <i class="pi pi-star-fill" aria-hidden="true"></i>
+              {{ lang.t('knowledge.featuredBadge') }}
+            </span>
+          }
+        </div>
+
+        <dl class="kb-detail__facts">
+          <div>
+            <dt>ID</dt>
+            <dd dir="ltr">#{{ current.id }}</dd>
+          </div>
+          <div>
+            <dt>{{ lang.t('knowledge.fieldCategory') }}</dt>
+            <dd>{{ categoryLabel() }}</dd>
+          </div>
+          <div>
+            <dt>{{ lang.t('knowledge.col.reading') }}</dt>
+            <dd>{{ reading() }}</dd>
+          </div>
+          <div>
+            <dt>{{ lang.t('knowledge.fieldDate') }}</dt>
+            <dd>{{ published() }}</dd>
+          </div>
+          <div>
+            <dt>{{ lang.t('knowledge.fieldAuthor') }}</dt>
+            <dd class="kb-detail__author">
+              @if (current.authorAvatarUrl) {
+                <img [src]="current.authorAvatarUrl" alt="" />
+              }
+              <span>{{ author() || '—' }}</span>
+            </dd>
+          </div>
+        </dl>
+      </div>
+    </article>
+
+    <article class="kb-card" [attr.dir]="dir()">
+      <header class="kb-card__head">
+        <span class="kb-card__icon" aria-hidden="true"><i class="pi pi-align-left"></i></span>
+        <h2>{{ lang.t('knowledge.contentCard') }}</h2>
+      </header>
+      @if (content(); as html) {
+        <!-- Angular sanitizes [innerHTML]; do not bypassSecurityTrustHtml. -->
+        <div class="kb-detail__content" [innerHTML]="html"></div>
+      } @else {
+        <app-state-view mode="empty" [message]="lang.t('knowledge.detailNoContent')" />
+      }
+    </article>
+
+    <div class="kb-editor__media" [attr.dir]="dir()">
+      <article class="kb-card">
+        <header class="kb-card__head">
+          <span class="kb-card__icon" aria-hidden="true"><i class="pi pi-search"></i></span>
+          <h2>{{ lang.t('knowledge.seoCard') }}</h2>
+        </header>
+        <dl class="kb-detail__list">
+          <div>
+            <dt>{{ lang.t('knowledge.fieldSlug') }}</dt>
+            <dd dir="ltr">{{ current.slug || '—' }}</dd>
+          </div>
+          <div>
+            <dt>{{ lang.t('knowledge.fieldSeoTitle') }}</dt>
+            <dd>{{ seoText('seoTitle') }}</dd>
+          </div>
+          <div>
+            <dt>{{ lang.t('knowledge.fieldSeoDescription') }}</dt>
+            <dd>{{ seoText('seoDescription') }}</dd>
+          </div>
+          <div>
+            <dt>{{ lang.t('knowledge.fieldSeoKeywords') }}</dt>
+            <dd>{{ seoText('seoKeywords') }}</dd>
+          </div>
+        </dl>
+      </article>
+
+      <article class="kb-card">
+        <header class="kb-card__head">
+          <span class="kb-card__icon" aria-hidden="true"><i class="pi pi-image"></i></span>
+          <h2>{{ lang.t('knowledge.thumbnailCard') }}</h2>
+        </header>
+        @if (current.thumbnailUrl) {
+          <img
+            class="kb-detail__thumb"
+            [src]="current.thumbnailUrl"
+            [alt]="imageText('thumbnailAlt')"
+          />
+        }
+        <dl class="kb-detail__list">
+          <div>
+            <dt>{{ lang.t('knowledge.fieldImageTitle') }}</dt>
+            <dd>{{ imageText('thumbnailTitle') }}</dd>
+          </div>
+          <div>
+            <dt>{{ lang.t('knowledge.fieldImageAlt') }}</dt>
+            <dd>{{ imageText('thumbnailAlt') }}</dd>
+          </div>
+        </dl>
+      </article>
+    </div>
+  }
+</section>
+
+<p-popover #statusPopover appendTo="body" styleClass="kb-menu">
+  <div class="kb-menu__list">
+    @for (status of otherStatuses(); track status) {
+      <button type="button" (click)="changeStatus(status)">
+        <i class="pi pi-sync" aria-hidden="true"></i>{{ lang.t(statusActionKey(status)) }}
+      </button>
+    }
+  </div>
+</p-popover>
+
+<app-confirm-dialog />

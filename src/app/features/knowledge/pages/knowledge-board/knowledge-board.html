@@ -1,0 +1,67 @@
+<section class="page knowledge-board">
+  <app-page-header [title]="lang.t('nav.knowledge')" [subtitle]="subtitle()">
+    <app-button
+      styleClass="knowledge-board__refresh"
+      icon="pi pi-refresh"
+      variant="outlined"
+      [ariaLabel]="lang.t('knowledge.refresh')"
+      [disabled]="state() === 'loading'"
+      (clicked)="reload()"
+    />
+    <app-button
+      icon="pi pi-plus"
+      iconPos="end"
+      styleClass="knowledge-board__add"
+      [label]="addLabel()"
+      (clicked)="add()"
+    />
+  </app-page-header>
+
+  <app-page-tabs [tabs]="tabs()" [value]="tab()" (valueChange)="setTab($event)" />
+
+  @if (state() === 'loading') {
+    <app-state-view mode="loading" />
+  } @else if (state() === 'error') {
+    <app-state-view mode="error" [message]="lang.t('knowledge.loadError')" (retry)="reload()" />
+  } @else {
+    <div [hidden]="tab() !== 'articles'">
+      <app-knowledge-articles-panel
+        [articles]="articles()"
+        [categories]="categories()"
+        (view)="view($event)"
+        (edit)="openEditor($event)"
+        (remove)="removeArticle($event)"
+        (toggleFeatured)="toggleFeatured($event)"
+        (statusChange)="changeStatus($event)"
+        (exported)="exported($event)"
+      />
+    </div>
+    <div [hidden]="tab() !== 'categories'">
+      <app-knowledge-categories-panel
+        [categories]="categories()"
+        (edit)="openEditCategory($event)"
+        (remove)="removeCategory($event)"
+      />
+    </div>
+  }
+</section>
+
+<app-modal
+  [visible]="editor() !== null"
+  (visibleChange)="setEditorVisible($event)"
+  [title]="editorTitle()"
+  [icon]="editor() === 'edit' ? 'pi pi-pencil' : 'pi pi-th-large'"
+  [saveLabel]="editorSaveLabel()"
+  [saveIcon]="editor() === 'edit' ? 'pi pi-save' : 'pi pi-plus'"
+  [saveIconPos]="editor() === 'edit' ? 'start' : 'end'"
+  [cancelLabel]="lang.t('common.cancel')"
+  [saving]="saving()"
+  (save)="saveCategory()"
+  (cancel)="closeEditor()"
+>
+  @if (editor() !== null) {
+    <app-faq-category-form [form]="categoryForm" (submitted)="saveCategory()" />
+  }
+</app-modal>
+
+<app-confirm-dialog />
