@@ -207,7 +207,7 @@ export const en = {
   'review.videoType': 'Only MP4 files are allowed',
   'review.videoSize': 'Video size must not exceed 35MB',
   'review.required': 'This field is required',
-  'knowledge.subtitle': 'Manage the articles shown in the Knowledge center',
+  'knowledge.subtitle': 'Manage and write articles published on the site',
   'knowledge.categoriesSubtitle': 'Add and organize the article categories',
   'knowledge.add': 'Add new article',
   'knowledge.edit': 'Edit article',

@@ -206,7 +206,7 @@ export const ar: { [K in keyof typeof en]: string } = {
   'review.videoType': 'يُسمح بملفات MP4 فقط',
   'review.videoSize': 'حجم الفيديو يجب ألا يتجاوز 35 ميجابايت',
   'review.required': 'هذا الحقل مطلوب',
-  'knowledge.subtitle': 'إدارة المقالات المعروضة في مركز المعرفة',
+  'knowledge.subtitle': 'إدارة وكتابة المقالات المنشورة في الموقع',
   'knowledge.categoriesSubtitle': 'إضافة وتنظيم تصنيفات المقالات',
   'knowledge.add': 'إضافة مقال جديد',
   'knowledge.edit': 'تعديل المقال',

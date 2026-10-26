@@ -301,9 +301,9 @@ $kb-blue: #1c81d3;
   color: #e11d48;
 }
 
-// White check on the selected status. PrimeNG's CheckIcon SVG does not paint reliably inside
-// popovers appended to <body>, so draw the tick with a border instead (same as the reviews board).
-.app-data-table-menu,
+// White check for the categories status filter only. Article table filters use
+// `app-data-table-menu` styles from the shared data-table stylesheet — do not
+// restyle that class here or Inquiries/FAQ filters pick up Knowledge colors.
 .kb-filter-menu {
   --p-checkbox-width: 18px;
   --p-checkbox-height: 18px;

@@ -79,16 +79,18 @@
         <div class="kb-editor__grid">
           <label class="field kb-editor__wide">
             <span class="field__label">{{ lang.t('knowledge.fieldTitle') }}</span>
-            <p-iconfield>
-              <input
-                pInputText
-                [fluid]="true"
-                [formControlName]="key('title')"
-                [placeholder]="lang.t('knowledge.fieldTitlePh')"
-                [invalid]="isInvalid('title')"
-              />
-              <p-inputicon class="pi pi-pencil" />
-            </p-iconfield>
+            @for (_ of [locale()]; track _) {
+              <p-iconfield>
+                <input
+                  pInputText
+                  [fluid]="true"
+                  [formControlName]="key('title')"
+                  [placeholder]="lang.t('knowledge.fieldTitlePh')"
+                  [invalid]="isInvalid('title')"
+                />
+                <p-inputicon class="pi pi-pencil" />
+              </p-iconfield>
+            }
             @if (isInvalid('title')) {
               <app-field-error>{{ lang.t('knowledge.required') }}</app-field-error>
             }
@@ -96,13 +98,15 @@
 
           <label class="field kb-editor__wide">
             <span class="field__label">{{ lang.t('knowledge.fieldExcerpt') }}</span>
-            <textarea
-              pTextarea
-              [fluid]="true"
-              rows="3"
-              [formControlName]="key('excerpt')"
-              [placeholder]="lang.t('knowledge.fieldExcerptPh')"
-            ></textarea>
+            @for (_ of [locale()]; track _) {
+              <textarea
+                pTextarea
+                [fluid]="true"
+                rows="3"
+                [formControlName]="key('excerpt')"
+                [placeholder]="lang.t('knowledge.fieldExcerptPh')"
+              ></textarea>
+            }
           </label>
 
           <label class="field">
@@ -142,15 +146,17 @@
 
           <label class="field">
             <span class="field__label">{{ lang.t('knowledge.fieldAuthor') }}</span>
-            <p-iconfield>
-              <input
-                pInputText
-                [fluid]="true"
-                [formControlName]="key('authorName')"
-                [placeholder]="lang.t('knowledge.fieldAuthorPh')"
-              />
-              <p-inputicon class="pi pi-user" />
-            </p-iconfield>
+            @for (_ of [locale()]; track _) {
+              <p-iconfield>
+                <input
+                  pInputText
+                  [fluid]="true"
+                  [formControlName]="key('authorName')"
+                  [placeholder]="lang.t('knowledge.fieldAuthorPh')"
+                />
+                <p-inputicon class="pi pi-user" />
+              </p-iconfield>
+            }
           </label>
 
           <div class="kb-editor__wide">
@@ -178,25 +184,27 @@
             <input pInputText dir="ltr" [fluid]="true" formControlName="slug" />
           </label>
 
-          <label class="field">
-            <span class="field__label">{{ lang.t('knowledge.fieldSeoTitle') }}</span>
-            <input pInputText [fluid]="true" [formControlName]="key('seoTitle')" />
-          </label>
+          @for (_ of [locale()]; track _) {
+            <label class="field">
+              <span class="field__label">{{ lang.t('knowledge.fieldSeoTitle') }}</span>
+              <input pInputText [fluid]="true" [formControlName]="key('seoTitle')" />
+            </label>
 
-          <label class="field kb-editor__wide">
-            <span class="field__label">{{ lang.t('knowledge.fieldSeoDescription') }}</span>
-            <textarea
-              pTextarea
-              [fluid]="true"
-              rows="3"
-              [formControlName]="key('seoDescription')"
-            ></textarea>
-          </label>
+            <label class="field kb-editor__wide">
+              <span class="field__label">{{ lang.t('knowledge.fieldSeoDescription') }}</span>
+              <textarea
+                pTextarea
+                [fluid]="true"
+                rows="3"
+                [formControlName]="key('seoDescription')"
+              ></textarea>
+            </label>
 
-          <label class="field kb-editor__wide">
-            <span class="field__label">{{ lang.t('knowledge.fieldSeoKeywords') }}</span>
-            <input pInputText [fluid]="true" [formControlName]="key('seoKeywords')" />
-          </label>
+            <label class="field kb-editor__wide">
+              <span class="field__label">{{ lang.t('knowledge.fieldSeoKeywords') }}</span>
+              <input pInputText [fluid]="true" [formControlName]="key('seoKeywords')" />
+            </label>
+          }
         </div>
       </article>
 
@@ -211,14 +219,16 @@
             [ngTemplateOutlet]="uploader"
             [ngTemplateOutletContext]="{ slot: 'thumbnail', label: '' }"
           />
-          <label class="field">
-            <span class="field__label">{{ lang.t('knowledge.fieldImageTitle') }}</span>
-            <input pInputText [fluid]="true" [formControlName]="key('thumbnailTitle')" />
-          </label>
-          <label class="field">
-            <span class="field__label">{{ lang.t('knowledge.fieldImageAlt') }}</span>
-            <input pInputText [fluid]="true" [formControlName]="key('thumbnailAlt')" />
-          </label>
+          @for (_ of [locale()]; track _) {
+            <label class="field">
+              <span class="field__label">{{ lang.t('knowledge.fieldImageTitle') }}</span>
+              <input pInputText [fluid]="true" [formControlName]="key('thumbnailTitle')" />
+            </label>
+            <label class="field">
+              <span class="field__label">{{ lang.t('knowledge.fieldImageAlt') }}</span>
+              <input pInputText [fluid]="true" [formControlName]="key('thumbnailAlt')" />
+            </label>
+          }
         </article>
 
         <article class="kb-card">
@@ -230,14 +240,16 @@
             [ngTemplateOutlet]="uploader"
             [ngTemplateOutletContext]="{ slot: 'cover', label: '' }"
           />
-          <label class="field">
-            <span class="field__label">{{ lang.t('knowledge.fieldImageTitle') }}</span>
-            <input pInputText [fluid]="true" [formControlName]="key('coverTitle')" />
-          </label>
-          <label class="field">
-            <span class="field__label">{{ lang.t('knowledge.fieldImageAlt') }}</span>
-            <input pInputText [fluid]="true" [formControlName]="key('coverAlt')" />
-          </label>
+          @for (_ of [locale()]; track _) {
+            <label class="field">
+              <span class="field__label">{{ lang.t('knowledge.fieldImageTitle') }}</span>
+              <input pInputText [fluid]="true" [formControlName]="key('coverTitle')" />
+            </label>
+            <label class="field">
+              <span class="field__label">{{ lang.t('knowledge.fieldImageAlt') }}</span>
+              <input pInputText [fluid]="true" [formControlName]="key('coverAlt')" />
+            </label>
+          }
         </article>
       </div>
 
