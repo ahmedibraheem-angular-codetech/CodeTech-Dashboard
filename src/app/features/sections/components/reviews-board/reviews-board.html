@@ -1,0 +1,110 @@
+<section class="page reviews-board">
+  <app-page-header [title]="lang.t('review.manage')" [subtitle]="lang.t('review.subtitle')">
+    <app-button
+      styleClass="reviews-board__add"
+      variant="primary"
+      icon="pi pi-plus"
+      iconPos="end"
+      [label]="lang.t('review.add')"
+      (clicked)="addReview()"
+    />
+  </app-page-header>
+
+  <section class="reviews-board__body">
+    <div class="reviews-board__toolbar">
+      <h2 class="reviews-board__count">{{ countLabel() }}</h2>
+
+      <div class="reviews-board__tools">
+        <button
+          type="button"
+          class="reviews-board__filter"
+          [class.is-open]="filterOpen()"
+          [attr.aria-expanded]="filterOpen()"
+          [attr.aria-label]="lang.t('review.filter')"
+          (click)="filterMenu.toggle($event)"
+        >
+          <i class="pi pi-filter" aria-hidden="true"></i>
+          <span>{{ filterLabel() }}</span>
+          <i
+            class="pi"
+            [class.pi-chevron-up]="filterOpen()"
+            [class.pi-chevron-down]="!filterOpen()"
+            aria-hidden="true"
+          ></i>
+        </button>
+        <p-popover
+          #filterMenu
+          styleClass="reviews-board-menu"
+          appendTo="body"
+          [dismissable]="true"
+          [focusOnShow]="false"
+          (onShow)="filterOpen.set(true)"
+          (onHide)="filterOpen.set(false)"
+        >
+          <ul class="reviews-board-menu__list">
+            @for (option of filterOptions(); track option.value) {
+              <li>
+                <label class="reviews-board-option">
+                  <p-checkbox
+                    [binary]="true"
+                    [inputId]="'review-filter-' + option.value"
+                    [ariaLabel]="option.label"
+                    [ngModel]="isFilterChecked(option.value)"
+                    (ngModelChange)="setFilter(option.value, $event)"
+                  />
+                  <span>{{ option.label }}</span>
+                </label>
+              </li>
+            }
+          </ul>
+        </p-popover>
+
+        <app-button
+          styleClass="reviews-board__export"
+          variant="outlined"
+          icon="pi pi-download"
+          iconPos="end"
+          [label]="lang.t('review.export')"
+          (clicked)="exportRows()"
+        />
+      </div>
+    </div>
+
+    @if (loading()) {
+      <app-state-view mode="loading" />
+    } @else if (visible().length === 0) {
+      <app-state-view mode="empty" [message]="lang.t('review.empty')" />
+    } @else {
+      <div class="reviews-board__grid">
+        @for (review of visible(); track review.id) {
+          <app-review-card
+            [name]="text(review).name"
+            [role]="text(review).role"
+            [externalId]="review.externalId"
+            [idLabel]="lang.t('review.idLabel')"
+            [avatarUrl]="review.avatarUrl"
+            [rating]="review.rating"
+            [status]="statusOf(review)"
+            [publishedLabel]="lang.t('review.published')"
+            [unpublishedLabel]="lang.t('review.unpublished')"
+            [mediaUrl]="review.mediaUrl"
+            [mediaKind]="review.mediaKind"
+            [playLabel]="lang.t('review.play')"
+            [createdAt]="displayDate(review.createdAt)"
+            [createdTime]="displayTime(review.createdTime)"
+            [quote]="text(review).quote"
+            [publishStatusLabel]="lang.t('review.publishStatus')"
+            [published]="review.published"
+            [editLabel]="lang.t('review.edit')"
+            [deleteLabel]="lang.t('review.delete')"
+            (publishedChange)="setPublished(review, $event)"
+            (editRequested)="editReview(review)"
+            (deleteRequested)="remove(review)"
+          />
+        }
+      </div>
+    }
+  </section>
+
+  <app-confirm-dialog />
+</section>

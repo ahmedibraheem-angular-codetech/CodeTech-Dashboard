@@ -1,0 +1,135 @@
+// Customer reviews board — page chrome, toolbar, filter menu.
+
+.reviews-board {
+  gap: 16px;
+}
+
+.reviews-board app-page-header .page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  min-height: 0;
+  gap: 16px;
+  padding: 16px;
+  border: 1px solid #edeeee;
+  border-radius: 16px;
+  background: #fff;
+}
+
+.reviews-board app-page-header .page-header h1 {
+  color: #0f2744;
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.reviews-board app-page-header .page-header p,
+.reviews-board app-page-header .page-header .mt-3 {
+  margin-top: 4px !important;
+  color: #64748b;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.reviews-board .page-header__actions {
+  flex: none;
+}
+
+.reviews-board__add.p-button,
+.reviews-board .reviews-board__add.p-button {
+  height: 48px;
+  padding-inline: 16px;
+  border-radius: 16px;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.reviews-board__export.p-button,
+.reviews-board .reviews-board__export.p-button {
+  height: 44px;
+  padding-inline: 14px;
+  border-color: #e6ebf2;
+  border-radius: 14px;
+  background: #fff;
+  color: #0f2744;
+  font-weight: 600;
+}
+
+.reviews-board .review-card__publish {
+  --p-toggleswitch-width: 40px;
+  --p-toggleswitch-height: 22px;
+  --p-toggleswitch-checked-background: #1c81d3;
+  --p-toggleswitch-handle-size: 16px;
+}
+
+// Filter popover — Figma: blue box + white check on the selected status.
+.reviews-board-menu.p-popover {
+  --p-checkbox-width: 18px;
+  --p-checkbox-height: 18px;
+  --p-checkbox-border-radius: 4px;
+  --p-checkbox-checked-background: #1c81d3;
+  --p-checkbox-checked-border-color: #1c81d3;
+  --p-checkbox-checked-hover-background: #1670b8;
+  --p-checkbox-checked-hover-border-color: #1670b8;
+  --p-checkbox-icon-checked-color: #ffffff;
+  --p-popover-background: #fff;
+  --p-popover-border-radius: 14px;
+  --p-popover-padding: 8px;
+}
+
+.reviews-board-menu__list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  min-width: 180px;
+}
+
+.reviews-board-option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  color: #0f2744;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.reviews-board-option:hover {
+  background: #f8fafc;
+}
+
+// PrimeNG CheckIcon SVG often fails to paint in this popover; draw a white check instead.
+.reviews-board-menu .p-checkbox-box {
+  position: relative;
+  color: #ffffff;
+}
+
+.reviews-board-menu .p-checkbox-checked .p-checkbox-box .p-checkbox-icon {
+  opacity: 0;
+}
+
+.reviews-board-menu .p-checkbox-checked .p-checkbox-box::after {
+  content: '';
+  position: absolute;
+  inset-inline-start: 5px;
+  inset-block-start: 1.5px;
+  width: 5px;
+  height: 9px;
+  border: solid #ffffff;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+  pointer-events: none;
+  box-sizing: border-box;
+}
+
+@media (min-width: 1100px) {
+  .reviews-board app-page-header .page-header {
+    gap: 16px;
+  }
+}

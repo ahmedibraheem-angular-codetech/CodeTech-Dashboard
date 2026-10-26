@@ -73,6 +73,14 @@ describe('SectionPage', () => {
     expect(root.textContent).toContain('إدارة الاستفسارات المستقبلة');
   });
 
+  it('renders the reviews board on the reviews route', async () => {
+    const fixture = await render('nav.reviews');
+    const root: HTMLElement = fixture.nativeElement;
+
+    expect(root.querySelector('app-reviews-board')).not.toBeNull();
+    expect(root.querySelector('h1')?.textContent).toContain('آراء العملاء والتقييمات');
+  });
+
   it('renders the FAQ board on the faq route', async () => {
     const fixture = await render('nav.faq');
     const root: HTMLElement = fixture.nativeElement;

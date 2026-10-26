@@ -1,0 +1,245 @@
+:host {
+  display: block;
+  width: 100%;
+  min-width: 0;
+}
+
+.review-card {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+  min-height: 553.4375px;
+  padding: 16px;
+  border: 1px solid #f2f2f2;
+  border-radius: 20px;
+  background: #f9fafb;
+}
+
+.review-card__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.review-card__person {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  align-items: center;
+  gap: 10px;
+}
+
+.review-card__avatar {
+  flex: none;
+  width: 48px;
+  height: 48px;
+  border-radius: 100px;
+  object-fit: cover;
+  background: #e8eef6;
+}
+
+.review-card__meta {
+  min-width: 0;
+  flex: 1;
+}
+
+.review-card__name {
+  margin: 0;
+  color: #0f2744;
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.review-card__role {
+  margin: 2px 0 0;
+  color: #94a3b8;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.review-card__id {
+  unicode-bidi: isolate;
+}
+
+.review-card__stars {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: 2px;
+  margin-block-start: 4px;
+  color: #f5b301;
+  font-size: 13px;
+}
+
+.review-card__stars .pi-star {
+  color: #d7dee8;
+}
+
+.review-card__badge.p-tag,
+:host ::ng-deep .review-card__badge.p-tag {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: 6px;
+  margin-block-start: 2px;
+  padding: 4px 10px;
+  border: 0;
+  background: transparent;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+:host ::ng-deep .review-card__badge.p-tag::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+:host ::ng-deep .review-card__badge.p-tag[data-status='published'] {
+  color: #1c81d3;
+  background: #1c81d314;
+}
+
+:host ::ng-deep .review-card__badge.p-tag[data-status='unpublished'] {
+  color: #e11d48;
+  background: #e11d4814;
+}
+
+.review-card__media {
+  position: relative;
+  overflow: hidden;
+  flex: none;
+  width: 100%;
+  height: 237px;
+  border: 1px solid #eef1f5;
+  border-radius: 20px;
+  background: #dbe7f5;
+}
+
+.review-card__media img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.review-card__media-shade {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgb(0 41 81 / 0%) -3.02%, rgb(0 41 81 / 80%) 101.85%);
+  pointer-events: none;
+}
+
+.review-card__play {
+  position: absolute;
+  inset-block-start: 50%;
+  inset-inline-start: 50%;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: #1c81d3;
+  box-shadow: 0 8px 20px rgb(28 129 211 / 35%);
+  color: #fff;
+  font-size: 18px;
+  transform: translate(-50%, -50%);
+  cursor: pointer;
+}
+
+[dir='rtl'] .review-card__play .pi-play {
+  transform: translateX(-1px);
+}
+
+// Text block only — edit/delete sit outside this panel (Figma).
+.review-card__panel {
+  box-sizing: border-box;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  min-height: 161.4375px;
+  padding: 16px;
+  border-radius: 16px;
+  background: #ffffff;
+}
+
+.review-card__when {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #94a3b8;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.review-card__quote {
+  margin: 0;
+  flex: 1;
+  color: #334155;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.7;
+}
+
+.review-card__publish {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: auto;
+  color: #0f2744;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.review-card__actions {
+  display: grid;
+  flex: none;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+:host ::ng-deep .review-card__action.p-button {
+  width: 100%;
+  height: 44px;
+  border-radius: 16px;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+:host ::ng-deep .review-card__action--edit.p-button {
+  border-color: #1c81d326;
+  background: #fff;
+  color: #1c81d3;
+}
+
+:host ::ng-deep .review-card__action--delete.p-button {
+  border-color: #e11d4826;
+  background: #fff;
+  color: #e11d48;
+}
+
+@media (max-width: 560px) {
+  .review-card {
+    min-height: 0;
+  }
+
+  .review-card__media {
+    height: auto;
+    aspect-ratio: 483 / 237;
+  }
+}

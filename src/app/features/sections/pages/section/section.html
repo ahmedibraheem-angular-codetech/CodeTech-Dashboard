@@ -4,6 +4,8 @@
   <app-inquiries-board [pageTitle]="boardTitle()" [detailPath]="detailPath()" />
 } @else if (isFaq()) {
   <app-faq-board />
+} @else if (isReviews()) {
+  <app-reviews-board />
 } @else if (isLegal()) {
   <app-legal-document-board
     [kind]="legalKind()"

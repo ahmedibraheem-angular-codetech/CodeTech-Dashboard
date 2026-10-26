@@ -293,4 +293,9 @@
   --p-checkbox-checked-border-color: #2f6fed;
   --p-checkbox-checked-hover-background: #1d4ed8;
   --p-checkbox-checked-hover-border-color: #1d4ed8;
+  --p-checkbox-icon-checked-color: #ffffff;
+}
+
+.app-data-table-menu .p-checkbox-box svg path {
+  fill: #ffffff !important;
 }

@@ -10,11 +10,20 @@ import { AboutPage } from '../../components/about-page/about-page';
 import { FaqBoard } from '../../components/faq-board/faq-board';
 import { InquiriesBoard } from '../../components/inquiries-board/inquiries-board';
 import { LegalDocumentBoard } from '../../components/legal-document-board/legal-document-board';
+import { ReviewsBoard } from '../../components/reviews-board/reviews-board';
 import type { LegalDocumentKind } from '../../models/legal-document.model';
 
 @Component({
   selector: 'app-section-page',
-  imports: [PageHeader, StateView, AboutPage, FaqBoard, InquiriesBoard, LegalDocumentBoard],
+  imports: [
+    PageHeader,
+    StateView,
+    AboutPage,
+    FaqBoard,
+    InquiriesBoard,
+    LegalDocumentBoard,
+    ReviewsBoard,
+  ],
   templateUrl: './section.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -31,6 +40,7 @@ export class SectionPage {
   /** Same board as inquiries. Only the page and table title change. */
   readonly isStart = computed(() => this.titleKey() === 'nav.startProjects');
   readonly isFaq = computed(() => this.titleKey() === 'nav.faq');
+  readonly isReviews = computed(() => this.titleKey() === 'nav.reviews');
   readonly isTerms = computed(() => this.titleKey() === 'nav.terms');
   readonly isPrivacy = computed(() => this.titleKey() === 'nav.privacy');
   readonly isLegal = computed(() => this.isTerms() || this.isPrivacy());

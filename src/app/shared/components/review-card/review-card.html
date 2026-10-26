@@ -1,0 +1,84 @@
+<article class="review-card" [attr.data-status]="status()">
+  <header class="review-card__head">
+    <div class="review-card__person">
+      <img class="review-card__avatar" [src]="avatarUrl()" [alt]="name()" />
+      <div class="review-card__meta">
+        <h3 class="review-card__name">{{ name() }}</h3>
+        <p class="review-card__role">
+          {{ role() }} -
+          <span class="review-card__id" dir="ltr">{{ idLabel() }} #{{ externalId() }}</span>
+        </p>
+      </div>
+    </div>
+
+    <span class="review-card__stars" aria-hidden="true">
+      @for (filled of stars(); track $index) {
+        <i class="pi" [class.pi-star-fill]="filled" [class.pi-star]="!filled"></i>
+      }
+    </span>
+
+    <p-tag
+      styleClass="review-card__badge"
+      [value]="statusLabel()"
+      [rounded]="true"
+      [attr.data-status]="status()"
+    />
+  </header>
+
+  <div class="review-card__media">
+    @if (mediaUrl()) {
+      <img [src]="mediaUrl()" alt="" />
+    }
+    <div class="review-card__media-shade" aria-hidden="true"></div>
+    @if (mediaKind() === 'video') {
+      <button
+        type="button"
+        class="review-card__play"
+        [attr.aria-label]="playLabel()"
+        (click)="playRequested.emit()"
+      >
+        <i class="pi pi-play" aria-hidden="true"></i>
+      </button>
+    }
+  </div>
+
+  <div class="review-card__panel">
+    <div class="review-card__when">
+      <i class="pi pi-calendar" aria-hidden="true"></i>
+      <span>{{ createdTime() }} - {{ createdAt() }}</span>
+    </div>
+
+    <blockquote class="review-card__quote">“{{ quote() }}”</blockquote>
+
+    <div class="review-card__publish">
+      <span>{{ publishStatusLabel() }}</span>
+      <p-toggleswitch
+        [ngModel]="published()"
+        (ngModelChange)="publishedChange.emit($event)"
+        [ariaLabel]="publishStatusLabel()"
+      />
+    </div>
+  </div>
+
+  <footer class="review-card__actions">
+    <app-button
+      type="button"
+      variant="outlined"
+      icon="pi pi-pencil"
+      iconPos="start"
+      styleClass="review-card__action review-card__action--edit"
+      [label]="editLabel()"
+      (clicked)="editRequested.emit()"
+    />
+    <app-button
+      type="button"
+      variant="danger"
+      [outlined]="true"
+      icon="pi pi-trash"
+      iconPos="start"
+      styleClass="review-card__action review-card__action--delete"
+      [label]="deleteLabel()"
+      (clicked)="deleteRequested.emit()"
+    />
+  </footer>
+</article>
