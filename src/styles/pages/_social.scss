@@ -1,0 +1,609 @@
+// Social links settings — match Figma cards, grid, and sticky footer actions.
+@use 'abstracts/functions' as *;
+
+.social-page {
+  gap: 16px;
+  padding-bottom: 24px;
+}
+
+.social-page app-page-header .page-header {
+  width: 100%;
+  min-height: 0;
+  gap: 16px;
+  padding: 16px;
+  border: 1px solid #edeeee;
+  border-radius: 16px;
+  background: #fff;
+}
+
+.social-page app-page-header .page-header h1 {
+  color: #0f2744;
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.social-page .page-header__actions {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+.social-page .locale-switch {
+  width: 100%;
+  margin: 0;
+  padding: 4px;
+  border: 1px solid #edeeee;
+  border-radius: 16px;
+  background: #fff;
+  gap: 8px;
+}
+
+.social-page .locale-switch__option {
+  height: 48px;
+  border-radius: 14px;
+}
+
+.social-page .locale-switch__option.is-active {
+  background: #f0f7fd;
+  color: #0f2744;
+  box-shadow: none;
+}
+
+.social-page__add,
+.social-page__save {
+  --p-button-border-radius: 14px;
+  --p-button-padding-y: 0;
+  --p-button-padding-x: 18px;
+  --p-button-primary-background: #1c81d3;
+  --p-button-primary-border-color: #1c81d3;
+  --p-button-primary-hover-background: #1a73bd;
+  --p-button-primary-hover-border-color: #1a73bd;
+
+  height: 46px;
+  font-weight: 700;
+}
+
+.social-page__cancel {
+  --p-button-border-radius: 14px;
+  --p-button-padding-y: 0;
+  --p-button-padding-x: 18px;
+  --p-button-outlined-secondary-color: #64748b;
+  --p-button-outlined-secondary-border-color: #e3e8f2;
+
+  height: 46px;
+  font-weight: 700;
+}
+
+.social-top {
+  display: grid;
+  // Details (wide) then image (Figma 405). In RTL the wide card sits near the sidebar.
+  grid-template-columns: minmax(0, 1fr) minmax(280px, 405px);
+  gap: 16px;
+  align-items: stretch;
+}
+
+// EN Figma: upload on the left, details on the right (LTR).
+[dir='ltr'] .social-top {
+  grid-template-columns: minmax(280px, 405px) minmax(0, 1fr);
+}
+
+[dir='ltr'] .social-panel--image {
+  order: 1;
+}
+
+[dir='ltr'] .social-panel--details {
+  order: 2;
+}
+
+.social-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 18px;
+  border: 1px solid #e6edf5;
+  border-radius: 20px;
+  background: #fff;
+  box-sizing: border-box;
+  --p-inputtext-background: #fff;
+  --p-inputtext-border-color: #e3e8f2;
+  --p-inputtext-hover-border-color: #c5d0e0;
+  --p-inputtext-focus-border-color: #1c81d3;
+  --p-inputtext-border-radius: 14px;
+  --p-inputtext-padding-y: 12px;
+  --p-inputtext-padding-x: 16px;
+  --p-textarea-background: #fff;
+  --p-textarea-border-color: #e3e8f2;
+  --p-textarea-border-radius: 14px;
+  --p-textarea-padding-y: 12px;
+  --p-textarea-padding-x: 16px;
+  --p-iconfield-icon-color: #94a3b8;
+  --p-toggleswitch-width: 42px;
+  --p-toggleswitch-height: 24px;
+  --p-toggleswitch-checked-background: #1c81d3;
+}
+
+// Outer — Figma: 661×423, r16, pad 16, gap 12, bg #FFF, border #F0F1F3
+.social-panel--details {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 423px;
+  gap: 12px;
+  padding: 16px;
+  border: 1px solid #f0f1f3;
+  border-radius: 16px;
+  background: #fff;
+}
+
+// Inner shell — Figma: 629×331, r16, pad 12, gap 14, bg #F9FAFB, border #EDEEEE
+.social-panel--details .social-panel__shell {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  width: 100%;
+  min-height: 331px;
+  gap: 14px;
+  padding: 12px;
+  border: 1px solid #edeeee;
+  border-radius: 16px;
+  background: #f9fafb;
+}
+
+// Outer — Figma: 405×421, r16, pad 16, gap 12, bg #FFF, border #F0F1F3
+.social-panel--image {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 421px;
+  gap: 12px;
+  padding: 16px;
+  border: 1px solid #f0f1f3;
+  border-radius: 16px;
+  background: #fff;
+}
+
+// Inner shell — Figma: 373×207, r16, pad 12, gap 14, bg #F9FAFB, border #EDEEEE
+.social-panel--image .social-panel__shell {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  flex: 0 0 auto;
+  width: 100%;
+  min-height: 207px;
+  gap: 14px;
+  padding: 12px;
+  border: 1px solid #edeeee;
+  border-radius: 16px;
+  background: #f9fafb;
+}
+
+// Outer — Figma: 1074×312, r16, pad 16, gap 12, bg #FFF, border #F0F1F3
+.social-panel--location {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 312px;
+  gap: 12px;
+  padding: 16px;
+  border: 1px solid #f0f1f3;
+  border-radius: 16px;
+  background: #fff;
+}
+
+// Inner shell — Figma: 1042×220, r16, pad 12, gap 14, bg #F9FAFB, border #EDEEEE
+.social-panel--location .social-panel__shell {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  width: 100%;
+  min-height: 220px;
+  gap: 14px;
+  padding: 12px;
+  border: 1px solid #edeeee;
+  border-radius: 16px;
+  background: #f9fafb;
+}
+
+.social-panel__head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.social-panel__head h2 {
+  margin: 0;
+  color: #0f2744;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.social-panel__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  background: #eef6ff;
+  color: #1c81d3;
+  font-size: 14px;
+}
+
+.social-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.social-fields .field,
+.social-editor .field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.social-fields .field__label,
+.social-editor .field__label {
+  color: #64748b;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+// LTR values (phone/email/url) keep Latin alignment, but icon sits at
+// inline-start of the RTL field — clear the physical right edge in RTL.
+[dir='rtl'] .social-panel .p-iconfield input[dir='ltr'] {
+  padding-left: 16px;
+  padding-right: 44px;
+}
+
+[dir='ltr'] .social-panel .p-iconfield input[dir='ltr'] {
+  padding-left: 44px;
+  padding-right: 16px;
+}
+
+.social-upload {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1 1 auto;
+  width: 100%;
+  min-height: 183px; // 207 shell − 12×2 pad
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 12px;
+  background: transparent;
+  cursor: pointer;
+  overflow: hidden;
+}
+
+.social-upload img {
+  display: block;
+  width: 100%;
+  max-height: 183px;
+  object-fit: contain;
+}
+
+.social-upload__empty {
+  color: #94a3b8;
+  font-size: 13px;
+  text-align: center;
+}
+
+// Figma places the download badge at the visual top-left of the upload area.
+.social-upload__badge {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+  background: #fff;
+  border: 1px solid #e3e8f2;
+  color: #64748b;
+  box-shadow: 0 4px 12px rgb(15 23 42 / 6%);
+}
+
+.social-location {
+  display: grid;
+  // Fields first (inline-start / right in RTL), map second — matches Figma.
+  grid-template-columns: minmax(0, 1fr) minmax(280px, 502px);
+  gap: 14px;
+  align-items: stretch;
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+// Map card — Figma: 502×196, r20, pad 9.53 14.29, bg #FFF, border #ECEFF3
+.social-map {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 100%;
+  max-width: 502px;
+  height: 196px;
+  padding: 9.53px 14.29px;
+  overflow: hidden;
+  border-radius: 20px;
+  border: 1px solid #eceff3;
+  background: #fff;
+  justify-self: stretch;
+}
+
+.social-map__frame {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  border-radius: 12px;
+}
+
+// Outer — Figma: 1074×800, r16, pad 16, gap 12, bg #FFF, border #F0F1F3
+.social-panel--links,
+.social-links {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-height: 800px;
+  gap: 12px;
+  padding: 16px;
+  border: 1px solid #f0f1f3;
+  border-radius: 16px;
+  background: #fff;
+}
+
+.social-links__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  flex: 1 1 auto;
+  align-content: start;
+}
+
+// Let the card article be the grid item (host would otherwise break span/sizing).
+app-social-link-card {
+  display: contents;
+}
+
+// Card — Figma: 515×168, r20, pad 16, gap 10, bg #F9FAFB, border #F2F2F2
+.social-card {
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 168px;
+  gap: 10px;
+  padding: 16px;
+  border: 1px solid var(--text-input-field-defult-stroke-color, #f2f2f2);
+  border-radius: 20px;
+  background: #f9fafb;
+  --p-toggleswitch-width: 42px;
+  --p-toggleswitch-height: 24px;
+  --p-toggleswitch-checked-background: #1c81d3;
+}
+
+.social-card--wide {
+  grid-column: 1 / -1;
+}
+
+.social-card__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.social-card__head h3 {
+  margin: 0;
+  color: #64748b;
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.social-card__field {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.social-card__input {
+  width: 100%;
+  height: 44px;
+  padding: 0 48px;
+  border: 1px solid #edeeee;
+  border-radius: 14px;
+  background: #fff;
+  color: #334155;
+  font: inherit;
+  font-size: 13px;
+  direction: ltr;
+  text-align: left;
+  box-sizing: border-box;
+}
+
+.social-card__icon-btn {
+  position: absolute;
+  top: 50%;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: 1px solid #edeeee;
+  border-radius: 999px;
+  background: #fff;
+  color: #94a3b8;
+  font-size: 12px;
+  cursor: pointer;
+  transform: translateY(-50%);
+}
+
+.social-card__icon-btn--start {
+  inset-inline-start: 10px;
+}
+
+.social-card__icon-btn--end {
+  inset-inline-end: 10px;
+}
+
+.social-card__actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  width: 100%;
+}
+
+.social-card__actions app-button,
+.social-card__actions .app-button {
+  display: block;
+  width: 100%;
+  min-width: 0;
+}
+
+.social-card__actions .p-button {
+  width: 100%;
+  height: 40px;
+  border-radius: 12px;
+  font-weight: 700;
+}
+
+.social-card__edit,
+.social-card__edit.p-button {
+  --p-button-outlined-primary-color: #1c81d3;
+  --p-button-outlined-primary-border-color: #d6e8f7;
+  --p-button-outlined-primary-background: #fff;
+  --p-button-outlined-primary-hover-background: #f0f7fd;
+  --p-button-outlined-primary-hover-border-color: #1c81d3;
+  --p-button-border-radius: 12px;
+}
+
+.social-card__delete,
+.social-card__delete.p-button {
+  --p-button-outlined-danger-color: #ef4444;
+  --p-button-outlined-danger-border-color: #fecaca;
+  --p-button-outlined-danger-background: #fff;
+  --p-button-outlined-danger-hover-background: #fef2f2;
+  --p-button-outlined-danger-hover-border-color: #ef4444;
+  --p-button-border-radius: 12px;
+}
+
+.social-footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 8px;
+  padding: 16px;
+  border: 1px solid #e6edf5;
+  border-radius: 18px;
+  background: #fff;
+}
+
+.social-footer__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.social-footer__meta {
+  margin: 0;
+  color: #94a3b8;
+  font-size: 13px;
+}
+
+.social-editor {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding-block: 8px 4px;
+  --p-select-background: #fff;
+  --p-select-border-color: #e3e8f2;
+  --p-select-hover-border-color: #c5d0e0;
+  --p-select-focus-border-color: #1c81d3;
+  --p-select-border-radius: 14px;
+  --p-select-padding-y: 12px;
+  --p-select-padding-x: 16px;
+}
+
+.social-editor .locale-switch {
+  width: 100%;
+  margin: 0;
+  padding: 4px;
+  border: 1px solid #edeeee;
+  border-radius: 16px;
+  background: #f4f7fb;
+  gap: 8px;
+}
+
+.social-editor .locale-switch__option {
+  height: 48px;
+  border-radius: 14px;
+}
+
+.social-editor .locale-switch__option.is-active {
+  background: #fff;
+  color: #0f2744;
+  box-shadow: 0 1px 2px rgb(22 50 79 / 8%);
+}
+
+.social-editor__link {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 48px;
+  padding: 0 12px;
+  border: 1px solid #e3e8f2;
+  border-radius: 14px;
+  background: #fff;
+}
+
+.social-editor__link-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  background: #eef6ff;
+  color: #1c81d3;
+  flex: 0 0 auto;
+}
+
+.social-editor__link-input {
+  flex: 1 1 auto;
+  min-width: 0;
+  border: 0;
+  background: transparent;
+  color: #334155;
+  font: inherit;
+  font-size: 13px;
+  outline: none;
+}
+
+.social-editor__link-open {
+  color: #94a3b8;
+  flex: 0 0 auto;
+}
+
+@media (max-width: 960px) {
+  .social-top,
+  .social-location,
+  .social-links__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .social-card--wide {
+    grid-column: auto;
+  }
+}

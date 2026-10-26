@@ -204,7 +204,15 @@ export const routes: Routes = [
           ),
         data: { breadcrumb: 'nav.permissions', titleKey: 'nav.permissions' },
       },
-      section('settings/social', 'nav.social'),
+      {
+        path: 'settings/social',
+        loadComponent: () =>
+          import('./features/settings/pages/social-links/social-links').then(
+            (m) => m.SocialLinksPage,
+          ),
+        data: { breadcrumb: 'nav.social', titleKey: 'nav.social' },
+      },
+
       section('support/terms', 'nav.terms'),
       section('support/privacy', 'nav.privacy'),
       section('support/faq', 'nav.faq'),

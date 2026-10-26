@@ -1,0 +1,190 @@
+@if (state() === 'loading') {
+  <app-state-view mode="loading" />
+} @else if (state() === 'error') {
+  <app-state-view mode="error" [message]="lang.t('social.loadError')" (retry)="reload()" />
+} @else {
+  <section class="page social-page">
+    <app-page-header [title]="lang.t('nav.social')">
+      <app-button
+        icon="pi pi-plus"
+        iconPos="end"
+        styleClass="social-page__add"
+        [label]="lang.t('social.addChannel')"
+        (clicked)="openAdd()"
+      />
+    </app-page-header>
+
+    <app-locale-switch [value]="locale()" (picked)="setLocale($event)" />
+
+    <div class="social-top">
+      <!-- First in DOM sits at the inline-start edge (right in RTL), matching Figma. -->
+      <article class="social-panel social-panel--details">
+        <header class="social-panel__head">
+          <span class="social-panel__icon" aria-hidden="true"><i class="pi pi-file"></i></span>
+          <h2>{{ lang.t('social.siteDetails') }}</h2>
+        </header>
+        <!-- Inner shell — Figma: 629×331, r16, pad 12, gap 14, bg #F9FAFB, border #EDEEEE -->
+        <form class="social-fields social-panel__shell" [formGroup]="form">
+          <label class="field">
+            <span class="field__label">{{ lang.t('social.siteDescription') }}</span>
+            <textarea
+              pTextarea
+              rows="4"
+              [fluid]="true"
+              formControlName="description"
+              [placeholder]="lang.t('social.siteDescriptionPh')"
+            ></textarea>
+          </label>
+          <label class="field">
+            <span class="field__label">{{ lang.t('social.phone') }}</span>
+            <p-iconfield>
+              <p-inputicon class="pi pi-phone" />
+              <input
+                pInputText
+                [fluid]="true"
+                formControlName="phone"
+                [placeholder]="lang.t('social.phonePh')"
+                dir="ltr"
+              />
+            </p-iconfield>
+          </label>
+          <label class="field">
+            <span class="field__label">{{ lang.t('social.email') }}</span>
+            <p-iconfield>
+              <p-inputicon class="pi pi-envelope" />
+              <input
+                pInputText
+                type="email"
+                [fluid]="true"
+                formControlName="email"
+                [placeholder]="lang.t('social.emailPh')"
+                dir="ltr"
+              />
+            </p-iconfield>
+          </label>
+        </form>
+      </article>
+
+      <article class="social-panel social-panel--image">
+        <header class="social-panel__head">
+          <span class="social-panel__icon" aria-hidden="true"><i class="pi pi-image"></i></span>
+          <h2>{{ lang.t('social.uploadImage') }}</h2>
+        </header>
+        <!-- Inner shell — Figma: 373×207, r16, pad 12, gap 14, bg #F9FAFB, border #EDEEEE -->
+        <div class="social-panel__shell">
+          <label class="social-upload">
+            <input type="file" accept="image/*" hidden (change)="onImagePicked($event)" />
+            @if (document()?.site?.imageUrl; as imageUrl) {
+              <img [src]="imageUrl" [alt]="document()?.site?.imageName ?? ''" />
+            } @else {
+              <span class="social-upload__empty">{{ lang.t('social.uploadHint') }}</span>
+            }
+            <span class="social-upload__badge" aria-hidden="true">
+              <i class="pi pi-download"></i>
+            </span>
+          </label>
+        </div>
+      </article>
+    </div>
+
+    <article class="social-panel social-panel--location">
+      <header class="social-panel__head">
+        <span class="social-panel__icon" aria-hidden="true"><i class="pi pi-map-marker"></i></span>
+        <h2>{{ lang.t('social.location') }}</h2>
+      </header>
+      <!-- Inner shell — Figma: 1042×220, r16, pad 12, gap 14, bg #F9FAFB, border #EDEEEE -->
+      <div class="social-panel__shell">
+        <div class="social-location">
+          <form class="social-fields" [formGroup]="form">
+            <label class="field">
+              <span class="field__label">{{ lang.t('social.locationName') }}</span>
+              <p-iconfield>
+                <p-inputicon class="pi pi-map-marker" />
+                <input
+                  pInputText
+                  [fluid]="true"
+                  formControlName="locationName"
+                  [placeholder]="lang.t('social.locationNamePh')"
+                />
+              </p-iconfield>
+            </label>
+            <label class="field">
+              <span class="field__label">{{ lang.t('social.mapLink') }}</span>
+              <p-iconfield>
+                <p-inputicon class="pi pi-link" />
+                <input
+                  pInputText
+                  [fluid]="true"
+                  formControlName="mapUrl"
+                  [placeholder]="lang.t('social.mapLinkPh')"
+                  dir="ltr"
+                />
+              </p-iconfield>
+            </label>
+          </form>
+          <div class="social-map">
+            <iframe
+              class="social-map__frame"
+              [src]="mapEmbedUrl()"
+              [title]="lang.t('social.location')"
+              loading="lazy"
+              referrerpolicy="no-referrer-when-downgrade"
+              allowfullscreen
+            ></iframe>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <!-- Outer — Figma: 1074×800, r16, pad 16, gap 12, bg #FFF, border #F0F1F3 -->
+    <section class="social-panel social-panel--links social-links">
+      <header class="social-panel__head social-links__head">
+        <span class="social-panel__icon" aria-hidden="true"><i class="pi pi-link"></i></span>
+        <h2>{{ lang.t('social.communicationLinks') }}</h2>
+      </header>
+      <div class="social-links__grid">
+        @for (channel of channels(); track channel.id) {
+          <app-social-link-card
+            [channel]="channel"
+            [title]="channelTitle(channel)"
+            [url]="channelUrl(channel)"
+            [editLabel]="lang.t('social.edit')"
+            [deleteLabel]="lang.t('social.delete')"
+            [wide]="channel.platform === 'whatsapp'"
+            (enabledChange)="setEnabled(channel, $event)"
+            (edit)="openEdit(channel)"
+            (remove)="removeChannel(channel)"
+          />
+        }
+      </div>
+    </section>
+
+    <footer class="social-footer">
+      <div class="social-footer__actions">
+        <app-button
+          icon="pi pi-save"
+          iconPos="start"
+          styleClass="social-page__save"
+          [label]="lang.t('common.saveChanges')"
+          [loading]="saving()"
+          (clicked)="save()"
+        />
+        <app-button
+          variant="outlined"
+          styleClass="social-page__cancel"
+          [label]="lang.t('common.cancel')"
+          [disabled]="saving()"
+          (clicked)="cancel()"
+        />
+      </div>
+      <p class="social-footer__meta">{{ updatedLabel() }}</p>
+    </footer>
+  </section>
+}
+
+<app-social-link-editor
+  [platforms]="editorPlatforms()"
+  [saving]="editorSaving()"
+  (saved)="onEditorSaved($event)"
+/>
+<app-confirm-dialog />
