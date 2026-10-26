@@ -378,7 +378,7 @@ app-social-link-card {
   flex-direction: column;
   box-sizing: border-box;
   width: 100%;
-  min-height: 168px;
+  height: 168px;
   gap: 10px;
   padding: 16px;
   border: 1px solid var(--text-input-field-defult-stroke-color, #f2f2f2);
@@ -398,6 +398,7 @@ app-social-link-card {
   align-items: center;
   justify-content: space-between;
   gap: 10px;
+  flex: 0 0 auto;
 }
 
 .social-card__head h3 {
@@ -408,59 +409,61 @@ app-social-link-card {
   line-height: 1.4;
 }
 
+// URL field — Figma: 483×48, r16, pad 12 5 12 14, bg #FFF, border #DCE3EB
 .social-card__field {
-  position: relative;
   display: flex;
   align-items: center;
+  justify-content: space-between;
+  box-sizing: border-box;
+  flex: 0 0 auto;
+  width: 100%;
+  height: 48px;
+  padding: 12px 5px 12px 14px;
+  border: 1px solid var(--Text-Geyser-200, #dce3eb);
+  border-radius: 16px;
+  background: #fff;
+  gap: 8px;
 }
 
 .social-card__input {
-  width: 100%;
-  height: 44px;
-  padding: 0 48px;
-  border: 1px solid #edeeee;
-  border-radius: 14px;
-  background: #fff;
+  flex: 1 1 auto;
+  min-width: 0;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  background: transparent;
   color: #334155;
   font: inherit;
   font-size: 13px;
   direction: ltr;
   text-align: left;
-  box-sizing: border-box;
+  outline: none;
 }
 
 .social-card__icon-btn {
-  position: absolute;
-  top: 50%;
-  z-index: 1;
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  flex: 0 0 auto;
   width: 28px;
   height: 28px;
   padding: 0;
-  border: 1px solid #edeeee;
+  border: 0;
   border-radius: 999px;
-  background: #fff;
+  background: transparent;
   color: #94a3b8;
-  font-size: 12px;
+  font-size: 13px;
   cursor: pointer;
-  transform: translateY(-50%);
 }
 
-.social-card__icon-btn--start {
-  inset-inline-start: 10px;
-}
-
-.social-card__icon-btn--end {
-  inset-inline-end: 10px;
-}
-
+// Edit / Delete — Figma: 238.5×44, r16, pad 16, gap 8, border #1C81D326, bg #FFF
 .social-card__actions {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 8px;
   width: 100%;
+  flex: 0 0 auto;
+  margin-top: auto;
 }
 
 .social-card__actions app-button,
@@ -471,30 +474,46 @@ app-social-link-card {
 }
 
 .social-card__actions .p-button {
+  box-sizing: border-box;
   width: 100%;
-  height: 40px;
-  border-radius: 12px;
+  height: 44px;
+  padding: 0 16px;
+  border-radius: 16px;
+  background: #ffffff;
   font-weight: 700;
+  gap: 8px;
+  transition:
+    background-color 300ms ease-out,
+    border-color 300ms ease-out,
+    color 300ms ease-out;
 }
 
 .social-card__edit,
 .social-card__edit.p-button {
   --p-button-outlined-primary-color: #1c81d3;
-  --p-button-outlined-primary-border-color: #d6e8f7;
-  --p-button-outlined-primary-background: #fff;
+  --p-button-outlined-primary-border-color: #1c81d326;
+  --p-button-outlined-primary-background: #ffffff;
   --p-button-outlined-primary-hover-background: #f0f7fd;
   --p-button-outlined-primary-hover-border-color: #1c81d3;
-  --p-button-border-radius: 12px;
+  --p-button-border-radius: 16px;
+
+  background: #ffffff;
+  border-color: #1c81d326;
+  color: #1c81d3;
 }
 
 .social-card__delete,
 .social-card__delete.p-button {
   --p-button-outlined-danger-color: #ef4444;
-  --p-button-outlined-danger-border-color: #fecaca;
-  --p-button-outlined-danger-background: #fff;
+  --p-button-outlined-danger-border-color: #ef444426;
+  --p-button-outlined-danger-background: #ffffff;
   --p-button-outlined-danger-hover-background: #fef2f2;
   --p-button-outlined-danger-hover-border-color: #ef4444;
-  --p-button-border-radius: 12px;
+  --p-button-border-radius: 16px;
+
+  background: #ffffff;
+  border-color: #ef444426;
+  color: #ef4444;
 }
 
 .social-footer {

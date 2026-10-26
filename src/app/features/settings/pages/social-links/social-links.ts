@@ -26,6 +26,7 @@ import { PageHeader } from '../../../../shared/components/page-header/page-heade
 import { StateView } from '../../../../shared/components/state-view/state-view';
 import { formatIsoDate } from '../../../../shared/utils/date';
 import { SocialLinkCard } from '../../components/social-link-card/social-link-card';
+import type { SocialLinkCopyResult } from '../../components/social-link-card/social-link-url';
 import { SocialLinkEditor } from '../../components/social-link-editor/social-link-editor';
 import type {
   SocialChannel,
@@ -96,15 +97,21 @@ export class SocialLinksPage {
   );
 
   readonly updatedLabel = computed(() => {
-    this.lang.language();
+    this.locale();
     const doc = this.document();
     if (!doc) {
       return '';
     }
-    return this.lang
-      .t('social.lastUpdated')
-      .replace('{date}', formatIsoDate(doc.updatedAt, this.lang.language()));
+    return this.t('social.lastUpdated').replace(
+      '{date}',
+      formatIsoDate(doc.updatedAt, this.locale()),
+    );
   });
+
+  /** Section copy follows content locale — not the global UI language. */
+  t(key: string): string {
+    return this.lang.lookup(key, this.locale()) ?? key;
+  }
 
   readonly channels = computed(() => this.document()?.channels ?? []);
 
@@ -135,6 +142,9 @@ export class SocialLinksPage {
   }
 
   protected setLocale(next: AppLanguage): void {
+    if (next === this.locale()) {
+      return;
+    }
     this.flushLocaleFields();
     this.locale.set(next);
     this.form.patchValue({
@@ -144,12 +154,38 @@ export class SocialLinksPage {
   }
 
   protected channelTitle(channel: SocialChannel): string {
-    this.lang.language();
-    return this.lang.t(`social.platform.${channel.platform}`);
+    this.locale();
+    return this.t(`social.platform.${channel.platform}`);
   }
 
   protected channelUrl(channel: SocialChannel): string {
     return readLocale(channel.url, this.locale());
+  }
+
+  protected openLinkLabel(channel: SocialChannel): string {
+    this.locale();
+    return this.t('social.openLink').replace('{name}', this.channelTitle(channel));
+  }
+
+  protected copyLinkLabel(channel: SocialChannel): string {
+    this.locale();
+    return this.t('social.copyLink').replace('{name}', this.channelTitle(channel));
+  }
+
+  protected urlFieldLabel(channel: SocialChannel): string {
+    this.locale();
+    return this.t('social.urlField').replace('{name}', this.channelTitle(channel));
+  }
+
+  protected onCopyResult(result: SocialLinkCopyResult): void {
+    if (result.ok) {
+      this.messages.add({ severity: 'success', summary: this.lang.t('social.linkCopied') });
+      return;
+    }
+    if (result.reason === 'empty') {
+      return;
+    }
+    this.messages.add({ severity: 'error', summary: this.lang.t('social.linkCopyFailed') });
   }
 
   protected openAdd(): void {
@@ -223,6 +259,11 @@ export class SocialLinksPage {
       });
   }
 
+  /**
+   * Persists channel enabled state immediately (not deferred to Save).
+   * On failure, re-clone the document signal so the one-way toggle binding
+   * snaps back to the last persisted value.
+   */
   protected setEnabled(channel: SocialChannel, enabled: boolean): void {
     this.api
       .setChannelEnabled(channel.id, enabled)
@@ -230,6 +271,10 @@ export class SocialLinksPage {
       .subscribe({
         next: (doc) => this.applyDocument(doc),
         error: () => {
+          const current = this.document();
+          if (current) {
+            this.document.set(structuredClone(current));
+          }
           this.messages.add({ severity: 'error', summary: this.lang.t('common.error') });
         },
       });

@@ -21,35 +21,36 @@
       <article class="social-panel social-panel--details">
         <header class="social-panel__head">
           <span class="social-panel__icon" aria-hidden="true"><i class="pi pi-file"></i></span>
-          <h2>{{ lang.t('social.siteDetails') }}</h2>
+          <h2>{{ t('social.siteDetails') }}</h2>
         </header>
         <!-- Inner shell — Figma: 629×331, r16, pad 12, gap 14, bg #F9FAFB, border #EDEEEE -->
         <form class="social-fields social-panel__shell" [formGroup]="form">
           <label class="field">
-            <span class="field__label">{{ lang.t('social.siteDescription') }}</span>
+            <span class="field__label">{{ t('social.siteDescription') }}</span>
             <textarea
               pTextarea
               rows="4"
               [fluid]="true"
               formControlName="description"
-              [placeholder]="lang.t('social.siteDescriptionPh')"
+              [placeholder]="t('social.siteDescriptionPh')"
+              [attr.dir]="locale() === 'ar' ? 'rtl' : 'ltr'"
             ></textarea>
           </label>
           <label class="field">
-            <span class="field__label">{{ lang.t('social.phone') }}</span>
+            <span class="field__label">{{ t('social.phone') }}</span>
             <p-iconfield>
               <p-inputicon class="pi pi-phone" />
               <input
                 pInputText
                 [fluid]="true"
                 formControlName="phone"
-                [placeholder]="lang.t('social.phonePh')"
+                [placeholder]="t('social.phonePh')"
                 dir="ltr"
               />
             </p-iconfield>
           </label>
           <label class="field">
-            <span class="field__label">{{ lang.t('social.email') }}</span>
+            <span class="field__label">{{ t('social.email') }}</span>
             <p-iconfield>
               <p-inputicon class="pi pi-envelope" />
               <input
@@ -57,7 +58,7 @@
                 type="email"
                 [fluid]="true"
                 formControlName="email"
-                [placeholder]="lang.t('social.emailPh')"
+                [placeholder]="t('social.emailPh')"
                 dir="ltr"
               />
             </p-iconfield>
@@ -68,7 +69,7 @@
       <article class="social-panel social-panel--image">
         <header class="social-panel__head">
           <span class="social-panel__icon" aria-hidden="true"><i class="pi pi-image"></i></span>
-          <h2>{{ lang.t('social.uploadImage') }}</h2>
+          <h2>{{ t('social.uploadImage') }}</h2>
         </header>
         <!-- Inner shell — Figma: 373×207, r16, pad 12, gap 14, bg #F9FAFB, border #EDEEEE -->
         <div class="social-panel__shell">
@@ -77,7 +78,7 @@
             @if (document()?.site?.imageUrl; as imageUrl) {
               <img [src]="imageUrl" [alt]="document()?.site?.imageName ?? ''" />
             } @else {
-              <span class="social-upload__empty">{{ lang.t('social.uploadHint') }}</span>
+              <span class="social-upload__empty">{{ t('social.uploadHint') }}</span>
             }
             <span class="social-upload__badge" aria-hidden="true">
               <i class="pi pi-download"></i>
@@ -90,33 +91,34 @@
     <article class="social-panel social-panel--location">
       <header class="social-panel__head">
         <span class="social-panel__icon" aria-hidden="true"><i class="pi pi-map-marker"></i></span>
-        <h2>{{ lang.t('social.location') }}</h2>
+        <h2>{{ t('social.location') }}</h2>
       </header>
       <!-- Inner shell — Figma: 1042×220, r16, pad 12, gap 14, bg #F9FAFB, border #EDEEEE -->
       <div class="social-panel__shell">
         <div class="social-location">
           <form class="social-fields" [formGroup]="form">
             <label class="field">
-              <span class="field__label">{{ lang.t('social.locationName') }}</span>
+              <span class="field__label">{{ t('social.locationName') }}</span>
               <p-iconfield>
                 <p-inputicon class="pi pi-map-marker" />
                 <input
                   pInputText
                   [fluid]="true"
                   formControlName="locationName"
-                  [placeholder]="lang.t('social.locationNamePh')"
+                  [placeholder]="t('social.locationNamePh')"
+                  [attr.dir]="locale() === 'ar' ? 'rtl' : 'ltr'"
                 />
               </p-iconfield>
             </label>
             <label class="field">
-              <span class="field__label">{{ lang.t('social.mapLink') }}</span>
+              <span class="field__label">{{ t('social.mapLink') }}</span>
               <p-iconfield>
                 <p-inputicon class="pi pi-link" />
                 <input
                   pInputText
                   [fluid]="true"
                   formControlName="mapUrl"
-                  [placeholder]="lang.t('social.mapLinkPh')"
+                  [placeholder]="t('social.mapLinkPh')"
                   dir="ltr"
                 />
               </p-iconfield>
@@ -126,7 +128,7 @@
             <iframe
               class="social-map__frame"
               [src]="mapEmbedUrl()"
-              [title]="lang.t('social.location')"
+              [title]="t('social.location')"
               loading="lazy"
               referrerpolicy="no-referrer-when-downgrade"
               allowfullscreen
@@ -140,7 +142,7 @@
     <section class="social-panel social-panel--links social-links">
       <header class="social-panel__head social-links__head">
         <span class="social-panel__icon" aria-hidden="true"><i class="pi pi-link"></i></span>
-        <h2>{{ lang.t('social.communicationLinks') }}</h2>
+        <h2>{{ t('social.communicationLinks') }}</h2>
       </header>
       <div class="social-links__grid">
         @for (channel of channels(); track channel.id) {
@@ -148,12 +150,16 @@
             [channel]="channel"
             [title]="channelTitle(channel)"
             [url]="channelUrl(channel)"
-            [editLabel]="lang.t('social.edit')"
-            [deleteLabel]="lang.t('social.delete')"
+            [editLabel]="t('social.edit')"
+            [deleteLabel]="t('social.delete')"
+            [openLabel]="openLinkLabel(channel)"
+            [copyLabel]="copyLinkLabel(channel)"
+            [urlFieldLabel]="urlFieldLabel(channel)"
             [wide]="channel.platform === 'whatsapp'"
             (enabledChange)="setEnabled(channel, $event)"
             (edit)="openEdit(channel)"
             (remove)="removeChannel(channel)"
+            (copyResult)="onCopyResult($event)"
           />
         }
       </div>
@@ -165,14 +171,14 @@
           icon="pi pi-save"
           iconPos="start"
           styleClass="social-page__save"
-          [label]="lang.t('common.saveChanges')"
+          [label]="t('common.saveChanges')"
           [loading]="saving()"
           (clicked)="save()"
         />
         <app-button
           variant="outlined"
           styleClass="social-page__cancel"
-          [label]="lang.t('common.cancel')"
+          [label]="t('common.cancel')"
           [disabled]="saving()"
           (clicked)="cancel()"
         />
