@@ -5,36 +5,58 @@
   z-index: var(--app-z-toast);
 }
 
-// Flash messages — Figma “Flash Messages” (success / error). Summary text stays dynamic.
+// Flash messages — Figma success: 459×84, r16, gap 12, pad 20 12, bg #FFF.
 .p-toast.app-toast {
-  width: min(28rem, calc(100vw - 2rem));
+  width: min(459px, calc(100vw - 2rem));
 }
 
 .p-toast.app-toast .p-toast-message {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 84px;
   margin: 0 0 10px;
   overflow: hidden;
   border: 1px solid transparent;
   border-radius: 16px;
   background: #fff;
-  box-shadow: 0 10px 28px rgb(15 23 42 / 8%);
+  box-shadow: none;
 }
 
 .p-toast.app-toast .p-toast-message-content {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 14px 16px;
+  padding: 20px 12px;
 }
 
-.p-toast.app-toast .p-toast-message-icon {
+// Outer ring — Figma: 44×44, r22.55. Inner solid disc via radial-gradient.
+.p-toast.app-toast .p-toast-message-icon,
+.p-toast.app-toast .app-toast-icon {
+  box-sizing: border-box;
   display: inline-flex;
   flex: none;
   align-items: center;
   justify-content: center;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  font-size: 16px;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border-radius: 22.55px;
+  font-size: 14px;
+  line-height: 1;
+}
+
+.p-toast.app-toast .app-toast-check {
+  display: block;
+  flex: none;
+  overflow: visible;
+}
+
+.p-toast.app-toast .app-toast-check path {
+  fill: none !important;
+  stroke: #ffffff !important;
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 
 .p-toast.app-toast .p-toast-message-text {
@@ -64,7 +86,9 @@
   display: none;
 }
 
+// Close — Figma: 32×32, r38.79, pad 9.14, bg #FFF, border 0.69px #666B6D33
 .p-toast.app-toast .p-toast-close-button {
+  box-sizing: border-box;
   display: inline-flex;
   flex: none;
   align-items: center;
@@ -72,58 +96,68 @@
   width: 32px;
   height: 32px;
   margin: 0;
-  margin-inline-start: 4px;
-  border: 0;
-  border-radius: 50%;
-  background: #f1f5f9;
-  color: #94a3b8;
+  padding: 9.14px;
+  border: 0.69px solid #666b6d33;
+  border-radius: 38.79px;
+  background: #fff;
+  color: #666b6d;
 }
 
 .p-toast.app-toast .p-toast-close-button:hover {
-  background: #e2e8f0;
-  color: #64748b;
+  background: #f8fafc;
+  color: #475569;
 }
 
 .p-toast.app-toast .p-toast-close-icon {
   font-size: 12px;
 }
 
+// Success — border #32934F59; outer #32934F2E; inner #32934F
 .p-toast.app-toast .p-toast-message-success {
-  border-color: #bbf7d0;
+  border-color: #32934f59;
 }
 
-.p-toast.app-toast .p-toast-message-success .p-toast-message-icon {
-  background: #16a34a;
-  color: #fff;
-  box-shadow: 0 0 0 6px rgb(22 163 74 / 14%);
+// Success icon — green rings; white check comes from app.html template (Figma 13.33×9.56).
+.p-toast.app-toast .p-toast-message-success .p-toast-message-icon,
+.p-toast.app-toast .p-toast-message-success .app-toast-icon {
+  box-sizing: border-box;
+  width: 44px;
+  height: 44px;
+  color: #ffffff;
+  box-shadow: none;
+  background: radial-gradient(circle at center, #32934f 0 16px, #32934f2e 16px 100%);
 }
 
+// Error — same structure with red tokens matching the Figma flash set
 .p-toast.app-toast .p-toast-message-error {
-  border-color: #fecdd3;
+  border-color: #c94c4c59;
 }
 
-.p-toast.app-toast .p-toast-message-error .p-toast-message-icon {
-  background: #e11d48;
+.p-toast.app-toast .p-toast-message-error .p-toast-message-icon,
+.p-toast.app-toast .p-toast-message-error .app-toast-icon {
+  background: radial-gradient(circle at center, #c94c4c 0 16px, #c94c4c2e 16px 100%);
   color: #fff;
-  box-shadow: 0 0 0 6px rgb(225 29 72 / 12%);
+  box-shadow: none;
 }
 
 .p-toast.app-toast .p-toast-message-warn {
-  border-color: #fde68a;
+  border-color: #d9770659;
 }
 
-.p-toast.app-toast .p-toast-message-warn .p-toast-message-icon {
-  background: #d97706;
+.p-toast.app-toast .p-toast-message-warn .p-toast-message-icon,
+.p-toast.app-toast .p-toast-message-warn .app-toast-icon {
+  background: radial-gradient(circle at center, #d97706 0 16px, #d977062e 16px 100%);
   color: #fff;
-  box-shadow: 0 0 0 6px rgb(217 119 6 / 14%);
+  box-shadow: none;
 }
 
 .p-toast.app-toast .p-toast-message-info {
-  border-color: #bfdbfe;
+  border-color: #1c81d359;
 }
 
-.p-toast.app-toast .p-toast-message-info .p-toast-message-icon {
-  background: #2f6fed;
+.p-toast.app-toast .p-toast-message-info .p-toast-message-icon,
+.p-toast.app-toast .p-toast-message-info .app-toast-icon {
+  background: radial-gradient(circle at center, #1c81d3 0 16px, #1c81d32e 16px 100%);
   color: #fff;
-  box-shadow: 0 0 0 6px rgb(47 111 237 / 14%);
+  box-shadow: none;
 }

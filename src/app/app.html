@@ -1,2 +1,50 @@
-<p-toast position="top-center" styleClass="app-toast" [breakpoints]="{ '640px': { width: 'min(28rem, calc(100vw - 2rem))' } }" />
+<p-toast
+  position="top-center"
+  styleClass="app-toast"
+  [breakpoints]="{ '640px': { width: 'min(459px, calc(100vw - 2rem))' } }"
+>
+  <ng-template #message let-message>
+    <span
+      class="p-toast-message-icon app-toast-icon"
+      [attr.data-severity]="message.severity"
+      aria-hidden="true"
+    >
+      @if (message.severity === 'success') {
+        <svg
+          class="app-toast-check"
+          width="13.33"
+          height="9.56"
+          viewBox="0 0 14 10"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M1.2 5.1 5.3 9.1 12.8 1.2"
+            stroke="#ffffff"
+            stroke-width="2.2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
+        </svg>
+      } @else if (message.severity === 'error') {
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M3 3l6 6M9 3L3 9" stroke="#ffffff" stroke-width="2" stroke-linecap="round" />
+        </svg>
+      } @else if (message.severity === 'warn') {
+        <svg width="14" height="12" viewBox="0 0 14 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M7 4v3.5M7 9.2h.01" stroke="#ffffff" stroke-width="2" stroke-linecap="round" />
+        </svg>
+      } @else {
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="7" cy="7" r="5.25" stroke="#ffffff" stroke-width="2" />
+          <path d="M7 6.2V10M7 4.2h.01" stroke="#ffffff" stroke-width="2" stroke-linecap="round" />
+        </svg>
+      }
+    </span>
+    <div class="p-toast-message-text">
+      <div class="p-toast-summary">{{ message.summary }}</div>
+      <div class="p-toast-detail">{{ message.detail }}</div>
+    </div>
+  </ng-template>
+</p-toast>
 <router-outlet />
