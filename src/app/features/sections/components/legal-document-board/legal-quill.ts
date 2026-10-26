@@ -20,13 +20,20 @@ export const LEGAL_QUILL_FONT_REGISTRAR = new InjectionToken<() => Promise<Quill
 /** Minimal Quill surface used by the legal toolbar and draft sync. */
 export interface LegalQuill {
   root: HTMLElement;
+  focus?: () => void;
   getSelection: (focus?: boolean) => { index: number; length: number } | null;
   getLength: () => number;
   getSemanticHTML?: () => string;
   clipboard: { dangerouslyPasteHTML: (index: number, html: string) => void };
   setSelection: (index: number, length?: number) => void;
   history: { undo: () => void; redo: () => void };
-  getModule: (name: string) => { addHandler: (name: string, handler: () => void) => void };
+  getModule: (name: string) => LegalToolbarModule;
+}
+
+export interface LegalToolbarModule {
+  container?: HTMLElement | null;
+  addHandler: (name: string, handler: () => void) => void;
+  attach?: (input: HTMLElement) => void;
 }
 
 type QuillConstructor = {
@@ -69,6 +76,10 @@ export function readQuillHtml(quill: LegalQuill): string {
 /**
  * Wire undo / redo / hr once per Quill instance. Returns false when the
  * instance was already wired so callers can skip duplicate work.
+ *
+ * Quill's toolbar skips unknown formats (`ql-undo` / `ql-redo` / `ql-hr`) during
+ * construction — `addHandler` alone is not enough after that. We register the
+ * handlers, then attach (or click-bind) those buttons so clicks actually run.
  */
 export function wireLegalToolbarHandlers(quill: LegalQuill): boolean {
   if (wiredEditors.has(quill)) {
@@ -77,16 +88,57 @@ export function wireLegalToolbarHandlers(quill: LegalQuill): boolean {
   wiredEditors.add(quill);
 
   const toolbar = quill.getModule('toolbar');
-  toolbar.addHandler('undo', () => quill.history.undo());
-  toolbar.addHandler('redo', () => quill.history.redo());
-  toolbar.addHandler('hr', () => {
+  const undo = (): void => {
+    quill.focus?.();
+    quill.history.undo();
+  };
+  const redo = (): void => {
+    quill.focus?.();
+    quill.history.redo();
+  };
+  const insertHr = (): void => {
+    quill.focus?.();
     const range = quill.getSelection(true) ?? { index: Math.max(quill.getLength() - 1, 0), length: 0 };
     // Quill 2 defaults this helper to sources.API. With History.userOnly=false
     // (Quill default), API edits are still recorded, so undo/redo remain valid.
     quill.clipboard.dangerouslyPasteHTML(range.index, '<hr>');
     quill.setSelection(range.index + 1);
-  });
+  };
+
+  toolbar.addHandler('undo', undo);
+  toolbar.addHandler('redo', redo);
+  toolbar.addHandler('hr', insertHr);
+
+  bindCustomToolbarControl(toolbar, 'undo', undo);
+  bindCustomToolbarControl(toolbar, 'redo', redo);
+  bindCustomToolbarControl(toolbar, 'hr', insertHr);
   return true;
+}
+
+function bindCustomToolbarControl(
+  toolbar: LegalToolbarModule,
+  format: 'undo' | 'redo' | 'hr',
+  action: () => void,
+): void {
+  const button = toolbar.container?.querySelector<HTMLElement>(`.ql-${format}`);
+  if (!button) {
+    return;
+  }
+
+  // Prefer Quill's attach now that the handler exists in toolbar.handlers.
+  if (typeof toolbar.attach === 'function') {
+    toolbar.attach(button);
+    return;
+  }
+
+  if (button.dataset['legalBound'] === '1') {
+    return;
+  }
+  button.dataset['legalBound'] = '1';
+  button.addEventListener('click', (event) => {
+    event.preventDefault();
+    action();
+  });
 }
 
 /** Apply RTL/LTR on the editable root (not only the surrounding shell). */

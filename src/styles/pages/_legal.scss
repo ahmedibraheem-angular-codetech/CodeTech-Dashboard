@@ -501,6 +501,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  pointer-events: none;
   color: var(--legal-toolbar-icon);
   font-family: 'primeicons';
   font-size: 16px;

@@ -15,8 +15,16 @@ function fakeQuill(overrides: Partial<LegalQuill> = {}): LegalQuill {
   const handlers = new Map<string, () => void>();
   const root = document.createElement('div');
   root.innerHTML = '<p>hello</p>';
+  const container = document.createElement('div');
+  container.innerHTML = `
+    <button type="button" class="ql-undo"></button>
+    <button type="button" class="ql-redo"></button>
+    <button type="button" class="ql-hr"></button>
+  `;
+  const attach = vi.fn();
   return {
     root,
+    focus: vi.fn(),
     getSelection: () => ({ index: 2, length: 0 }),
     getLength: () => 10,
     getSemanticHTML: () => '<p>semantic</p>',
@@ -24,14 +32,20 @@ function fakeQuill(overrides: Partial<LegalQuill> = {}): LegalQuill {
     setSelection: vi.fn(),
     history: { undo: vi.fn(), redo: vi.fn() },
     getModule: () => ({
+      container,
+      attach,
       addHandler: (name: string, handler: () => void) => {
         handlers.set(name, handler);
       },
     }),
     ...overrides,
     // Expose handlers for assertions without leaking into LegalQuill type.
-    ...( { __handlers: handlers } as object),
-  } as LegalQuill & { __handlers?: Map<string, () => void> };
+    ...({ __handlers: handlers, __attach: attach, __container: container } as object),
+  } as LegalQuill & {
+    __handlers?: Map<string, () => void>;
+    __attach?: ReturnType<typeof vi.fn>;
+    __container?: HTMLElement;
+  };
 }
 
 describe('legal-quill helpers', () => {
@@ -69,13 +83,21 @@ describe('legal-quill helpers', () => {
   });
 
   it('registers undo, redo, and hr once per Quill instance', () => {
-    const quill = fakeQuill() as LegalQuill & { __handlers: Map<string, () => void> };
+    const quill = fakeQuill() as LegalQuill & {
+      __handlers: Map<string, () => void>;
+      __attach: ReturnType<typeof vi.fn>;
+      __container: HTMLElement;
+    };
     expect(wireLegalToolbarHandlers(quill)).toBe(true);
     expect(wireLegalToolbarHandlers(quill)).toBe(false);
 
     expect(quill.__handlers.has('undo')).toBe(true);
     expect(quill.__handlers.has('redo')).toBe(true);
     expect(quill.__handlers.has('hr')).toBe(true);
+    expect(quill.__attach).toHaveBeenCalledTimes(3);
+    expect(quill.__attach).toHaveBeenCalledWith(quill.__container.querySelector('.ql-undo'));
+    expect(quill.__attach).toHaveBeenCalledWith(quill.__container.querySelector('.ql-redo'));
+    expect(quill.__attach).toHaveBeenCalledWith(quill.__container.querySelector('.ql-hr'));
 
     quill.__handlers.get('undo')?.();
     quill.__handlers.get('redo')?.();
@@ -85,6 +107,30 @@ describe('legal-quill helpers', () => {
     quill.__handlers.get('hr')?.();
     expect(quill.clipboard.dangerouslyPasteHTML).toHaveBeenCalledWith(2, '<hr>');
     expect(quill.setSelection).toHaveBeenCalledWith(3);
+  });
+
+  it('falls back to click listeners when toolbar.attach is unavailable', () => {
+    const handlers = new Map<string, () => void>();
+    const container = document.createElement('div');
+    container.innerHTML = `
+      <button type="button" class="ql-undo"></button>
+      <button type="button" class="ql-redo"></button>
+      <button type="button" class="ql-hr"></button>
+    `;
+    const quill = fakeQuill({
+      getModule: () => ({
+        container,
+        addHandler: (name: string, handler: () => void) => {
+          handlers.set(name, handler);
+        },
+      }),
+    });
+
+    expect(wireLegalToolbarHandlers(quill)).toBe(true);
+    container.querySelector<HTMLButtonElement>('.ql-undo')?.click();
+    container.querySelector<HTMLButtonElement>('.ql-redo')?.click();
+    expect(quill.history.undo).toHaveBeenCalledTimes(1);
+    expect(quill.history.redo).toHaveBeenCalledTimes(1);
   });
 
   it('wires a second Quill instance independently of the first', () => {

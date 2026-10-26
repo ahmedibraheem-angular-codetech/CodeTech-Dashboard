@@ -114,15 +114,26 @@ describe('LegalDocumentBoard', () => {
   function fakeQuill(html = '<p>live</p>'): LegalQuill {
     const rootEl = document.createElement('div');
     rootEl.innerHTML = html;
+    const container = document.createElement('div');
+    container.innerHTML = `
+      <button type="button" class="ql-undo"></button>
+      <button type="button" class="ql-redo"></button>
+      <button type="button" class="ql-hr"></button>
+    `;
     return {
       root: rootEl,
+      focus: vi.fn(),
       getSelection: () => ({ index: 0, length: 0 }),
       getLength: () => 1,
       getSemanticHTML: () => html,
       clipboard: { dangerouslyPasteHTML: vi.fn() },
       setSelection: vi.fn(),
       history: { undo: vi.fn(), redo: vi.fn() },
-      getModule: () => ({ addHandler: vi.fn() }),
+      getModule: () => ({
+        container,
+        attach: vi.fn(),
+        addHandler: vi.fn(),
+      }),
     };
   }
 
