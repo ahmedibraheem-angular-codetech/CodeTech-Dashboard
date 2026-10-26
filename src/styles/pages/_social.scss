@@ -262,19 +262,23 @@
   padding-right: 16px;
 }
 
+// Upload preview — Figma: 349×183, r20, pad 9.53 14.29, bg #FFF, border #ECEFF3
 .social-upload {
+  box-sizing: border-box;
   position: relative;
   display: flex;
-  align-items: center;
-  justify-content: center;
-  flex: 1 1 auto;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: space-between;
+  flex: 0 0 auto;
   width: 100%;
-  min-height: 183px; // 207 shell − 12×2 pad
+  max-width: 349px;
+  height: 183px;
   margin: 0;
-  padding: 0;
-  border: 0;
-  border-radius: 12px;
-  background: transparent;
+  padding: 9.53px 14.29px;
+  border: 1px solid #eceff3;
+  border-radius: 20px;
+  background: #fff;
   cursor: pointer;
   overflow: hidden;
 }
@@ -282,31 +286,41 @@
 .social-upload img {
   display: block;
   width: 100%;
-  max-height: 183px;
+  height: 100%;
   object-fit: contain;
+  border-radius: 12px;
 }
 
 .social-upload__empty {
+  display: flex;
+  flex: 1 1 auto;
+  align-items: center;
+  justify-content: center;
   color: #94a3b8;
   font-size: 13px;
   text-align: center;
 }
 
-// Figma places the download badge at the visual top-left of the upload area.
+// Upload action — Figma: 36×36, r10, pad 10, gap 10, bg #1C81D30D
 .social-upload__badge {
+  box-sizing: border-box;
   position: absolute;
-  top: 12px;
-  left: 12px;
+  top: 9.53px;
+  left: 14.29px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 32px;
-  height: 32px;
+  width: 36px;
+  height: 36px;
+  padding: 10px;
+  gap: 10px;
+  border: 0;
   border-radius: 10px;
-  background: #fff;
-  border: 1px solid #e3e8f2;
-  color: #64748b;
-  box-shadow: 0 4px 12px rgb(15 23 42 / 6%);
+  background: #1c81d30d;
+  color: #1c81d3;
+  box-shadow: none;
+  font-size: 14px;
+  line-height: 1;
 }
 
 .social-location {
