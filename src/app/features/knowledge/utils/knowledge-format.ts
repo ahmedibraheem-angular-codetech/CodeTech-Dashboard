@@ -12,6 +12,33 @@ export function articleTitle(article: Article, locale: AppLanguage): string {
   return pick(article.titleAr, article.titleEn, locale);
 }
 
+/**
+ * Presentation-only article code for the list table (`ART-0222`).
+ * Keeps the underlying model id untouched for routes and API calls.
+ */
+export function articleDisplayId(id: string): string {
+  const digits = id.replace(/\D/g, '');
+  const suffix = (digits || '0').slice(-4).padStart(4, '0');
+  return `ART-${suffix}`;
+}
+
+/** Splits a comma/Arabic-comma separated keyword string into chip labels. */
+export function splitKeywords(value: string | null | undefined): string[] {
+  return String(value ?? '')
+    .split(/[,،]/)
+    .map((part) => part.trim())
+    .filter(Boolean);
+}
+
+/** Joins keyword chips back into the stored string form. */
+export function joinKeywords(tags: readonly string[], locale: AppLanguage = 'ar'): string {
+  const sep = locale === 'ar' ? '، ' : ', ';
+  return tags
+    .map((tag) => tag.trim())
+    .filter(Boolean)
+    .join(sep);
+}
+
 export function articleExcerpt(article: Article, locale: AppLanguage): string {
   return pick(article.excerptAr, article.excerptEn, locale);
 }

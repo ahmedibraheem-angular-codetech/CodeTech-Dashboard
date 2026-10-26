@@ -332,17 +332,21 @@
 
 .image-drop {
   display: flex;
-  padding: 16px;
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 114px;
+  padding: 18px 16px;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   gap: 12px;
   align-self: stretch;
   border-radius: 16px;
-  border: 1.5px dashed rgb(28 129 211 / 40%);
-  background: #f9fafb;
+  border: 1px dashed rgb(28 129 211 / 40%);
+  background: #fff;
   text-align: center;
   cursor: pointer;
+  opacity: 1;
 }
 
 .image-drop input {

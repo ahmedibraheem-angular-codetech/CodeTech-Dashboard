@@ -12,6 +12,7 @@ import {
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
+import { MessageService } from 'primeng/api';
 import { Popover } from 'primeng/popover';
 import { forkJoin } from 'rxjs';
 
@@ -31,7 +32,14 @@ import {
 } from '../../models/knowledge.model';
 import { KnowledgeActions } from '../../services/knowledge-actions.service';
 import { KnowledgeService } from '../../services/knowledge.service';
-import { categoryName, formatStampDate, formatStampTime, pick } from '../../utils/knowledge-format';
+import {
+  articleDisplayId,
+  categoryName,
+  formatStampDate,
+  formatStampTime,
+  pick,
+  splitKeywords,
+} from '../../utils/knowledge-format';
 import { hasVisibleHtml } from '../../../sections/components/legal-document-board/legal-quill';
 
 type LoadStatus = 'loading' | 'ready' | 'missing' | 'error';
@@ -46,6 +54,7 @@ type LoadStatus = 'loading' | 'ready' | 'missing' | 'error';
 export class ArticleDetail {
   private readonly api = inject(KnowledgeService);
   private readonly actions = inject(KnowledgeActions);
+  private readonly messages = inject(MessageService);
   private readonly router = inject(Router);
   private readonly breadcrumbs = inject(BreadcrumbService);
   private readonly destroyRef = inject(DestroyRef);
@@ -65,6 +74,7 @@ export class ArticleDetail {
   readonly author = computed(() => this.text('authorNameAr', 'authorNameEn'));
   readonly categoryLabel = computed(() => categoryName(this.category(), this.locale()) || '—');
   readonly dir = computed(() => (this.locale() === 'ar' ? 'rtl' : 'ltr'));
+  readonly displayId = computed(() => articleDisplayId(this.article()?.id ?? this.id()));
 
   readonly content = computed(() => {
     const article = this.article();
@@ -79,12 +89,23 @@ export class ArticleDetail {
     const stamp = this.article()?.publishedAt ?? '';
     const date = formatStampDate(stamp, this.locale());
     const time = formatStampTime(stamp, this.locale());
-    return [date, time].filter(Boolean).join(' - ') || '—';
+    return [time, date].filter(Boolean).join(' - ') || '—';
   });
+
+  /** Header meta line under the title (clock + stamp), matching the detail Figma. */
+  readonly headerMeta = computed(() => this.published());
 
   readonly reading = computed(() =>
     this.lang.t('knowledge.minutes').replace('{count}', `${this.article()?.readingMinutes ?? 0}`),
   );
+
+  readonly keywordTags = computed(() => {
+    const article = this.article();
+    if (!article) {
+      return [];
+    }
+    return splitKeywords(pick(article.seoKeywordsAr, article.seoKeywordsEn, this.locale()));
+  });
 
   readonly otherStatuses = computed<ArticleStatus[]>(() =>
     ARTICLE_STATUSES.filter((status) => status !== this.article()?.status),
@@ -144,6 +165,42 @@ export class ArticleDetail {
     void this.router.navigate(['/knowledge', this.id(), 'edit']);
   }
 
+  protected async copyId(): Promise<void> {
+    const value = this.displayId();
+    if (!(await this.writeClipboard(value))) {
+      return;
+    }
+    this.messages.add({
+      severity: 'success',
+      summary: this.lang.t('knowledge.idCopied'),
+    });
+  }
+
+  protected async copyLink(): Promise<void> {
+    if (!(await this.writeClipboard(this.shareUrl()))) {
+      return;
+    }
+    this.messages.add({
+      severity: 'success',
+      summary: this.lang.t('knowledge.linkCopied'),
+    });
+  }
+
+  protected shareWhatsapp(): void {
+    const url = encodeURIComponent(this.shareUrl());
+    const text = encodeURIComponent(this.title());
+    window.open(`https://wa.me/?text=${text}%20${url}`, '_blank', 'noopener,noreferrer');
+  }
+
+  protected shareLinkedin(): void {
+    const url = encodeURIComponent(this.shareUrl());
+    window.open(
+      `https://www.linkedin.com/sharing/share-offsite/?url=${url}`,
+      '_blank',
+      'noopener,noreferrer',
+    );
+  }
+
   protected async toggleFeatured(): Promise<void> {
     const current = this.article();
     const next = current ? await this.actions.toggleFeatured(current, this.confirm()) : null;
@@ -169,6 +226,22 @@ export class ArticleDetail {
     const current = this.article();
     if (current && (await this.actions.remove(current, this.confirm()))) {
       this.back();
+    }
+  }
+
+  private shareUrl(): string {
+    return typeof window === 'undefined' ? '' : window.location.href;
+  }
+
+  private async writeClipboard(value: string): Promise<boolean> {
+    if (!value || !navigator.clipboard?.writeText) {
+      return false;
+    }
+    try {
+      await navigator.clipboard.writeText(value);
+      return true;
+    } catch {
+      return false;
     }
   }
 

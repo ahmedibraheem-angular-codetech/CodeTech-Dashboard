@@ -43,6 +43,13 @@
     </div>
   </ng-template>
 
+  <ng-template appDataCell="reading" let-row>
+    <span class="kb-reading">
+      <i class="pi pi-clock" aria-hidden="true"></i>
+      <span>{{ row.reading }}</span>
+    </span>
+  </ng-template>
+
   <ng-template appDataCell="actions" let-row>
     <app-button
       styleClass="kb-more"

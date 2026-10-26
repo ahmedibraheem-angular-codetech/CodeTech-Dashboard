@@ -32,6 +32,7 @@ import {
   type ArticleStatus,
 } from '../../models/knowledge.model';
 import {
+  articleDisplayId,
   articleExcerpt,
   articleTitle,
   categoryName,
@@ -41,6 +42,8 @@ import {
 
 interface ArticleRow {
   id: string;
+  /** Figma list label (`ART-0222`). Routes still use `source.id`. */
+  displayId: string;
   article: { title: string; excerpt: string; thumbnailUrl: string; featured: boolean };
   category: string;
   reading: string;
@@ -151,10 +154,10 @@ export class ArticlesPanel {
   readonly columns = computed<DataTableColumn<ArticleRow>[]>(() => {
     this.lang.language();
     return [
-      { key: 'id', header: 'ID', field: 'id', width: '110px' },
+      { key: 'id', header: 'ID', field: 'displayId', width: '110px', dir: 'ltr' },
       { key: 'article', header: this.lang.t('knowledge.col.article'), width: '380px' },
       { key: 'category', header: this.lang.t('knowledge.col.category'), field: 'category' },
-      { key: 'reading', header: this.lang.t('knowledge.col.reading'), field: 'reading' },
+      { key: 'reading', header: this.lang.t('knowledge.col.reading'), width: '130px' },
       {
         key: 'status',
         header: this.lang.t('knowledge.col.status'),
@@ -169,7 +172,7 @@ export class ArticlesPanel {
         kind: 'datetime',
         width: '240px',
       },
-      { key: 'actions', header: this.lang.t('knowledge.col.actions'), width: '90px' },
+      { key: 'actions', header: this.lang.t('knowledge.col.actions'), width: '72px' },
     ];
   });
 
@@ -187,6 +190,7 @@ export class ArticlesPanel {
         const category = categories.find((entry) => entry.id === item.categoryId);
         const haystack = [
           item.id,
+          articleDisplayId(item.id),
           item.titleAr,
           item.titleEn,
           item.excerptAr,
@@ -208,6 +212,7 @@ export class ArticlesPanel {
       .slice(this.first(), this.first() + this.pageSize())
       .map((item) => ({
         id: item.id,
+        displayId: articleDisplayId(item.id),
         article: {
           title: articleTitle(item, locale),
           excerpt: articleExcerpt(item, locale),

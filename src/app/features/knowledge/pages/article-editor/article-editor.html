@@ -33,7 +33,7 @@
         styleClass="kb-editor__primary"
         icon="pi pi-save"
         iconPos="end"
-        [label]="lang.t('common.save')"
+        [label]="lang.t('common.saveChanges')"
         [loading]="saving()"
         [disabled]="status() !== 'ready'"
         (clicked)="save()"
@@ -69,195 +69,308 @@
     <app-locale-switch [value]="locale()" (picked)="setLocale($event)" />
 
     <form class="kb-editor__form" [formGroup]="form" [attr.dir]="dir()">
-      <!-- Article data -->
-      <article class="kb-card">
-        <header class="kb-card__head">
-          <span class="kb-card__icon" aria-hidden="true"><i class="pi pi-file"></i></span>
-          <h2>{{ lang.t('knowledge.dataCard') }}</h2>
-        </header>
+      <!-- Figma: main 661 (data + SEO) | side 405 (thumbnail + cover) -->
+      <div class="kb-editor__layout">
+        <div class="kb-editor__main">
+          <article class="kb-card kb-card--data">
+            <header class="kb-card__head">
+              <span class="kb-card__icon" aria-hidden="true"><i class="pi pi-file-edit"></i></span>
+              <h2>{{ ct('knowledge.dataCard') }}</h2>
+            </header>
 
-        <div class="kb-editor__grid">
-          <label class="field kb-editor__wide">
-            <span class="field__label">{{ lang.t('knowledge.fieldTitle') }}</span>
-            @for (_ of [locale()]; track _) {
-              <p-iconfield>
-                <input
-                  pInputText
-                  [fluid]="true"
-                  [formControlName]="key('title')"
-                  [placeholder]="lang.t('knowledge.fieldTitlePh')"
-                  [invalid]="isInvalid('title')"
-                />
-                <p-inputicon class="pi pi-pencil" />
-              </p-iconfield>
-            }
-            @if (isInvalid('title')) {
-              <app-field-error>{{ lang.t('knowledge.required') }}</app-field-error>
-            }
-          </label>
+            <div class="kb-card__body">
+              <div class="kb-editor__grid">
+                <label class="field">
+                  <span class="field__label">{{ ct('knowledge.fieldTitle') }}</span>
+                  @if (locale() === 'ar') {
+                    <p-iconfield>
+                      <input
+                        pInputText
+                        [fluid]="true"
+                        formControlName="titleAr"
+                        [placeholder]="ct('knowledge.fieldTitlePh')"
+                        [invalid]="isInvalid('title')"
+                      />
+                      <p-inputicon class="pi pi-pencil" />
+                    </p-iconfield>
+                  } @else {
+                    <p-iconfield>
+                      <input
+                        pInputText
+                        [fluid]="true"
+                        formControlName="titleEn"
+                        [placeholder]="ct('knowledge.fieldTitlePh')"
+                        [invalid]="isInvalid('title')"
+                      />
+                      <p-inputicon class="pi pi-pencil" />
+                    </p-iconfield>
+                  }
+                  @if (isInvalid('title')) {
+                    <app-field-error>{{ ct('knowledge.required') }}</app-field-error>
+                  }
+                </label>
 
-          <label class="field kb-editor__wide">
-            <span class="field__label">{{ lang.t('knowledge.fieldExcerpt') }}</span>
-            @for (_ of [locale()]; track _) {
-              <textarea
-                pTextarea
-                [fluid]="true"
-                rows="3"
-                [formControlName]="key('excerpt')"
-                [placeholder]="lang.t('knowledge.fieldExcerptPh')"
-              ></textarea>
-            }
-          </label>
+                <label class="field">
+                  <span class="field__label">{{ ct('knowledge.fieldCategory') }}</span>
+                  <p-select
+                    [fluid]="true"
+                    formControlName="categoryId"
+                    [options]="categoryOptions()"
+                    optionLabel="label"
+                    optionValue="value"
+                    [placeholder]="ct('knowledge.fieldCategoryPh')"
+                    [invalid]="flagged().has('categoryId') && !form.controls.categoryId.value"
+                  />
+                  @if (flagged().has('categoryId') && !form.controls.categoryId.value) {
+                    <app-field-error>{{ ct('knowledge.required') }}</app-field-error>
+                  }
+                </label>
 
-          <label class="field">
-            <span class="field__label">{{ lang.t('knowledge.fieldCategory') }}</span>
-            <p-select
-              [fluid]="true"
-              formControlName="categoryId"
-              [options]="categoryOptions()"
-              optionLabel="label"
-              optionValue="value"
-              [placeholder]="lang.t('knowledge.fieldCategoryPh')"
-              [invalid]="flagged().has('categoryId') && !form.controls.categoryId.value"
-            />
-            @if (flagged().has('categoryId') && !form.controls.categoryId.value) {
-              <app-field-error>{{ lang.t('knowledge.required') }}</app-field-error>
-            }
-          </label>
+                <label class="field">
+                  <span class="field__label">{{ ct('knowledge.fieldDate') }}</span>
+                  <p-datepicker
+                    formControlName="publishedDate"
+                    styleClass="kb-datepicker"
+                    inputStyleClass="kb-datepicker__input"
+                    dateFormat="yy-mm-dd"
+                    dataType="string"
+                    iconDisplay="input"
+                    appendTo="body"
+                    [fluid]="true"
+                    [showIcon]="true"
+                    [placeholder]="ct('knowledge.fieldDate')"
+                  />
+                </label>
 
-          <label class="field">
-            <span class="field__label">{{ lang.t('knowledge.fieldReading') }}</span>
-            <p-iconfield>
-              <input
-                pInputText
-                type="number"
-                min="1"
-                [fluid]="true"
-                formControlName="readingMinutes"
+                <label class="field">
+                  <span class="field__label">{{ ct('knowledge.fieldReading') }}</span>
+                  <p-select
+                    [fluid]="true"
+                    formControlName="readingMinutes"
+                    [options]="readingOptions()"
+                    optionLabel="label"
+                    optionValue="value"
+                    [placeholder]="ct('knowledge.fieldReading')"
+                  />
+                </label>
+
+                <label class="field">
+                  <span class="field__label">{{ ct('knowledge.fieldAuthor') }}</span>
+                  @if (locale() === 'ar') {
+                    <p-iconfield>
+                      <input
+                        pInputText
+                        [fluid]="true"
+                        formControlName="authorNameAr"
+                        [placeholder]="ct('knowledge.fieldAuthorPh')"
+                      />
+                      <p-inputicon class="pi pi-user" />
+                    </p-iconfield>
+                  } @else {
+                    <p-iconfield>
+                      <input
+                        pInputText
+                        [fluid]="true"
+                        formControlName="authorNameEn"
+                        [placeholder]="ct('knowledge.fieldAuthorPh')"
+                      />
+                      <p-inputicon class="pi pi-user" />
+                    </p-iconfield>
+                  }
+                </label>
+
+                <label class="field">
+                  <span class="field__label">{{ ct('knowledge.fieldExcerpt') }}</span>
+                  @if (locale() === 'ar') {
+                    <textarea
+                      pTextarea
+                      [fluid]="true"
+                      rows="3"
+                      formControlName="excerptAr"
+                      [placeholder]="ct('knowledge.fieldExcerptPh')"
+                    ></textarea>
+                  } @else {
+                    <textarea
+                      pTextarea
+                      [fluid]="true"
+                      rows="3"
+                      formControlName="excerptEn"
+                      [placeholder]="ct('knowledge.fieldExcerptPh')"
+                    ></textarea>
+                  }
+                </label>
+
+                <div class="kb-editor__wide">
+                  <ng-container
+                    [ngTemplateOutlet]="uploader"
+                    [ngTemplateOutletContext]="{
+                      slot: 'avatar',
+                      label: ct('knowledge.fieldAuthorPhoto'),
+                    }"
+                  />
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <article class="kb-card kb-card--seo">
+            <header class="kb-card__head">
+              <span class="kb-card__icon" aria-hidden="true"><i class="pi pi-link"></i></span>
+              <h2>{{ ct('knowledge.seoCard') }}</h2>
+            </header>
+
+            <div class="kb-card__body">
+              <div class="kb-editor__grid">
+                <label class="field">
+                  <span class="field__label">{{ ct('knowledge.fieldSeoTitle') }}</span>
+                  @if (locale() === 'ar') {
+                    <p-iconfield>
+                      <input pInputText [fluid]="true" formControlName="seoTitleAr" />
+                      <p-inputicon class="pi pi-align-left" />
+                    </p-iconfield>
+                  } @else {
+                    <p-iconfield>
+                      <input pInputText [fluid]="true" formControlName="seoTitleEn" />
+                      <p-inputicon class="pi pi-align-left" />
+                    </p-iconfield>
+                  }
+                </label>
+
+                <label class="field">
+                  <span class="field__label">{{ ct('knowledge.fieldSlug') }}</span>
+                  <p-iconfield>
+                    <input pInputText dir="ltr" [fluid]="true" formControlName="slug" />
+                    <p-inputicon class="pi pi-link" />
+                  </p-iconfield>
+                </label>
+
+                <div class="field kb-editor__wide">
+                  <span class="field__label">{{ ct('knowledge.fieldSeoKeywords') }}</span>
+                  <div class="kb-keywords" [attr.dir]="dir()">
+                    @for (tag of keywordTags(); track tag) {
+                      <span class="kb-keyword">
+                        <bdi>{{ tag }}</bdi>
+                        <button
+                          type="button"
+                          class="kb-keyword__remove"
+                          [attr.aria-label]="lang.t('common.close')"
+                          (click)="removeKeyword(tag)"
+                        >
+                          <i class="pi pi-times" aria-hidden="true"></i>
+                        </button>
+                      </span>
+                    }
+                    <input
+                      class="kb-keywords__input"
+                      type="text"
+                      [placeholder]="ct('knowledge.keywordsPh')"
+                      [value]="keywordDraft()"
+                      (input)="onKeywordDraft($event)"
+                      (keydown)="onKeywordKey($event)"
+                    />
+                    <i class="pi pi-tags kb-keywords__icon" aria-hidden="true"></i>
+                  </div>
+                </div>
+
+                <label class="field kb-editor__wide">
+                  <span class="field__label">{{ ct('knowledge.fieldSeoDescription') }}</span>
+                  @if (locale() === 'ar') {
+                    <textarea
+                      pTextarea
+                      [fluid]="true"
+                      rows="4"
+                      maxlength="160"
+                      formControlName="seoDescriptionAr"
+                    ></textarea>
+                  } @else {
+                    <textarea
+                      pTextarea
+                      [fluid]="true"
+                      rows="4"
+                      maxlength="160"
+                      formControlName="seoDescriptionEn"
+                    ></textarea>
+                  }
+                  <span class="kb-seo-count" aria-live="polite">
+                    {{ seoDescriptionLength() }}/160
+                  </span>
+                </label>
+              </div>
+            </div>
+          </article>
+        </div>
+
+        <div class="kb-editor__side">
+          <article class="kb-card kb-card--media">
+            <header class="kb-card__head">
+              <span class="kb-card__icon" aria-hidden="true"><i class="pi pi-image"></i></span>
+              <h2>{{ ct('knowledge.thumbnailCard') }}</h2>
+            </header>
+            <div class="kb-card__body">
+              <ng-container
+                [ngTemplateOutlet]="uploader"
+                [ngTemplateOutletContext]="{ slot: 'thumbnail', label: '' }"
               />
-              <p-inputicon class="pi pi-clock" />
-            </p-iconfield>
-          </label>
+              @if (locale() === 'ar') {
+                <label class="field">
+                  <span class="field__label">{{ ct('knowledge.fieldImageTitle') }}</span>
+                  <input pInputText [fluid]="true" formControlName="thumbnailTitleAr" />
+                </label>
+                <label class="field">
+                  <span class="field__label">{{ ct('knowledge.fieldImageAlt') }}</span>
+                  <input pInputText [fluid]="true" formControlName="thumbnailAltAr" />
+                </label>
+              } @else {
+                <label class="field">
+                  <span class="field__label">{{ ct('knowledge.fieldImageTitle') }}</span>
+                  <input pInputText [fluid]="true" formControlName="thumbnailTitleEn" />
+                </label>
+                <label class="field">
+                  <span class="field__label">{{ ct('knowledge.fieldImageAlt') }}</span>
+                  <input pInputText [fluid]="true" formControlName="thumbnailAltEn" />
+                </label>
+              }
+            </div>
+          </article>
 
-          <label class="field">
-            <span class="field__label">{{ lang.t('knowledge.fieldDate') }}</span>
-            <input pInputText type="date" [fluid]="true" formControlName="publishedDate" />
-          </label>
-
-          <label class="field">
-            <span class="field__label">{{ lang.t('knowledge.fieldAuthor') }}</span>
-            @for (_ of [locale()]; track _) {
-              <p-iconfield>
-                <input
-                  pInputText
-                  [fluid]="true"
-                  [formControlName]="key('authorName')"
-                  [placeholder]="lang.t('knowledge.fieldAuthorPh')"
-                />
-                <p-inputicon class="pi pi-user" />
-              </p-iconfield>
-            }
-          </label>
-
-          <div class="kb-editor__wide">
-            <ng-container
-              [ngTemplateOutlet]="uploader"
-              [ngTemplateOutletContext]="{
-                slot: 'avatar',
-                label: lang.t('knowledge.fieldAuthorPhoto'),
-              }"
-            />
-          </div>
+          <article class="kb-card kb-card--media">
+            <header class="kb-card__head">
+              <span class="kb-card__icon" aria-hidden="true"><i class="pi pi-images"></i></span>
+              <h2>{{ ct('knowledge.coverCard') }}</h2>
+            </header>
+            <div class="kb-card__body">
+              <ng-container
+                [ngTemplateOutlet]="uploader"
+                [ngTemplateOutletContext]="{ slot: 'cover', label: '' }"
+              />
+              @if (locale() === 'ar') {
+                <label class="field">
+                  <span class="field__label">{{ ct('knowledge.fieldImageTitle') }}</span>
+                  <input pInputText [fluid]="true" formControlName="coverTitleAr" />
+                </label>
+                <label class="field">
+                  <span class="field__label">{{ ct('knowledge.fieldImageAlt') }}</span>
+                  <input pInputText [fluid]="true" formControlName="coverAltAr" />
+                </label>
+              } @else {
+                <label class="field">
+                  <span class="field__label">{{ ct('knowledge.fieldImageTitle') }}</span>
+                  <input pInputText [fluid]="true" formControlName="coverTitleEn" />
+                </label>
+                <label class="field">
+                  <span class="field__label">{{ ct('knowledge.fieldImageAlt') }}</span>
+                  <input pInputText [fluid]="true" formControlName="coverAltEn" />
+                </label>
+              }
+            </div>
+          </article>
         </div>
-      </article>
-
-      <!-- SEO -->
-      <article class="kb-card">
-        <header class="kb-card__head">
-          <span class="kb-card__icon" aria-hidden="true"><i class="pi pi-search"></i></span>
-          <h2>{{ lang.t('knowledge.seoCard') }}</h2>
-        </header>
-
-        <div class="kb-editor__grid">
-          <label class="field">
-            <span class="field__label">{{ lang.t('knowledge.fieldSlug') }}</span>
-            <input pInputText dir="ltr" [fluid]="true" formControlName="slug" />
-          </label>
-
-          @for (_ of [locale()]; track _) {
-            <label class="field">
-              <span class="field__label">{{ lang.t('knowledge.fieldSeoTitle') }}</span>
-              <input pInputText [fluid]="true" [formControlName]="key('seoTitle')" />
-            </label>
-
-            <label class="field kb-editor__wide">
-              <span class="field__label">{{ lang.t('knowledge.fieldSeoDescription') }}</span>
-              <textarea
-                pTextarea
-                [fluid]="true"
-                rows="3"
-                [formControlName]="key('seoDescription')"
-              ></textarea>
-            </label>
-
-            <label class="field kb-editor__wide">
-              <span class="field__label">{{ lang.t('knowledge.fieldSeoKeywords') }}</span>
-              <input pInputText [fluid]="true" [formControlName]="key('seoKeywords')" />
-            </label>
-          }
-        </div>
-      </article>
-
-      <!-- Thumbnail + cover -->
-      <div class="kb-editor__media">
-        <article class="kb-card">
-          <header class="kb-card__head">
-            <span class="kb-card__icon" aria-hidden="true"><i class="pi pi-image"></i></span>
-            <h2>{{ lang.t('knowledge.thumbnailCard') }}</h2>
-          </header>
-          <ng-container
-            [ngTemplateOutlet]="uploader"
-            [ngTemplateOutletContext]="{ slot: 'thumbnail', label: '' }"
-          />
-          @for (_ of [locale()]; track _) {
-            <label class="field">
-              <span class="field__label">{{ lang.t('knowledge.fieldImageTitle') }}</span>
-              <input pInputText [fluid]="true" [formControlName]="key('thumbnailTitle')" />
-            </label>
-            <label class="field">
-              <span class="field__label">{{ lang.t('knowledge.fieldImageAlt') }}</span>
-              <input pInputText [fluid]="true" [formControlName]="key('thumbnailAlt')" />
-            </label>
-          }
-        </article>
-
-        <article class="kb-card">
-          <header class="kb-card__head">
-            <span class="kb-card__icon" aria-hidden="true"><i class="pi pi-images"></i></span>
-            <h2>{{ lang.t('knowledge.coverCard') }}</h2>
-          </header>
-          <ng-container
-            [ngTemplateOutlet]="uploader"
-            [ngTemplateOutletContext]="{ slot: 'cover', label: '' }"
-          />
-          @for (_ of [locale()]; track _) {
-            <label class="field">
-              <span class="field__label">{{ lang.t('knowledge.fieldImageTitle') }}</span>
-              <input pInputText [fluid]="true" [formControlName]="key('coverTitle')" />
-            </label>
-            <label class="field">
-              <span class="field__label">{{ lang.t('knowledge.fieldImageAlt') }}</span>
-              <input pInputText [fluid]="true" [formControlName]="key('coverAlt')" />
-            </label>
-          }
-        </article>
       </div>
 
-      <!-- Content -->
-      <article class="kb-card">
+      <article class="kb-card kb-card--content">
         <header class="kb-card__head">
           <span class="kb-card__icon" aria-hidden="true"><i class="pi pi-align-left"></i></span>
-          <h2>{{ lang.t('knowledge.contentCard') }}</h2>
+          <h2>{{ ct('knowledge.contentCard') }}</h2>
         </header>
 
         @if (quillReady()) {
@@ -266,7 +379,7 @@
               <p-editor
                 formControlName="contentAr"
                 styleClass="kb-editor__quill-root"
-                [placeholder]="lang.t('knowledge.fieldContentPh')"
+                [placeholder]="ct('knowledge.fieldContentPh')"
                 [style]="{ minHeight: '420px' }"
                 (onInit)="onEditorInit($event)"
               >
@@ -278,7 +391,7 @@
               <p-editor
                 formControlName="contentEn"
                 styleClass="kb-editor__quill-root"
-                [placeholder]="lang.t('knowledge.fieldContentPh')"
+                [placeholder]="ct('knowledge.fieldContentPh')"
                 [style]="{ minHeight: '420px' }"
                 (onInit)="onEditorInit($event)"
               >
@@ -289,7 +402,7 @@
             }
           </div>
           @if (isInvalid('content')) {
-            <app-field-error>{{ lang.t('knowledge.required') }}</app-field-error>
+            <app-field-error>{{ ct('knowledge.required') }}</app-field-error>
           }
         } @else {
           <app-state-view mode="loading" />
@@ -309,8 +422,8 @@
     <label class="image-drop" (dragover)="$event.preventDefault()" (drop)="onDrop($event, slot)">
       <input type="file" tabindex="-1" [accept]="imageAccept" (change)="onPick($event, slot)" />
       <span class="image-drop__icon"><i class="pi pi-cloud-upload" aria-hidden="true"></i></span>
-      <strong>{{ lang.t('knowledge.uploadHint') }}</strong>
-      <small>{{ lang.t('knowledge.uploadFormats') }}</small>
+      <strong>{{ ct('knowledge.uploadHint') }}</strong>
+      <small>{{ ct('knowledge.uploadFormats') }}</small>
     </label>
     @if (errorOf(slot); as error) {
       <p class="field__error" role="alert">{{ lang.t(error) }}</p>

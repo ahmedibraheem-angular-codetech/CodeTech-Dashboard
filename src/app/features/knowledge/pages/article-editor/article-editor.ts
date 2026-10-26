@@ -15,6 +15,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MessageService, SharedModule } from 'primeng/api';
+import { DatePickerModule } from 'primeng/datepicker';
 import { Editor } from 'primeng/editor';
 import { IconField } from 'primeng/iconfield';
 import { InputIcon } from 'primeng/inputicon';
@@ -50,7 +51,12 @@ import {
 } from '../../models/knowledge.model';
 import { KnowledgeActions } from '../../services/knowledge-actions.service';
 import { KnowledgeService } from '../../services/knowledge.service';
-import { categoryName, nowStamp } from '../../utils/knowledge-format';
+import {
+  categoryName,
+  joinKeywords,
+  nowStamp,
+  splitKeywords,
+} from '../../utils/knowledge-format';
 
 type LoadStatus = 'loading' | 'ready' | 'missing' | 'error';
 type ImageSlot = 'avatar' | 'thumbnail' | 'cover';
@@ -88,6 +94,7 @@ const EMPTY_IMAGES: Record<ImageSlot, SlotImage | null> = {
     SharedModule,
     AppButton,
     ConfirmDialog,
+    DatePickerModule,
     Editor,
     FieldError,
     IconField,
@@ -130,6 +137,10 @@ export class ArticleEditor {
   /** Control names flagged by the last failed validation. Cleared per field as it is filled. */
   readonly flagged = signal<ReadonlySet<string>>(new Set());
   readonly quillReady = signal(false);
+  /** In-progress text for the SEO keyword chip input. */
+  readonly keywordDraft = signal('');
+  /** Bumped when keyword chips are rewritten so the template recomputes. */
+  private readonly keywordRevision = signal(0);
 
   readonly form = this.fb.nonNullable.group({
     titleAr: '',
@@ -176,6 +187,26 @@ export class ArticleEditor {
       .map((item) => ({ value: item.id, label: categoryName(item, locale) }));
   });
 
+  /** Figma reading-time dropdown; values stay as `readingMinutes` numbers. */
+  readonly readingOptions = computed(() => {
+    const locale = this.locale();
+    const current = Number(this.form.controls.readingMinutes.value) || 5;
+    const base = [3, 5, 6, 8, 10, 12, 15, 20];
+    const values = [...new Set([...base, current].filter((n) => n > 0))].sort((a, b) => a - b);
+    const template =
+      this.lang.lookup('knowledge.minutes', locale) ?? this.lang.t('knowledge.minutes');
+    return values.map((value) => ({
+      value,
+      label: template.replace('{count}', `${value}`),
+    }));
+  });
+
+  readonly keywordTags = computed(() => {
+    this.locale();
+    this.keywordRevision();
+    return splitKeywords(String(this.form.get(this.key('seoKeywords'))?.value ?? ''));
+  });
+
   constructor() {
     this.registerQuillFont().then(
       () => this.quillReady.set(true),
@@ -200,6 +231,56 @@ export class ArticleEditor {
     return `${base}${this.suffix()}` as FormKey;
   }
 
+  /**
+   * Field chrome (labels / placeholders) follows the content locale switch,
+   * so Arabic ↔ English actually changes the visible form text.
+   */
+  protected ct(key: string): string {
+    return this.lang.lookup(key, this.locale()) ?? this.lang.t(key);
+  }
+
+  /** Figma meta-description counter (`0/160`); presentation-only. */
+  protected seoDescriptionLength(): number {
+    return String(this.form.get(this.key('seoDescription'))?.value ?? '').length;
+  }
+
+  protected onKeywordDraft(event: Event): void {
+    this.keywordDraft.set((event.target as HTMLInputElement).value);
+  }
+
+  protected onKeywordKey(event: KeyboardEvent): void {
+    if (event.key !== 'Enter' && event.key !== ',') {
+      return;
+    }
+    event.preventDefault();
+    this.commitKeyword(this.keywordDraft());
+  }
+
+  protected removeKeyword(tag: string): void {
+    const next = this.keywordTags().filter((item) => item !== tag);
+    this.writeKeywords(next);
+  }
+
+  private commitKeyword(raw: string): void {
+    const tag = raw.replace(/[,،]/g, '').trim();
+    if (!tag) {
+      this.keywordDraft.set('');
+      return;
+    }
+    const next = [...this.keywordTags()];
+    if (!next.some((item) => item.toLowerCase() === tag.toLowerCase())) {
+      next.push(tag);
+    }
+    this.writeKeywords(next);
+    this.keywordDraft.set('');
+  }
+
+  private writeKeywords(tags: readonly string[]): void {
+    this.form.get(this.key('seoKeywords'))?.setValue(joinKeywords(tags, this.locale()));
+    this.form.get(this.key('seoKeywords'))?.markAsDirty();
+    this.keywordRevision.update((n) => n + 1);
+  }
+
   protected showError(base: string): boolean {
     const name = this.key(base);
     return this.flagged().has(name) && !this.blank(name);
@@ -212,6 +293,8 @@ export class ArticleEditor {
 
   protected setLocale(value: AppLanguage): void {
     this.locale.set(value);
+    this.keywordDraft.set('');
+    this.keywordRevision.update((n) => n + 1);
   }
 
   protected onEditorInit(event: EditorInitEvent): void {
@@ -395,6 +478,8 @@ export class ArticleEditor {
       thumbnail: this.slotFrom(article.thumbnailUrl, article.createdAt),
       cover: this.slotFrom(article.coverUrl, article.createdAt),
     });
+    this.keywordDraft.set('');
+    this.keywordRevision.update((n) => n + 1);
   }
 
   private slotFrom(url: string, date: string): SlotImage | null {
