@@ -133,3 +133,212 @@
     gap: 16px;
   }
 }
+
+// Add / edit review modal — mirrors FAQ editor chrome, reuses shared `.image-drop`.
+.p-dialog.app-modal:has(.review-editor-form) {
+  width: min(640px, calc(100vw - 32px));
+  max-height: calc(100vh - 32px);
+}
+
+.p-dialog.app-modal:has(.review-editor-form) .p-dialog-content {
+  overflow: auto;
+}
+
+.p-dialog.app-modal:has(.review-editor-form) .p-dialog-header {
+  position: relative;
+  justify-content: center;
+  min-height: 80px;
+  background: #fff;
+}
+
+.p-dialog.app-modal:has(.review-editor-form) .app-modal__heading {
+  flex: 1;
+  justify-content: center;
+  gap: 0;
+  padding-inline: 64px;
+}
+
+.p-dialog.app-modal:has(.review-editor-form) .app-modal__icon {
+  position: absolute;
+  inset-inline-start: 24px;
+  inset-block-start: 50%;
+  transform: translateY(-50%);
+  color: #1c81d3;
+}
+
+.p-dialog.app-modal:has(.review-editor-form) .p-dialog-close-button {
+  position: absolute;
+  inset-inline-end: 24px;
+  inset-block-start: 50%;
+  z-index: 1;
+  margin: 0;
+  transform: translateY(-50%);
+}
+
+.p-dialog.app-modal:has(.review-editor-form) .app-modal__title {
+  color: #0f2744;
+  font-size: 18px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.p-dialog.app-modal:has(.review-editor-form) .app-modal__action .p-button {
+  --p-button-gap: 10px;
+
+  box-sizing: border-box;
+  height: 48px;
+  padding: 12px 16px;
+  border-radius: 16px;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.p-dialog.app-modal:has(.review-editor-form) .app-modal__action .p-button:not(.p-button-outlined) {
+  --p-button-primary-background: #1c81d3;
+  --p-button-primary-hover-background: #1874be;
+  --p-button-primary-active-background: #1669ab;
+  --p-button-primary-border-color: #eceff3;
+  --p-button-primary-hover-border-color: #eceff3;
+  --p-button-primary-active-border-color: #eceff3;
+
+  border: 1px solid #eceff3;
+  background: #1c81d3;
+}
+
+.review-editor-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding-block: 4px;
+  --p-inputtext-border-radius: 12px;
+  --p-inputtext-padding-y: 12px;
+  --p-inputtext-padding-x: 14px;
+  --p-inputtext-border-color: #edeeee;
+  --p-iconfield-icon-color: #94a3b8;
+  --p-select-border-radius: 12px;
+  --p-select-padding-y: 12px;
+  --p-select-border-color: #edeeee;
+  --p-textarea-border-radius: 12px;
+  --p-textarea-border-color: #edeeee;
+}
+
+.review-editor-form .locale-switch {
+  width: 100%;
+}
+
+.review-editor-form .field__label {
+  color: #6f8bac;
+  font-size: 13px;
+  font-weight: 600;
+  text-align: start;
+}
+
+.review-editor-form .p-inputtext,
+.review-editor-form .p-select,
+.review-editor-form .p-textarea {
+  min-height: 48px;
+  border-color: #edeeee;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 500;
+  text-align: start;
+}
+
+.review-editor-form .p-textarea {
+  min-height: 120px;
+  padding: 12px 14px;
+  resize: vertical;
+}
+
+.review-editor-form .p-iconfield {
+  width: 100%;
+}
+
+// Rating select — Figma gold gradient stars.
+.review-rating-stars {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.review-rating-star {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 19.41px;
+  height: 18.58px;
+  font-size: 16px;
+  line-height: 1;
+}
+
+.review-rating-star.is-filled,
+.review-rating-star.pi-star-fill {
+  color: transparent;
+
+  &::before {
+    background: linear-gradient(312.09deg, #ff9500 -1.05%, #ffe059 101.06%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    -webkit-text-fill-color: transparent;
+  }
+}
+
+.review-rating-star.pi-star:not(.is-filled) {
+  color: #d7dee8;
+
+  &::before {
+    color: #d7dee8;
+    -webkit-text-fill-color: #d7dee8;
+  }
+}
+
+.review-editor-form .review-rating-select.p-select,
+.p-select-overlay .review-rating-stars {
+  min-height: 48px;
+}
+
+.p-select-list .review-rating-stars {
+  min-height: 0;
+  padding-block: 2px;
+}
+
+.review-editor-form__row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.review-editor-form .image-drop {
+  position: relative;
+}
+
+.review-editor-form__publish {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 52px;
+  padding: 12px 16px;
+  border: 1px solid #f0f1f3;
+  border-radius: 12px;
+  background: #f9fafb;
+  color: #0f2744;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  --p-toggleswitch-width: 40px;
+  --p-toggleswitch-height: 22px;
+  --p-toggleswitch-checked-background: #1c81d3;
+  --p-toggleswitch-handle-size: 16px;
+}
+
+.review-editor-form__remove.p-button {
+  color: #e11d48;
+}
+
+@media (max-width: 640px) {
+  .review-editor-form__row {
+    grid-template-columns: 1fr;
+  }
+}

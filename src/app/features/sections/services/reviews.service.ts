@@ -14,6 +14,41 @@ export class ReviewsService {
     return timer(this.latency).pipe(map(() => structuredClone(this.items())));
   }
 
+  create(review: Omit<Review, 'id' | 'externalId' | 'createdAt' | 'createdTime'>): Observable<Review> {
+    return timer(this.latency).pipe(
+      map(() => {
+        const now = new Date();
+        const next: Review = {
+          ...review,
+          id: crypto.randomUUID(),
+          externalId: `${Math.floor(100000 + Math.random() * 900000)}`,
+          createdAt: now.toISOString().slice(0, 10),
+          createdTime: now.toLocaleTimeString('en-US', {
+            hour: 'numeric',
+            minute: '2-digit',
+            hour12: true,
+          }),
+        };
+        this.items.update((list) => [next, ...list]);
+        return structuredClone(next);
+      }),
+    );
+  }
+
+  update(review: Review): Observable<Review> {
+    return timer(this.latency).pipe(
+      map(() => {
+        const current = this.items().find((item) => item.id === review.id);
+        if (!current) {
+          throw new Error(`Review not found: ${review.id}`);
+        }
+        const next: Review = { ...current, ...review };
+        this.items.update((list) => list.map((item) => (item.id === review.id ? next : item)));
+        return structuredClone(next);
+      }),
+    );
+  }
+
   setPublished(id: string, published: boolean): Observable<Review> {
     return timer(this.latency).pipe(
       map(() => {

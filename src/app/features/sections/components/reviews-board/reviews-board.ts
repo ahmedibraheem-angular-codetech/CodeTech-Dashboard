@@ -8,7 +8,7 @@ import {
   viewChild,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { FormsModule } from '@angular/forms';
+import { FormBuilder, FormsModule, Validators } from '@angular/forms';
 import { MessageService } from 'primeng/api';
 import { Checkbox } from 'primeng/checkbox';
 import { Popover } from 'primeng/popover';
@@ -16,17 +16,24 @@ import { Popover } from 'primeng/popover';
 import { LanguageService } from '../../../../core/services/language.service';
 import { AppButton } from '../../../../shared/components/app-button/app-button';
 import { ConfirmDialog } from '../../../../shared/components/confirm-dialog/confirm-dialog';
+import { Modal } from '../../../../shared/components/modal/modal';
 import { PageHeader } from '../../../../shared/components/page-header/page-header';
 import { ReviewCard } from '../../../../shared/components/review-card/review-card';
 import { StateView } from '../../../../shared/components/state-view/state-view';
 import { formatIsoDate } from '../../../../shared/utils/date';
 import type { Review, ReviewStatusFilter } from '../../models/review.model';
 import { ReviewsService } from '../../services/reviews.service';
+import {
+  ReviewEditorForm,
+  type ReviewEditorMode,
+} from './components/review-editor-form/review-editor-form';
 
 interface FilterOption {
   value: ReviewStatusFilter;
   label: string;
 }
+
+type EditorMode = ReviewEditorMode | null;
 
 @Component({
   selector: 'app-reviews-board',
@@ -37,8 +44,10 @@ interface FilterOption {
     ReviewCard,
     StateView,
     ConfirmDialog,
+    Modal,
     Popover,
     Checkbox,
+    ReviewEditorForm,
   ],
   templateUrl: './reviews-board.html',
   styleUrl: './reviews-board.scss',
@@ -48,13 +57,29 @@ export class ReviewsBoard {
   private readonly api = inject(ReviewsService);
   private readonly messages = inject(MessageService);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly fb = inject(FormBuilder);
   private readonly confirm = viewChild.required(ConfirmDialog);
+  private readonly editorForm = viewChild(ReviewEditorForm);
   readonly lang = inject(LanguageService);
 
   private readonly source = signal<Review[]>([]);
   readonly statusFilter = signal<ReviewStatusFilter>('all');
   readonly filterOpen = signal(false);
   readonly loading = signal(true);
+  readonly saving = signal(false);
+  readonly editor = signal<EditorMode>(null);
+  readonly selected = signal<Review | null>(null);
+
+  readonly form = this.fb.nonNullable.group({
+    nameAr: ['', Validators.required],
+    nameEn: ['', Validators.required],
+    roleAr: ['', Validators.required],
+    roleEn: ['', Validators.required],
+    quoteAr: ['', Validators.required],
+    quoteEn: ['', Validators.required],
+    rating: this.fb.nonNullable.control(5, [Validators.required, Validators.min(1), Validators.max(5)]),
+    published: this.fb.nonNullable.control(false),
+  });
 
   constructor() {
     this.api
@@ -97,6 +122,20 @@ export class ReviewsBoard {
     this.lang.t('review.count').replace('{count}', String(this.visible().length)),
   );
 
+  readonly editorTitle = computed(() => {
+    this.lang.language();
+    return this.editor() === 'edit' ? this.lang.t('review.editTitle') : this.lang.t('review.createTitle');
+  });
+
+  readonly editorSaveLabel = computed(() => {
+    this.lang.language();
+    return this.editor() === 'edit' ? this.lang.t('common.saveChanges') : this.lang.t('review.addSubmit');
+  });
+
+  readonly editorSaveIcon = computed(() => (this.editor() === 'edit' ? 'pi pi-save' : 'pi pi-plus'));
+
+  readonly editorMode = computed<ReviewEditorMode>(() => this.editor() ?? 'create');
+
   protected text(review: Review): Review['texts'][keyof Review['texts']] {
     return review.texts[this.lang.language()];
   }
@@ -134,17 +173,129 @@ export class ReviewsBoard {
   }
 
   protected addReview(): void {
-    this.messages.add({
-      severity: 'info',
-      summary: this.lang.t('review.add'),
+    this.selected.set(null);
+    this.form.reset({
+      nameAr: '',
+      nameEn: '',
+      roleAr: '',
+      roleEn: '',
+      quoteAr: '',
+      quoteEn: '',
+      rating: 5,
+      published: false,
     });
+    this.editor.set('create');
+    queueMicrotask(() => this.editorForm()?.resetMedia());
   }
 
   protected editReview(review: Review): void {
-    this.messages.add({
-      severity: 'info',
-      summary: `${this.lang.t('review.edit')} · ${this.text(review).name}`,
+    this.selected.set(review);
+    this.form.reset({
+      nameAr: review.texts.ar.name,
+      nameEn: review.texts.en.name,
+      roleAr: review.texts.ar.role,
+      roleEn: review.texts.en.role,
+      quoteAr: review.texts.ar.quote,
+      quoteEn: review.texts.en.quote,
+      rating: review.rating,
+      published: review.published,
     });
+    this.editor.set('edit');
+    queueMicrotask(() =>
+      this.editorForm()?.resetMedia({
+        avatarUrl: review.avatarUrl,
+        avatarName: this.lang.t('review.avatarFile'),
+      }),
+    );
+  }
+
+  protected setEditorVisible(open: boolean): void {
+    if (!open) {
+      this.closeEditor();
+    }
+  }
+
+  protected closeEditor(): void {
+    this.editor.set(null);
+    this.selected.set(null);
+    this.saving.set(false);
+    this.editorForm()?.resetMedia();
+  }
+
+  protected save(): void {
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+      return;
+    }
+    if (this.saving()) {
+      return;
+    }
+
+    const value = this.form.getRawValue();
+    const media = this.editorForm()?.mediaSnapshot() ?? {
+      avatarUrl: 'images/avatar-placeholder.svg',
+      mediaUrl: 'images/ceo.svg',
+      mediaKind: 'video' as const,
+    };
+    const texts = {
+      ar: { name: value.nameAr, role: value.roleAr, quote: value.quoteAr },
+      en: { name: value.nameEn, role: value.roleEn, quote: value.quoteEn },
+    };
+
+    this.saving.set(true);
+    const mode = this.editor();
+    const selected = this.selected();
+
+    if (mode === 'edit' && selected) {
+      const next: Review = {
+        ...selected,
+        rating: value.rating,
+        published: value.published,
+        avatarUrl: media.avatarUrl || selected.avatarUrl,
+        mediaUrl: selected.mediaUrl,
+        mediaKind: selected.mediaKind,
+        texts,
+      };
+      this.api
+        .update(next)
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe({
+          next: (saved) => {
+            this.source.update((rows) => rows.map((row) => (row.id === saved.id ? saved : row)));
+            this.saving.set(false);
+            this.closeEditor();
+            this.messages.add({ severity: 'success', summary: this.lang.t('review.saved') });
+          },
+          error: () => {
+            this.saving.set(false);
+            this.messages.add({ severity: 'error', summary: this.lang.t('common.error') });
+          },
+        });
+      return;
+    }
+
+    this.api
+      .create({
+        rating: value.rating,
+        published: value.published,
+        avatarUrl: media.avatarUrl,
+        mediaUrl: media.mediaUrl,
+        mediaKind: media.mediaKind,
+        texts,
+      })
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (saved) => {
+          this.source.update((rows) => [saved, ...rows.filter((row) => row.id !== saved.id)]);
+          this.saving.set(false);
+          this.closeEditor();
+          this.messages.add({ severity: 'success', summary: this.lang.t('review.created') });
+        },
+        error: () => {
+          this.saving.set(false);
+          this.messages.add({ severity: 'error', summary: this.lang.t('common.error') });
+        },
+      });
   }
 
   protected setPublished(review: Review, published: boolean): void {

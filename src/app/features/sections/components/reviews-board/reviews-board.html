@@ -106,5 +106,23 @@
     }
   </section>
 
+  <app-modal
+    [visible]="editor() !== null"
+    (visibleChange)="setEditorVisible($event)"
+    [title]="editorTitle()"
+    icon="pi pi-star"
+    [saveLabel]="editorSaveLabel()"
+    [saveIcon]="editorSaveIcon()"
+    saveIconPos="end"
+    [cancelLabel]="lang.t('common.cancel')"
+    [saving]="saving()"
+    (save)="save()"
+    (cancel)="closeEditor()"
+  >
+    @if (editor()) {
+      <app-review-editor-form [form]="form" [mode]="editorMode()" (submitted)="save()" />
+    }
+  </app-modal>
+
   <app-confirm-dialog />
 </section>
