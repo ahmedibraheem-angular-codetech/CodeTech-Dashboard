@@ -459,16 +459,18 @@ $kb-blue: #1c81d3;
   gap: 16px;
 }
 
+// Category card — Figma outer shell (~339×297) + inner metrics panel (~307×148).
 .kb-cat-card {
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
-  gap: 14px;
+  gap: 10px;
   min-width: 0;
+  min-height: 297px;
   padding: 16px;
-  border: 1px solid $kb-border;
-  border-radius: 16px;
-  background: #fff;
+  border: 1px solid var(--text-input-field-defult-stroke-color, #f2f2f2);
+  border-radius: 20px;
+  background: #f9fafb;
 }
 
 .kb-cat-card__head {
@@ -510,6 +512,7 @@ $kb-blue: #1c81d3;
   gap: 6px;
   min-height: 28px;
   padding: 4px 10px;
+  border: 1px solid transparent;
   border-radius: 999px;
   font-size: 12px;
   font-weight: 600;
@@ -526,21 +529,28 @@ $kb-blue: #1c81d3;
 }
 
 .kb-cat-card__badge--active {
+  border-color: #cfe3f8;
   background: #f6f9fe;
   color: #0074d4;
 }
 
 .kb-cat-card__badge--inactive {
+  border-color: #e2e8f0;
   background: #f1f5f9;
   color: $kb-muted;
 }
 
 .kb-cat-card__body {
   display: flex;
+  flex: 1 1 auto;
   flex-direction: column;
-  padding: 4px 12px;
-  border-radius: 12px;
-  background: #f9fafb;
+  justify-content: center;
+  box-sizing: border-box;
+  gap: 0;
+  min-height: 148px;
+  padding: 16px;
+  border-radius: 16px;
+  background: #fff;
 }
 
 .kb-cat-card__row {
@@ -548,11 +558,19 @@ $kb-blue: #1c81d3;
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  min-height: 44px;
-  padding-block: 10px;
+  min-height: 0;
+  padding-block: 12px;
 
   & + & {
-    border-top: 1px solid $kb-border;
+    border-top: 1px solid #edeeee;
+  }
+
+  &:first-child {
+    padding-block-start: 0;
+  }
+
+  &:last-child {
+    padding-block-end: 0;
   }
 }
 
@@ -588,22 +606,23 @@ $kb-blue: #1c81d3;
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 10px;
+  margin-block-start: auto;
 }
 
 .kb-cat-card__btn.p-button {
-  height: 40px;
-  border-radius: 10px;
+  height: 44px;
+  border-radius: 12px;
   font-size: 13px;
   font-weight: 700;
 }
 
 .kb-cat-card__btn--edit.p-button {
   --p-button-outlined-secondary-border-color: #dbeafe;
-  --p-button-outlined-secondary-color: var(--app-primary, #2f6fed);
+  --p-button-outlined-secondary-color: #{$kb-blue};
 
   border-color: #dbeafe;
   background: #fff;
-  color: var(--app-primary, #2f6fed) !important;
+  color: $kb-blue !important;
 
   &:hover {
     background: #eff6ff;
