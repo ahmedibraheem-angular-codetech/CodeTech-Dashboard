@@ -8,7 +8,7 @@
       [attr.aria-selected]="source() === 'library'"
       (click)="source.set('library')"
     >
-      {{ copy('product.chooseLibrary') }}
+      {{ copy('chooseLibrary') }}
       <i class="pi pi-face-smile" aria-hidden="true"></i>
     </button>
     <button
@@ -19,37 +19,62 @@
       [attr.aria-selected]="source() === 'upload'"
       (click)="source.set('upload')"
     >
-      {{ copy('product.uploadIcon') }}
+      {{ copy('uploadIcon') }}
       <i class="pi pi-upload" aria-hidden="true"></i>
     </button>
   </div>
 }
-@if (actions() && source() === 'library') {
-  <div class="icon-library" role="listbox" [attr.aria-label]="copy('product.chooseLibrary')">
-    @for (icon of icons; track icon) {
-      <button
-        type="button"
-        class="icon-library__item"
-        role="option"
-        [class.is-selected]="iconSelected(icon)"
-        [attr.aria-selected]="iconSelected(icon)"
-        (click)="pickIcon(icon)"
-      >
-        <i [class]="'pi ' + icon" aria-hidden="true"></i>
-      </button>
-    }
-  </div>
-} @else {
-  <label class="uploader">
-    @if (url() && !url().startsWith('icon:')) {
-      <img class="uploader__preview" [src]="url()" alt="" />
-    } @else {
-      <span class="uploader__mark" aria-hidden="true">
-        <i class="pi" [class.pi-upload]="actions()" [class.pi-file]="!actions()"></i>
-      </span>
-    }
-    <span>{{ copy('product.uploadHint') }}</span>
-    <small>{{ name() || copy('product.uploadTypes') }}</small>
-    <input #file type="file" accept="image/png,image/jpeg" (change)="choose($event)" />
-  </label>
-}
+<div class="uploader-shell">
+  @if (clearable() && hasMedia()) {
+    <button
+      type="button"
+      class="uploader__clear"
+      [attr.aria-label]="copy('clearImage')"
+      (click)="clear($event)"
+    >
+      <i class="pi pi-times" aria-hidden="true"></i>
+    </button>
+  }
+  @if (actions() && source() === 'library') {
+    <div class="icon-library" role="listbox" [attr.aria-label]="copy('chooseLibrary')">
+      @for (icon of icons; track icon) {
+        <button
+          type="button"
+          class="icon-library__item"
+          role="option"
+          [class.is-selected]="iconSelected(icon)"
+          [attr.aria-selected]="iconSelected(icon)"
+          (click)="pickIcon(icon)"
+        >
+          <i [class]="'pi ' + icon" aria-hidden="true"></i>
+        </button>
+      }
+    </div>
+  } @else {
+    <label
+      class="uploader"
+      [class.is-dragging]="dragging()"
+      (dragover)="onDragOver($event)"
+      (dragleave)="onDragLeave($event)"
+      (drop)="onDrop($event)"
+    >
+      @if (url() && !url().startsWith('icon:')) {
+        <img class="uploader__preview" [src]="url()" alt="" />
+      } @else if (iconName(); as icon) {
+        <span class="uploader__mark uploader__mark--icon" aria-hidden="true">
+          <i [class]="'pi ' + icon"></i>
+        </span>
+      } @else {
+        <span class="uploader__mark" aria-hidden="true">
+          <i class="pi" [class.pi-upload]="actions()" [class.pi-file]="!actions()"></i>
+        </span>
+      }
+      <span>{{ copy('uploadHint') }}</span>
+      <small>{{ name() || copy('uploadTypes') }}</small>
+      @if (sizeError()) {
+        <small class="uploader__error">{{ copy('uploadTooLarge') }}</small>
+      }
+      <input #file type="file" accept="image/png,image/jpeg" (change)="choose($event)" />
+    </label>
+  }
+</div>

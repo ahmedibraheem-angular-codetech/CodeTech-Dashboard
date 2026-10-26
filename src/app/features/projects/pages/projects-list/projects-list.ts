@@ -19,7 +19,7 @@ import { AppPaginator } from '../../../../shared/components/app-paginator/app-pa
 import { ConfirmDialog } from '../../../../shared/components/confirm-dialog/confirm-dialog';
 import { PageHeader } from '../../../../shared/components/page-header/page-header';
 import { StateView } from '../../../../shared/components/state-view/state-view';
-import type { Project } from '../../models/project.model';
+import { readLocale, type Project } from '../../models/project.model';
 import { ProjectsService } from '../../services/projects.service';
 
 @Component({
@@ -55,6 +55,23 @@ export class ProjectsPage {
   }
 
   readonly visible = computed(() => this.items().slice(this.first(), this.first() + this.rows()));
+
+  protected title(project: Project): string {
+    return readLocale(project.name, this.lang.language()) || project.name.ar;
+  }
+
+  protected summary(project: Project): string {
+    return readLocale(project.summary, this.lang.language()) || project.summary.ar;
+  }
+
+  protected tags(project: Project): { icon: string; label: string }[] {
+    return project.categories.slice(0, 4).map((category) => ({
+      icon: category.imageUrl.startsWith('icon:')
+        ? `pi ${category.imageUrl.slice(5)}`
+        : 'pi pi-tag',
+      label: readLocale(category.title, this.lang.language()) || category.title.ar,
+    }));
+  }
 
   protected page(event: PaginatorState): void {
     this.first.set(event.first ?? 0);

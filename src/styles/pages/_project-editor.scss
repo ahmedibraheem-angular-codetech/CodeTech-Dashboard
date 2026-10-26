@@ -1,0 +1,61 @@
+// Project editor — reuses shared `.editor-*` rules from product-editor and adds project-only chrome.
+
+app-project-editor .editor-card {
+  gap: 16px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+
+app-project-editor .locale-switch {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  background: transparent;
+  gap: 8px;
+}
+
+app-project-editor .locale-switch__option {
+  height: 48px;
+  border-radius: 14px;
+}
+
+app-project-editor .locale-switch__option.is-active {
+  background: var(--app-canvas);
+  color: var(--app-text);
+  box-shadow: none;
+}
+
+.soft-item__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+}
+
+.soft-item__head .feature-card__remove {
+  position: static;
+}
+
+.editor-layout--gallery {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-areas: none;
+}
+
+.project-identity-button {
+  display: grid;
+  gap: 16px;
+}
+
+.project-identity-button + .project-identity-button {
+  margin-top: 8px;
+  padding-top: 16px;
+  border-top: 1px solid #edeeee;
+}
+
+@media (max-width: 900px) {
+  .editor-layout--gallery {
+    grid-template-columns: 1fr;
+  }
+}

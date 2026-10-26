@@ -1,0 +1,70 @@
+<section class="editor-section editor-section--soft">
+  <header class="editor-section__head">
+    <h2>{{ editor.copy('project.identity') }}</h2>
+    <span class="icon-badge" aria-hidden="true"><i class="pi pi-id-card"></i></span>
+  </header>
+  <div class="editor-section__body">
+    @for (button of editor.draft().identityButtons; track button.id; let buttonIndex = $index) {
+      <article class="project-identity-button">
+        <div class="soft-item__head">
+          <span class="field__label">{{ editor.identityButtonLabel(buttonIndex) }}</span>
+          <button
+            type="button"
+            class="feature-card__remove"
+            [disabled]="editor.draft().identityButtons.length === 1 || editor.saving()"
+            [attr.aria-label]="editor.copy('project.deleteTitle')"
+            (click)="editor.removeIdentityButton(buttonIndex)"
+          >
+            <i class="pi pi-trash" aria-hidden="true"></i>
+          </button>
+        </div>
+
+        <label class="field">
+          <span class="field__label">{{ editor.copy('project.identityTitle') }}</span>
+          <input
+            pInputText
+            [fluid]="true"
+            [value]="editor.text(button.title)"
+            [placeholder]="editor.copy('project.identityTitlePh')"
+            (input)="editor.setIdentityButtonText(buttonIndex, 'title', $event)"
+          />
+        </label>
+        <label class="field">
+          <span class="field__label">{{ editor.copy('project.identityBody') }}</span>
+          <textarea
+            pTextarea
+            [fluid]="true"
+            rows="4"
+            [value]="editor.text(button.body)"
+            [placeholder]="editor.copy('project.identityBodyPh')"
+            (input)="editor.setIdentityButtonText(buttonIndex, 'body', $event)"
+          ></textarea>
+        </label>
+
+        <div class="editor-layout editor-layout--gallery">
+          @for (image of button.images; track image.id; let imageIndex = $index) {
+            <div class="field">
+              <span class="field__label"
+                >{{ editor.copy('project.identityImage') }} {{ imageIndex + 1 }}</span
+              >
+              <app-product-upload
+                [keyPrefix]="uploadPrefix"
+                [locale]="editor.locale()"
+                [clearable]="true"
+                [name]="image.imageName"
+                [url]="image.imageUrl"
+                (picked)="editor.setIdentityButtonImage(buttonIndex, imageIndex, $event)"
+                (cleared)="editor.clearIdentityButtonImage(buttonIndex, imageIndex)"
+              />
+            </div>
+          }
+        </div>
+      </article>
+    }
+
+    <button type="button" class="add-row" (click)="editor.addIdentityButton()">
+      <span class="add-row__mark" aria-hidden="true"><i class="pi pi-plus"></i></span>
+      {{ editor.copy('project.addIdentityButton') }}
+    </button>
+  </div>
+</section>

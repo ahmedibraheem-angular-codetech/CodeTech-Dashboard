@@ -148,6 +148,8 @@ export const en = {
   'product.seoDescriptionPh': 'Describe the product for search engines',
   'product.uploadHint': 'Click to upload an image or drag and drop it here',
   'product.uploadTypes': 'PNG,JPG. Maximum size 5 MB',
+  'product.uploadTooLarge': 'This image exceeds the 5 MB limit.',
+  'product.clearImage': 'Remove image',
   'product.chooseLibrary': 'Choose from the library',
   'product.viewIcon': 'View the icon',
   'product.view': 'View',

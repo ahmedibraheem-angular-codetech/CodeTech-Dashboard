@@ -150,6 +150,8 @@ export const ar: { [K in keyof typeof en]: string } = {
   'product.seoDescriptionPh': 'وصف المنتج للظهور في محركات البحث',
   'product.uploadHint': 'اضغط لرفع صورة أو اسحبها وأفلتها هنا',
   'product.uploadTypes': 'صيغة PNG,JPG. الحجم الأقصى 5 ميجابايت',
+  'product.uploadTooLarge': 'هذه الصورة تتجاوز الحد الأقصى 5 ميجابايت.',
+  'product.clearImage': 'إزالة الصورة',
   'product.chooseLibrary': 'اختيار من المكتبة',
   'product.viewIcon': 'عرض الأيقونة',
   'product.view': 'عرض',

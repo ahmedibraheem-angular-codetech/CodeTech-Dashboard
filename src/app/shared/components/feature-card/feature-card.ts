@@ -26,6 +26,10 @@ export class FeatureCard {
   readonly imageName = input('');
   readonly imageUrl = input('');
   readonly locale = input<AppLanguage | null>(null);
+  /** Forwarded to `app-product-upload` (`product` default, `project` for the projects wizard). */
+  readonly uploadKeyPrefix = input('product');
+  /** Opt-in clear control; Products leave the default off. */
+  readonly clearable = input(false);
   /** Library and upload tabs. Plain image drop zones leave this off. */
   readonly actions = input(true);
   readonly showIcon = input(true);
@@ -38,6 +42,7 @@ export class FeatureCard {
   readonly titleChange = output<Event>();
   readonly bodyChange = output<Event>();
   readonly imageChange = output<{ name: string; url: string }>();
+  readonly imageCleared = output<void>();
   readonly removed = output<void>();
   readonly selected = output<void>();
 }

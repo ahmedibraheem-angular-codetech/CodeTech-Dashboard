@@ -41,10 +41,13 @@
         <span class="field__label">{{ iconLabel() }}</span>
         <app-product-upload
           [locale]="locale()"
+          [keyPrefix]="uploadKeyPrefix()"
           [actions]="actions()"
+          [clearable]="clearable()"
           [name]="imageName()"
           [url]="imageUrl()"
           (picked)="imageChange.emit($event)"
+          (cleared)="imageCleared.emit()"
         />
       </div>
     }

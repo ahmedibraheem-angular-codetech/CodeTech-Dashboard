@@ -9,6 +9,7 @@ import { PROJECTS_SEED } from './projects.mock';
 export class ProjectsService {
   private readonly latency = inject(API_LATENCY_MS);
   private readonly state = signal<Project[]>(structuredClone(PROJECTS_SEED));
+  /** Matches the catalog switch on the projects board. */
   readonly catalogVisible = signal(true);
 
   list(): Observable<Project[]> {
@@ -25,7 +26,10 @@ export class ProjectsService {
   }
 
   save(project: Project): Observable<Project> {
-    const next: Project = { ...project, id: project.id || `prj-${Date.now()}` };
+    const next: Project = {
+      ...structuredClone(project),
+      id: project.id || `prj-${Date.now()}`,
+    };
     this.state.update((items) => {
       const index = items.findIndex((item) => item.id === next.id);
       if (index === -1) {

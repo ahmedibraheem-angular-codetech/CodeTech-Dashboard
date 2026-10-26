@@ -1,22 +1,117 @@
-<section class="page">
+<section class="page project-detail">
   @if (status() === 'loading') {
     <app-state-view mode="loading" [message]="lang.t('common.loading')" />
   } @else if (status() === 'missing' || !item()) {
     <app-state-view mode="empty" [message]="lang.t('project.notFound')" />
   } @else if (item(); as project) {
-    <app-page-header [title]="project.name">
+    <app-page-header [title]="title(project)">
+      <span class="project-detail__badge" [class.is-live]="project.published">
+        {{ lang.t(project.published ? 'project.live' : 'project.draft') }}
+      </span>
       <a class="projects-board__add" [routerLink]="['/projects', project.id, 'edit']">
         {{ lang.t('project.edit') }}
       </a>
     </app-page-header>
-    <article class="project-tile">
-      <img class="project-detail__cover" [src]="project.coverUrl" alt="" />
-      <p>{{ project.summary }}</p>
-      <ul class="project-tile__tags">
-        @for (tag of project.tags; track tag.label) {
-          <li><i [class]="tag.icon" aria-hidden="true"></i>{{ tag.label }}</li>
-        }
-      </ul>
-    </article>
+
+    <img class="project-detail__cover" [src]="project.coverUrl" [alt]="title(project)" />
+
+    <app-page-tabs
+      [tabs]="tabs()"
+      [value]="tab()"
+      (valueChange)="chooseTab($event)"
+    />
+
+    @switch (tab()) {
+      @case ('gallery') {
+        <div class="project-detail__gallery">
+          @for (image of project.gallery; track image.id) {
+            @if (image.imageUrl) {
+              <img [src]="image.imageUrl" alt="" />
+            }
+          }
+        </div>
+      }
+      @case ('identity') {
+        <div class="project-detail__identity">
+          @for (button of project.identityButtons; track button.id) {
+            <article class="project-tile project-detail__panel">
+              <h2>{{ locale(button.title) || lang.t('project.identity') }}</h2>
+              @if (locale(button.body)) {
+                <p>{{ locale(button.body) }}</p>
+              }
+              <div class="project-detail__gallery">
+                @for (image of button.images; track image.id) {
+                  @if (image.imageUrl) {
+                    <img [src]="image.imageUrl" [alt]="locale(button.title)" />
+                  }
+                }
+              </div>
+            </article>
+          }
+        </div>
+      }
+      @case ('seo') {
+        <article class="project-tile project-detail__panel">
+          <dl class="project-detail__seo">
+            <div>
+              <dt>{{ lang.t('project.seoSlug') }}</dt>
+              <dd dir="ltr">{{ locale(project.seo.slug) || '—' }}</dd>
+            </div>
+            <div>
+              <dt>{{ lang.t('project.seoTitle') }}</dt>
+              <dd>{{ locale(project.seo.title) || '—' }}</dd>
+            </div>
+            <div>
+              <dt>{{ lang.t('project.seoKeywords') }}</dt>
+              <dd>{{ locale(project.seo.keywords) || '—' }}</dd>
+            </div>
+            <div>
+              <dt>{{ lang.t('project.seoDescription') }}</dt>
+              <dd>{{ locale(project.seo.description) || '—' }}</dd>
+            </div>
+          </dl>
+        </article>
+      }
+      @default {
+        <article class="project-tile project-detail__panel">
+          <p>{{ summary(project) }}</p>
+          <h3>{{ lang.t('project.categories') }}</h3>
+          <ul class="project-tile__tags">
+            @for (category of project.categories; track category.id) {
+              <li>
+                <i
+                  class="pi"
+                  [class]="
+                    category.imageUrl.startsWith('icon:')
+                      ? category.imageUrl.slice(5)
+                      : 'pi-tag'
+                  "
+                  aria-hidden="true"
+                ></i>
+                {{ locale(category.title) }}
+              </li>
+            }
+          </ul>
+          <h3>{{ lang.t('project.features') }}</h3>
+          <ul class="project-detail__list">
+            @for (feature of project.features; track feature.id) {
+              <li>
+                <strong>{{ locale(feature.title) }}</strong>
+                <span>{{ locale(feature.body) }}</span>
+              </li>
+            }
+          </ul>
+          <h3>{{ lang.t('project.results') }}</h3>
+          <ul class="project-detail__list">
+            @for (result of project.results; track result.id) {
+              <li>
+                <strong>{{ locale(result.title) }}</strong>
+                <span>{{ locale(result.body) }}</span>
+              </li>
+            }
+          </ul>
+        </article>
+      }
+    }
   }
 </section>

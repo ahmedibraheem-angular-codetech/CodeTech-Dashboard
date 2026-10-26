@@ -23,7 +23,7 @@
       @for (project of visible(); track project.id) {
         <article class="project-tile">
           <a class="project-tile__media" [routerLink]="['/projects', project.id]">
-            <img [src]="project.coverUrl" alt="" />
+            <img [src]="project.coverUrl" [alt]="title(project)" />
             <span class="project-tile__actions">
               <button
                 type="button"
@@ -45,17 +45,17 @@
           </a>
           <div class="project-tile__head">
             <h2>
-              <a [routerLink]="['/projects', project.id]">{{ project.name }}</a>
+              <a [routerLink]="['/projects', project.id]">{{ title(project) }}</a>
             </h2>
             <p-toggleswitch
               [ngModel]="project.published"
               (ngModelChange)="publish(project.id, $event)"
-              [ariaLabel]="project.name"
+              [ariaLabel]="title(project)"
             />
           </div>
-          <p>{{ project.summary }}</p>
+          <p>{{ summary(project) }}</p>
           <ul class="project-tile__tags">
-            @for (tag of project.tags; track tag.label) {
+            @for (tag of tags(project); track tag.label) {
               <li><i [class]="tag.icon" aria-hidden="true"></i>{{ tag.label }}</li>
             }
           </ul>
@@ -66,7 +66,7 @@
       [first]="first()"
       [rows]="rows()"
       [totalRecords]="items().length"
-      currentPageReportTemplate="{currentPage} من {totalPages}"
+      [currentPageReportTemplate]="lang.t('project.pageReport')"
       (pageChange)="page($event)"
     />
   }
