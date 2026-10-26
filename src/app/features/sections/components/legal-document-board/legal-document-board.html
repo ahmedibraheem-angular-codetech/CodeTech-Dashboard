@@ -76,17 +76,18 @@
                 <button type="button" class="ql-hr" aria-label="Horizontal line"></button>
               </span>
               <span class="ql-formats legal-doc__toolbar-end">
-                <button type="button" class="ql-undo" aria-label="Undo"></button>
-                <button type="button" class="ql-redo" aria-label="Redo"></button>
                 <select class="ql-font">
                   <option selected value="thmanyah-sans">thmanyah sans</option>
                 </select>
+                <button type="button" class="ql-undo" aria-label="Undo"></button>
+                <button type="button" class="ql-redo" aria-label="Redo"></button>
               </span>
             </p-header>
           </p-editor>
         </div>
       } @else if (viewingHtml(); as html) {
         <div class="legal-doc__shell">
+          <!-- Angular sanitizes [innerHTML]; do not bypassSecurityTrustHtml. -->
           <div
             class="legal-doc__text"
             [attr.dir]="locale() === 'ar' ? 'rtl' : 'ltr'"

@@ -310,15 +310,16 @@
   gap: 10px;
 }
 
-.legal-doc__editor .ql-toolbar.ql-snow .legal-doc__toolbar-end .ql-undo {
+// Physical LTR order: font, then undo/redo at the far right edge.
+.legal-doc__editor .ql-toolbar.ql-snow .legal-doc__toolbar-end .ql-font {
   order: 1;
 }
 
-.legal-doc__editor .ql-toolbar.ql-snow .legal-doc__toolbar-end .ql-redo {
+.legal-doc__editor .ql-toolbar.ql-snow .legal-doc__toolbar-end .ql-undo {
   order: 2;
 }
 
-.legal-doc__editor .ql-toolbar.ql-snow .legal-doc__toolbar-end .ql-font {
+.legal-doc__editor .ql-toolbar.ql-snow .legal-doc__toolbar-end .ql-redo {
   order: 3;
 }
 
