@@ -1,0 +1,110 @@
+<section class="page projects-manage">
+  <app-page-header
+    [title]="lang.t('nav.projectsPage')"
+    [subtitle]="lang.t('project.page.subtitle')"
+  />
+
+  @if (status() === 'loading' || !content()) {
+    <app-state-view mode="loading" [message]="lang.t('common.loading')" />
+  } @else if (content(); as page) {
+    <article class="projects-numbers-panel">
+      <header class="projects-numbers__head">
+        <div class="projects-numbers__title">
+          <h2>{{ lang.t('project.page.numbers') }}</h2>
+          <p-toggleswitch
+            [ngModel]="page.numbersEnabled"
+            (ngModelChange)="toggleNumbers($event)"
+            [ariaLabel]="lang.t('project.page.numbers')"
+          />
+        </div>
+        <button
+          type="button"
+          class="projects-numbers__edit"
+          [attr.aria-label]="lang.t('project.page.editStat')"
+          (click)="openNumbersEditor()"
+        >
+          <i class="pi pi-pencil" aria-hidden="true"></i>
+        </button>
+      </header>
+
+      <div class="projects-numbers" [class.is-off]="!page.numbersEnabled">
+        <div class="projects-numbers__grid">
+          @for (stat of page.numbers; track stat.id) {
+            <article class="projects-numbers__card">
+              <button
+                type="button"
+                class="projects-numbers__delete"
+                [attr.aria-label]="lang.t('about.delete')"
+                (click)="removeStat(stat)"
+              >
+                <i class="pi pi-trash" aria-hidden="true"></i>
+              </button>
+              <div class="projects-numbers__copy">
+                <strong>{{ text(stat.label) }}</strong>
+                <p>{{ text(stat.value) }}</p>
+              </div>
+            </article>
+          }
+        </div>
+      </div>
+    </article>
+  }
+
+  <app-modal
+    [(visible)]="editorOpen"
+    [title]="lang.t('project.page.editStat')"
+    icon="pi pi-pencil"
+    styleClass="app-modal--wide"
+    [dir]="editorDir()"
+    [saving]="saving()"
+    [saveDisabled]="!canSave()"
+    [saveLabel]="lang.t('common.saveChanges')"
+    (save)="saveNumbers()"
+  >
+    <div class="projects-numbers-editor">
+      <app-locale-switch [value]="locale()" (picked)="locale.set($event)" />
+
+      <div class="projects-numbers-editor__grid">
+        @for (stat of drafts(); track stat.id; let index = $index) {
+          <article class="projects-numbers-editor__card">
+            <header class="projects-numbers-editor__card-head">
+              <strong>{{ copy('project.page.point') }} {{ index + 1 }}</strong>
+              <button
+                type="button"
+                class="projects-numbers-editor__delete"
+                [attr.aria-label]="lang.t('about.delete')"
+                (click)="removeDraft(index)"
+              >
+                <i class="pi pi-trash" aria-hidden="true"></i>
+              </button>
+            </header>
+
+            <label class="field">
+              <span class="field__label">{{ copy('project.page.statLabel') }}</span>
+              <input
+                pInputText
+                [fluid]="true"
+                [value]="draftText(stat.label)"
+                [placeholder]="copy('project.page.statLabelPh')"
+                (input)="setDraftField(index, 'label', $event)"
+              />
+            </label>
+
+            <label class="field">
+              <span class="field__label">{{ copy('project.page.statValue') }}</span>
+              <input
+                pInputText
+                [fluid]="true"
+                [value]="draftText(stat.value)"
+                [placeholder]="copy('project.page.statValuePh')"
+                (input)="setDraftField(index, 'value', $event)"
+              />
+            </label>
+          </article>
+        }
+      </div>
+    </div>
+  </app-modal>
+
+  <app-confirm-dialog />
+</section>

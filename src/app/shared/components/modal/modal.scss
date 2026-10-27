@@ -17,6 +17,10 @@
   padding-bottom: 24px;
 }
 
+.p-dialog.app-modal.app-modal--wide {
+  width: min(980px, calc(100vw - 32px));
+}
+
 .p-dialog.app-modal.app-modal--rtl {
   direction: rtl;
 }

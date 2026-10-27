@@ -65,13 +65,16 @@ export class Modal {
    * panel flips independently of the global UI language.
    */
   readonly dir = input<'rtl' | 'ltr'>();
+  /** Extra dialog panel classes, e.g. `app-modal--wide`. */
+  readonly styleClass = input('');
 
   /** Whether the close icon and Escape dismiss the modal. The Cancel button always works. */
   readonly dismissible = input(true);
 
   protected readonly dialogStyleClass = computed(() => {
     const dir = this.dir();
-    return dir ? `app-modal app-modal--${dir}` : 'app-modal';
+    const extra = this.styleClass().trim();
+    return ['app-modal', dir ? `app-modal--${dir}` : '', extra].filter(Boolean).join(' ');
   });
   /**
    * Set to false when the feature must confirm before closing (unsaved changes). Cancel then

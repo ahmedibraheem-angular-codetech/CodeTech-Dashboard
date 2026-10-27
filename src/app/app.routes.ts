@@ -154,7 +154,14 @@ export const routes: Routes = [
           },
         ],
       },
-      section('projects/page', 'nav.projectsPage'),
+      {
+        path: 'projects/page',
+        loadComponent: () =>
+          import('./features/projects/pages/projects-page/projects-page').then(
+            (m) => m.ProjectsPageManage,
+          ),
+        data: { breadcrumb: 'nav.projectsPage', titleKey: 'nav.projectsPage' },
+      },
       {
         path: 'projects',
         data: { breadcrumb: 'nav.projects' },

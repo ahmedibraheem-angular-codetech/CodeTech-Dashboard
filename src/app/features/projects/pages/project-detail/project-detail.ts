@@ -33,7 +33,7 @@ type PointVisual = { icon: string; image: string };
   selector: 'app-project-detail',
   imports: [PageHeader, RouterLink, StateView, PageTabs],
   templateUrl: './project-detail.html',
-  styleUrl: '../projects-list/projects-list.scss',
+  styleUrl: './project-detail.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProjectDetailPage {
