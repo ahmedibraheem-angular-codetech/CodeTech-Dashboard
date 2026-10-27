@@ -265,6 +265,42 @@ describe('ServiceDetailPage', () => {
       expect(text(root)).toContain(service.whyImage.title.ar);
     });
 
+    it('shows the service data fields on the why tab', async () => {
+      const { root } = await open('/services/web-development');
+      const service = seed('web-development');
+      expect(text(root)).toContain('بيانات الخدمة');
+      expect(root.querySelector('.service-detail__id')?.textContent).toContain(service.id);
+      const fields = [...root.querySelectorAll('app-info-field')].map((field) =>
+        field.textContent?.replace(/\s+/g, ' ').trim(),
+      );
+      expect(fields.some((value) => value?.includes(service.name.ar))).toBe(true);
+      expect(fields.some((value) => value?.includes(service.description.ar))).toBe(true);
+    });
+
+    it('asks before deleting and returns to the list when confirmed', async () => {
+      const remove = vi.spyOn(ServicesService.prototype, 'remove').mockReturnValue(of(undefined));
+      const { harness, root } = await open('/services/web-development');
+      root.querySelector<HTMLButtonElement>('.service-detail__delete')?.click();
+      await settle(harness);
+      expect(text(root)).toContain('هل تريد حذف هذه الخدمة؟');
+      const cancel = [...root.querySelectorAll('button')].find((button) =>
+        button.textContent?.includes('إلغاء'),
+      );
+      cancel?.click();
+      await settle(harness);
+      expect(remove).not.toHaveBeenCalled();
+
+      root.querySelector<HTMLButtonElement>('.service-detail__delete')?.click();
+      await settle(harness);
+      const confirm = [...root.querySelectorAll('button')].find(
+        (button) => button.textContent?.trim() === 'حذف',
+      );
+      confirm?.click();
+      await settle(harness);
+      expect(remove).toHaveBeenCalledWith('web-development');
+      expect(TestBed.inject(Router).url).toBe('/services');
+    });
+
     it('shows every solution with its text and icon', async () => {
       const { harness, root } = await open('/services/web-development');
       await showTab(harness, root, 'حلول الخدمة');

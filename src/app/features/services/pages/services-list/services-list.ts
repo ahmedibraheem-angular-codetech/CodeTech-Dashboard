@@ -71,6 +71,10 @@ export class ServicesPage {
     void this.router.navigate(['/services', 'new']);
   }
 
+  protected open(service: Service): void {
+    void this.router.navigate(['/services', service.id]);
+  }
+
   protected edit(service: Service): void {
     void this.router.navigate(['/services', service.id, 'edit']);
   }

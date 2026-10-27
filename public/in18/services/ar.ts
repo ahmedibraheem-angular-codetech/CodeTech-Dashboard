@@ -37,6 +37,7 @@ export const ar: { [K in keyof typeof en]: string } = {
   'service.step.sectors': 'قطاعات الخدمة',
   'service.step.faq': 'الأسئلة الشائعة',
   'service.info': 'بيانات الخدمة',
+  'service.idLabel': 'ID',
   'service.name': 'اسم الخدمة',
   'service.namePh': 'اكتب اسم الخدمة',
   'service.description': 'وصف الخدمة',

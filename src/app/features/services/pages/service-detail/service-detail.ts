@@ -9,13 +9,18 @@ import {
   input,
   signal,
   untracked,
+  viewChild,
 } from '@angular/core';
 import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
+import { MessageService } from 'primeng/api';
 import { catchError, map, of, switchMap } from 'rxjs';
 
 import { BreadcrumbService } from '../../../../core/services/breadcrumb.service';
 import { LanguageService } from '../../../../core/services/language.service';
+import { AppButton } from '../../../../shared/components/app-button/app-button';
+import { ConfirmDialog } from '../../../../shared/components/confirm-dialog/confirm-dialog';
+import { InfoField } from '../../../../shared/components/info-field/info-field';
 import { PageHeader } from '../../../../shared/components/page-header/page-header';
 import { PageTabs, type PageTab } from '../../../../shared/components/page-tabs/page-tabs';
 import { SectorCard } from '../../../../shared/components/sector-card/sector-card';
@@ -47,7 +52,16 @@ export interface ServiceVisual {
  */
 @Component({
   selector: 'app-service-detail',
-  imports: [RouterLink, PageHeader, PageTabs, SectorCard, StateView],
+  imports: [
+    RouterLink,
+    AppButton,
+    ConfirmDialog,
+    InfoField,
+    PageHeader,
+    PageTabs,
+    SectorCard,
+    StateView,
+  ],
   templateUrl: './service-detail.html',
   styleUrl: './service-detail.scss',
   encapsulation: ViewEncapsulation.None,
@@ -56,10 +70,12 @@ export interface ServiceVisual {
 export class ServiceDetailPage {
   private readonly api = inject(ServicesService);
   private readonly projectsApi = inject(ProjectsService);
+  private readonly router = inject(Router);
+  private readonly messages = inject(MessageService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly breadcrumbs = inject(BreadcrumbService);
+  private readonly confirm = viewChild.required(ConfirmDialog);
   readonly lang = inject(LanguageService);
-
   /** Bound from the `:id` route parameter; an empty id resolves to the not-found state. */
   readonly id = input('');
   readonly item = signal<Service | null>(null);
@@ -174,6 +190,27 @@ export class ServiceDetailPage {
     if (typeof value === 'string') {
       this.tab.set(value);
     }
+  }
+
+  /** Same confirm + remove path as the list page; returns to `/services` on success. */
+  protected async remove(service: Service): Promise<void> {
+    const accepted = await this.confirm().ask({
+      title: this.lang.t('service.deleteTitle'),
+      message: this.lang.t('service.deleteMessage'),
+      confirmLabel: this.lang.t('about.delete'),
+      cancelLabel: this.lang.t('common.cancel'),
+      danger: true,
+    });
+    if (!accepted) {
+      return;
+    }
+    this.api
+      .remove(service.id)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => {
+        this.messages.add({ severity: 'success', summary: this.lang.t('service.deleted') });
+        void this.router.navigate(['/services']);
+      });
   }
 
   /** Text in the interface language, falling back to the other language when it is blank. */

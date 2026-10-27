@@ -7,6 +7,18 @@ app-service-detail {
 .service-detail .page-header__actions {
   flex-wrap: wrap;
   align-items: center;
+  gap: 8px;
+}
+
+// Published badge matches the reference blue pill (scoped so products stay green).
+.service-detail .detail-status {
+  background: #e8f1fb;
+  color: #1c81d3;
+}
+
+.service-detail .detail-status.is-draft {
+  background: var(--app-canvas);
+  color: var(--app-muted);
 }
 
 .service-detail__icon {
@@ -21,6 +33,19 @@ app-service-detail {
   font-size: 16px;
 }
 
+.service-detail__edit.detail-edit {
+  border-color: color-mix(in srgb, var(--app-primary) 28%, transparent);
+  color: var(--app-primary);
+}
+
+.service-detail__delete.p-button {
+  height: 40px;
+  padding-inline: 16px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 700;
+}
+
 .service-detail__back {
   &:hover {
     text-decoration: none;
@@ -31,6 +56,33 @@ app-service-detail {
   align-self: flex-start;
 }
 
+.service-detail__why {
+  gap: 16px;
+}
+
+.service-detail__fields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.service-detail__id {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+
+  .pi {
+    color: var(--app-muted);
+    font-size: 13px;
+  }
+}
+
+.service-detail__fields .info-field__value .pi {
+  color: var(--app-muted);
+  font-size: 14px;
+}
+
 .service-detail__list,
 .service-detail__cards,
 .service-detail__projects {
@@ -39,14 +91,25 @@ app-service-detail {
   list-style: none;
 }
 
-.service-detail__cards {
+// Why tiles: compact 2–3 column grid as in the reference.
+.service-detail__list.detail-features {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 10px;
 }
 
+.service-detail__list.detail-features li {
+  min-width: 0;
+}
+
+.service-detail__cards {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
 .service-detail__stages {
-  grid-template-columns: minmax(0, 1fr);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
 .service-detail__card {
@@ -55,9 +118,20 @@ app-service-detail {
   gap: 12px;
   min-width: 0;
   padding: 14px;
-  border: 1px solid #edeeee;
+  border: 1px solid var(--app-border, #e6ebf2);
   border-radius: 14px;
-  background: #f9fafb;
+  background: var(--app-surface-muted, #f8fafc);
+}
+
+.service-detail__feature {
+  align-items: flex-start;
+  background: #f4f7f9;
+  border-color: transparent;
+}
+
+.service-detail__stage {
+  align-items: stretch;
+  background: var(--app-surface, #fff);
 }
 
 .service-detail__copy {
@@ -70,11 +144,12 @@ app-service-detail {
   strong {
     color: var(--app-text);
     font-size: 14px;
+    font-weight: 700;
     overflow-wrap: anywhere;
   }
 
   small {
-    color: #64748b;
+    color: var(--app-muted);
     font-size: 12px;
     line-height: 1.7;
     overflow-wrap: anywhere;
@@ -84,6 +159,7 @@ app-service-detail {
 .service-detail__number {
   display: grid;
   flex: none;
+  order: -1;
   width: 36px;
   height: 36px;
   place-items: center;
@@ -97,16 +173,22 @@ app-service-detail {
 .service-detail__thumb {
   display: block;
   flex: none;
-  width: 64px;
-  height: 48px;
-  border-radius: 10px;
+  width: 148px;
+  height: 112px;
+  margin-inline-start: auto;
+  border-radius: 12px;
   object-fit: cover;
+}
+
+.service-detail__stage .service-detail__number {
+  align-self: flex-start;
 }
 
 .service-detail__photo {
   min-height: 0;
   max-height: 320px;
   aspect-ratio: 16 / 10;
+  border-radius: 14px;
 }
 
 .service-detail__photo-empty {
@@ -117,7 +199,7 @@ app-service-detail {
   min-height: 140px;
   border: 1px dashed #d9dee8;
   border-radius: 14px;
-  background: #f9fafb;
+  background: var(--app-surface-muted, #f8fafc);
   color: #94a3b8;
   font-size: 13px;
 
@@ -126,26 +208,19 @@ app-service-detail {
   }
 }
 
-.service-detail__caption {
-  margin: 0;
-  color: #64748b;
-  font-size: 13px;
-  text-align: center;
-}
-
 .service-detail__projects {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(min(100%, 220px), 1fr));
-  gap: 12px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
 }
 
 .service-detail__project {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 8px;
   height: 100%;
-  padding: 10px;
-  border: 1px solid #edeeee;
+  padding: 12px;
+  border: 1px solid var(--app-border, #e6ebf2);
   border-radius: 14px;
   background: var(--app-surface);
   color: inherit;
@@ -156,18 +231,19 @@ app-service-detail {
     display: block;
     width: 100%;
     aspect-ratio: 16 / 10;
-    border-radius: 10px;
+    border-radius: 12px;
     object-fit: cover;
   }
 
   strong {
     color: var(--app-text);
     font-size: 14px;
+    font-weight: 700;
     overflow-wrap: anywhere;
   }
 
   small {
-    color: #64748b;
+    color: var(--app-muted);
     font-size: 12px;
     line-height: 1.7;
     overflow-wrap: anywhere;
@@ -194,8 +270,23 @@ app-service-detail {
   font-size: 13px;
 }
 
+@media (max-width: 1100px) {
+  .service-detail__list.detail-features {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
 @media (max-width: 900px) {
-  .service-detail__cards {
+  .service-detail__fields,
+  .service-detail__cards,
+  .service-detail__stages,
+  .service-detail__projects,
+  .service-detail__list.detail-features {
     grid-template-columns: minmax(0, 1fr);
+  }
+
+  .service-detail__thumb {
+    width: 96px;
+    height: 72px;
   }
 }

@@ -27,7 +27,7 @@ describe('ServiceCard', () => {
 
   it('renders the title, description, and a PrimeIcons icon from `icon`', async () => {
     const root: HTMLElement = (await render()).nativeElement;
-    expect(root.querySelector('h2')?.textContent).toBe('تطوير المواقع');
+    expect(root.querySelector('h2')?.textContent?.trim()).toBe('تطوير المواقع');
     expect(root.querySelector('.service-card__description')?.textContent).toBe('وصف الخدمة');
     const icon = root.querySelector('.service-card__icon i');
     expect(icon?.classList.contains('pi')).toBe(true);
@@ -72,5 +72,25 @@ describe('ServiceCard', () => {
     expect(published).toEqual([true]);
     expect(edits).toBe(1);
     expect(deletes).toBe(1);
+  });
+
+  it('requests the details from the card body and the title, but not from its controls', async () => {
+    const fixture = await render();
+    const root: HTMLElement = fixture.nativeElement;
+    let opens = 0;
+    fixture.componentInstance.openRequested.subscribe(() => (opens += 1));
+
+    root.querySelector<HTMLElement>('.service-card__description')?.click();
+    expect(opens).toBe(1);
+    root.querySelector<HTMLElement>('.service-card__icon')?.click();
+    expect(opens).toBe(2);
+    // The title is a real button (keyboard access) and must emit exactly once.
+    root.querySelector<HTMLButtonElement>('h2 button')?.click();
+    expect(opens).toBe(3);
+
+    root.querySelector<HTMLInputElement>('p-toggleswitch input')?.click();
+    root.querySelector<HTMLButtonElement>('button[aria-label="تعديل الخدمة"]')?.click();
+    root.querySelector<HTMLButtonElement>('button[aria-label="حذف الخدمة"]')?.click();
+    expect(opens).toBe(3);
   });
 });

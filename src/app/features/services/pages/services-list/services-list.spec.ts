@@ -76,7 +76,7 @@ describe('ServicesPage', () => {
     const { fixture, root } = await render();
     await settle(fixture);
     const first = SERVICES_SEED[0]!;
-    expect(root.querySelector('app-service-card h2')?.textContent).toBe(first.name.ar);
+    expect(root.querySelector('app-service-card h2')?.textContent?.trim()).toBe(first.name.ar);
     expect(root.querySelector('.service-card__description')?.textContent).toBe(
       first.description.ar,
     );
@@ -88,7 +88,7 @@ describe('ServicesPage', () => {
     expect(root.querySelector('h1')?.textContent).toBe('Manage services');
     expect(root.querySelector('.services-board__title')?.textContent).toBe('Services');
     expect(root.textContent).toContain('Add a new service');
-    expect(root.querySelector('app-service-card h2')?.textContent).toBe(first.name.en);
+    expect(root.querySelector('app-service-card h2')?.textContent?.trim()).toBe(first.name.en);
     expect(root.querySelector('.service-card__description')?.textContent).toBe(
       first.description.en,
     );
@@ -133,6 +133,18 @@ describe('ServicesPage', () => {
     expect(edits).toHaveLength(6);
     edits[1]!.click();
     expect(navigate).toHaveBeenCalledWith(['/services', SERVICES_SEED[1]!.id, 'edit']);
+  });
+
+  it('navigates to /services/:id when a service card is clicked', async () => {
+    const { fixture, root } = await render();
+    const navigate = vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
+    await settle(fixture);
+    const cards = root.querySelectorAll<HTMLElement>('.service-card__description');
+    cards[2]!.click();
+    expect(navigate).toHaveBeenCalledWith(['/services', SERVICES_SEED[2]!.id]);
+    root.querySelectorAll<HTMLButtonElement>('.service-card h2 button')[0]!.click();
+    expect(navigate).toHaveBeenLastCalledWith(['/services', SERVICES_SEED[0]!.id]);
+    expect(navigate).toHaveBeenCalledTimes(2);
   });
 
   it('keeps the service when the delete confirmation is cancelled', async () => {

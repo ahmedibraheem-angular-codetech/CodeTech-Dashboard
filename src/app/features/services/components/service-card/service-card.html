@@ -1,4 +1,4 @@
-<article class="service-card">
+<article class="service-card" (click)="openFromCard($event)">
   <div class="service-card__top">
     <span class="service-card__icon" aria-hidden="true">
       <i [class]="iconClass()"></i>
@@ -8,7 +8,6 @@
         icon="pi pi-pencil"
         variant="primary"
         [outlined]="true"
-        [rounded]="true"
         styleClass="service-card__action"
         [ariaLabel]="editLabel()"
         (clicked)="editRequested.emit()"
@@ -17,7 +16,6 @@
         icon="pi pi-trash"
         variant="danger"
         [outlined]="true"
-        [rounded]="true"
         styleClass="service-card__action"
         [ariaLabel]="deleteLabel()"
         (clicked)="deleteRequested.emit()"
@@ -25,7 +23,11 @@
     </span>
   </div>
   <div class="service-card__head">
-    <h2>{{ title() }}</h2>
+    <h2>
+      <button type="button" class="service-card__open" (click)="openRequested.emit()">
+        {{ title() }}
+      </button>
+    </h2>
     <p-toggleswitch
       [ngModel]="published()"
       (ngModelChange)="publishedChange.emit($event)"

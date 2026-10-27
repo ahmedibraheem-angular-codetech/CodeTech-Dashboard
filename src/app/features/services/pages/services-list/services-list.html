@@ -27,6 +27,7 @@
             [editLabel]="lang.t('service.editAction')"
             [deleteLabel]="lang.t('service.deleteAction')"
             (publishedChange)="publish(service.id, $event)"
+            (openRequested)="open(service)"
             (editRequested)="edit(service)"
             (deleteRequested)="remove(service)"
           />

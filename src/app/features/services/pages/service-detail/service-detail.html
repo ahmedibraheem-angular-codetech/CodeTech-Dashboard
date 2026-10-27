@@ -29,13 +29,69 @@
         <i class="pi pi-pen-to-square" aria-hidden="true"></i>
         {{ lang.t('service.editAction') }}
       </a>
+      <app-button
+        variant="danger"
+        [outlined]="true"
+        icon="pi pi-trash"
+        styleClass="service-detail__delete"
+        [label]="lang.t('service.deleteAction')"
+        (clicked)="remove(service)"
+      />
     </app-page-header>
 
     <app-page-tabs [tabs]="tabs" [value]="tab()" (valueChange)="selectTab($event)" />
 
     @switch (tab()) {
       @case ('why') {
-        <div class="detail-overview service-detail__why">
+        <div class="detail-stack service-detail__why">
+          <div class="detail-overview">
+            <article class="detail-panel">
+              <header class="detail-panel__head">
+                <h2>{{ lang.t('service.info') }}</h2>
+                <span class="icon-badge"><i class="pi pi-sitemap" aria-hidden="true"></i></span>
+              </header>
+              <div class="service-detail__fields">
+                <app-info-field [label]="lang.t('service.idLabel')">
+                  <span class="service-detail__id" dir="ltr">
+                    <bdi>{{ service.id }}</bdi>
+                    <i class="pi pi-share-alt" aria-hidden="true"></i>
+                  </span>
+                </app-info-field>
+                <app-info-field [label]="lang.t('service.name')">
+                  <i class="pi pi-user" aria-hidden="true"></i>
+                  <span>{{ text(service.name) }}</span>
+                </app-info-field>
+                <app-info-field [label]="lang.t('service.description')" [wide]="true">
+                  <span>{{ text(service.description) }}</span>
+                </app-info-field>
+              </div>
+            </article>
+            <article class="detail-panel">
+              <header class="detail-panel__head">
+                <h2>{{ lang.t('service.detail.whyImage') }}</h2>
+                <span class="icon-badge"><i class="pi pi-image" aria-hidden="true"></i></span>
+              </header>
+              @if (whyImage(); as hero) {
+                @if (hero.imageUrl && !visual(hero).icon) {
+                  <img
+                    class="detail-photo service-detail__photo"
+                    [src]="hero.imageUrl"
+                    [alt]="text(hero.title)"
+                  />
+                } @else {
+                  <div class="service-detail__photo-empty">
+                    <i class="pi pi-image" aria-hidden="true"></i>
+                    <span>{{ lang.t('service.detail.noImage') }}</span>
+                  </div>
+                }
+                @if (text(hero.title)) {
+                  <app-info-field [label]="lang.t('service.whyImageTitle')">
+                    <span>{{ text(hero.title) }}</span>
+                  </app-info-field>
+                }
+              }
+            </article>
+          </div>
           <article class="detail-panel">
             <header class="detail-panel__head">
               <h2>{{ lang.t('service.whyItems') }}</h2>
@@ -61,36 +117,13 @@
               <p class="service-detail__empty">{{ lang.t('service.detail.empty') }}</p>
             }
           </article>
-          <article class="detail-panel">
-            <header class="detail-panel__head">
-              <h2>{{ lang.t('service.detail.whyImage') }}</h2>
-              <span class="icon-badge"><i class="pi pi-image" aria-hidden="true"></i></span>
-            </header>
-            @if (whyImage(); as hero) {
-              @if (hero.imageUrl && !visual(hero).icon) {
-                <img
-                  class="detail-photo service-detail__photo"
-                  [src]="hero.imageUrl"
-                  [alt]="text(hero.title)"
-                />
-              } @else {
-                <div class="service-detail__photo-empty">
-                  <i class="pi pi-image" aria-hidden="true"></i>
-                  <span>{{ lang.t('service.detail.noImage') }}</span>
-                </div>
-              }
-              @if (text(hero.title)) {
-                <p class="service-detail__caption">{{ text(hero.title) }}</p>
-              }
-            }
-          </article>
         </div>
       }
       @case ('solutions') {
         <article class="detail-panel">
           <header class="detail-panel__head">
             <h2>{{ lang.t('service.solutions') }}</h2>
-            <span class="icon-badge"><i class="pi pi-lightbulb" aria-hidden="true"></i></span>
+            <span class="icon-badge"><i class="pi pi-check-circle" aria-hidden="true"></i></span>
           </header>
           @if (solutions().length) {
             <ul class="service-detail__cards">
@@ -120,13 +153,13 @@
         <article class="detail-panel">
           <header class="detail-panel__head">
             <h2>{{ lang.t('service.stages') }}</h2>
-            <span class="icon-badge"><i class="pi pi-sitemap" aria-hidden="true"></i></span>
+            <span class="icon-badge"><i class="pi pi-th-large" aria-hidden="true"></i></span>
           </header>
           @if (stages().length) {
             <ol class="service-detail__cards service-detail__stages">
               @for (entry of stages(); track entry.id; let index = $index) {
                 @let art = visual(entry);
-                <li class="service-detail__card">
+                <li class="service-detail__card service-detail__stage">
                   <span class="service-detail__number" aria-hidden="true">
                     {{ position(index) }}
                   </span>
@@ -153,24 +186,24 @@
         <article class="detail-panel">
           <header class="detail-panel__head">
             <h2>{{ lang.t('service.features') }}</h2>
-            <span class="icon-badge"><i class="pi pi-check-circle" aria-hidden="true"></i></span>
+            <span class="icon-badge"><i class="pi pi-star" aria-hidden="true"></i></span>
           </header>
           @if (features().length) {
-            <ul class="service-detail__cards">
+            <ul class="service-detail__cards service-detail__features">
               @for (entry of features(); track entry.id) {
                 @let art = visual(entry);
-                <li class="service-detail__card">
-                  <span class="detail-features__icon" aria-hidden="true">
-                    @if (art.image) {
-                      <img [src]="art.image" alt="" />
-                    } @else {
-                      <i class="pi" [class]="art.icon || 'pi-check-circle'"></i>
-                    }
-                  </span>
+                <li class="service-detail__card service-detail__feature">
                   <span class="service-detail__copy">
                     <strong>{{ text(entry.title) }}</strong>
                     <small>{{ text(entry.body) }}</small>
                   </span>
+                  @if (art.image) {
+                    <img class="service-detail__thumb" [src]="art.image" alt="" />
+                  } @else if (art.icon) {
+                    <span class="detail-features__icon" aria-hidden="true">
+                      <i class="pi" [class]="art.icon"></i>
+                    </span>
+                  }
                 </li>
               }
             </ul>
@@ -183,7 +216,7 @@
         <article class="detail-panel">
           <header class="detail-panel__head">
             <h2>{{ lang.t('service.projects') }}</h2>
-            <span class="icon-badge"><i class="pi pi-briefcase" aria-hidden="true"></i></span>
+            <span class="icon-badge"><i class="pi pi-folder" aria-hidden="true"></i></span>
           </header>
           @if (projectsStatus() === 'loading') {
             <app-state-view mode="loading" [message]="lang.t('common.loading')" />
@@ -271,4 +304,5 @@
       }
     }
   }
+  <app-confirm-dialog />
 </section>

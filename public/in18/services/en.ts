@@ -35,6 +35,7 @@ export const en = {
   'service.step.sectors': 'Service sectors',
   'service.step.faq': 'Frequently asked questions',
   'service.info': 'Service details',
+  'service.idLabel': 'ID',
   'service.name': 'Service name',
   'service.namePh': 'Enter the service name',
   'service.description': 'Service description',
