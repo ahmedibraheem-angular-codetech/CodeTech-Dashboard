@@ -42,6 +42,7 @@ import {
   type LocaleText,
   type Product,
 } from '../../models/product.model';
+import { ObjectUrls } from '../../components/product-upload/object-urls';
 import { ProductsService } from '../../services/products.service';
 
 type PointList = 'features' | 'challenges' | 'offer' | 'results' | 'steps' | 'highlights';
@@ -65,6 +66,7 @@ type MediaList = 'sectors' | 'tools' | 'integrations' | 'identity';
 })
 export class ProductEditor {
   private readonly api = inject(ProductsService);
+  private readonly objectUrls = inject(ObjectUrls);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
   private readonly messages = inject(MessageService);
@@ -117,6 +119,9 @@ export class ProductEditor {
   );
 
   constructor() {
+    // Drop draft-owned object URLs when leaving the editor; store-owned ones stay via `sync`.
+    this.destroyRef.onDestroy(() => this.objectUrls.abandon(this.draft()));
+
     effect(() => {
       const editing = this.mode() === 'edit' && this.id();
       untracked(() => {
@@ -525,7 +530,9 @@ export class ProductEditor {
     message: 'product.saved' | 'product.draftSaved',
     leave: boolean,
   ): void {
-    if (this.saving()) {
+    // The shell keeps its header actions visible while a record loads, fails to load, or is
+    // missing; saving then would write the blank placeholder draft as a brand-new product.
+    if (this.saving() || this.status() !== 'ready') {
       return;
     }
     const current = { ...this.draft(), published };

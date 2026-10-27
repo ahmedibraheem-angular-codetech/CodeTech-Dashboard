@@ -1,15 +1,8 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  DestroyRef,
-  inject,
-  input,
-  output,
-  signal,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, input, output, signal } from '@angular/core';
 
 import type { AppLanguage } from '../../../../core/i18n/language';
 import { LanguageService } from '../../../../core/services/language.service';
+import { ObjectUrls } from './object-urls';
 
 const MAX_IMAGE_BYTES = 5 * 1024 * 1024;
 
@@ -20,6 +13,7 @@ const MAX_IMAGE_BYTES = 5 * 1024 * 1024;
 })
 export class ProductUpload {
   readonly lang = inject(LanguageService);
+  private readonly objectUrls = inject(ObjectUrls);
   readonly name = input('');
   readonly url = input('');
   readonly actions = input(false);
@@ -68,11 +62,8 @@ export class ProductUpload {
     'pi-compass',
     'pi-box',
   ];
-  private previewUrl = '';
-
-  constructor() {
-    inject(DestroyRef).onDestroy(() => this.revokePreview());
-  }
+  /** Last URL this instance emitted; covers a re-pick before the `url` input has caught up. */
+  private lastPicked = '';
 
   protected copy(suffix: string): string {
     const key = `${this.keyPrefix()}.${suffix}`;
@@ -117,7 +108,7 @@ export class ProductUpload {
     event.preventDefault();
     event.stopPropagation();
     this.sizeError.set(false);
-    this.revokePreview();
+    this.release();
     this.cleared.emit();
   }
 
@@ -130,17 +121,22 @@ export class ProductUpload {
       return;
     }
     this.sizeError.set(false);
-    this.revokePreview();
-    this.previewUrl = URL.createObjectURL(file);
-    this.picked.emit({ name: file.name, url: this.previewUrl });
+    const url = this.objectUrls.create(file);
+    this.release(url);
+    this.picked.emit({ name: file.name, url });
   }
 
-  private revokePreview(): void {
-    if (!this.previewUrl.startsWith('blob:')) {
-      return;
+  /**
+   * Revokes the preview this field shows (and the one it last emitted) because it is being
+   * replaced or cleared. `keep` is the new value, which must stay alive.
+   */
+  private release(keep = ''): void {
+    for (const url of new Set([this.url(), this.lastPicked])) {
+      if (url !== keep) {
+        this.objectUrls.release(url);
+      }
     }
-    URL.revokeObjectURL(this.previewUrl);
-    this.previewUrl = '';
+    this.lastPicked = keep;
   }
 
   protected open(input: HTMLInputElement): void {
@@ -149,7 +145,7 @@ export class ProductUpload {
 
   protected pickIcon(icon: string): void {
     this.sizeError.set(false);
-    this.revokePreview();
+    this.release();
     this.source.set('library');
     this.picked.emit({ name: icon, url: `icon:${icon}` });
   }

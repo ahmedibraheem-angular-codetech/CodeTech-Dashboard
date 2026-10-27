@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { ActivatedRoute, provideRouter, Router } from '@angular/router';
 import { MessageService } from 'primeng/api';
-import { firstValueFrom, map, of, Subject, throwError, timer } from 'rxjs';
+import { firstValueFrom, map, NEVER, of, Subject, throwError, timer } from 'rxjs';
 
 import { API_LATENCY_MS } from '../../../../core/config/latency';
 import { blankProduct, localeText, type Product } from '../../models/product.model';
@@ -297,6 +297,222 @@ describe('ProductEditor', () => {
     expect(points()).toHaveLength(1);
     expect(points()[0]?.disabled).toBe(true);
   });
+
+  describe('unloaded records', () => {
+    const unloaded = {
+      missing: () => of(null),
+      failed: () => throwError(() => new Error('offline')),
+      loading: () => NEVER,
+    };
+
+    for (const [name, get] of Object.entries(unloaded)) {
+      it(`cannot save, publish, or create a record while the edit page is ${name}`, async () => {
+        const save = vi.fn((product: Product) => of(product));
+        const fixture = await render('edit', 'info-system', { get, save });
+        const root: HTMLElement = fixture.nativeElement;
+        const editor = fixture.componentInstance;
+        const toast = vi.spyOn(TestBed.inject(MessageService), 'add');
+        const navigate = vi.spyOn(TestBed.inject(Router), 'navigate');
+        expect(editor.status()).toBe(
+          name === 'loading' ? 'loading' : name === 'failed' ? 'error' : 'missing',
+        );
+
+        editor.saveDraft();
+        editor.updatePublished(false);
+        editor.updatePublished(true);
+        editor.finish();
+        for (const label of ['حفظ كمسودة', 'إلغاء النشر', 'حفظ']) {
+          clickButton(root, label);
+        }
+        await settle(fixture);
+
+        expect(save).not.toHaveBeenCalled();
+        expect(toast).not.toHaveBeenCalled();
+        expect(navigate).not.toHaveBeenCalled();
+        expect(editor.draft().id).toBe('');
+      });
+    }
+
+    it('does not add a product to the list when an unknown id is saved', async () => {
+      const fixture = await render('edit', 'does-not-exist');
+      const root: HTMLElement = fixture.nativeElement;
+      const api = TestBed.inject(ProductsService);
+      const before = await firstValueFrom(api.list());
+      expect(fixture.componentInstance.status()).toBe('missing');
+
+      for (const label of ['حفظ كمسودة', 'إلغاء النشر', 'حفظ']) {
+        clickButton(root, label);
+      }
+      await settle(fixture);
+
+      expect(await firstValueFrom(api.list())).toEqual(before);
+    });
+
+    it('saves normally once a failed load has been retried successfully', async () => {
+      let failed = true;
+      const save = vi.fn((product: Product) => of(product));
+      const fixture = await render('edit', 'info-system', {
+        get: () =>
+          failed
+            ? throwError(() => new Error('failed'))
+            : of(named('info-system', 'بعد إعادة المحاولة')),
+        save,
+      });
+      const root: HTMLElement = fixture.nativeElement;
+      clickButton(root, 'حفظ كمسودة');
+      expect(save).not.toHaveBeenCalled();
+
+      failed = false;
+      clickButton(root, 'إعادة المحاولة');
+      await settle(fixture);
+      clickButton(root, 'حفظ كمسودة');
+      await settle(fixture);
+
+      expect(save).toHaveBeenCalledTimes(1);
+      expect(save.mock.calls[0]?.[0]).toMatchObject({ id: 'info-system', published: false });
+    });
+  });
+
+  describe('upload preview lifecycle', () => {
+    const originalCreate = URL.createObjectURL;
+    const originalRevoke = URL.revokeObjectURL;
+    let created = 0;
+    let revoke: ReturnType<typeof vi.fn<(url: string) => void>>;
+
+    beforeEach(() => {
+      created = 0;
+      revoke = vi.fn<(url: string) => void>();
+      URL.createObjectURL = () => `blob:product/${(created += 1)}`;
+      URL.revokeObjectURL = revoke;
+    });
+
+    afterEach(() => {
+      URL.createObjectURL = originalCreate;
+      URL.revokeObjectURL = originalRevoke;
+    });
+
+    it('keeps a picked image previewable after leaving and returning to its step', async () => {
+      const fixture = await render('edit', 'info-system');
+      const root: HTMLElement = fixture.nativeElement;
+      const editor = fixture.componentInstance;
+
+      pickFile(root, '.editor-section--cover input[type="file"]', 'cover.png');
+      await settle(fixture);
+      const url = editor.draft().coverUrl;
+      expect(url).toBe('blob:product/1');
+
+      editor.select(1);
+      await settle(fixture);
+      expect(root.querySelector('app-info-step')).toBeNull();
+      editor.select(0);
+      await settle(fixture);
+
+      expect(revoke).not.toHaveBeenCalled();
+      expect(editor.draft().coverUrl).toBe(url);
+      expect(
+        root.querySelector('.editor-section--cover img.uploader__preview')?.getAttribute('src'),
+      ).toBe(url);
+    });
+
+    it('revokes only the replaced image, including after the step was left and re-entered', async () => {
+      const fixture = await render('edit', 'info-system');
+      const root: HTMLElement = fixture.nativeElement;
+      const editor = fixture.componentInstance;
+
+      pickFile(root, '.editor-section--cover input[type="file"]', 'first.png');
+      await settle(fixture);
+      editor.select(1);
+      await settle(fixture);
+      editor.select(0);
+      await settle(fixture);
+      pickFile(root, '.editor-section--cover input[type="file"]', 'second.png');
+      await settle(fixture);
+
+      expect(revoke).toHaveBeenCalledTimes(1);
+      expect(revoke).toHaveBeenCalledWith('blob:product/1');
+      expect(editor.draft().coverUrl).toBe('blob:product/2');
+    });
+
+    it('revokes a newly selected unsaved image when the editor is closed', async () => {
+      const fixture = await render('edit', 'info-system');
+      const editor = fixture.componentInstance;
+
+      pickFile(fixture.nativeElement, '.editor-section--cover input[type="file"]', 'cover.png');
+      await settle(fixture);
+      const url = editor.draft().coverUrl;
+
+      fixture.destroy();
+      expect(revoke).toHaveBeenCalledTimes(1);
+      expect(revoke).toHaveBeenCalledWith(url);
+    });
+
+    it('keeps a saved cover after closing an editor that did not change it', async () => {
+      const fixture = await render('edit', 'info-system');
+      const root: HTMLElement = fixture.nativeElement;
+      const api = TestBed.inject(ProductsService);
+
+      pickFile(root, '.editor-section--cover input[type="file"]', 'saved.png');
+      await settle(fixture);
+      clickButton(root, 'حفظ كمسودة');
+      await settle(fixture);
+      const saved = (await firstValueFrom(api.get('info-system')))?.coverUrl;
+
+      fixture.destroy();
+      expect(revoke).not.toHaveBeenCalled();
+      expect((await firstValueFrom(api.get('info-system')))?.coverUrl).toBe(saved);
+    });
+
+    it('does not break a saved cover when an unsaved edit replaces it, then closes', async () => {
+      const fixture = await render('edit', 'info-system');
+      const root: HTMLElement = fixture.nativeElement;
+      const editor = fixture.componentInstance;
+      const api = TestBed.inject(ProductsService);
+
+      pickFile(root, '.editor-section--cover input[type="file"]', 'saved.png');
+      await settle(fixture);
+      clickButton(root, 'حفظ كمسودة');
+      await settle(fixture);
+      const saved = editor.draft().coverUrl;
+      expect((await firstValueFrom(api.get('info-system')))?.coverUrl).toBe(saved);
+
+      pickFile(root, '.editor-section--cover input[type="file"]', 'unsaved.png');
+      await settle(fixture);
+      expect(revoke).not.toHaveBeenCalled();
+      expect(editor.draft().coverUrl).toBe('blob:product/2');
+
+      fixture.destroy();
+      expect(revoke).toHaveBeenCalledTimes(1);
+      expect(revoke).toHaveBeenCalledWith('blob:product/2');
+      expect((await firstValueFrom(api.get('info-system')))?.coverUrl).toBe(saved);
+    });
+
+    it('revokes the previous cover once a later save no longer uses it, and keeps the new one after close', async () => {
+      const fixture = await render('edit', 'info-system');
+      const root: HTMLElement = fixture.nativeElement;
+      const editor = fixture.componentInstance;
+      const api = TestBed.inject(ProductsService);
+
+      pickFile(root, '.editor-section--cover input[type="file"]', 'first.png');
+      await settle(fixture);
+      clickButton(root, 'حفظ كمسودة');
+      await settle(fixture);
+      const first = editor.draft().coverUrl;
+
+      pickFile(root, '.editor-section--cover input[type="file"]', 'second.png');
+      await settle(fixture);
+      expect(revoke).not.toHaveBeenCalled();
+      clickButton(root, 'حفظ كمسودة');
+      await settle(fixture);
+
+      expect(revoke).toHaveBeenCalledTimes(1);
+      expect(revoke).toHaveBeenCalledWith(first);
+      expect((await firstValueFrom(api.get('info-system')))?.coverUrl).toBe('blob:product/2');
+
+      fixture.destroy();
+      expect(revoke).toHaveBeenCalledTimes(1);
+      expect((await firstValueFrom(api.get('info-system')))?.coverUrl).toBe('blob:product/2');
+    });
+  });
 });
 
 function enterName(root: HTMLElement, value: string): void {
@@ -349,4 +565,16 @@ async function settle(fixture: { whenStable: () => Promise<unknown>; detectChang
 
 function named(id: string, arabic: string): Product {
   return { ...blankProduct(), id, published: true, name: localeText(arabic, arabic) };
+}
+
+function pickFile(root: HTMLElement, selector: string, name: string): void {
+  const input = root.querySelector<HTMLInputElement>(selector);
+  if (!input) {
+    throw new Error(`File input "${selector}" is missing`);
+  }
+  Object.defineProperty(input, 'files', {
+    value: [new File([new Uint8Array([1])], name, { type: 'image/png' })],
+    configurable: true,
+  });
+  input.dispatchEvent(new Event('change'));
 }

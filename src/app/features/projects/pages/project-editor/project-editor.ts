@@ -31,6 +31,7 @@ import {
   type LocaleText,
   type Project,
 } from '../../models/project.model';
+import { ObjectUrls } from '../../../products/components/product-upload/object-urls';
 import { ProjectsService } from '../../services/projects.service';
 import {
   AboutStep,
@@ -62,6 +63,7 @@ type MediaList = 'tools';
 })
 export class ProjectEditor {
   private readonly api = inject(ProjectsService);
+  private readonly objectUrls = inject(ObjectUrls);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
   private readonly messages = inject(MessageService);
@@ -112,6 +114,9 @@ export class ProjectEditor {
   );
 
   constructor() {
+    // Drop draft-owned object URLs when leaving the editor; store-owned ones stay via `sync`.
+    this.destroyRef.onDestroy(() => this.objectUrls.abandon(this.draft()));
+
     effect(() => {
       const editing = this.mode() === 'edit' && this.id();
       untracked(() => {
@@ -484,7 +489,9 @@ export class ProjectEditor {
     message: 'project.saved' | 'project.draftSaved',
     leave: boolean,
   ): void {
-    if (this.saving()) {
+    // The shell keeps its header actions visible while a record loads, fails to load, or is
+    // missing; saving then would write the blank placeholder draft as a brand-new project.
+    if (this.saving() || this.status() !== 'ready') {
       return;
     }
     const current = { ...this.draft(), published };

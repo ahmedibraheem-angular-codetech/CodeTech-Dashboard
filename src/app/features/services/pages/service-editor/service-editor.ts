@@ -34,6 +34,7 @@ import {
   type LocaleText,
   type Service,
 } from '../../models/service.model';
+import { ObjectUrls } from '../../../products/components/product-upload/object-urls';
 import { ServicesService } from '../../services/services.service';
 import {
   FaqStep,
@@ -67,6 +68,7 @@ export type ServiceImageFile = { name: string; url: string };
 })
 export class ServiceEditor {
   private readonly api = inject(ServicesService);
+  private readonly objectUrls = inject(ObjectUrls);
   private readonly projectsApi = inject(ProjectsService);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
@@ -121,6 +123,9 @@ export class ServiceEditor {
   );
 
   constructor() {
+    // Drop draft-owned object URLs when leaving the editor; store-owned ones stay via `sync`.
+    this.destroyRef.onDestroy(() => this.objectUrls.abandon(this.draft()));
+
     effect(() => {
       const editing = this.mode() === 'edit' && this.id();
       untracked(() => {

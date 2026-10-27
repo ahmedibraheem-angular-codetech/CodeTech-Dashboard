@@ -1213,6 +1213,150 @@ describe('ServiceEditor', () => {
       expect(root.querySelectorAll('app-product-upload img').length).toBe(0);
     });
   });
+
+  describe('upload preview lifecycle', () => {
+    const originalCreate = URL.createObjectURL;
+    const originalRevoke = URL.revokeObjectURL;
+    let created = 0;
+    let revoke: ReturnType<typeof vi.fn<(url: string) => void>>;
+
+    beforeEach(() => {
+      created = 0;
+      revoke = vi.fn<(url: string) => void>();
+      URL.createObjectURL = () => `blob:service/${(created += 1)}`;
+      URL.revokeObjectURL = revoke;
+    });
+
+    afterEach(() => {
+      URL.createObjectURL = originalCreate;
+      URL.revokeObjectURL = originalRevoke;
+    });
+
+    it('keeps a picked image previewable after leaving and returning to its step, then clears it', async () => {
+      const { fixture, editor, root } = await render('edit', 'web-development');
+
+      pickFile(lastFileInput(root), 'why.png');
+      await settle(fixture);
+      const url = editor.draft().whyImage.imageUrl;
+      expect(url).toBe('blob:service/1');
+
+      editor.select(1);
+      await settle(fixture);
+      expect(root.querySelector('app-service-why-step')).toBeNull();
+      editor.select(0);
+      await settle(fixture);
+
+      expect(revoke).not.toHaveBeenCalled();
+      expect(editor.draft().whyImage.imageUrl).toBe(url);
+      expect(lastFileInput(root).closest('app-product-upload')?.querySelector('img')?.src).toBe(
+        url,
+      );
+
+      lastFileInput(root)
+        .closest('app-product-upload')
+        ?.querySelector<HTMLButtonElement>('.uploader__clear')
+        ?.click();
+      await settle(fixture);
+
+      expect(revoke).toHaveBeenCalledTimes(1);
+      expect(revoke).toHaveBeenCalledWith(url);
+      expect(editor.draft().whyImage.imageUrl).toBe('');
+    });
+
+    it('revokes only the replaced image', async () => {
+      const { fixture, editor, root } = await render('edit', 'web-development');
+
+      pickFile(lastFileInput(root), 'first.png');
+      await settle(fixture);
+      editor.select(1);
+      await settle(fixture);
+      editor.select(0);
+      await settle(fixture);
+      pickFile(lastFileInput(root), 'second.png');
+      await settle(fixture);
+
+      expect(revoke).toHaveBeenCalledTimes(1);
+      expect(revoke).toHaveBeenCalledWith('blob:service/1');
+      expect(editor.draft().whyImage.imageUrl).toBe('blob:service/2');
+    });
+
+    it('revokes a newly selected unsaved image when the editor is closed', async () => {
+      const { fixture, editor, root } = await render('edit', 'web-development');
+      pickFile(lastFileInput(root), 'why.png');
+      await settle(fixture);
+      const url = editor.draft().whyImage.imageUrl;
+      fixture.destroy();
+      expect(revoke).toHaveBeenCalledTimes(1);
+      expect(revoke).toHaveBeenCalledWith(url);
+    });
+
+    it('keeps a saved image after closing an editor that did not change it', async () => {
+      const { fixture, root } = await render('edit', 'web-development');
+      const api = TestBed.inject(ServicesService);
+      pickFile(lastFileInput(root), 'saved.png');
+      await settle(fixture);
+      headerButton(root, 'حفظ كمسودة')?.click();
+      await settle(fixture);
+      const saved = (await firstValueFrom(api.get('web-development')))?.whyImage.imageUrl;
+      fixture.destroy();
+      expect(revoke).not.toHaveBeenCalled();
+      expect((await firstValueFrom(api.get('web-development')))?.whyImage.imageUrl).toBe(saved);
+    });
+
+    it('does not break a saved image when an unsaved edit replaces or clears it', async () => {
+      const { fixture, editor, root } = await render('edit', 'web-development');
+      const api = TestBed.inject(ServicesService);
+
+      pickFile(lastFileInput(root), 'saved.png');
+      await settle(fixture);
+      headerButton(root, 'حفظ كمسودة')?.click();
+      await settle(fixture);
+      const saved = editor.draft().whyImage.imageUrl;
+      expect((await firstValueFrom(api.get('web-development')))?.whyImage.imageUrl).toBe(saved);
+
+      pickFile(lastFileInput(root), 'unsaved.png');
+      await settle(fixture);
+      expect(revoke).not.toHaveBeenCalled();
+      expect((await firstValueFrom(api.get('web-development')))?.whyImage.imageUrl).toBe(saved);
+
+      lastFileInput(root)
+        .closest('app-product-upload')
+        ?.querySelector<HTMLButtonElement>('.uploader__clear')
+        ?.click();
+      await settle(fixture);
+      expect(revoke).toHaveBeenCalledTimes(1);
+      expect(revoke).toHaveBeenCalledWith('blob:service/2');
+      expect((await firstValueFrom(api.get('web-development')))?.whyImage.imageUrl).toBe(saved);
+      expect(editor.draft().whyImage.imageUrl).toBe('');
+    });
+
+    it('revokes the previous image once a later save no longer uses it, and keeps the new one after close', async () => {
+      const { fixture, root } = await render('edit', 'web-development');
+      const api = TestBed.inject(ServicesService);
+
+      pickFile(lastFileInput(root), 'first.png');
+      await settle(fixture);
+      headerButton(root, 'حفظ كمسودة')?.click();
+      await settle(fixture);
+      const first = (await firstValueFrom(api.get('web-development')))?.whyImage.imageUrl;
+
+      pickFile(lastFileInput(root), 'second.png');
+      await settle(fixture);
+      headerButton(root, 'حفظ كمسودة')?.click();
+      await settle(fixture);
+
+      expect(revoke).toHaveBeenCalledWith(first);
+      expect((await firstValueFrom(api.get('web-development')))?.whyImage.imageUrl).toBe(
+        'blob:service/2',
+      );
+
+      fixture.destroy();
+      expect(revoke).toHaveBeenCalledTimes(1);
+      expect((await firstValueFrom(api.get('web-development')))?.whyImage.imageUrl).toBe(
+        'blob:service/2',
+      );
+    });
+  });
 });
 
 function inputEvent(value: string): Event {
@@ -1300,4 +1444,21 @@ function headerButton(root: HTMLElement, label: string): HTMLButtonElement | nul
 
 function projectNamed(id: string) {
   return { ...blankProject(), id, published: true };
+}
+
+function lastFileInput(root: HTMLElement): HTMLInputElement {
+  const inputs = root.querySelectorAll<HTMLInputElement>('app-service-why-step input[type="file"]');
+  const input = inputs.item(inputs.length - 1);
+  if (!input) {
+    throw new Error('File input is missing');
+  }
+  return input;
+}
+
+function pickFile(input: HTMLInputElement, name: string): void {
+  Object.defineProperty(input, 'files', {
+    value: [new File([new Uint8Array([1])], name, { type: 'image/png' })],
+    configurable: true,
+  });
+  input.dispatchEvent(new Event('change'));
 }
