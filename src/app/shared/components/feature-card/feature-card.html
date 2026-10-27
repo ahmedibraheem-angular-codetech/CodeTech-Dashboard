@@ -30,7 +30,7 @@
       <textarea
         pTextarea
         [fluid]="true"
-        rows="3"
+        [attr.rows]="bodyRows()"
         [value]="body()"
         [placeholder]="bodyPlaceholder()"
         (input)="bodyChange.emit($event)"
@@ -51,5 +51,6 @@
         />
       </div>
     }
+    <ng-content />
   </div>
 </article>

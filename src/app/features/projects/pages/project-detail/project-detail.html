@@ -15,11 +15,7 @@
 
     <img class="project-detail__cover" [src]="project.coverUrl" [alt]="title(project)" />
 
-    <app-page-tabs
-      [tabs]="tabs()"
-      [value]="tab()"
-      (valueChange)="chooseTab($event)"
-    />
+    <app-page-tabs [tabs]="tabs()" [value]="tab()" (valueChange)="chooseTab($event)" />
 
     @switch (tab()) {
       @case ('gallery') {
@@ -82,9 +78,7 @@
                 <i
                   class="pi"
                   [class]="
-                    category.imageUrl.startsWith('icon:')
-                      ? category.imageUrl.slice(5)
-                      : 'pi-tag'
+                    category.imageUrl.startsWith('icon:') ? category.imageUrl.slice(5) : 'pi-tag'
                   "
                   aria-hidden="true"
                 ></i>

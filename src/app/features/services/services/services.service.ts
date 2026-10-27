@@ -1,0 +1,62 @@
+import { Injectable, inject, signal } from '@angular/core';
+import { Observable, map, timer } from 'rxjs';
+
+import { API_LATENCY_MS } from '../../../core/config/latency';
+import type { Service } from '../models/service.model';
+import { SERVICES_SEED } from './services.mock';
+
+@Injectable({ providedIn: 'root' })
+export class ServicesService {
+  private readonly latency = inject(API_LATENCY_MS);
+  private readonly state = signal<Service[]>(structuredClone(SERVICES_SEED));
+
+  list(): Observable<Service[]> {
+    return timer(this.latency).pipe(map(() => structuredClone(this.state())));
+  }
+
+  get(id: string): Observable<Service | null> {
+    return timer(this.latency).pipe(
+      map(() => {
+        const match = this.state().find((item) => item.id === id);
+        return match ? structuredClone(match) : null;
+      }),
+    );
+  }
+
+  /** Creates the record when `id` is empty or unknown, otherwise replaces it in place. */
+  save(service: Service): Observable<Service> {
+    const next: Service = {
+      ...structuredClone(service),
+      id: service.id || this.newId(),
+    };
+    this.state.update((items) => {
+      const index = items.findIndex((item) => item.id === next.id);
+      if (index === -1) {
+        return [next, ...items];
+      }
+      return items.map((item) => (item.id === next.id ? next : item));
+    });
+    return timer(this.latency).pipe(map(() => structuredClone(next)));
+  }
+
+  /** Flips the list-card toggle. An unknown id is a no-op, like `ProjectsService`. */
+  setPublished(id: string, published: boolean): void {
+    this.state.update((items) =>
+      items.map((item) => (item.id === id ? { ...item, published } : item)),
+    );
+  }
+
+  remove(id: string): Observable<void> {
+    this.state.update((items) => items.filter((item) => item.id !== id));
+    return timer(this.latency).pipe(map(() => undefined));
+  }
+
+  /** `svc-<timestamp>`, bumped when two creates land in the same millisecond. */
+  private newId(): string {
+    let stamp = Date.now();
+    while (this.state().some((item) => item.id === `svc-${stamp}`)) {
+      stamp += 1;
+    }
+    return `svc-${stamp}`;
+  }
+}

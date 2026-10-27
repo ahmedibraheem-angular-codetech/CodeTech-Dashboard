@@ -108,7 +108,7 @@ export class ResultsStep extends EditorStep {
 
 @Component({
   selector: 'app-project-identity-step',
-  imports: [InputText, Textarea, ProductUpload],
+  imports: [FeatureCard, ProductUpload],
   templateUrl: './identity-step.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: stepHost,

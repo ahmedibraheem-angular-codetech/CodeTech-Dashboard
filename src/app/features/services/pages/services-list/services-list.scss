@@ -1,0 +1,67 @@
+// Services list. Encapsulation is off so the page-header and PrimeNG button overrides apply;
+// every selector is namespaced under `.services-board` or `.services-*`.
+app-services-page {
+  display: block;
+}
+
+.services-board app-page-header .page-header {
+  min-height: 0;
+  align-items: flex-start;
+  padding: 18px 22px;
+}
+
+.services-board app-page-header .page-header .mt-3 {
+  margin-top: 4px !important;
+  color: #64748b;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.services-add.p-button {
+  height: 40px;
+  padding-inline: 16px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.services-board__body {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 16px;
+  border: 1px solid var(--Foundation-grey-scale-Light, #f0f1f3);
+  border-radius: 16px;
+  background: var(--app-surface, #fff);
+}
+
+.services-board__title {
+  margin: 0;
+  color: #002951;
+  font-size: 16px;
+  font-weight: 800;
+  line-height: 1.6;
+}
+
+.services-board__body > app-paginator,
+.services-board__body > app-state-view {
+  align-self: stretch;
+  width: 100%;
+}
+
+// Soft tray the white cards sit on, as in the design.
+.services-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  padding: 16px;
+  border-radius: 16px;
+  background: #f9fafb;
+}
+
+@media (max-width: 900px) {
+  .services-grid {
+    grid-template-columns: 1fr;
+    padding: 12px;
+  }
+}

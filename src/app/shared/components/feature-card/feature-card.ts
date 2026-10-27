@@ -22,6 +22,8 @@ export class FeatureCard {
   readonly body = input('');
   readonly bodyLabel = input.required<string>();
   readonly bodyPlaceholder = input('');
+  /** Visible rows of the description field; other editors keep the default of three. */
+  readonly bodyRows = input(3);
   readonly iconLabel = input.required<string>();
   readonly imageName = input('');
   readonly imageUrl = input('');

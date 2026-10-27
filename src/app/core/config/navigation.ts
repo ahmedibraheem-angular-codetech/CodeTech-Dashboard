@@ -67,6 +67,8 @@ export const NAV_ITEMS: NavItem[] = [
     labelKey: 'nav.services',
     icon: 'pi pi-cog',
     route: '/services',
+    // Prefix match keeps the item active on /services/new, /services/:id/edit and /services/:id.
+    exact: false,
   },
   {
     id: 'knowledge',

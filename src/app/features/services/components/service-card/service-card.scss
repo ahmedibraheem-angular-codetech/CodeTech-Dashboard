@@ -1,0 +1,83 @@
+// Services list card. Encapsulation is off so the PrimeNG buttons and switch inside can be
+// sized; every selector is namespaced under `.service-card`.
+app-service-card {
+  display: block;
+}
+
+.service-card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  height: 100%;
+  min-height: 200px;
+  padding: 16px;
+  border: 1px solid #edeeee;
+  border-radius: 16px;
+  background: var(--app-surface, #fff);
+}
+
+.service-card__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.service-card__icon {
+  display: grid;
+  width: 40px;
+  height: 40px;
+  place-items: center;
+  border-radius: 12px;
+  background: #f4f5f7;
+  color: #12324f;
+  font-size: 18px;
+}
+
+.service-card__actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.service-card .p-button.service-card__action {
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border-width: 1px;
+  background: #fff;
+}
+
+.service-card .p-button.service-card__action .p-button-icon {
+  font-size: 14px;
+}
+
+// Pushes the title block to the bottom so every card in a row aligns, as in the design.
+.service-card__head {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 12px;
+  margin-top: auto;
+}
+
+.service-card__head h2 {
+  margin: 0;
+  color: #002951;
+  font-size: 16px;
+  font-weight: 800;
+  line-height: 1.6;
+}
+
+.service-card .p-toggleswitch {
+  flex-shrink: 0;
+  width: 36px;
+  height: 20px;
+}
+
+.service-card__description {
+  margin: 0;
+  color: #64748b;
+  font-size: 13px;
+  line-height: 1.7;
+}

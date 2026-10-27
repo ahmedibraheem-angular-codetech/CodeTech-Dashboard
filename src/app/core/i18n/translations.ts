@@ -20,6 +20,8 @@ import { ar as productsAr } from '../../../../public/in18/products/ar';
 import { en as productsEn } from '../../../../public/in18/products/en';
 import { ar as projectsAr } from '../../../../public/in18/projects/ar';
 import { en as projectsEn } from '../../../../public/in18/projects/en';
+import { ar as servicesAr } from '../../../../public/in18/services/ar';
+import { en as servicesEn } from '../../../../public/in18/services/en';
 
 import { mergeTranslations, zipTranslations } from './merge';
 
@@ -37,4 +39,5 @@ export const TRANSLATIONS = mergeTranslations(
   zipTranslations(seoAr, seoEn),
   zipTranslations(productsAr, productsEn),
   zipTranslations(projectsAr, projectsEn),
+  zipTranslations(servicesAr, servicesEn),
 );

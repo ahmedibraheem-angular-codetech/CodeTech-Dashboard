@@ -169,9 +169,7 @@ describe('ProjectEditor', () => {
     editor.addIdentityButton();
     editor.addIdentityButton();
     expect(editor.draft().identityButtons).toHaveLength(3);
-    expect(editor.draft().identityButtons.every((button) => button.images.length === 4)).toBe(
-      true,
-    );
+    expect(editor.draft().identityButtons.every((button) => button.images.length === 4)).toBe(true);
 
     const secondId = editor.draft().identityButtons[1]?.id;
     editor.removeIdentityButton(0);
@@ -219,6 +217,51 @@ describe('ProjectEditor', () => {
     expect(editor.identityButtonLabel(0)).toBe('Button 1');
     editor.useLocale('ar');
     expect(editor.identityButtonLabel(0)).toBe('الزر الأول');
+  });
+
+  it('renders identity buttons with the shared card, four uploads, and add action', async () => {
+    const fixture = await render('create');
+    const editor = fixture.componentInstance;
+    const root: HTMLElement = fixture.nativeElement;
+
+    enterName(root, 'مشروع');
+    switchToEnglish(root);
+    fixture.detectChanges();
+    enterName(root, 'Project');
+    fixture.detectChanges();
+    editor.useLocale('ar');
+    for (let step = 0; step < 5; step += 1) {
+      clickNext(root);
+      fixture.detectChanges();
+    }
+
+    expect(root.querySelectorAll('app-feature-card')).toHaveLength(1);
+    expect(root.querySelectorAll('.identity-grid app-product-upload')).toHaveLength(4);
+    expect(root.querySelectorAll('.identity-grid .uploader__mark--icon')).toHaveLength(0);
+    expect(root.querySelector('.feature-card__tab')?.textContent).toContain('الزر الأول');
+    expect(root.textContent).toContain('عنوان الهوية');
+    expect(root.textContent).toContain('صيغة PNG,JPG. الحجم الأقصى 5 ميجابايت');
+    expect(root.querySelector<HTMLTextAreaElement>('textarea')?.getAttribute('rows')).toBe('1');
+    const remove = root.querySelector<HTMLButtonElement>('.feature-card__remove');
+    expect(remove?.disabled).toBe(true);
+
+    const add = root.querySelector<HTMLButtonElement>('.editor-section--identity .add-row');
+    expect(add?.textContent?.trim()).toBe('إضافة زر آخر');
+    expect(add?.firstChild?.nodeType).toBe(Node.TEXT_NODE);
+    expect(add?.lastElementChild?.classList.contains('add-row__mark')).toBe(true);
+    add?.click();
+    fixture.detectChanges();
+
+    expect(root.querySelectorAll('app-feature-card')).toHaveLength(2);
+    expect(root.querySelectorAll('.identity-grid app-product-upload')).toHaveLength(8);
+    expect(
+      [...root.querySelectorAll<HTMLButtonElement>('.feature-card__remove')].every(
+        (item) => !item.disabled,
+      ),
+    ).toBe(true);
+    expect([...root.querySelectorAll('.feature-card__tab')].at(1)?.textContent).toContain(
+      'الزر الثاني',
+    );
   });
 
   it('clears one identity image slot without affecting siblings or slot count', async () => {
@@ -346,9 +389,7 @@ describe('ProjectEditor', () => {
     let failed = true;
     const fixture = await render('edit', 'wasly', {
       get: () =>
-        failed
-          ? throwError(() => new Error('failed'))
-          : of(named('wasly', 'بعد إعادة المحاولة')),
+        failed ? throwError(() => new Error('failed')) : of(named('wasly', 'بعد إعادة المحاولة')),
       save: () => timer(0).pipe(map(() => blankProject())),
     });
     const root: HTMLElement = fixture.nativeElement;

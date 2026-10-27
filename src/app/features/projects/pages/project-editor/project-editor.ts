@@ -348,10 +348,7 @@ export class ProjectEditor {
     }));
   }
 
-  setCoverText(
-    key: 'coverTitle' | 'coverAlt' | 'thumbTitle' | 'thumbAlt',
-    event: Event,
-  ): void {
+  setCoverText(key: 'coverTitle' | 'coverAlt' | 'thumbTitle' | 'thumbAlt', event: Event): void {
     const value = this.read(event);
     if (value === undefined) {
       return;

@@ -193,7 +193,45 @@ export const routes: Routes = [
           },
         ],
       },
-      section('services', 'nav.services'),
+      {
+        path: 'services',
+        data: { breadcrumb: 'nav.services' },
+        children: [
+          {
+            path: '',
+            loadComponent: () =>
+              import('./features/services/pages/services-list/services-list').then(
+                (m) => m.ServicesPage,
+              ),
+            // An empty child path inherits the parent's data; blank it so the crumb shows once.
+            data: { titleKey: 'nav.services', breadcrumb: '' },
+          },
+          {
+            path: 'new',
+            loadComponent: () =>
+              import('./features/services/pages/service-editor/service-editor').then(
+                (m) => m.ServiceEditor,
+              ),
+            data: { mode: 'create', titleKey: 'service.add', breadcrumb: 'service.add' },
+          },
+          {
+            path: ':id/edit',
+            loadComponent: () =>
+              import('./features/services/pages/service-editor/service-editor').then(
+                (m) => m.ServiceEditor,
+              ),
+            data: { mode: 'edit', titleKey: 'service.edit', breadcrumb: 'service.edit' },
+          },
+          {
+            path: ':id',
+            loadComponent: () =>
+              import('./features/services/pages/service-detail/service-detail').then(
+                (m) => m.ServiceDetailPage,
+              ),
+            data: { breadcrumb: ':id', titleKey: 'nav.services' },
+          },
+        ],
+      },
       {
         path: 'knowledge',
         data: { breadcrumb: 'nav.knowledge' },

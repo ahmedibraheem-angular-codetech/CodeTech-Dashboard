@@ -1,0 +1,46 @@
+<section class="page services-board">
+  <app-page-header [title]="lang.t('service.manage')" [subtitle]="lang.t('service.subtitle')">
+    <app-button
+      icon="pi pi-plus"
+      styleClass="services-add"
+      [label]="lang.t('service.add')"
+      (clicked)="add()"
+    />
+  </app-page-header>
+
+  <section class="services-board__body">
+    <h2 class="services-board__title">{{ lang.t('service.catalog') }}</h2>
+
+    @if (loading()) {
+      <app-state-view mode="loading" />
+    } @else if (items().length === 0) {
+      <app-state-view mode="empty" [message]="lang.t('service.empty')" />
+    } @else {
+      <div class="services-grid">
+        @for (service of visible(); track service.id) {
+          <app-service-card
+            [icon]="service.icon"
+            [title]="name(service)"
+            [description]="description(service)"
+            [published]="service.published"
+            [toggleLabel]="lang.t('service.publishToggle')"
+            [editLabel]="lang.t('service.editAction')"
+            [deleteLabel]="lang.t('service.deleteAction')"
+            (publishedChange)="publish(service.id, $event)"
+            (editRequested)="edit(service)"
+            (deleteRequested)="remove(service)"
+          />
+        }
+      </div>
+      <app-paginator
+        [first]="first()"
+        [rows]="rows()"
+        [totalRecords]="items().length"
+        [alwaysShow]="false"
+        [currentPageReportTemplate]="lang.t('service.pageReport')"
+        (pageChange)="page($event)"
+      />
+    }
+  </section>
+  <app-confirm-dialog />
+</section>
