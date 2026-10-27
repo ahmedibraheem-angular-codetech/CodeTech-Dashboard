@@ -23,6 +23,8 @@ import { ServiceCard } from '../../components/service-card/service-card';
 import { readLocale, type Service } from '../../models/service.model';
 import { ServicesService } from '../../services/services.service';
 
+type LoadState = 'loading' | 'ready' | 'error';
+
 @Component({
   selector: 'app-services-page',
   imports: [PageHeader, AppButton, AppPaginator, ConfirmDialog, StateView, ServiceCard],
@@ -39,19 +41,15 @@ export class ServicesPage {
   private readonly confirm = viewChild.required(ConfirmDialog);
   readonly lang = inject(LanguageService);
   readonly items = signal<Service[]>([]);
-  readonly loading = signal(true);
+  readonly status = signal<LoadState>('loading');
   readonly first = signal(0);
   readonly rows = signal(10);
   readonly visible = computed(() => this.items().slice(this.first(), this.first() + this.rows()));
+  /** Bumps on every load so a slower, older response cannot overwrite a newer one. */
+  private loadSeq = 0;
 
   constructor() {
-    this.api
-      .list()
-      .pipe(takeUntilDestroyed())
-      .subscribe((items) => {
-        this.items.set(items);
-        this.loading.set(false);
-      });
+    this.load();
   }
 
   protected name(service: Service): string {
@@ -86,6 +84,10 @@ export class ServicesPage {
     );
   }
 
+  protected retry(): void {
+    this.load();
+  }
+
   protected async remove(service: Service): Promise<void> {
     const accepted = await this.confirm().ask({
       title: this.lang.t('service.deleteTitle'),
@@ -100,10 +102,38 @@ export class ServicesPage {
     this.api
       .remove(service.id)
       .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(() => {
-        this.items.update((items) => items.filter((item) => item.id !== service.id));
-        this.stepBackIfPageEmpty();
-        this.messages.add({ severity: 'success', summary: this.lang.t('service.deleted') });
+      .subscribe({
+        next: () => {
+          this.items.update((items) => items.filter((item) => item.id !== service.id));
+          this.stepBackIfPageEmpty();
+          this.messages.add({ severity: 'success', summary: this.lang.t('service.deleted') });
+        },
+        error: () => {
+          this.messages.add({ severity: 'error', summary: this.lang.t('common.error') });
+        },
+      });
+  }
+
+  private load(): void {
+    const seq = ++this.loadSeq;
+    this.status.set('loading');
+    this.api
+      .list()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (items) => {
+          if (seq !== this.loadSeq) {
+            return;
+          }
+          this.items.set(items);
+          this.status.set('ready');
+        },
+        error: () => {
+          if (seq !== this.loadSeq) {
+            return;
+          }
+          this.status.set('error');
+        },
       });
   }
 

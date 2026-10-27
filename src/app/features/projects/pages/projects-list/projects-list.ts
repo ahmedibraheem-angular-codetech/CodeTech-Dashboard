@@ -22,6 +22,8 @@ import { StateView } from '../../../../shared/components/state-view/state-view';
 import { readLocale, type Project } from '../../models/project.model';
 import { ProjectsService } from '../../services/projects.service';
 
+type LoadState = 'loading' | 'ready' | 'error';
+
 @Component({
   selector: 'app-projects-page',
   imports: [
@@ -44,14 +46,14 @@ export class ProjectsPage {
   readonly lang = inject(LanguageService);
   readonly api = inject(ProjectsService);
   readonly items = signal<Project[]>([]);
+  readonly status = signal<LoadState>('loading');
   readonly first = signal(0);
   readonly rows = signal(10);
+  /** Bumps on every load so a slower, older response cannot overwrite a newer one. */
+  private loadSeq = 0;
 
   constructor() {
-    this.api
-      .list()
-      .pipe(takeUntilDestroyed())
-      .subscribe((items) => this.items.set(items));
+    this.load();
   }
 
   readonly visible = computed(() => this.items().slice(this.first(), this.first() + this.rows()));
@@ -62,6 +64,12 @@ export class ProjectsPage {
 
   protected summary(project: Project): string {
     return readLocale(project.summary, this.lang.language()) || project.summary.ar;
+  }
+
+  /** Real image paths / blob URLs only — blank, whitespace, and `icon:` must not become `img[src]`. */
+  protected coverSrc(url: string): string {
+    const value = url.trim();
+    return value.length > 0 && !value.startsWith('icon:') ? value : '';
   }
 
   protected tags(project: Project): { icon: string; label: string }[] {
@@ -85,6 +93,10 @@ export class ProjectsPage {
     );
   }
 
+  protected retry(): void {
+    this.load();
+  }
+
   protected async remove(project: Project): Promise<void> {
     const accepted = await this.confirm().ask({
       title: this.lang.t('project.deleteTitle'),
@@ -99,9 +111,46 @@ export class ProjectsPage {
     this.api
       .remove(project.id)
       .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(() => {
-        this.items.update((items) => items.filter((item) => item.id !== project.id));
-        this.messages.add({ severity: 'success', summary: this.lang.t('project.deleted') });
+      .subscribe({
+        next: () => {
+          this.items.update((items) => items.filter((item) => item.id !== project.id));
+          this.stepBackIfPageEmpty();
+          this.messages.add({ severity: 'success', summary: this.lang.t('project.deleted') });
+        },
+        error: () => {
+          this.messages.add({ severity: 'error', summary: this.lang.t('common.error') });
+        },
       });
+  }
+
+  private load(): void {
+    const seq = ++this.loadSeq;
+    this.status.set('loading');
+    this.api
+      .list()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (items) => {
+          if (seq !== this.loadSeq) {
+            return;
+          }
+          this.items.set(items);
+          this.status.set('ready');
+        },
+        error: () => {
+          if (seq !== this.loadSeq) {
+            return;
+          }
+          this.status.set('error');
+        },
+      });
+  }
+
+  /** Removing the last card of a later page would otherwise leave an empty page behind. */
+  private stepBackIfPageEmpty(): void {
+    const total = this.items().length;
+    if (this.first() > 0 && this.first() >= total) {
+      this.first.set(Math.max(0, Math.floor((total - 1) / this.rows()) * this.rows()));
+    }
   }
 }

@@ -31,7 +31,7 @@ import {
   type LocaleText,
   type Project,
 } from '../../models/project.model';
-import { ObjectUrls } from '../../../products/components/product-upload/object-urls';
+import { ObjectUrls } from '../../../../shared/components/product-upload/object-urls';
 import { ProjectsService } from '../../services/projects.service';
 import {
   AboutStep,

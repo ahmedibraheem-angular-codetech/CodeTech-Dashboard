@@ -1,10 +1,11 @@
 import { TestBed } from '@angular/core/testing';
 import { Router, provideRouter } from '@angular/router';
 import { MessageService } from 'primeng/api';
-import { firstValueFrom } from 'rxjs';
+import { Subject, firstValueFrom, throwError } from 'rxjs';
 
 import { API_LATENCY_MS } from '../../../../core/config/latency';
 import { LanguageService } from '../../../../core/services/language.service';
+import type { Service } from '../../models/service.model';
 import { SERVICES_SEED } from '../../services/services.mock';
 import { ServicesService } from '../../services/services.service';
 import { ServicesPage } from './services-list';
@@ -46,6 +47,109 @@ describe('ServicesPage', () => {
     await settle(fixture);
     expect(root.querySelector('app-state-view')).toBeNull();
     expect(cards(root)).toHaveLength(6);
+    expect(fixture.componentInstance.status()).toBe('ready');
+  });
+
+  it('shows an error instead of the empty state when loading fails', async () => {
+    TestBed.configureTestingModule({
+      imports: [ServicesPage],
+      providers: [MessageService, { provide: API_LATENCY_MS, useValue: 0 }, provideRouter([])],
+    });
+    localStorage.setItem('codetech.language', 'ar');
+    TestBed.inject(LanguageService).set('ar');
+    const api = TestBed.inject(ServicesService);
+    vi.spyOn(api, 'list').mockReturnValue(throwError(() => new Error('offline')));
+    const fixture = TestBed.createComponent(ServicesPage);
+    fixture.detectChanges();
+    await settle(fixture);
+    const root: HTMLElement = fixture.nativeElement;
+
+    expect(fixture.componentInstance.status()).toBe('error');
+    expect(root.querySelector('app-state-view .pi-exclamation-circle')).not.toBeNull();
+    expect(root.querySelector('app-state-view .pi-inbox')).toBeNull();
+    expect(root.textContent).toContain('حدث خطأ');
+    expect(root.textContent).toContain('إعادة المحاولة');
+    expect(cards(root)).toHaveLength(0);
+  });
+
+  it('retries after a load failure and shows the catalog on success', async () => {
+    TestBed.configureTestingModule({
+      imports: [ServicesPage],
+      providers: [MessageService, { provide: API_LATENCY_MS, useValue: 0 }, provideRouter([])],
+    });
+    localStorage.setItem('codetech.language', 'ar');
+    TestBed.inject(LanguageService).set('ar');
+    const api = TestBed.inject(ServicesService);
+    const list = vi.spyOn(api, 'list').mockReturnValueOnce(throwError(() => new Error('offline')));
+    const fixture = TestBed.createComponent(ServicesPage);
+    fixture.detectChanges();
+    await settle(fixture);
+    expect(fixture.componentInstance.status()).toBe('error');
+
+    const next = new Subject<Service[]>();
+    list.mockReturnValueOnce(next.asObservable());
+    fixture.componentInstance['retry']();
+    expect(fixture.componentInstance.status()).toBe('loading');
+    next.next(structuredClone(SERVICES_SEED));
+    next.complete();
+    await settle(fixture);
+
+    expect(fixture.componentInstance.status()).toBe('ready');
+    expect(cards(fixture.nativeElement)).toHaveLength(6);
+  });
+
+  it('keeps the error state when retry fails again', async () => {
+    TestBed.configureTestingModule({
+      imports: [ServicesPage],
+      providers: [MessageService, { provide: API_LATENCY_MS, useValue: 0 }, provideRouter([])],
+    });
+    localStorage.setItem('codetech.language', 'ar');
+    TestBed.inject(LanguageService).set('ar');
+    const api = TestBed.inject(ServicesService);
+    vi.spyOn(api, 'list').mockReturnValue(throwError(() => new Error('offline')));
+    const fixture = TestBed.createComponent(ServicesPage);
+    fixture.detectChanges();
+    await settle(fixture);
+
+    fixture.componentInstance['retry']();
+    await settle(fixture);
+
+    expect(fixture.componentInstance.status()).toBe('error');
+    expect(
+      fixture.nativeElement.querySelector('app-state-view .pi-exclamation-circle'),
+    ).not.toBeNull();
+  });
+
+  it('ignores a stale list response after a newer load has started', async () => {
+    TestBed.configureTestingModule({
+      imports: [ServicesPage],
+      providers: [MessageService, { provide: API_LATENCY_MS, useValue: 0 }, provideRouter([])],
+    });
+    localStorage.setItem('codetech.language', 'ar');
+    TestBed.inject(LanguageService).set('ar');
+    const api = TestBed.inject(ServicesService);
+    const first = new Subject<Service[]>();
+    const second = new Subject<Service[]>();
+    let calls = 0;
+    vi.spyOn(api, 'list').mockImplementation(() => {
+      calls += 1;
+      return calls === 1 ? first.asObservable() : second.asObservable();
+    });
+    const fixture = TestBed.createComponent(ServicesPage);
+    fixture.detectChanges();
+
+    fixture.componentInstance['retry']();
+    const newer = structuredClone(SERVICES_SEED).slice(0, 2);
+    second.next(newer);
+    second.complete();
+    await settle(fixture);
+    expect(fixture.componentInstance.items()).toEqual(newer);
+
+    first.next(structuredClone(SERVICES_SEED));
+    first.complete();
+    await settle(fixture);
+    expect(fixture.componentInstance.items()).toEqual(newer);
+    expect(cards(fixture.nativeElement)).toHaveLength(2);
   });
 
   it('renders the page header, the add button, and all six services including drafts', async () => {
@@ -184,9 +288,28 @@ describe('ServicesPage', () => {
     });
     await settle(fixture);
     expect(cards(root)).toHaveLength(0);
+    expect(fixture.componentInstance.status()).toBe('ready');
     expect(root.querySelector('app-state-view')?.textContent).toContain('لا توجد خدمات بعد');
     expect(root.querySelector('app-paginator')).toBeNull();
     expect(root.textContent).toContain('إضافة خدمة جديدة');
+  });
+
+  it('does not report a successful deletion when the remove request fails', async () => {
+    const { fixture, api, root } = await render();
+    await settle(fixture);
+    vi.spyOn(confirmOf(fixture), 'ask').mockResolvedValue(true);
+    vi.spyOn(api, 'remove').mockReturnValue(throwError(() => new Error('offline')));
+    const toast = vi.spyOn(TestBed.inject(MessageService), 'add');
+    const before = cards(root).length;
+
+    root.querySelector<HTMLButtonElement>('button[aria-label="حذف الخدمة"]')!.click();
+    await settle(fixture);
+
+    expect(cards(root)).toHaveLength(before);
+    expect(toast).toHaveBeenCalledWith(
+      expect.objectContaining({ severity: 'error', summary: 'حدث خطأ' }),
+    );
+    expect(toast).not.toHaveBeenCalledWith(expect.objectContaining({ severity: 'success' }));
   });
 
   it('paginates long lists and steps back when the last card of a page is removed', async () => {

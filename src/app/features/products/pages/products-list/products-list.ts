@@ -27,6 +27,8 @@ import { StateView } from '../../../../shared/components/state-view/state-view';
 import { readLocale, type Product, type ProductPoint } from '../../models/product.model';
 import { ProductsService } from '../../services/products.service';
 
+type LoadState = 'loading' | 'ready' | 'error';
+
 @Component({
   selector: 'app-products-page',
   imports: [
@@ -52,15 +54,15 @@ export class ProductsPage {
   readonly lang = inject(LanguageService);
   readonly api = inject(ProductsService);
   private readonly source = signal<Product[]>([]);
+  readonly status = signal<LoadState>('loading');
   readonly menuProduct = signal<Product | null>(null);
   readonly first = signal(0);
   readonly rows = signal(10);
+  /** Bumps on every load so a slower, older response cannot overwrite a newer one. */
+  private loadSeq = 0;
 
   constructor() {
-    this.api
-      .list()
-      .pipe(takeUntilDestroyed())
-      .subscribe((items) => this.source.set(items));
+    this.load();
   }
 
   readonly total = computed(() => this.source().length);
@@ -116,6 +118,10 @@ export class ProductsPage {
     this.menu().toggle(event);
   }
 
+  protected retry(): void {
+    this.load();
+  }
+
   protected async remove(product: Product): Promise<void> {
     this.menu().hide();
     const accepted = await this.confirm().ask({
@@ -131,9 +137,46 @@ export class ProductsPage {
     this.api
       .remove(product.id)
       .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(() => {
-        this.source.update((items) => items.filter((item) => item.id !== product.id));
-        this.messages.add({ severity: 'success', summary: this.lang.t('product.deleted') });
+      .subscribe({
+        next: () => {
+          this.source.update((items) => items.filter((item) => item.id !== product.id));
+          this.stepBackIfPageEmpty();
+          this.messages.add({ severity: 'success', summary: this.lang.t('product.deleted') });
+        },
+        error: () => {
+          this.messages.add({ severity: 'error', summary: this.lang.t('common.error') });
+        },
       });
+  }
+
+  private load(): void {
+    const seq = ++this.loadSeq;
+    this.status.set('loading');
+    this.api
+      .list()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (items) => {
+          if (seq !== this.loadSeq) {
+            return;
+          }
+          this.source.set(items);
+          this.status.set('ready');
+        },
+        error: () => {
+          if (seq !== this.loadSeq) {
+            return;
+          }
+          this.status.set('error');
+        },
+      });
+  }
+
+  /** Removing the last card of a later page would otherwise leave an empty page behind. */
+  private stepBackIfPageEmpty(): void {
+    const total = this.source().length;
+    if (this.first() > 0 && this.first() >= total) {
+      this.first.set(Math.max(0, Math.floor((total - 1) / this.rows()) * this.rows()));
+    }
   }
 }

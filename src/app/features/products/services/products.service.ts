@@ -2,7 +2,7 @@ import { Injectable, inject, signal } from '@angular/core';
 import { Observable, map, timer } from 'rxjs';
 
 import { API_LATENCY_MS } from '../../../core/config/latency';
-import { ObjectUrls } from '../components/product-upload/object-urls';
+import { ObjectUrls } from '../../../shared/components/product-upload/object-urls';
 import { type Product } from '../models/product.model';
 import { PRODUCTS_SEED } from './products.mock';
 

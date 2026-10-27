@@ -7,7 +7,7 @@ import { Textarea } from 'primeng/textarea';
 import type { AppLanguage } from '../../../../core/i18n/language';
 import { LanguageService } from '../../../../core/services/language.service';
 import { LocaleSwitch } from '../../../../shared/components/locale-switch/locale-switch';
-import { ProductUpload } from '../product-upload/product-upload';
+import { ProductUpload } from '../../../../shared/components/product-upload/product-upload';
 import { readLocale, type LocaleText } from '../../models/product.model';
 import type { ProductsPageFeature, ProductsPageSector } from '../../models/products-page.model';
 

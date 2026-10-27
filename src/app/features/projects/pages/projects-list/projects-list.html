@@ -14,7 +14,11 @@
     </a>
   </app-page-header>
 
-  @if (!api.catalogVisible()) {
+  @if (status() === 'loading') {
+    <app-state-view mode="loading" />
+  } @else if (status() === 'error') {
+    <app-state-view mode="error" [message]="lang.t('common.error')" (retry)="retry()" />
+  } @else if (!api.catalogVisible()) {
     <app-state-view mode="empty" [message]="lang.t('project.empty')" />
   } @else if (items().length === 0) {
     <app-state-view mode="empty" [message]="lang.t('project.empty')" />
@@ -23,7 +27,9 @@
       @for (project of visible(); track project.id) {
         <article class="project-tile">
           <a class="project-tile__media" [routerLink]="['/projects', project.id]">
-            <img [src]="project.coverUrl" [alt]="title(project)" />
+            @if (coverSrc(project.coverUrl); as cover) {
+              <img [src]="cover" [alt]="title(project)" />
+            }
             <span class="project-tile__actions">
               <button
                 type="button"

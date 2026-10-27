@@ -3,7 +3,7 @@ import { InputText } from 'primeng/inputtext';
 import { Textarea } from 'primeng/textarea';
 
 import type { AppLanguage } from '../../../core/i18n/language';
-import { ProductUpload } from '../../../features/products/components/product-upload/product-upload';
+import { ProductUpload } from '../product-upload/product-upload';
 
 /** One product feature: tab, title, description, and icon. */
 @Component({

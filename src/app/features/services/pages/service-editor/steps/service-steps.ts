@@ -7,7 +7,7 @@ import { Textarea } from 'primeng/textarea';
 import { FeatureCard } from '../../../../../shared/components/feature-card/feature-card';
 import { FieldError } from '../../../../../shared/components/field-error/field-error';
 import { StateView } from '../../../../../shared/components/state-view/state-view';
-import { ProductUpload } from '../../../../products/components/product-upload/product-upload';
+import { ProductUpload } from '../../../../../shared/components/product-upload/product-upload';
 import { ServiceIconPicker } from '../../../components/service-icon-picker/service-icon-picker';
 import { ServiceProjectCard } from '../../../components/service-project-card/service-project-card';
 import { EditorStep } from './editor-step';

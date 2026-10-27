@@ -11,8 +11,10 @@
   <section class="services-board__body">
     <h2 class="services-board__title">{{ lang.t('service.catalog') }}</h2>
 
-    @if (loading()) {
+    @if (status() === 'loading') {
       <app-state-view mode="loading" />
+    } @else if (status() === 'error') {
+      <app-state-view mode="error" [message]="lang.t('common.error')" (retry)="retry()" />
     } @else if (items().length === 0) {
       <app-state-view mode="empty" [message]="lang.t('service.empty')" />
     } @else {

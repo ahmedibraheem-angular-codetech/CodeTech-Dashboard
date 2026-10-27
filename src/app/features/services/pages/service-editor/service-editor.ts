@@ -34,7 +34,7 @@ import {
   type LocaleText,
   type Service,
 } from '../../models/service.model';
-import { ObjectUrls } from '../../../products/components/product-upload/object-urls';
+import { ObjectUrls } from '../../../../shared/components/product-upload/object-urls';
 import { ServicesService } from '../../services/services.service';
 import {
   FaqStep,

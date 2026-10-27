@@ -42,7 +42,7 @@ import {
   type LocaleText,
   type Product,
 } from '../../models/product.model';
-import { ObjectUrls } from '../../components/product-upload/object-urls';
+import { ObjectUrls } from '../../../../shared/components/product-upload/object-urls';
 import { ProductsService } from '../../services/products.service';
 
 type PointList = 'features' | 'challenges' | 'offer' | 'results' | 'steps' | 'highlights';

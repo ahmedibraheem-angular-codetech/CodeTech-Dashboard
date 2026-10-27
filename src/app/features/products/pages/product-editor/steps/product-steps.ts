@@ -6,7 +6,7 @@ import { Textarea } from 'primeng/textarea';
 
 import { FeatureCard } from '../../../../../shared/components/feature-card/feature-card';
 import { FieldError } from '../../../../../shared/components/field-error/field-error';
-import { ProductUpload } from '../../../components/product-upload/product-upload';
+import { ProductUpload } from '../../../../../shared/components/product-upload/product-upload';
 import { EditorStep } from './editor-step';
 
 const stepHost = { style: 'display: contents' };

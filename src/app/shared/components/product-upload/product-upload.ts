@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, inject, input, output, signal } from '@angular/core';
 
-import type { AppLanguage } from '../../../../core/i18n/language';
-import { LanguageService } from '../../../../core/services/language.service';
+import type { AppLanguage } from '../../../core/i18n/language';
+import { LanguageService } from '../../../core/services/language.service';
 import { ObjectUrls } from './object-urls';
 
 const MAX_IMAGE_BYTES = 5 * 1024 * 1024;

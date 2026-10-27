@@ -16,7 +16,11 @@
       </a>
     </div>
 
-    @if (visible().length === 0) {
+    @if (status() === 'loading') {
+      <app-state-view mode="loading" />
+    } @else if (status() === 'error') {
+      <app-state-view mode="error" [message]="lang.t('common.error')" (retry)="retry()" />
+    } @else if (total() === 0) {
       <app-state-view mode="empty" [message]="lang.t('product.empty')" />
     } @else {
       <div class="product-grid">
