@@ -34,6 +34,7 @@ export const en = {
   'service.step.projects': 'Service projects',
   'service.step.sectors': 'Service sectors',
   'service.step.faq': 'Frequently asked questions',
+  'service.step.sectorsFaq': 'Sectors and FAQ',
   'service.info': 'Service details',
   'service.idLabel': 'ID',
   'service.name': 'Service name',
@@ -112,4 +113,5 @@ export const en = {
   'service.detail.empty': 'Nothing has been added to this section yet.',
   'service.detail.projectsError': 'The linked projects could not be loaded.',
   'service.detail.projectsMissing': 'Some linked projects are no longer available.',
+  'service.detail.targetedSectors': 'Targeted sectors',
 };

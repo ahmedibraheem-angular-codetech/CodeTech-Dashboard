@@ -3,7 +3,10 @@
     @if (coverUrl()) {
       <img [src]="coverUrl()" alt="" />
     }
-    <span class="service-project__toggle">
+    <span
+      class="service-project__toggle"
+      (click)="$event.preventDefault(); $event.stopPropagation()"
+    >
       <p-toggleswitch
         [ngModel]="selected()"
         (ngModelChange)="selectedChange.emit($event)"

@@ -224,7 +224,7 @@ describe('ServiceDetailPage', () => {
       const save = vi.spyOn(ServicesService.prototype, 'save');
       const setPublished = vi.spyOn(ServicesService.prototype, 'setPublished');
       const { harness, root } = await open('/services/web-development');
-      for (const label of ['حلول الخدمة', 'مشاريع الخدمة', 'الأسئلة الشائعة']) {
+      for (const label of ['حلول الخدمة', 'مشاريع الخدمة', 'القطاعات والأسئلة الشائعة']) {
         await showTab(harness, root, label);
       }
       expect(save).not.toHaveBeenCalled();
@@ -233,7 +233,7 @@ describe('ServiceDetailPage', () => {
   });
 
   describe('sections', () => {
-    it('lists the seven sections as tabs in the editor order', async () => {
+    it('lists six detail tabs with sectors and FAQ combined', async () => {
       const { root } = await open('/services/web-development');
       const labels = [...root.querySelectorAll('app-page-tabs [role="tab"]')].map((tab) =>
         tab.textContent?.trim(),
@@ -244,8 +244,7 @@ describe('ServiceDetailPage', () => {
         'مراحل الخدمة',
         'مميزات الخدمة',
         'مشاريع الخدمة',
-        'قطاعات الخدمة',
-        'الأسئلة الشائعة',
+        'القطاعات والأسئلة الشائعة',
       ]);
     });
 
@@ -349,30 +348,44 @@ describe('ServiceDetailPage', () => {
       expect(titles).toEqual(['ج', 'أ', 'ب']);
     });
 
-    it('shows every feature with its text and image', async () => {
+    it('shows every feature as a text-only tile', async () => {
       const { harness, root } = await open('/services/web-development');
       await showTab(harness, root, 'مميزات الخدمة');
       const service = seed('web-development');
-      const cards = [...root.querySelectorAll('.service-detail__card')];
+      const cards = [...root.querySelectorAll('.service-detail__feature')];
       expect(cards).toHaveLength(service.features.length);
       service.features.forEach((item, index) => {
         expect(cards[index]?.textContent).toContain(item.title.ar);
         expect(cards[index]?.textContent).toContain(item.body.ar);
-        expect(cards[index]?.querySelector('img')?.getAttribute('src')).toBe(item.imageUrl);
+        expect(cards[index]?.querySelector('img')).toBeNull();
+        expect(cards[index]?.querySelector('i')).toBeNull();
       });
     });
 
-    it('shows every sector with its image and a numbered label', async () => {
+    it('shows every sector and FAQ together under the combined tab', async () => {
       const { harness, root } = await open('/services/web-development');
-      await showTab(harness, root, 'قطاعات الخدمة');
+      await showTab(harness, root, 'القطاعات والأسئلة الشائعة');
       const service = seed('web-development');
+      expect(text(root)).toContain('القطاعات المستهدفة');
+      expect(text(root)).toContain('الأسئلة الشائعة');
       const cards = [...root.querySelectorAll('app-sector-card')];
       expect(cards).toHaveLength(service.sectors.length);
       service.sectors.forEach((sector, index) => {
         expect(cards[index]?.querySelector('img')?.getAttribute('src')).toBe(sector.imageUrl);
         expect(cards[index]?.textContent).toContain(`قطاع ${index + 1}`);
       });
-      expect(root.querySelector('app-sector-card button')).toBeNull();
+      const tools = [...root.querySelectorAll<HTMLButtonElement>('app-sector-card button')];
+      expect(tools.length).toBe(service.sectors.length * 2);
+      expect(tools.every((button) => button.disabled || button.className.includes('edit'))).toBe(
+        true,
+      );
+      const items = [...root.querySelectorAll('.faq-item')];
+      expect(items).toHaveLength(service.faqs.length);
+      service.faqs.forEach((item, index) => {
+        expect(items[index]?.textContent).toContain(item.question.ar);
+        expect(items[index]?.textContent).toContain(item.answer.ar);
+        expect(items[index]?.querySelector('header span')?.textContent).toBe(`0${index + 1}`);
+      });
     });
 
     it('leaves out a sector that has no drawable picture instead of an unreadable tile', async () => {
@@ -385,25 +398,12 @@ describe('ServiceDetailPage', () => {
       const { harness, root } = await open('/services/web-development', {
         services: { get: () => of(service) },
       });
-      await showTab(harness, root, 'قطاعات الخدمة');
+      await showTab(harness, root, 'القطاعات والأسئلة الشائعة');
       const cards = [...root.querySelectorAll('app-sector-card')];
       expect(cards).toHaveLength(1);
       expect(cards[0]?.querySelector('img')?.getAttribute('src')).toBe('/images/a.png');
       expect(cards[0]?.querySelector('img')?.getAttribute('alt')).toBe('');
       expect(cards[0]?.textContent).toContain('قطاع 1');
-    });
-
-    it('shows every FAQ with its question, answer, and number', async () => {
-      const { harness, root } = await open('/services/web-development');
-      await showTab(harness, root, 'الأسئلة الشائعة');
-      const service = seed('web-development');
-      const items = [...root.querySelectorAll('.faq-item')];
-      expect(items).toHaveLength(service.faqs.length);
-      service.faqs.forEach((item, index) => {
-        expect(items[index]?.textContent).toContain(item.question.ar);
-        expect(items[index]?.textContent).toContain(item.answer.ar);
-        expect(items[index]?.querySelector('header span')?.textContent).toBe(`0${index + 1}`);
-      });
     });
 
     it('shows a subtle localized empty message in a section with no content', async () => {
@@ -423,8 +423,7 @@ describe('ServiceDetailPage', () => {
         'مراحل الخدمة',
         'مميزات الخدمة',
         'مشاريع الخدمة',
-        'قطاعات الخدمة',
-        'الأسئلة الشائعة',
+        'القطاعات والأسئلة الشائعة',
       ]) {
         await showTab(harness, root, label);
         expect(text(root), label).toContain(empty);
@@ -455,9 +454,8 @@ describe('ServiceDetailPage', () => {
       await showTab(harness, root, 'حلول الخدمة');
       expect(root.querySelectorAll('.service-detail__card')).toHaveLength(1);
       expect(text(root)).toContain('مملوء');
-      await showTab(harness, root, 'قطاعات الخدمة');
+      await showTab(harness, root, 'القطاعات والأسئلة الشائعة');
       expect(root.querySelector('app-sector-card')).toBeNull();
-      await showTab(harness, root, 'الأسئلة الشائعة');
       expect(root.querySelector('.faq-item')).toBeNull();
     });
 
@@ -480,11 +478,13 @@ describe('ServiceDetailPage', () => {
       const ids = seed('web-development').projectIds;
       const cards = [...root.querySelectorAll<HTMLAnchorElement>('.service-detail__project')];
       expect(cards).toHaveLength(ids.length);
+      expect(root.querySelector('.service-detail__add-project')).not.toBeNull();
       ids.forEach((id, index) => {
         const project = PROJECTS_SEED.find((item) => item.id === id);
         expect(cards[index]?.textContent).toContain(project?.name.ar);
         expect(cards[index]?.getAttribute('href')).toBe(`/projects/${id}`);
         expect(cards[index]?.querySelector('img')?.getAttribute('src')).toBe(project?.coverUrl);
+        expect(cards[index]?.querySelector('p-toggleswitch')).not.toBeNull();
       });
       expect(text(root)).not.toContain('لم تعد متوفرة');
     });
@@ -500,7 +500,7 @@ describe('ServiceDetailPage', () => {
         projects: { list: () => of(projects) },
       });
       await showTab(harness, root, 'مشاريع الخدمة');
-      const names = [...root.querySelectorAll('.service-detail__project strong')].map((item) =>
+      const names = [...root.querySelectorAll('.service-detail__project h3')].map((item) =>
         item.textContent?.trim(),
       );
       expect(names).toEqual([
@@ -624,13 +624,14 @@ describe('ServiceDetailPage', () => {
         ['Service stages', service.stages[0]?.title.en ?? ''],
         ['Service features', service.features[0]?.title.en ?? ''],
         ['Service projects', PROJECTS_SEED[0]?.name.en ?? ''],
-        ['Service sectors', 'Sector 1'],
-        ['Frequently asked questions', service.faqs[0]?.question.en ?? ''],
+        ['Sectors and FAQ', 'Sector 1'],
       ];
       for (const [tab, content] of expected) {
         await showTab(harness, root, tab);
         expect(text(root), tab).toContain(content);
       }
+      expect(text(root)).toContain('Targeted sectors');
+      expect(text(root)).toContain(service.faqs[0]?.question.en ?? '');
     });
 
     it('shows the English not-found message and back link', async () => {

@@ -27,6 +27,7 @@ import { SectorCard } from '../../../../shared/components/sector-card/sector-car
 import { StateView } from '../../../../shared/components/state-view/state-view';
 import type { Project } from '../../../projects/models/project.model';
 import { ProjectsService } from '../../../projects/services/projects.service';
+import { ServiceProjectCard } from '../../components/service-project-card/service-project-card';
 import {
   SERVICE_STEPS,
   readLocale,
@@ -60,6 +61,7 @@ export interface ServiceVisual {
     PageHeader,
     PageTabs,
     SectorCard,
+    ServiceProjectCard,
     StateView,
   ],
   templateUrl: './service-detail.html',
@@ -85,8 +87,16 @@ export class ServiceDetailPage {
   readonly projectsStatus = signal<'loading' | 'ready' | 'error'>('loading');
   private readonly reload = signal(0);
 
-  /** Same seven sections, in the same order and with the same labels, as the editor. */
-  readonly tabs: readonly PageTab[] = SERVICE_STEPS.map(({ id, labelKey }) => ({ id, labelKey }));
+  /**
+   * Detail tabs follow the Figma strip: the first five editor steps stay separate, then
+   * sectors and FAQ share one tab. The editor wizard still uses all seven `SERVICE_STEPS`.
+   */
+  readonly tabs: readonly PageTab[] = [
+    ...SERVICE_STEPS.filter((step) => step.id !== 'sectors' && step.id !== 'faq').map(
+      ({ id, labelKey }) => ({ id, labelKey }),
+    ),
+    { id: 'sectors-faq', labelKey: 'service.step.sectorsFaq' },
+  ];
 
   protected readonly backIcon = computed(() =>
     this.lang.language() === 'ar' ? 'pi-arrow-right' : 'pi-arrow-left',
@@ -99,7 +109,12 @@ export class ServiceDetailPage {
   protected readonly whyImage = computed(() => this.item()?.whyImage ?? null);
   protected readonly solutions = computed(() => this.points('solutions'));
   protected readonly stages = computed(() => this.points('stages'));
-  protected readonly features = computed(() => this.points('features'));
+  /** Features are text-only tiles on the detail page (no image/icon), matching Figma. */
+  protected readonly features = computed(() =>
+    (this.item()?.features ?? []).filter(
+      (entry) => this.filled(entry.title) || this.filled(entry.body),
+    ),
+  );
   /**
    * A sector is only its image, and the shared sector tile draws its label in white over that
    * image, so an entry without a drawable picture (blank, or an `icon:` value) is left out
@@ -190,6 +205,28 @@ export class ServiceDetailPage {
     if (typeof value === 'string') {
       this.tab.set(value);
     }
+  }
+
+  /** Opens the editor for the loaded service (same destination as the header Edit link). */
+  protected edit(): void {
+    const id = this.item()?.id;
+    if (!id) {
+      return;
+    }
+    void this.router.navigate(['/services', id, 'edit']);
+  }
+
+  /** Same entry point as the projects list “add” action. */
+  protected addProject(): void {
+    void this.router.navigate(['/projects', 'new']);
+  }
+
+  /** Mirrors the projects list publish toggle without touching the service record. */
+  protected publishProject(id: string, published: boolean): void {
+    this.projectsApi.setPublished(id, published);
+    this.projects.update((items) =>
+      items.map((item) => (item.id === id ? { ...item, published } : item)),
+    );
   }
 
   /** Same confirm + remove path as the list page; returns to `/services` on success. */

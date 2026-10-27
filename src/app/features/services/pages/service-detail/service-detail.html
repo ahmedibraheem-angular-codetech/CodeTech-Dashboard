@@ -160,13 +160,13 @@
               @for (entry of stages(); track entry.id; let index = $index) {
                 @let art = visual(entry);
                 <li class="service-detail__card service-detail__stage">
-                  <span class="service-detail__number" aria-hidden="true">
-                    {{ position(index) }}
-                  </span>
-                  <span class="service-detail__copy">
+                  <div class="service-detail__stage-copy">
+                    <span class="service-detail__number" aria-hidden="true">
+                      {{ position(index) }}
+                    </span>
                     <strong>{{ text(entry.title) }}</strong>
                     <small>{{ text(entry.body) }}</small>
-                  </span>
+                  </div>
                   @if (art.image) {
                     <img class="service-detail__thumb" [src]="art.image" alt="" />
                   } @else if (art.icon) {
@@ -191,19 +191,11 @@
           @if (features().length) {
             <ul class="service-detail__cards service-detail__features">
               @for (entry of features(); track entry.id) {
-                @let art = visual(entry);
                 <li class="service-detail__card service-detail__feature">
                   <span class="service-detail__copy">
                     <strong>{{ text(entry.title) }}</strong>
                     <small>{{ text(entry.body) }}</small>
                   </span>
-                  @if (art.image) {
-                    <img class="service-detail__thumb" [src]="art.image" alt="" />
-                  } @else if (art.icon) {
-                    <span class="detail-features__icon" aria-hidden="true">
-                      <i class="pi" [class]="art.icon"></i>
-                    </span>
-                  }
                 </li>
               }
             </ul>
@@ -214,9 +206,16 @@
       }
       @case ('projects') {
         <article class="detail-panel">
-          <header class="detail-panel__head">
-            <h2>{{ lang.t('service.projects') }}</h2>
-            <span class="icon-badge"><i class="pi pi-folder" aria-hidden="true"></i></span>
+          <header class="detail-panel__head service-detail__panel-head">
+            <h2>{{ lang.t('project.catalog') }}</h2>
+            <app-button
+              variant="primary"
+              [outlined]="true"
+              icon="pi pi-plus"
+              styleClass="service-detail__add-project"
+              [label]="lang.t('project.add')"
+              (clicked)="addProject()"
+            />
           </header>
           @if (projectsStatus() === 'loading') {
             <app-state-view mode="loading" [message]="lang.t('common.loading')" />
@@ -232,15 +231,14 @@
                 @for (project of relatedProjects(); track project.id) {
                   <li>
                     <a class="service-detail__project" [routerLink]="['/projects', project.id]">
-                      @if (project.coverUrl) {
-                        <img [src]="project.coverUrl" alt="" />
-                      } @else {
-                        <span class="service-detail__project-empty" aria-hidden="true">
-                          <i class="pi pi-image"></i>
-                        </span>
-                      }
-                      <strong>{{ text(project.name) }}</strong>
-                      <small>{{ text(project.summary) }}</small>
+                      <app-service-project-card
+                        [title]="text(project.name)"
+                        [summary]="text(project.summary)"
+                        [coverUrl]="project.coverUrl"
+                        [selected]="project.published"
+                        [toggleLabel]="lang.t('project.publish')"
+                        (selectedChange)="publishProject(project.id, $event)"
+                      />
                     </a>
                   </li>
                 }
@@ -254,53 +252,57 @@
           }
         </article>
       }
-      @case ('sectors') {
-        <article class="detail-panel">
-          <header class="detail-panel__head">
-            <h2>{{ lang.t('service.sectors') }}</h2>
-            <span class="icon-badge"><i class="pi pi-building" aria-hidden="true"></i></span>
-          </header>
-          @if (sectors().length) {
-            <div class="app-sector-grid service-detail__sectors">
-              @for (sector of sectors(); track sector.id; let index = $index) {
-                <app-sector-card
-                  [imageUrl]="visual(sector).image"
-                  [title]="sectorLabel(index)"
-                  [showActions]="false"
-                />
-              }
-            </div>
-          } @else {
-            <p class="service-detail__empty">{{ lang.t('service.detail.empty') }}</p>
-          }
-        </article>
-      }
-      @case ('faq') {
-        <article class="detail-panel">
-          <header class="detail-panel__head">
-            <h2>{{ lang.t('service.faq') }}</h2>
-            <span class="icon-badge">
-              <i class="pi pi-question-circle" aria-hidden="true"></i>
-            </span>
-          </header>
-          @if (faqs().length) {
-            <div class="faq-list">
-              @for (entry of faqs(); track entry.id; let index = $index) {
-                <article class="faq-item">
-                  <header>
-                    <strong>{{ text(entry.question) }}</strong>
-                    <span>{{ position(index) }}</span>
-                  </header>
-                  @if (text(entry.answer)) {
-                    <p>{{ text(entry.answer) }}</p>
-                  }
-                </article>
-              }
-            </div>
-          } @else {
-            <p class="service-detail__empty">{{ lang.t('service.detail.empty') }}</p>
-          }
-        </article>
+      @case ('sectors-faq') {
+        <div class="detail-stack service-detail__sectors-faq">
+          <article class="detail-panel">
+            <header class="detail-panel__head">
+              <h2>{{ lang.t('service.detail.targetedSectors') }}</h2>
+              <span class="icon-badge"><i class="pi pi-building" aria-hidden="true"></i></span>
+            </header>
+            @if (sectors().length) {
+              <div class="app-sector-grid service-detail__sectors">
+                @for (sector of sectors(); track sector.id; let index = $index) {
+                  <app-sector-card
+                    [imageUrl]="visual(sector).image"
+                    [title]="sectorLabel(index)"
+                    [editLabel]="lang.t('service.editAction')"
+                    [deleteLabel]="lang.t('service.deleteAction')"
+                    [deleteDisabled]="true"
+                    [showActions]="true"
+                    (editRequested)="edit()"
+                  />
+                }
+              </div>
+            } @else {
+              <p class="service-detail__empty">{{ lang.t('service.detail.empty') }}</p>
+            }
+          </article>
+          <article class="detail-panel">
+            <header class="detail-panel__head">
+              <h2>{{ lang.t('service.faq') }}</h2>
+              <span class="icon-badge">
+                <i class="pi pi-question-circle" aria-hidden="true"></i>
+              </span>
+            </header>
+            @if (faqs().length) {
+              <div class="faq-list service-detail__faq">
+                @for (entry of faqs(); track entry.id; let index = $index) {
+                  <article class="faq-item">
+                    <header>
+                      <span>{{ position(index) }}</span>
+                      <strong>{{ text(entry.question) }}</strong>
+                    </header>
+                    @if (text(entry.answer)) {
+                      <p>{{ text(entry.answer) }}</p>
+                    }
+                  </article>
+                }
+              </div>
+            } @else {
+              <p class="service-detail__empty">{{ lang.t('service.detail.empty') }}</p>
+            }
+          </article>
+        </div>
       }
     }
   }

@@ -36,6 +36,7 @@ export const ar: { [K in keyof typeof en]: string } = {
   'service.step.projects': 'مشاريع الخدمة',
   'service.step.sectors': 'قطاعات الخدمة',
   'service.step.faq': 'الأسئلة الشائعة',
+  'service.step.sectorsFaq': 'القطاعات والأسئلة الشائعة',
   'service.info': 'بيانات الخدمة',
   'service.idLabel': 'ID',
   'service.name': 'اسم الخدمة',
@@ -114,4 +115,5 @@ export const ar: { [K in keyof typeof en]: string } = {
   'service.detail.empty': 'لم تتم إضافة أي محتوى إلى هذا القسم بعد.',
   'service.detail.projectsError': 'تعذر تحميل المشاريع المرتبطة.',
   'service.detail.projectsMissing': 'بعض المشاريع المرتبطة لم تعد متوفرة.',
+  'service.detail.targetedSectors': 'القطاعات المستهدفة',
 };

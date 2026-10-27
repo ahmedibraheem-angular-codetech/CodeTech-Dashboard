@@ -108,6 +108,10 @@ app-service-detail {
   gap: 12px;
 }
 
+.service-detail__features {
+  gap: 16px;
+}
+
 .service-detail__stages {
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
@@ -125,13 +129,56 @@ app-service-detail {
 
 .service-detail__feature {
   align-items: flex-start;
+  padding: 20px 24px;
+  border: 0;
+  border-radius: 16px;
   background: #f4f7f9;
-  border-color: transparent;
+}
+
+.service-detail__feature .service-detail__copy {
+  gap: 8px;
+
+  strong {
+    color: #1a2b4b;
+    font-size: 15px;
+  }
+
+  small {
+    color: #707070;
+    font-size: 13px;
+    line-height: 1.7;
+  }
 }
 
 .service-detail__stage {
   align-items: stretch;
+  gap: 16px;
+  min-height: 148px;
+  padding: 12px;
   background: var(--app-surface, #fff);
+}
+
+.service-detail__stage-copy {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  min-width: 0;
+
+  strong {
+    color: var(--app-text);
+    font-size: 15px;
+    font-weight: 700;
+    overflow-wrap: anywhere;
+  }
+
+  small {
+    color: var(--app-muted);
+    font-size: 12px;
+    line-height: 1.7;
+    overflow-wrap: anywhere;
+  }
 }
 
 .service-detail__copy {
@@ -157,31 +204,35 @@ app-service-detail {
 }
 
 .service-detail__number {
-  display: grid;
+  display: inline-grid;
   flex: none;
-  order: -1;
-  width: 36px;
-  height: 36px;
+  min-width: 32px;
+  height: 28px;
   place-items: center;
-  border-radius: 50%;
-  background: #eef6fd;
-  color: #1c81d3;
-  font-size: 13px;
+  padding-inline: 8px;
+  border-radius: 8px;
+  background: #eef1f4;
+  color: #8b95a5;
+  font-size: 12px;
   font-weight: 700;
 }
 
 .service-detail__thumb {
   display: block;
   flex: none;
-  width: 148px;
-  height: 112px;
+  width: min(42%, 180px);
+  height: auto;
+  aspect-ratio: 4 / 3;
   margin-inline-start: auto;
   border-radius: 12px;
   object-fit: cover;
 }
 
-.service-detail__stage .service-detail__number {
-  align-self: flex-start;
+.service-detail__stage .service-detail__thumb {
+  align-self: stretch;
+  width: min(46%, 200px);
+  max-height: none;
+  aspect-ratio: 5 / 4;
 }
 
 .service-detail__photo {
@@ -208,6 +259,19 @@ app-service-detail {
   }
 }
 
+.service-detail__panel-head {
+  width: 100%;
+}
+
+.service-detail__add-project.p-button {
+  margin-inline-start: auto;
+  height: 40px;
+  padding-inline: 14px;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 700;
+}
+
 .service-detail__projects {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -215,52 +279,87 @@ app-service-detail {
 }
 
 .service-detail__project {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
+  display: block;
   height: 100%;
-  padding: 12px;
-  border: 1px solid var(--app-border, #e6ebf2);
-  border-radius: 14px;
-  background: var(--app-surface);
   color: inherit;
   text-decoration: none;
-
-  img,
-  .service-detail__project-empty {
-    display: block;
-    width: 100%;
-    aspect-ratio: 16 / 10;
-    border-radius: 12px;
-    object-fit: cover;
-  }
-
-  strong {
-    color: var(--app-text);
-    font-size: 14px;
-    font-weight: 700;
-    overflow-wrap: anywhere;
-  }
-
-  small {
-    color: var(--app-muted);
-    font-size: 12px;
-    line-height: 1.7;
-    overflow-wrap: anywhere;
-  }
 }
 
-.service-detail__project-empty {
-  display: grid;
-  place-items: center;
-  background: #f4f5f7;
-  color: #94a3b8;
-  font-size: 22px;
+.service-detail__project app-service-project-card,
+.service-detail__project .service-project {
+  height: 100%;
 }
 
-.service-detail__sectors {
+// On the detail page the toggle reflects publish state; keep the card border neutral like the design.
+.service-detail__project .service-project {
+  gap: 12px;
+  padding: 12px;
+  border-radius: 16px;
+  box-shadow: none;
+}
+
+.service-detail__project .service-project.is-selected {
+  border-color: #edeeee;
+}
+
+.service-detail__project .service-project__media {
+  aspect-ratio: 16 / 10;
+  border-radius: 12px;
+}
+
+.service-detail__sectors-faq {
+  gap: 16px;
+}
+
+// Figma sectors sit flush in the white panel — drop the shared tray chrome.
+.service-detail__sectors.app-sector-grid {
+  gap: 16px;
   padding: 0;
   border: 0;
+  border-radius: 0;
+  background: transparent;
+}
+
+.service-detail__faq .faq-item {
+  padding: 16px;
+  border-radius: 16px;
+  background: #fff;
+}
+
+.service-detail__faq .faq-item header {
+  justify-content: flex-start;
+  gap: 12px;
+}
+
+.service-detail__faq .faq-item header span {
+  display: inline-grid;
+  flex: none;
+  order: -1;
+  min-width: 40px;
+  height: 40px;
+  place-items: center;
+  border-radius: 50%;
+  background: #eef1f4;
+  color: #8b95a5;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.service-detail__faq .faq-item header strong {
+  flex: 1;
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.6;
+}
+
+.service-detail__faq .faq-item p {
+  margin-top: 12px;
+  padding: 14px 16px;
+  border-radius: 12px;
+  background: #f4f7f9;
+  color: #707070;
+  font-size: 13px;
+  line-height: 1.8;
 }
 
 .service-detail__empty,
