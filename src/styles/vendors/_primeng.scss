@@ -5,7 +5,6 @@
   z-index: var(--app-z-toast);
 }
 
-// Flash messages — Figma success: 459×84, r16, gap 12, pad 20 12, bg #FFF.
 .p-toast.app-toast {
   width: min(459px, calc(100vw - 2rem));
 }
@@ -29,7 +28,6 @@
   padding: 20px 12px;
 }
 
-// Outer ring — Figma: 44×44, r22.55. Inner solid disc via radial-gradient.
 .p-toast.app-toast .p-toast-message-icon,
 .p-toast.app-toast .app-toast-icon {
   box-sizing: border-box;
@@ -86,7 +84,6 @@
   display: none;
 }
 
-// Close — Figma: 32×32, r38.79, pad 9.14, bg #FFF, border 0.69px #666B6D33
 .p-toast.app-toast .p-toast-close-button {
   box-sizing: border-box;
   display: inline-flex;
@@ -112,7 +109,6 @@
   font-size: 12px;
 }
 
-// Success — border #32934F59; outer #32934F2E; inner #32934F
 .p-toast.app-toast .p-toast-message-success {
   border-color: #32934f59;
 }
@@ -128,7 +124,6 @@
   background: radial-gradient(circle at center, #32934f 0 16px, #32934f2e 16px 100%);
 }
 
-// Error — same structure with red tokens matching the Figma flash set
 .p-toast.app-toast .p-toast-message-error {
   border-color: #c94c4c59;
 }

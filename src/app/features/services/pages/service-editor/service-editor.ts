@@ -255,8 +255,6 @@ export class ServiceEditor {
     this.persist(published, published ? 'service.saved' : 'service.draftSaved', false);
   }
 
-  // Step 1 — service data, icon, and “why” section
-
   setField(key: 'name' | 'description', event: Event): void {
     const value = this.read(event);
     if (value === undefined) {
@@ -385,8 +383,6 @@ export class ServiceEditor {
     return `${this.copy('service.stageItem')} ${suffix}`.trim();
   }
 
-  // Step 5 — related projects
-
   projectSelected(projectId: string): boolean {
     return this.draft().projectIds.includes(projectId);
   }
@@ -397,8 +393,6 @@ export class ServiceEditor {
       return { ...current, projectIds: selected ? [...without, projectId] : without };
     });
   }
-
-  // Step 6 — sectors
 
   addSector(): void {
     this.draft.update((current) => ({
@@ -427,8 +421,6 @@ export class ServiceEditor {
       sectors: this.mapAt(current.sectors, index, (item) => this.withoutImage(item)),
     }));
   }
-
-  // Step 7 — FAQs
 
   setFaq(index: number, field: 'question' | 'answer', event: Event): void {
     const value = this.read(event);

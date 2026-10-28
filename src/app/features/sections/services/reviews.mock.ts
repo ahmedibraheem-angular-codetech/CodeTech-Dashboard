@@ -5,13 +5,7 @@ const quoteAr =
 const quoteEn =
   'An excellent experience with the CodeTech team — on-time delivery, strong quality, and ongoing support after launch.';
 
-function review(
-  id: string,
-  published: boolean,
-  day: string,
-  time: string,
-  rating = 5,
-): Review {
+function review(id: string, published: boolean, day: string, time: string, rating = 5): Review {
   return {
     id,
     externalId: '255663',

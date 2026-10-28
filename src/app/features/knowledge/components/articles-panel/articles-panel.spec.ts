@@ -34,12 +34,7 @@ describe('ArticlesPanel statistics cards', () => {
 
   it('shows zeros for every card when the article list is empty', () => {
     const cards = setup([]).componentInstance.cards();
-    expect(cards.map((card) => card.id)).toEqual([
-      'total',
-      'published',
-      'draft',
-      'unpublished',
-    ]);
+    expect(cards.map((card) => card.id)).toEqual(['total', 'published', 'draft', 'unpublished']);
     expect(cards.map((card) => card.value)).toEqual(['0', '0', '0', '0']);
   });
 

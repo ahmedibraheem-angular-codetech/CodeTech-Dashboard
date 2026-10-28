@@ -1,4 +1,3 @@
-// Social links settings — match Figma cards, grid, and sticky footer actions.
 @use 'abstracts/functions' as *;
 
 .social-page {
@@ -124,7 +123,6 @@
   --p-toggleswitch-checked-background: #1c81d3;
 }
 
-// Outer — Figma: 661×423, r16, pad 16, gap 12, bg #FFF, border #F0F1F3
 .social-panel--details {
   box-sizing: border-box;
   width: 100%;
@@ -136,7 +134,6 @@
   background: #fff;
 }
 
-// Inner shell — Figma: 629×331, r16, pad 12, gap 14, bg #F9FAFB, border #EDEEEE
 .social-panel--details .social-panel__shell {
   box-sizing: border-box;
   display: flex;
@@ -151,7 +148,6 @@
   background: #f9fafb;
 }
 
-// Outer — Figma: 405×421, r16, pad 16, gap 12, bg #FFF, border #F0F1F3
 .social-panel--image {
   box-sizing: border-box;
   width: 100%;
@@ -163,7 +159,6 @@
   background: #fff;
 }
 
-// Inner shell — Figma: 373×207, r16, pad 12, gap 14, bg #F9FAFB, border #EDEEEE
 .social-panel--image .social-panel__shell {
   box-sizing: border-box;
   display: flex;
@@ -178,7 +173,6 @@
   background: #f9fafb;
 }
 
-// Outer — Figma: 1074×312, r16, pad 16, gap 12, bg #FFF, border #F0F1F3
 .social-panel--location {
   box-sizing: border-box;
   width: 100%;
@@ -190,7 +184,6 @@
   background: #fff;
 }
 
-// Inner shell — Figma: 1042×220, r16, pad 12, gap 14, bg #F9FAFB, border #EDEEEE
 .social-panel--location .social-panel__shell {
   box-sizing: border-box;
   display: flex;
@@ -262,7 +255,6 @@
   padding-right: 16px;
 }
 
-// Upload preview — Figma: 349×183, r20, pad 9.53 14.29, bg #FFF, border #ECEFF3
 .social-upload {
   box-sizing: border-box;
   position: relative;
@@ -301,7 +293,6 @@
   text-align: center;
 }
 
-// Upload action — Figma: 36×36, r10, pad 10, gap 10, bg #1C81D30D
 .social-upload__badge {
   box-sizing: border-box;
   position: absolute;
@@ -333,7 +324,6 @@
   min-height: 0;
 }
 
-// Map card — Figma: 502×196, r20, pad 9.53 14.29, bg #FFF, border #ECEFF3
 .social-map {
   box-sizing: border-box;
   display: flex;
@@ -358,7 +348,6 @@
   border-radius: 12px;
 }
 
-// Outer — Figma: 1074×800, r16, pad 16, gap 12, bg #FFF, border #F0F1F3
 .social-panel--links,
 .social-links {
   box-sizing: border-box;
@@ -386,7 +375,6 @@ app-social-link-card {
   display: contents;
 }
 
-// Card — Figma: 515×168, r20, pad 16, gap 10, bg #F9FAFB, border #F2F2F2
 .social-card {
   display: flex;
   flex-direction: column;
@@ -423,7 +411,6 @@ app-social-link-card {
   line-height: 1.4;
 }
 
-// URL field — Figma: 483×48, r16, pad 12 5 12 14, bg #FFF, border #DCE3EB
 .social-card__field {
   display: flex;
   align-items: center;
@@ -470,7 +457,6 @@ app-social-link-card {
   cursor: pointer;
 }
 
-// Edit / Delete — Figma: 238.5×44, r16, pad 16, gap 8, border #1C81D326, bg #FFF
 .social-card__actions {
   display: grid;
   grid-template-columns: 1fr 1fr;

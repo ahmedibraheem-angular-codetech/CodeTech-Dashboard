@@ -19,8 +19,7 @@ export interface UploadedVideoMeta {
 export type VideoUploadErrorKey = 'review.videoType' | 'review.videoSize';
 
 export type VideoUploadParseResult =
-  | { ok: true; video: UploadedVideoMeta }
-  | { ok: false; errorKey: VideoUploadErrorKey };
+  { ok: true; video: UploadedVideoMeta } | { ok: false; errorKey: VideoUploadErrorKey };
 
 /**
  * Validates a picked video and builds metadata. Returns `null` when no file was provided.

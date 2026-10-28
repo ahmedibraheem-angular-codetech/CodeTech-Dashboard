@@ -66,9 +66,7 @@ describe('ProjectsPageManage', () => {
     await settle(fixture);
 
     const firstLabel = () =>
-      root.querySelector(
-        '.projects-numbers-editor__card input',
-      ) as HTMLInputElement | null;
+      root.querySelector('.projects-numbers-editor__card input') as HTMLInputElement | null;
     expect(firstLabel()?.value).toBe('رضا العملاء');
 
     const english = root.querySelector(

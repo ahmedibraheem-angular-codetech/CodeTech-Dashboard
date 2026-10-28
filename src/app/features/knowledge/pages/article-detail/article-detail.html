@@ -7,11 +7,7 @@
     <app-state-view mode="error" [message]="lang.t('common.error')" (retry)="retry()" />
   } @else if (article(); as current) {
     <app-page-header [title]="title()">
-      <span
-        pageHeaderBadge
-        class="kb-status"
-        [class]="'kb-status kb-status--' + current.status"
-      >
+      <span pageHeaderBadge class="kb-status" [class]="'kb-status kb-status--' + current.status">
         {{ lang.t(readStatusKey(current.status)) }}
       </span>
       <div pageHeaderSub class="kb-detail__meta-line">

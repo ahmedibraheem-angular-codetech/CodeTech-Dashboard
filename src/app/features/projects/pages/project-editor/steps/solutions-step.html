@@ -89,9 +89,7 @@
     @for (image of editor.draft().gallery; track image.id; let index = $index) {
       <div class="field">
         <div class="soft-item__head">
-          <span class="field__label"
-            >{{ editor.copy('project.galleryItem') }} {{ index + 1 }}</span
-          >
+          <span class="field__label">{{ editor.copy('project.galleryItem') }} {{ index + 1 }}</span>
           <button
             type="button"
             class="feature-card__remove"

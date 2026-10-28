@@ -1,5 +1,3 @@
-// Knowledge Center (/knowledge): list, categories, article editor and article detail.
-
 $kb-navy: #0f2744;
 $kb-muted: #64748b;
 $kb-border: #edeeee;
@@ -25,7 +23,6 @@ $kb-blue: #1c81d3;
   box-shadow: 0 12px 32px rgb(15 23 42 / 8%);
 }
 
-// Page chrome shared by the board, the editor and the detail page.
 .knowledge-board,
 .kb-editor,
 .kb-detail {
@@ -175,8 +172,6 @@ $kb-blue: #1c81d3;
   flex-direction: column;
   gap: 16px;
 }
-
-// ----- Articles table ---------------------------------------------------------------------
 
 .knowledge-table .app-data-table__head h2 {
   margin: 0;
@@ -401,8 +396,6 @@ $kb-blue: #1c81d3;
   }
 }
 
-// ----- Categories tab ---------------------------------------------------------------------
-
 .kb-panel {
   display: flex;
   flex-direction: column;
@@ -522,7 +515,6 @@ $kb-blue: #1c81d3;
   gap: 16px;
 }
 
-// Category card — Figma outer shell (~339×297) + inner metrics panel (~307×148).
 .kb-cat-card {
   display: flex;
   flex-direction: column;
@@ -705,8 +697,6 @@ $kb-blue: #1c81d3;
   }
 }
 
-// ----- Article editor ---------------------------------------------------------------------
-
 $kb-card-border: #f0f1f3;
 $kb-inner-bg: #f9fafb;
 $kb-inner-border: #edeeee;
@@ -761,7 +751,6 @@ $kb-inner-border: #edeeee;
     width: 100%;
   }
 
-  /* Figma upload zone: full card width × 114, dashed 1px, pad 18/16, gap 12, radius 16. */
   .image-drop {
     position: relative;
     box-sizing: border-box;
@@ -1045,8 +1034,6 @@ $kb-inner-border: #edeeee;
     font-style: normal;
   }
 }
-
-// ----- Article detail ---------------------------------------------------------------------
 
 .kb-detail__meta-line {
   display: flex;

@@ -77,7 +77,11 @@ export class ReviewsBoard {
     roleEn: ['', Validators.required],
     quoteAr: ['', Validators.required],
     quoteEn: ['', Validators.required],
-    rating: this.fb.nonNullable.control(5, [Validators.required, Validators.min(1), Validators.max(5)]),
+    rating: this.fb.nonNullable.control(5, [
+      Validators.required,
+      Validators.min(1),
+      Validators.max(5),
+    ]),
     published: this.fb.nonNullable.control(false),
   });
 
@@ -124,15 +128,21 @@ export class ReviewsBoard {
 
   readonly editorTitle = computed(() => {
     this.lang.language();
-    return this.editor() === 'edit' ? this.lang.t('review.editTitle') : this.lang.t('review.createTitle');
+    return this.editor() === 'edit'
+      ? this.lang.t('review.editTitle')
+      : this.lang.t('review.createTitle');
   });
 
   readonly editorSaveLabel = computed(() => {
     this.lang.language();
-    return this.editor() === 'edit' ? this.lang.t('common.saveChanges') : this.lang.t('review.addSubmit');
+    return this.editor() === 'edit'
+      ? this.lang.t('common.saveChanges')
+      : this.lang.t('review.addSubmit');
   });
 
-  readonly editorSaveIcon = computed(() => (this.editor() === 'edit' ? 'pi pi-save' : 'pi pi-plus'));
+  readonly editorSaveIcon = computed(() =>
+    this.editor() === 'edit' ? 'pi pi-save' : 'pi pi-plus',
+  );
 
   readonly editorMode = computed<ReviewEditorMode>(() => this.editor() ?? 'create');
 

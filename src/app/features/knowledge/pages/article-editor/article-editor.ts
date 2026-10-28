@@ -51,12 +51,7 @@ import {
 } from '../../models/knowledge.model';
 import { KnowledgeActions } from '../../services/knowledge-actions.service';
 import { KnowledgeService } from '../../services/knowledge.service';
-import {
-  categoryName,
-  joinKeywords,
-  nowStamp,
-  splitKeywords,
-} from '../../utils/knowledge-format';
+import { categoryName, joinKeywords, nowStamp, splitKeywords } from '../../utils/knowledge-format';
 
 type LoadStatus = 'loading' | 'ready' | 'missing' | 'error';
 type ImageSlot = 'avatar' | 'thumbnail' | 'cover';
@@ -314,8 +309,6 @@ export class ArticleEditor {
     void this.router.navigate(['/knowledge']);
   }
 
-  // ----- Create actions -----------------------------------------------------------------
-
   protected publish(): void {
     if (this.validate('strict')) {
       this.persist('published');
@@ -330,8 +323,6 @@ export class ArticleEditor {
       this.persist('draft');
     }
   }
-
-  // ----- Edit actions -------------------------------------------------------------------
 
   protected save(): void {
     const status = this.article()?.status ?? 'draft';
@@ -365,8 +356,6 @@ export class ArticleEditor {
     }
   }
 
-  // ----- Images -------------------------------------------------------------------------
-
   protected onPick(event: Event, slot: ImageSlot): void {
     const input = event.target as HTMLInputElement;
     this.take(slot, input.files?.[0]);
@@ -398,8 +387,6 @@ export class ArticleEditor {
   protected date(file: SlotImage): string {
     return formatIsoDate(file.date, this.lang.language());
   }
-
-  // ----- Internals ----------------------------------------------------------------------
 
   private take(slot: ImageSlot, file: File | undefined): void {
     const parsed = parseUploadedImage(file);

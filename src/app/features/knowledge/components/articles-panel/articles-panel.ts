@@ -110,9 +110,7 @@ export interface ArticleStatusChange {
   status: ArticleStatus;
 }
 
-function countArticlesByStatus(
-  articles: readonly Article[],
-): Record<ArticleStatus, number> {
+function countArticlesByStatus(articles: readonly Article[]): Record<ArticleStatus, number> {
   const counts: Record<ArticleStatus, number> = {
     published: 0,
     draft: 0,
@@ -160,11 +158,7 @@ export class ArticlesPanel {
     const caption = this.lang.t('knowledge.compared');
     const byStatus = countArticlesByStatus(all);
     return ARTICLE_STAT_DEFS.map((def) =>
-      this.toStatCard(
-        def,
-        def.metric === 'total' ? all.length : byStatus[def.metric],
-        caption,
-      ),
+      this.toStatCard(def, def.metric === 'total' ? all.length : byStatus[def.metric], caption),
     );
   });
 

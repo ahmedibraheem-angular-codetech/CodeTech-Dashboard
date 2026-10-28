@@ -22,10 +22,7 @@ import { Modal } from '../../../../shared/components/modal/modal';
 import { PageHeader } from '../../../../shared/components/page-header/page-header';
 import { StateView } from '../../../../shared/components/state-view/state-view';
 import { readLocale, type LocaleText } from '../../models/project.model';
-import {
-  type ProjectsPageContent,
-  type ProjectsPageStat,
-} from '../../models/projects-page.model';
+import { type ProjectsPageContent, type ProjectsPageStat } from '../../models/projects-page.model';
 import { ProjectsPageService } from '../../services/projects-page.service';
 
 @Component({
@@ -109,9 +106,7 @@ export class ProjectsPageManage {
     const language = this.locale();
     this.drafts.update((items) =>
       items.map((item, itemIndex) =>
-        itemIndex === index
-          ? { ...item, [field]: { ...item[field], [language]: value } }
-          : item,
+        itemIndex === index ? { ...item, [field]: { ...item[field], [language]: value } } : item,
       ),
     );
   }

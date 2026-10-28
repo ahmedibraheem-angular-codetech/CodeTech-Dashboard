@@ -14,7 +14,9 @@ export class ReviewsService {
     return timer(this.latency).pipe(map(() => structuredClone(this.items())));
   }
 
-  create(review: Omit<Review, 'id' | 'externalId' | 'createdAt' | 'createdTime'>): Observable<Review> {
+  create(
+    review: Omit<Review, 'id' | 'externalId' | 'createdAt' | 'createdTime'>,
+  ): Observable<Review> {
     return timer(this.latency).pipe(
       map(() => {
         const now = new Date();
