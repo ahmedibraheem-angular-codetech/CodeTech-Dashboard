@@ -8,11 +8,13 @@ import {
 } from '@angular/core';
 import { MessageService } from 'primeng/api';
 
+import { AuthService } from '../../../../core/auth/auth.service';
 import { LanguageService } from '../../../../core/services/language.service';
 import { AppButton } from '../../../../shared/components/app-button/app-button';
 import { ConfirmDialog } from '../../../../shared/components/confirm-dialog/confirm-dialog';
 import { Modal } from '../../../../shared/components/modal/modal';
 import { PageHeader } from '../../../../shared/components/page-header/page-header';
+import { HasPermissionDirective } from '../../../../shared/directives/has-permission.directive';
 import { PermissionsMatrix } from '../../components/permissions-matrix/permissions-matrix';
 import { PermissionsRoleForm } from '../../components/permissions-role-form/permissions-role-form';
 import {
@@ -27,18 +29,23 @@ import {
   type PermissionRole,
 } from '../../models/permissions.model';
 
-/**
- * Permissions page container: owns role state, create/delete/save workflows,
- * and composes the matrix panel plus add-role modal form.
- */
 @Component({
   selector: 'app-permissions-page',
-  imports: [PageHeader, AppButton, ConfirmDialog, Modal, PermissionsMatrix, PermissionsRoleForm],
+  imports: [
+    PageHeader,
+    AppButton,
+    ConfirmDialog,
+    Modal,
+    PermissionsMatrix,
+    PermissionsRoleForm,
+    HasPermissionDirective,
+  ],
   templateUrl: './permissions.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PermissionsPage {
   private readonly messages = inject(MessageService);
+  private readonly auth = inject(AuthService);
   private readonly confirm = viewChild.required(ConfirmDialog);
   readonly lang = inject(LanguageService);
 
@@ -100,6 +107,15 @@ export class PermissionsPage {
       label: role.labelKey ? this.lang.t(role.labelKey) : (role.name ?? role.id),
     })),
   );
+
+  readonly canUpdate = computed(() => {
+    const session = this.auth.session();
+    return !!session?.profileLoaded && this.auth.hasPermission('roles.update');
+  });
+  readonly canDelete = computed(() => {
+    const session = this.auth.session();
+    return !!session?.profileLoaded && this.auth.hasPermission('roles.delete');
+  });
 
   protected setGrant(resourceId: string, action: PermissionAction, value: boolean): void {
     const current = this.selected();

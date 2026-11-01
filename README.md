@@ -36,24 +36,20 @@ There is no ESLint target yet; formatting is Prettier (`.prettierrc`, `.editorco
 
 ## Demo access
 
-There is no backend. In **development** (`npm start`) the mock auth accepts any valid email with:
-
-- Password: `12345678`
-- Verification code: `1111`
-
-These credentials live only in `src/environments/environment.ts`. The **production** build (`environment.production.ts`) ships without them, so signing in there reports "Sign-in is currently unavailable" until `AuthService` is replaced by a real API client.
+Login talks to `POST /admin/auth/login` on `environment.apiUrl`. After a successful password check the app still shows the existing OTP screen. That screen is a **frontend-only gate**: it accepts the static code `1111` (`TEMPORARY_DEMO_OTP`) and does not call a backend OTP endpoint. It is not two-factor authentication.
 
 `authInterceptor` attaches the bearer token only to requests under `environment.apiUrl` and signs the user out on a `401` response.
 
 ### Remember me
 
-The "Remember me" checkbox on the login page is **cosmetic** today. Its state is not passed to `AuthService` and nothing is persisted because of it.
+The checkbox is sent as `remember` on login. The backend token lasts 1 day when it is off, and 30 days when it is on. There is no refresh-token or cookie flow.
 
-- The mock session (`codetech.session`) and pending login (`codetech.pending`) live in `sessionStorage`, so they end when the tab closes, whether or not the box is ticked.
-- The password is never stored anywhere (covered by a test in `auth.service.spec.ts`).
-- The mock token is generated on the client, so it must not be copied to `localStorage` to fake persistence.
-
-Intended behavior once a real API exists: a ticked box asks the server for a long-lived session, delivered as an `HttpOnly; Secure; SameSite` refresh cookie. The app then restores the short-lived access token from that cookie on startup. An unticked box keeps the current tab-scoped session. This depends on the backend issuing, rotating and revoking that cookie, and on logout clearing it.
+- Off: the session is stored in `sessionStorage` (`codetech.session`) and ends when the tab closes.
+- On: the session is stored in `localStorage` and survives a browser restart, up to the 30-day token.
+- The pending login (`codetech.pending`) always stays in `sessionStorage` and is not a live session. The token is written to the session store only after OTP succeeds and `GET /admin/profile` succeeds.
+- The password is never stored (covered by a test in `auth.service.spec.ts`).
+- Only a lean session subset is persisted (`token`, `email`, `name`, `roleKey`, `remember`). Avatar URL, permissions, phone, username, and `last_login_at` stay in memory and are refreshed from `GET /admin/profile`.
+- Profile page edits (personal data, password, avatar upload) are still mock-backed; they must not fight the hydrated auth identity once profile has loaded.
 
 ## UI conventions (PrimeNG first)
 

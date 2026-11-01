@@ -22,6 +22,7 @@
       </div>
 
       <app-button
+        *appHasPermission="'knowledge_center.update'"
         styleClass="kb-detail__edit"
         variant="outlined"
         icon="pi pi-pencil"
@@ -30,6 +31,7 @@
         (clicked)="edit()"
       />
       <app-button
+        *appHasPermission="'knowledge_center.update'"
         styleClass="kb-editor__action"
         variant="outlined"
         [icon]="current.featured ? 'pi pi-star-fill' : 'pi pi-star'"
@@ -38,6 +40,7 @@
         (clicked)="toggleFeatured()"
       />
       <app-button
+        *appHasPermission="'knowledge_center.update'"
         styleClass="kb-editor__action"
         variant="outlined"
         icon="pi pi-angle-down"
@@ -46,6 +49,7 @@
         (clicked)="toggleStatusMenu($event)"
       />
       <app-button
+        *appHasPermission="'knowledge_center.delete'"
         styleClass="kb-detail__icon-btn"
         variant="danger"
         [outlined]="true"

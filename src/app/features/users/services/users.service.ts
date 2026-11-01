@@ -1,8 +1,8 @@
 import { Injectable, inject, signal } from '@angular/core';
-import { Observable, map, timer } from 'rxjs';
+import { type Observable, map, timer } from 'rxjs';
 
 import { API_LATENCY_MS } from '../../../core/config/latency';
-import { User, UserDraft } from '../models/user.model';
+import { type User, type UserDraft } from '../models/user.model';
 import { USERS_SEED } from './users.mock';
 
 @Injectable({ providedIn: 'root' })

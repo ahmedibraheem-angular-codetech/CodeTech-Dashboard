@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, inject, input, output, signal } fro
 
 import type { AppLanguage } from '../../../core/i18n/language';
 import { LanguageService } from '../../../core/services/language.service';
+import { ICON_LIBRARY_IDS, iconLibrarySrc } from './icon-library';
 import { ObjectUrls } from './object-urls';
 
 const MAX_IMAGE_BYTES = 5 * 1024 * 1024;
@@ -18,51 +19,18 @@ export class ProductUpload {
   readonly url = input('');
   readonly actions = input(false);
   readonly locale = input<AppLanguage | null>(null);
-  /**
-   * Translation key prefix for upload chrome (`product` by default).
-   * Projects pass `project` so the drop zone stays domain-correct without forking this component.
-   */
+
   readonly keyPrefix = input('product');
-  /**
-   * When true, a clear control appears for the current image/icon and emits `cleared`.
-   * Products leave this off so their existing UX is unchanged.
-   */
+
   readonly clearable = input(false);
   readonly picked = output<{ name: string; url: string }>();
   readonly cleared = output<void>();
   protected readonly source = signal<'upload' | 'library'>('upload');
   protected readonly sizeError = signal(false);
   protected readonly dragging = signal(false);
-  protected readonly icons = [
-    'pi-star',
-    'pi-heart',
-    'pi-bolt',
-    'pi-check-circle',
-    'pi-shield',
-    'pi-cog',
-    'pi-users',
-    'pi-chart-line',
-    'pi-globe',
-    'pi-lock',
-    'pi-bell',
-    'pi-calendar',
-    'pi-image',
-    'pi-send',
-    'pi-wifi',
-    'pi-mobile',
-    'pi-desktop',
-    'pi-database',
-    'pi-cloud',
-    'pi-shopping-cart',
-    'pi-wallet',
-    'pi-map-marker',
-    'pi-thumbs-up',
-    'pi-flag',
-    'pi-bookmark',
-    'pi-compass',
-    'pi-box',
-  ];
-  /** Last URL this instance emitted; covers a re-pick before the `url` input has caught up. */
+
+  protected readonly icons = ICON_LIBRARY_IDS;
+
   private lastPicked = '';
 
   protected copy(suffix: string): string {
@@ -77,6 +45,10 @@ export class ProductUpload {
   protected iconName(): string | null {
     const url = this.url();
     return url.startsWith('icon:') ? url.slice(5) : null;
+  }
+
+  protected iconSrc(id: string): string {
+    return iconLibrarySrc(id);
   }
 
   protected choose(event: Event): void {
@@ -126,10 +98,6 @@ export class ProductUpload {
     this.picked.emit({ name: file.name, url });
   }
 
-  /**
-   * Revokes the preview this field shows (and the one it last emitted) because it is being
-   * replaced or cleared. `keep` is the new value, which must stay alive.
-   */
   private release(keep = ''): void {
     for (const url of new Set([this.url(), this.lastPicked])) {
       if (url !== keep) {

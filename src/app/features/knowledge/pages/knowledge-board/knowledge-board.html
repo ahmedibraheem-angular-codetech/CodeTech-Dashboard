@@ -1,14 +1,25 @@
 <section class="page knowledge-board">
   <app-page-header [title]="lang.t('nav.knowledge')" [subtitle]="subtitle()">
-    <app-button
-      styleClass="knowledge-board__secondary"
-      icon="pi pi-file"
-      variant="outlined"
-      [ariaLabel]="lang.t('knowledge.refresh')"
+    <p-datepicker
+      styleClass="knowledge-board__datepicker"
+      inputStyleClass="knowledge-board__datepicker-input"
+      panelStyleClass="knowledge-board__datepicker-panel"
+      dateFormat="yy-mm-dd"
+      dataType="string"
+      iconDisplay="button"
+      appendTo="body"
+      [ngModel]="dateFilter()"
+      (ngModelChange)="setDateFilter($event)"
+      [showIcon]="true"
+      [showOnFocus]="false"
+      [showButtonBar]="true"
       [disabled]="state() === 'loading'"
-      (clicked)="reload()"
+      [placeholder]="lang.t('knowledge.filterByDate')"
+      [ariaLabel]="lang.t('knowledge.filterByDate')"
+      [iconAriaLabel]="lang.t('knowledge.filterByDate')"
     />
     <app-button
+      *appHasPermission="'knowledge_center.create'"
       icon="pi pi-plus"
       iconPos="end"
       styleClass="knowledge-board__add"
@@ -26,8 +37,10 @@
   } @else {
     <div [hidden]="tab() !== 'articles'">
       <app-knowledge-articles-panel
-        [articles]="articles()"
+        [articles]="filteredArticles()"
         [categories]="categories()"
+        [showEdit]="canUpdate()"
+        [showDelete]="canDelete()"
         (view)="view($event)"
         (edit)="openEditor($event)"
         (remove)="removeArticle($event)"
@@ -38,7 +51,9 @@
     </div>
     <div [hidden]="tab() !== 'categories'">
       <app-knowledge-categories-panel
-        [categories]="categories()"
+        [categories]="filteredCategories()"
+        [showEdit]="canUpdate()"
+        [showDelete]="canDelete()"
         (edit)="openEditCategory($event)"
         (remove)="removeCategory($event)"
       />
@@ -60,7 +75,14 @@
   (cancel)="closeEditor()"
 >
   @if (editor() !== null) {
-    <app-faq-category-form [form]="categoryForm" (submitted)="saveCategory()" />
+    <app-category-form
+      [form]="categoryForm"
+      labelKey="knowledge.categoryName"
+      placeholderKey="knowledge.categoryNamePlaceholder"
+      requiredKey="knowledge.required"
+      publishedKey="knowledge.publishStatus"
+      (submitted)="saveCategory()"
+    />
   }
 </app-modal>
 

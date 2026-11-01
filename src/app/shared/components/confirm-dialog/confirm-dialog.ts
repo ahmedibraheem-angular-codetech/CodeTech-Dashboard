@@ -22,7 +22,7 @@ let nextTitleId = 0;
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ConfirmDialog {
-  /** One id per instance: the home page renders two of these dialogs. */
+
   readonly titleId = `confirm-title-${++nextTitleId}`;
   readonly visible = signal(false);
   readonly title = signal('');

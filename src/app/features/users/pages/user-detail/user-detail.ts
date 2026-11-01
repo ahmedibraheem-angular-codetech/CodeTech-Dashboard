@@ -15,6 +15,7 @@ import { FormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { MessageService } from 'primeng/api';
 
+import { AuthService } from '../../../../core/auth/auth.service';
 import type { AppLanguage } from '../../../../core/i18n/language';
 import { DEFAULT_AVATAR_URL } from '../../../../core/profile/profile.model';
 import { BreadcrumbService } from '../../../../core/services/breadcrumb.service';
@@ -26,15 +27,11 @@ import { UserDetailBan } from '../../components/user-detail-ban/user-detail-ban'
 import { UserDetailFields } from '../../components/user-detail-fields/user-detail-fields';
 import { UserDetailProfile } from '../../components/user-detail-profile/user-detail-profile';
 import { UserEditorForm } from '../../components/user-editor-form/user-editor-form';
-import { User, UserDraft, UserRole, UserStatus } from '../../models/user.model';
+import { type User, type UserDraft, type UserRole, type UserStatus } from '../../models/user.model';
 import { UsersService } from '../../services/users.service';
 
 type LoadState = 'loading' | 'ready' | 'error' | 'missing';
 
-/**
- * User detail container: loads the user, owns edit/status/delete workflows,
- * and composes profile, fields, and ban panels plus the shared editor modal.
- */
 @Component({
   selector: 'app-user-detail',
   imports: [
@@ -57,18 +54,18 @@ export class UserDetailPage {
   private readonly breadcrumbs = inject(BreadcrumbService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly fb = inject(FormBuilder);
+  private readonly auth = inject(AuthService);
   private readonly confirm = viewChild.required(ConfirmDialog);
   private readonly editorForm = viewChild.required(UserEditorForm);
   readonly lang = inject(LanguageService);
 
-  /** Bound from `/users/:id`. */
   readonly id = input.required<string>();
 
   readonly status = signal<LoadState>('loading');
   readonly user = signal<User | null>(null);
   readonly saving = signal(false);
   readonly editing = signal(false);
-  /** Locale for the edit modal only — does not change the page language. */
+
   readonly editorLocale = signal<AppLanguage>('ar');
   readonly avatarUrl = DEFAULT_AVATAR_URL;
 
@@ -81,7 +78,6 @@ export class UserDetailPage {
     joinedAt: ['', Validators.required],
   });
 
-  /** Page-language status choices for the profile status menu (not the editor form). */
   readonly statusChoices = computed(() => {
     this.lang.language();
     return [
@@ -98,6 +94,15 @@ export class UserDetailPage {
   readonly editorSaveLabel = computed(() => {
     this.editorLocale();
     return this.editorT('common.saveChanges');
+  });
+
+  readonly canUpdate = computed(() => {
+    const session = this.auth.session();
+    return !!session?.profileLoaded && this.auth.hasPermission('users.update');
+  });
+  readonly canDelete = computed(() => {
+    const session = this.auth.session();
+    return !!session?.profileLoaded && this.auth.hasPermission('users.delete');
   });
 
   readonly displayCode = computed(() => {
@@ -161,7 +166,6 @@ export class UserDetailPage {
     this.load(this.id());
   }
 
-  /** Copy for the edit modal only (follows `editorLocale`, not the page language). */
   editorT(key: string): string {
     return this.lang.lookup(key, this.editorLocale()) ?? key;
   }

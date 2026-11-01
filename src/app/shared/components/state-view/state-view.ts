@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, input, output } from '@angular/core';
 import { ProgressSpinner } from 'primeng/progressspinner';
 
 import { LanguageService } from '../../../core/services/language.service';
@@ -13,9 +13,8 @@ export type ViewState = 'loading' | 'empty' | 'error';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class StateView {
+  readonly lang = inject(LanguageService);
   readonly mode = input.required<ViewState>();
   readonly message = input<string>('');
   readonly retry = output<void>();
-
-  constructor(readonly lang: LanguageService) {}
 }

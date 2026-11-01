@@ -24,9 +24,9 @@ class Host {
   prefix = 'product';
   clearable = false;
   actions = false;
-  /** Mounts or destroys the upload, like leaving and re-entering a wizard step. */
+
   show = true;
-  /** When set, the host behaves like a draft that keeps the value it was given. */
+
   follow = false;
   name = '';
   url = '';
@@ -117,10 +117,14 @@ describe('ProductUpload', () => {
 
   it('shows an icon preview when the url is an icon reference', () => {
     const fixture = create((host) => {
-      host.url = 'icon:pi-cloud';
-      host.name = 'pi-cloud';
+      host.url = 'icon:fi-br-globe';
+      host.name = 'fi-br-globe';
     });
-    expect(fixture.nativeElement.querySelector('.uploader__mark--icon .pi-cloud')).not.toBeNull();
+    const previewImg = fixture.nativeElement.querySelector(
+      '.uploader__mark--icon img.icon-library__img--preview',
+    ) as HTMLImageElement | null;
+    expect(previewImg).not.toBeNull();
+    expect(previewImg?.getAttribute('src')).toBe('iconLibrary/fi-br-globe.svg');
   });
   function fileInput(fixture: ReturnType<typeof create>): HTMLInputElement {
     return fixture.nativeElement.querySelector('input[type="file"]') as HTMLInputElement;
@@ -136,7 +140,6 @@ describe('ProductUpload', () => {
     fixture.detectChanges();
   }
 
-  /** The host is driven by plain fields, so it has to be marked dirty by hand. */
   function refresh(fixture: ReturnType<typeof create>): void {
     fixture.changeDetectorRef.markForCheck();
     fixture.detectChanges();
@@ -216,10 +219,12 @@ describe('ProductUpload', () => {
         host.follow = true;
         host.actions = true;
       });
-      const [library, upload] = [
+
+      const [upload, library] = [
         ...fixture.nativeElement.querySelectorAll('.uploader__action'),
       ] as HTMLButtonElement[];
       expect(upload).toBeDefined();
+      expect(library).toBeDefined();
       pick(fixture);
       library.click();
       fixture.detectChanges();
@@ -227,7 +232,7 @@ describe('ProductUpload', () => {
       fixture.detectChanges();
 
       expect(revoke).toHaveBeenCalledWith('blob:test/1');
-      expect(fixture.componentInstance.url).toMatch(/^icon:pi-/);
+      expect(fixture.componentInstance.url).toMatch(/^icon:fi-br-/);
     });
 
     it('does not revoke a saved blob URL when an unsaved icon replaces it', () => {
@@ -237,7 +242,7 @@ describe('ProductUpload', () => {
       });
       pick(fixture);
       TestBed.inject(ObjectUrls).sync(null, { url: 'blob:test/1' });
-      const [library] = [
+      const [, library] = [
         ...fixture.nativeElement.querySelectorAll('.uploader__action'),
       ] as HTMLButtonElement[];
       library.click();
@@ -246,7 +251,7 @@ describe('ProductUpload', () => {
       fixture.detectChanges();
 
       expect(revoke).not.toHaveBeenCalled();
-      expect(fixture.componentInstance.url).toMatch(/^icon:pi-/);
+      expect(fixture.componentInstance.url).toMatch(/^icon:fi-br-/);
     });
 
     it('never revokes values it did not create', () => {
@@ -259,7 +264,7 @@ describe('ProductUpload', () => {
       fixture.detectChanges();
       expect(revoke).not.toHaveBeenCalled();
 
-      fixture.componentInstance.url = 'icon:pi-cloud';
+      fixture.componentInstance.url = 'icon:fi-br-heart';
       fixture.componentInstance.actions = true;
       refresh(fixture);
       pick(fixture);

@@ -11,47 +11,58 @@ import {
 } from '@angular/core';
 import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
+import { DomSanitizer, type SafeHtml } from '@angular/platform-browser';
 import { MessageService, SharedModule } from 'primeng/api';
 import { Editor } from 'primeng/editor';
 import type { EditorInitEvent } from 'primeng/types/editor';
-import { Subject, catchError, map, merge, of, switchMap } from 'rxjs';
+import { Subject, catchError, firstValueFrom, map, merge, of, switchMap } from 'rxjs';
 
 import type { AppLanguage } from '../../../../core/i18n/language';
+import { MediaService } from '../../../../core/media/media.service';
 import { LanguageService } from '../../../../core/services/language.service';
 import { AppButton } from '../../../../shared/components/app-button/app-button';
 import { LocaleSwitch } from '../../../../shared/components/locale-switch/locale-switch';
 import { PageHeader } from '../../../../shared/components/page-header/page-header';
 import { StateView } from '../../../../shared/components/state-view/state-view';
-import type { LegalDocument, LegalDocumentKind } from '../../models/legal-document.model';
-import { LegalDocumentService } from '../../services/legal-document.service';
+import { HasPermissionDirective } from '../../../../shared/directives/has-permission.directive';
 import {
-  LEGAL_QUILL_FONT_REGISTRAR,
+  QUILL_FONT_REGISTRAR,
   applyQuillDirection,
   hasVisibleHtml,
   readQuillHtml,
-  wireLegalToolbarHandlers,
-  type LegalQuill,
-} from './legal-quill';
+  wireQuillToolbarHandlers,
+  type AppQuill,
+} from '../../../../shared/editor/quill';
+import { sanitizeRichTextHtml } from '../../../../shared/editor/sanitize-html';
+import type { LegalDocument, LegalDocumentKind } from '../../models/legal-document.model';
+import { LegalDocumentService } from '../../services/legal-document.service';
 
 type LoadState = 'loading' | 'ready' | 'error';
 type Mode = 'view' | 'edit';
 
-/**
- * Shared board for Terms and Privacy. Same layout for both; copy and document
- * kind come from the parent route via inputs.
- */
 @Component({
   selector: 'app-legal-document-board',
-  imports: [FormsModule, AppButton, Editor, LocaleSwitch, PageHeader, SharedModule, StateView],
+  imports: [
+    FormsModule,
+    AppButton,
+    Editor,
+    LocaleSwitch,
+    PageHeader,
+    SharedModule,
+    StateView,
+    HasPermissionDirective,
+  ],
   templateUrl: './legal-document-board.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LegalDocumentBoard {
   private readonly api = inject(LegalDocumentService);
+  private readonly media = inject(MediaService);
   private readonly messages = inject(MessageService);
+  private readonly sanitizer = inject(DomSanitizer);
   private readonly destroyRef = inject(DestroyRef);
   private readonly injector = inject(Injector);
-  private readonly registerQuillFont = inject(LEGAL_QUILL_FONT_REGISTRAR);
+  private readonly registerQuillFont = inject(QUILL_FONT_REGISTRAR);
   readonly lang = inject(LanguageService);
 
   readonly kind = input.required<LegalDocumentKind>();
@@ -71,13 +82,8 @@ export class LegalDocumentBoard {
   readonly draftAr = signal('');
   readonly draftEn = signal('');
 
-  /**
-   * Blocks draft writes while Quill is being force-synced to the active locale.
-   * Without this, a late text-change from the previous language can overwrite
-   * the other draft after setLocale().
-   */
   private syncingEditor = false;
-  private quill: LegalQuill | null = null;
+  private quill: AppQuill | null = null;
   private readonly reload$ = new Subject<void>();
 
   readonly pageTitle = computed(() => {
@@ -124,13 +130,13 @@ export class LegalDocumentBoard {
   });
 
   /**
-   * Plain HTML string for view mode. Angular's built-in `[innerHTML]` sanitizer
-   * strips scripts and unsafe attributes; we do not bypass security trust.
-   * View falls back to the other locale only when the selected one is empty so
-   * an incomplete translation still shows something in read mode. Edit mode
-   * never uses this fallback — drafts stay independent.
+   * View-mode HTML. Quill stores text color as inline `style`; Angular's default
+   * sanitizer would strip that and show black text. We allowlist-sanitize first
+   * (scripts / handlers / unsafe CSS out, color styles kept), then mark SafeHtml.
+   * View falls back to the other locale only when the selected one is empty.
+   * Edit mode never uses this fallback — drafts stay independent.
    */
-  readonly viewingHtml = computed(() => {
+  readonly viewingHtml = computed<SafeHtml | null>(() => {
     const doc = this.document();
     if (!doc) {
       return null;
@@ -141,7 +147,10 @@ export class LegalDocumentBoard {
       : hasVisibleHtml(doc.content.ar)
         ? doc.content.ar
         : doc.content.en;
-    return hasVisibleHtml(html) ? html : null;
+    if (!hasVisibleHtml(html)) {
+      return null;
+    }
+    return this.sanitizer.bypassSecurityTrustHtml(sanitizeRichTextHtml(html));
   });
 
   readonly draftHtml = computed(() => (this.locale() === 'ar' ? this.draftAr() : this.draftEn()));
@@ -149,9 +158,8 @@ export class LegalDocumentBoard {
   constructor() {
     this.locale.set(this.lang.language());
 
-    // kind can change while SectionPage reuses this board (terms ↔ privacy).
     // switchMap cancels the previous get() so a slow response cannot overwrite
-    // a newer document, and errors from cancelled requests are dropped.
+
     toObservable(this.kind)
       .pipe(
         switchMap((kind) =>
@@ -193,8 +201,7 @@ export class LegalDocumentBoard {
 
     const syncEditor = this.mode() === 'edit' && this.quill !== null;
     if (syncEditor) {
-      // Raise before locale.set so a synchronous Quill text-change cannot write
-      // the previous language into the newly selected draft.
+
       this.syncingEditor = true;
     }
 
@@ -202,9 +209,7 @@ export class LegalDocumentBoard {
 
     if (syncEditor) {
       this.applyQuillDirection();
-      // Wait until after Angular applies [ngModel]=draftHtml() to Quill. A
-      // queueMicrotask is too early: Quill may still hold the previous language
-      // when syncing clears, and a late text-change or a second flush can mix drafts.
+
       afterNextRender(
         () => {
           this.syncingEditor = false;
@@ -243,9 +248,18 @@ export class LegalDocumentBoard {
   }
 
   onEditorInit(event: EditorInitEvent): void {
-    const quill = event.editor as LegalQuill;
+    const quill = event.editor as AppQuill;
     this.quill = quill;
-    wireLegalToolbarHandlers(quill);
+    wireQuillToolbarHandlers(quill, {
+      uploadImage: (file) =>
+        firstValueFrom(this.media.uploadEditorImage(file)).then((uploaded) => uploaded.url),
+      onImageUploadError: () => {
+        this.messages.add({
+          severity: 'error',
+          summary: this.lang.t('common.error'),
+        });
+      },
+    });
     this.applyQuillDirection();
   }
 
@@ -268,8 +282,8 @@ export class LegalDocumentBoard {
     this.api
       .save(this.kind(), {
         content: {
-          ar: this.draftAr().trim(),
-          en: this.draftEn().trim(),
+          ar: this.draftAr(),
+          en: this.draftEn(),
         },
       })
       .pipe(takeUntilDestroyed(this.destroyRef))

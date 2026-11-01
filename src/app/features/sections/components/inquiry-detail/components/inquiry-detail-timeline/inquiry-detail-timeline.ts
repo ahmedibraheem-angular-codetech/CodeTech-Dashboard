@@ -13,7 +13,6 @@ export interface InquiryTimelineStep {
   time: string;
 }
 
-/** Status timeline card: received → note → follow-up → done. */
 @Component({
   selector: 'app-inquiry-detail-timeline',
   templateUrl: './inquiry-detail-timeline.html',

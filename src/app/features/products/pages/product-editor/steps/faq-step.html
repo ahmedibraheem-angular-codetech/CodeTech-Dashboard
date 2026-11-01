@@ -1,0 +1,65 @@
+<section class="editor-section editor-section--faq">
+  <header class="editor-section__head">
+    <h2>{{ editor.copy('product.whyChoose') }}</h2>
+    <span class="icon-badge" aria-hidden="true"><i class="pi pi-star"></i></span>
+  </header>
+  <div class="editor-section__body">
+    @for (item of editor.draft().highlights; track item.id; let index = $index) {
+      <app-feature-card
+        [label]="editor.copy('product.featureItem') + ' ' + (index + 1)"
+        [title]="editor.text(item.title)"
+        [titleLabel]="editor.copy('product.featureTitle')"
+        [titlePlaceholder]="editor.copy('product.featureTitlePh')"
+        [body]="editor.text(item.body)"
+        [bodyLabel]="editor.copy('product.featureBody')"
+        [bodyPlaceholder]="editor.copy('product.featureBody')"
+        [iconLabel]="editor.copy('product.icon')"
+        [imageName]="item.imageName"
+        [imageUrl]="item.imageUrl"
+        [locale]="editor.locale()"
+        [removeDisabled]="editor.draft().highlights.length === 1"
+        [removeLabel]="editor.copy('product.deleteTitle')"
+        (titleChange)="editor.setPoint('highlights', index, 'title', $event)"
+        (bodyChange)="editor.setPoint('highlights', index, 'body', $event)"
+        (imageChange)="editor.setPointImage('highlights', index, $event)"
+        (removed)="editor.removePoint('highlights', index)"
+      />
+    }
+    <button type="button" class="add-row" (click)="editor.addPoint('highlights')">
+      <span class="add-row__mark" aria-hidden="true"><i class="pi pi-plus"></i></span>
+      {{ editor.copy('product.addFeature') }}
+    </button>
+  </div>
+</section>
+<section class="editor-section editor-section--faq">
+  <header class="editor-section__head">
+    <h2>{{ editor.copy('product.faq') }}</h2>
+    <span class="icon-badge" aria-hidden="true"><i class="pi pi-question-circle"></i></span>
+  </header>
+  <div class="editor-section__body">
+    @for (item of editor.draft().faqs; track item.id; let index = $index) {
+      <app-feature-card
+        [label]="editor.copy('product.faqItem') + ' ' + (index + 1)"
+        [title]="editor.text(item.question)"
+        [titleLabel]="editor.copy('product.question')"
+        [titlePlaceholder]="editor.copy('product.questionPh')"
+        titleIcon="pi-question-circle"
+        [body]="editor.text(item.answer)"
+        [bodyLabel]="editor.copy('product.answer')"
+        [bodyPlaceholder]="editor.copy('product.answerPh')"
+        [iconLabel]="editor.copy('product.icon')"
+        [locale]="editor.locale()"
+        [showIcon]="false"
+        [removeDisabled]="editor.draft().faqs.length === 1"
+        [removeLabel]="editor.copy('product.deleteTitle')"
+        (titleChange)="editor.setFaq(index, 'question', $event)"
+        (bodyChange)="editor.setFaq(index, 'answer', $event)"
+        (removed)="editor.removeFaq(index)"
+      />
+    }
+    <button type="button" class="add-row" (click)="editor.addFaq()">
+      <span class="add-row__mark" aria-hidden="true"><i class="pi pi-plus"></i></span>
+      {{ editor.copy('product.addFaq') }}
+    </button>
+  </div>
+</section>

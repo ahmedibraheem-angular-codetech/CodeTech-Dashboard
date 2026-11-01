@@ -23,6 +23,7 @@ import { ConfirmDialog } from '../../../../shared/components/confirm-dialog/conf
 import { InfoField } from '../../../../shared/components/info-field/info-field';
 import { PageHeader } from '../../../../shared/components/page-header/page-header';
 import { StateView } from '../../../../shared/components/state-view/state-view';
+import { HasPermissionDirective } from '../../../../shared/directives/has-permission.directive';
 import {
   ARTICLE_STATUSES,
   type Article,
@@ -39,14 +40,21 @@ import {
   pick,
   splitKeywords,
 } from '../../utils/knowledge-format';
-import { hasVisibleHtml } from '../../../sections/components/legal-document-board/legal-quill';
+import { hasVisibleHtml } from '../../../../shared/editor/quill';
 
 type LoadStatus = 'loading' | 'ready' | 'missing' | 'error';
 
-/** Read-only preview of one article with the quick actions (edit, feature, status, delete). */
 @Component({
   selector: 'app-article-detail',
-  imports: [AppButton, ConfirmDialog, InfoField, PageHeader, Popover, StateView],
+  imports: [
+    AppButton,
+    ConfirmDialog,
+    InfoField,
+    PageHeader,
+    Popover,
+    StateView,
+    HasPermissionDirective,
+  ],
   templateUrl: './article-detail.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -65,7 +73,7 @@ export class ArticleDetail {
   readonly status = signal<LoadStatus>('loading');
   readonly article = signal<Article | null>(null);
   readonly category = signal<ArticleCategory | null>(null);
-  /** Content language follows the UI language (Figma detail has no content locale switch). */
+
   readonly locale = computed(() => this.lang.language());
 
   readonly title = computed(() => this.text('titleAr', 'titleEn'));
@@ -123,7 +131,6 @@ export class ArticleDetail {
       untracked(() => this.load(id));
     });
 
-    // The last breadcrumb shows the article title instead of its numeric id.
     effect(() => {
       const url = `/knowledge/${this.id()}`;
       const title = this.title();

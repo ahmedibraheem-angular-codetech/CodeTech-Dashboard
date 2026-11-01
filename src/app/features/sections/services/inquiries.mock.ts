@@ -1,4 +1,4 @@
-import { Inquiry } from '../models/inquiry.model';
+import { type Inquiry } from '../models/inquiry.model';
 
 const MESSAGE = `مرحبًا نرغب في معرفة المزيد عن خدمات كود التقنية والحلول الرقمية التي تقدمونها.
 نبحث عن تطوير نظام تقني يساعدنا في تحسين إدارة العمل وتسهيل العمليات الداخلية، ونود الحصول على استشارة ومعرفة أفضل الحلول المناسبة لاحتياجاتنا، بالإضافة إلى تفاصيل الأسعار ومدة التنفيذ.
@@ -31,7 +31,6 @@ function row(index: number, status: Inquiry['status'], extra: Partial<Inquiry> =
   };
 }
 
-/** Sample inquiries for the list and details screens. There is no backend yet. */
 export const INQUIRIES_SEED: Inquiry[] = [
   row(0, 'new', {
     customer: 'محمد عبدالمجيد حسن',

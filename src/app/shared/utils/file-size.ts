@@ -1,4 +1,4 @@
-/** A short human size: `313 KB`, `1.5 MB`. The units stay in Latin letters in every language. */
+
 export function formatFileSize(bytes: number): string {
   const mb = 1024 * 1024;
   if (bytes < mb) {

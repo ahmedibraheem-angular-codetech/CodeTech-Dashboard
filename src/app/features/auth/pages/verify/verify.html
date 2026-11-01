@@ -1,59 +1,13 @@
 <app-auth-shell>
-  <form class="verify-form" [formGroup]="form" (ngSubmit)="submit()">
-    <app-button
-      styleClass="back-btn"
-      type="button"
-      icon="pi pi-angle-right"
-      variant="secondary"
-      [ariaLabel]="lang.t('auth.back')"
-      (clicked)="back()"
-    />
-    <h1>{{ lang.t('auth.verifyTitle') }}</h1>
-    <div class="field">
-      <span class="field__label">{{ lang.t('auth.verifyLabel') }}</span>
-      <p-inputotp
-        formControlName="code"
-        [length]="4"
-        [integerOnly]="true"
-        [styleClass]="invalid() ? 'otp-invalid' : ''"
-        [attr.aria-label]="lang.t('auth.verifyLabel')"
-        [attr.aria-describedby]="
-          invalid() || (form.controls.code.touched && form.controls.code.invalid)
-            ? 'otp-error'
-            : null
-        "
-        (onChange)="clearInvalid()"
-      />
-      @if (invalid()) {
-        <app-field-error class="otp-error" id="otp-error" [icon]="true">{{
-          lang.t('auth.invalidOtp')
-        }}</app-field-error>
-      } @else if (form.controls.code.touched && form.controls.code.invalid) {
-        <app-field-error class="otp-error" id="otp-error">{{
-          lang.t('auth.otpRequired')
-        }}</app-field-error>
-      }
-    </div>
-    <app-button
-      styleClass="auth-submit"
-      type="submit"
-      icon="pi pi-angle-left"
-      iconPos="right"
-      size="large"
-      [fluid]="true"
-      [label]="lang.t('auth.verifySubmit')"
-      [loading]="submitting()"
-    />
-    <div class="otp-footer">
-      <span>{{ lang.t('auth.notReceived') }} {{ clock() }}</span>
-      <p-button
-        type="button"
-        [link]="true"
-        size="small"
-        [label]="lang.t('auth.resend')"
-        [disabled]="remaining() > 0"
-        (onClick)="resend()"
-      />
-    </div>
-  </form>
+  <app-auth-otp-form
+    [form]="form"
+    [invalid]="invalid()"
+    [submitting]="submitting()"
+    [remaining]="remaining()"
+    [clock]="clock()"
+    (back)="back()"
+    (submitted)="submit()"
+    (resend)="resend()"
+    (cleared)="clearInvalid()"
+  />
 </app-auth-shell>

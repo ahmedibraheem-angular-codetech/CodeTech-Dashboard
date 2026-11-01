@@ -13,6 +13,7 @@ import { FormArray, FormControl, FormGroup, ReactiveFormsModule, Validators } fr
 import { MessageService } from 'primeng/api';
 import { InputText } from 'primeng/inputtext';
 
+import { isApiError } from '../../../../core/http/api-error';
 import type { AppLanguage } from '../../../../core/i18n/language';
 import { LanguageService } from '../../../../core/services/language.service';
 import { AppButton } from '../../../../shared/components/app-button/app-button';
@@ -20,10 +21,11 @@ import { ContentPanel } from '../../../../shared/components/content-panel/conten
 import { LocaleSwitch } from '../../../../shared/components/locale-switch/locale-switch';
 import { Modal } from '../../../../shared/components/modal/modal';
 import { SectionEmpty } from '../../../../shared/components/section-empty/section-empty';
+import { HasPermissionDirective } from '../../../../shared/directives/has-permission.directive';
 import { formatIsoDate } from '../../../../shared/utils/date';
 import { formatFileSize } from '../../../../shared/utils/file-size';
 import { parseUploadedImage } from '../../../../shared/utils/image-upload';
-import { AboutGroups, AboutImage, AboutPointGroup } from '../../models/about.model';
+import { type AboutGroups, type AboutImage, type AboutPointGroup } from '../../models/about.model';
 import { AboutService } from '../../services/about.service';
 
 const LOCALES: readonly AppLanguage[] = ['ar', 'en'];
@@ -48,10 +50,6 @@ function hasCopy(groups: AboutPointGroup[]): boolean {
   );
 }
 
-/**
- * One checklist section of the About page: the story (image + stacked cards) or the
- * vision (two cards). The modal edits both languages and, for the story, the image.
- */
 @Component({
   selector: 'app-about-groups',
   imports: [
@@ -62,6 +60,7 @@ function hasCopy(groups: AboutPointGroup[]): boolean {
     LocaleSwitch,
     Modal,
     SectionEmpty,
+    HasPermissionDirective,
   ],
   templateUrl: './about-groups.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -100,6 +99,7 @@ export class AboutGroupsSection {
     formatIsoDate(this.image()?.uploadedAt ?? '1970-01-01', this.lang.language()),
   );
   readonly icon = computed(() => (this.section() === 'story' ? 'pi pi-building' : 'pi pi-flag'));
+  readonly visualUrl = computed(() => this.content().image?.url ?? null);
 
   readonly form = new FormGroup({
     ar: new FormArray<GroupForm>([]),
@@ -160,18 +160,31 @@ export class AboutGroupsSection {
       image: this.section() === 'story' ? this.image() : null,
     };
     const request =
-      this.section() === 'story' ? this.api.saveStory(next) : this.api.saveVision(next);
+      this.section() === 'story'
+        ? this.api.saveStory(next, this.content().image)
+        : this.api.saveVision(next);
     this.saving.set(true);
     request.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (saved) => {
         this.saving.set(false);
         this.saved.emit(saved);
         this.editorOpen.set(false);
-        this.messages.add({ severity: 'success', summary: this.lang.t('common.save') });
+        this.messages.add({
+          severity: 'success',
+          summary: this.lang.t(
+            this.section() === 'story' ? 'about.toastStorySuccess' : 'about.toastVisionSuccess',
+          ),
+        });
       },
-      error: () => {
+      error: (error: unknown) => {
         this.saving.set(false);
-        this.messages.add({ severity: 'error', summary: this.lang.t('common.error') });
+        this.messages.add({
+          severity: 'error',
+          summary:
+            isApiError(error) && error.serverMessage
+              ? error.serverMessage
+              : this.lang.t('about.toastSaveError'),
+        });
       },
     });
   }
@@ -223,7 +236,10 @@ export class AboutGroupsSection {
       this.imageError.set(result.errorKey);
       return;
     }
+    if (!file) {
+      return;
+    }
     this.imageError.set('');
-    this.image.set(result.image);
+    this.image.set({ ...result.image, file, url: undefined, uuid: undefined });
   }
 }

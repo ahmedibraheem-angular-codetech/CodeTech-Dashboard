@@ -1,7 +1,7 @@
 import { NgTemplateOutlet } from '@angular/common';
 import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
 
-import { StatisticsCard, TrendDirection } from './statistics-card.model';
+import { type StatisticsCard, type TrendDirection } from './statistics-card.model';
 
 @Component({
   selector: 'app-statistics-cards',

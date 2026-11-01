@@ -91,14 +91,16 @@
               <span class="faq-cat-card__label">{{ lang.t('faq.questionCount') }}</span>
               <strong class="faq-cat-card__value">{{ questionsCount(category.id) }}</strong>
             </div>
-            <div class="faq-cat-card__row">
-              <span class="faq-cat-card__label">{{ lang.t('faq.publishStatus') }}</span>
-              <p-toggleswitch
-                [ngModel]="category.published"
-                (ngModelChange)="onPublished(category, $event)"
-                [ariaLabel]="lang.t('faq.publishStatus')"
-              />
-            </div>
+            @if (showPublish()) {
+              <div class="faq-cat-card__row">
+                <span class="faq-cat-card__label">{{ lang.t('faq.publishStatus') }}</span>
+                <p-toggleswitch
+                  [ngModel]="category.published"
+                  (ngModelChange)="onPublished(category, $event)"
+                  [ariaLabel]="lang.t('faq.publishStatus')"
+                />
+              </div>
+            }
             <div class="faq-cat-card__row">
               <span class="faq-cat-card__label">{{ lang.t('faq.createdAt') }}</span>
               <span class="faq-cat-card__when">
@@ -108,27 +110,33 @@
             </div>
           </div>
 
-          <footer class="faq-cat-card__foot">
-            <app-button
-              [fluid]="true"
-              variant="outlined"
-              styleClass="faq-cat-card__btn faq-cat-card__btn--edit"
-              icon="pi pi-pencil"
-              iconPos="end"
-              [label]="lang.t('faq.edit')"
-              (clicked)="edit.emit(category)"
-            />
-            <app-button
-              [fluid]="true"
-              variant="danger"
-              [outlined]="true"
-              styleClass="faq-cat-card__btn faq-cat-card__btn--danger"
-              icon="pi pi-trash"
-              iconPos="end"
-              [label]="lang.t('faq.delete')"
-              (clicked)="remove.emit(category)"
-            />
-          </footer>
+          @if (showEdit() || showDelete()) {
+            <footer class="faq-cat-card__foot">
+              @if (showEdit()) {
+                <app-button
+                  [fluid]="true"
+                  variant="outlined"
+                  styleClass="faq-cat-card__btn faq-cat-card__btn--edit"
+                  icon="pi pi-pencil"
+                  iconPos="end"
+                  [label]="lang.t('faq.edit')"
+                  (clicked)="edit.emit(category)"
+                />
+              }
+              @if (showDelete()) {
+                <app-button
+                  [fluid]="true"
+                  variant="danger"
+                  [outlined]="true"
+                  styleClass="faq-cat-card__btn faq-cat-card__btn--danger"
+                  icon="pi pi-trash"
+                  iconPos="end"
+                  [label]="lang.t('faq.delete')"
+                  (clicked)="remove.emit(category)"
+                />
+              }
+            </footer>
+          }
         </article>
       }
     </div>

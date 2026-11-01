@@ -37,38 +37,31 @@ import { AppButton, type AppButtonIconPos } from '../app-button/app-button';
 export class Modal {
   readonly lang = inject(LanguageService);
 
-  /** Two-way bound by the parent: `[(visible)]="open"`. */
   readonly visible = model(false);
   readonly title = input.required<string>();
-  /** Optional PrimeIcons class shown beside the title, e.g. `pi pi-user-edit`. */
+
   readonly icon = input<string>();
-  /** Optional image shown beside the title instead of `icon`. */
+
   readonly iconUrl = input<string>();
 
-  /** True while the parent's save is running: shows a spinner and blocks save, cancel and dismiss. */
   readonly saving = input(false);
-  /** The parent disables save, typically `form.invalid || form.pristine`. */
+
   readonly saveDisabled = input(false);
-  /** Defaults to "Save changes". */
+
   readonly saveLabel = input<string>();
-  /** Icon on the save button. Pass an empty string to show the label alone. */
+
   readonly saveIcon = input('pi pi-save');
-  /** Icon side on the save button. Defaults to `start` (existing modal behaviour). */
+
   readonly saveIconPos = input<AppButtonIconPos>('start');
-  /** Defaults to "Cancel". */
+
   readonly cancelLabel = input<string>();
   readonly showSave = input(true);
   readonly showCancel = input(true);
 
-  /**
-   * Optional content direction for form-scoped locale switches. When set, the dialog
-   * panel flips independently of the global UI language.
-   */
   readonly dir = input<'rtl' | 'ltr'>();
-  /** Extra dialog panel classes, e.g. `app-modal--wide`. */
+
   readonly styleClass = input('');
 
-  /** Whether the close icon and Escape dismiss the modal. The Cancel button always works. */
   readonly dismissible = input(true);
 
   protected readonly dialogStyleClass = computed(() => {
@@ -85,6 +78,8 @@ export class Modal {
   readonly closeOnCancel = input(true);
 
   readonly save = output<void>();
+
+  // eslint-disable-next-line @angular-eslint/no-output-native -- public API used across the app
   readonly cancel = output<void>();
 
   protected onSave(): void {

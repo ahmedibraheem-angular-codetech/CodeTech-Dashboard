@@ -1,6 +1,6 @@
 import { effect, inject, Injectable } from '@angular/core';
 import { Title } from '@angular/platform-browser';
-import { RouterStateSnapshot, TitleStrategy } from '@angular/router';
+import { type RouterStateSnapshot, TitleStrategy } from '@angular/router';
 
 import { LanguageService } from './language.service';
 

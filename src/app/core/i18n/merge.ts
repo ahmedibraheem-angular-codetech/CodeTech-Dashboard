@@ -1,6 +1,5 @@
 import type { AppLanguage, Translations } from './language';
 
-/** Pairs an Arabic file with its English file. Every key must exist in both. */
 export function zipTranslations(
   ar: Record<string, string>,
   en: Record<string, string>,
@@ -19,7 +18,6 @@ export function zipTranslations(
   return paired;
 }
 
-/** Combines feature dictionaries. A repeated key is a mistake, not a silent override. */
 export function mergeTranslations(...groups: readonly Translations[]): Translations {
   const merged: Translations = {};
   for (const group of groups) {

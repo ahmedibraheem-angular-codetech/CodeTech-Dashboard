@@ -14,6 +14,7 @@ import { FormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { MessageService } from 'primeng/api';
 
+import { AuthService } from '../../../../core/auth/auth.service';
 import type { AppLanguage } from '../../../../core/i18n/language';
 import { LanguageService } from '../../../../core/services/language.service';
 import { AppButton } from '../../../../shared/components/app-button/app-button';
@@ -22,20 +23,17 @@ import type { DataTableColumn } from '../../../../shared/components/data-table/d
 import { Modal } from '../../../../shared/components/modal/modal';
 import { PageHeader } from '../../../../shared/components/page-header/page-header';
 import { StateView } from '../../../../shared/components/state-view/state-view';
-import { StatisticsCard } from '../../../../shared/components/statistics-cards/statistics-card.model';
+import { type StatisticsCard } from '../../../../shared/components/statistics-cards/statistics-card.model';
 import { StatisticsCards } from '../../../../shared/components/statistics-cards/statistics-cards';
+import { HasPermissionDirective } from '../../../../shared/directives/has-permission.directive';
 import { formatIsoDate, toIsoDate } from '../../../../shared/utils/date';
 import { UserEditorForm } from '../../components/user-editor-form/user-editor-form';
 import { UsersTable, type UsersTableRow } from '../../components/users-table/users-table';
-import { User, UserDraft, UserRole, UserStatus } from '../../models/user.model';
+import { type User, type UserDraft, type UserRole, type UserStatus } from '../../models/user.model';
 import { UsersService } from '../../services/users.service';
 
 type LoadState = 'loading' | 'ready' | 'error';
 
-/**
- * Users list page: loads users, owns filters/CRUD/editor modal, and composes
- * stats + table panel + shared editor form.
- */
 @Component({
   selector: 'app-users-page',
   imports: [
@@ -47,6 +45,7 @@ type LoadState = 'loading' | 'ready' | 'error';
     StatisticsCards,
     UsersTable,
     UserEditorForm,
+    HasPermissionDirective,
   ],
   templateUrl: './users.html',
   styleUrl: './users.scss',
@@ -58,6 +57,7 @@ export class UsersPage {
   private readonly router = inject(Router);
   private readonly destroyRef = inject(DestroyRef);
   private readonly fb = inject(FormBuilder);
+  private readonly auth = inject(AuthService);
   private readonly confirm = viewChild.required(ConfirmDialog);
   private readonly editorForm = viewChild.required(UserEditorForm);
   readonly lang = inject(LanguageService);
@@ -73,7 +73,7 @@ export class UsersPage {
   readonly pageSize = signal(10);
   readonly editor = signal<'create' | 'edit' | null>(null);
   readonly selected = signal<User | null>(null);
-  /** Locale for the add/edit modal only — does not change the page language. */
+
   readonly editorLocale = signal<AppLanguage>('ar');
 
   readonly form = this.fb.nonNullable.group({
@@ -114,6 +114,15 @@ export class UsersPage {
     return this.editorT(this.editor() === 'create' ? 'users.addSubmit' : 'common.saveChanges');
   });
 
+  readonly canUpdate = computed(() => {
+    const session = this.auth.session();
+    return !!session?.profileLoaded && this.auth.hasPermission('users.update');
+  });
+  readonly canDelete = computed(() => {
+    const session = this.auth.session();
+    return !!session?.profileLoaded && this.auth.hasPermission('users.delete');
+  });
+
   readonly filtered = computed(() => {
     const query = this.query().trim().toLowerCase();
     const role = this.role();
@@ -134,7 +143,7 @@ export class UsersPage {
   readonly cards = computed<StatisticsCard[]>(() => {
     this.lang.language();
     const caption = this.lang.t('users.statCaption');
-    // Same demo KPI treatment as the inquiries board (visual parity with the reference).
+
     return [
       this.card(
         'total',
@@ -254,7 +263,6 @@ export class UsersPage {
     return this.lang.t(role === 'editor' ? 'roles.editor' : 'roles.viewer');
   }
 
-  /** Copy for the editor modal only (follows `editorLocale`, not the page language). */
   editorT(key: string): string {
     return this.lang.lookup(key, this.editorLocale()) ?? key;
   }

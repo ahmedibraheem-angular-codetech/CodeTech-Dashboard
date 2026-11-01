@@ -35,7 +35,7 @@ export const ar: { [K in keyof typeof en]: string } = {
   'project.step.identity': 'الهوية الرقمية',
   'project.step.seo': 'SEO',
   'project.info': 'بيانات المشروع',
-  'project.categories': 'تصنيفات المشروع',
+  'project.categories': 'تصنيفات المشروع (Tags)',
   'project.categoryItem': 'تصنيف',
   'project.categoryTitle': 'عنوان التصنيف',
   'project.categoryTitlePh': 'اكتب عنوان التصنيف',

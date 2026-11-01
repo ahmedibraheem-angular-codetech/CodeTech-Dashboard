@@ -1,27 +1,6 @@
-@if (isAbout()) {
-  <app-about-page />
-} @else if (isInquiries() || isStart()) {
-  <app-inquiries-board [pageTitle]="boardTitle()" [detailPath]="detailPath()" />
-} @else if (isFaq()) {
-  <app-faq-board />
-} @else if (isReviews()) {
-  <app-reviews-board />
-} @else if (isLegal()) {
-  <app-legal-document-board
-    [kind]="legalKind()"
-    [titleKey]="titleKey()"
-    [subtitleKey]="legalPrefix() + '.subtitle'"
-    [contentTitleKey]="legalPrefix() + '.contentTitle'"
-    [emptyTitleKey]="legalPrefix() + '.emptyTitle'"
-    [emptyHintKey]="legalPrefix() + '.emptyHint'"
-    [writeLabelKey]="legalPrefix() + '.write'"
-    [placeholderKey]="legalPrefix() + '.placeholder'"
-  />
-} @else {
-  <section class="page">
-    <app-page-header [title]="lang.t(titleKey())" [subtitle]="lang.t('sections.ready')" />
-    <article class="section-card">
-      <app-state-view mode="empty" [message]="lang.t('sections.ready')" />
-    </article>
-  </section>
-}
+<section class="page">
+  <app-page-header [title]="lang.t(titleKey())" [subtitle]="lang.t('sections.ready')" />
+  <article class="section-card">
+    <app-state-view mode="empty" [message]="lang.t('sections.ready')" />
+  </article>
+</section>

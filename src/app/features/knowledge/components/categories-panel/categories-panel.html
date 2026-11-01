@@ -106,27 +106,33 @@
             </div>
           </div>
 
-          <footer class="kb-cat-card__foot">
-            <app-button
-              [fluid]="true"
-              variant="outlined"
-              styleClass="kb-cat-card__btn kb-cat-card__btn--edit"
-              icon="pi pi-pencil"
-              iconPos="end"
-              [label]="lang.t('knowledge.editAction')"
-              (clicked)="edit.emit(category)"
-            />
-            <app-button
-              [fluid]="true"
-              variant="danger"
-              [outlined]="true"
-              styleClass="kb-cat-card__btn kb-cat-card__btn--danger"
-              icon="pi pi-trash"
-              iconPos="end"
-              [label]="lang.t('knowledge.delete')"
-              (clicked)="remove.emit(category)"
-            />
-          </footer>
+          @if (showEdit() || showDelete()) {
+            <footer class="kb-cat-card__foot">
+              @if (showEdit()) {
+                <app-button
+                  [fluid]="true"
+                  variant="outlined"
+                  styleClass="kb-cat-card__btn kb-cat-card__btn--edit"
+                  icon="pi pi-pencil"
+                  iconPos="end"
+                  [label]="lang.t('knowledge.editAction')"
+                  (clicked)="edit.emit(category)"
+                />
+              }
+              @if (showDelete()) {
+                <app-button
+                  [fluid]="true"
+                  variant="danger"
+                  [outlined]="true"
+                  styleClass="kb-cat-card__btn kb-cat-card__btn--danger"
+                  icon="pi pi-trash"
+                  iconPos="end"
+                  [label]="lang.t('knowledge.delete')"
+                  (clicked)="remove.emit(category)"
+                />
+              }
+            </footer>
+          }
         </article>
       }
     </div>

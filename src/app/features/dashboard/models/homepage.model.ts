@@ -1,9 +1,5 @@
 import type { AppLanguage } from '../../../core/i18n/language';
-import {
-  IMAGE_UPLOAD_MAX_BYTES,
-  IMAGE_UPLOAD_TYPES,
-  type UploadedImageMeta,
-} from '../../../shared/utils/image-upload';
+import { type UploadedImageMeta } from '../../../shared/utils/image-upload';
 
 export interface Partner {
   id: string;
@@ -18,21 +14,25 @@ export interface ContentBlockText {
   points: string[];
 }
 
-export type BlockImage = UploadedImageMeta;
+export interface BlockImage extends UploadedImageMeta {
+  uuid?: string;
+  url?: string;
+  downloadUrl?: string;
+  file?: File;
+}
 
 export interface ContentBlock {
   texts: Record<AppLanguage, ContentBlockText>;
   image: BlockImage | null;
 }
 
-export const BLOCK_IMAGE_TYPES = IMAGE_UPLOAD_TYPES;
-export const BLOCK_IMAGE_MAX_BYTES = IMAGE_UPLOAD_MAX_BYTES;
+export const HOME_VIDEO_MAX_BYTES = 20 * 1024 * 1024;
 
 export interface HomepageContent {
   partners: Partner[];
   videoEnabled: boolean;
   videoName: string | null;
-  contactRequests: number;
+  videoUrl: string | null;
   about: ContentBlock;
   vision: ContentBlock;
 }

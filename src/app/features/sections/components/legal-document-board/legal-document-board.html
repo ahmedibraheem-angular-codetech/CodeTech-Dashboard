@@ -2,6 +2,7 @@
   <app-page-header [title]="pageTitle()" [subtitle]="pageSubtitle()">
     @if (mode() === 'edit') {
       <app-button
+        *appHasPermission="'help_support.update'"
         variant="outlined"
         styleClass="legal-doc__cancel"
         [label]="lang.t('common.cancel')"
@@ -9,6 +10,7 @@
         (clicked)="cancelEdit()"
       />
       <app-button
+        *appHasPermission="'help_support.update'"
         icon="pi pi-save"
         iconPos="end"
         styleClass="legal-doc__primary"
@@ -18,6 +20,7 @@
       />
     } @else if (hasContent()) {
       <app-button
+        *appHasPermission="'help_support.update'"
         icon="pi pi-pencil"
         iconPos="end"
         styleClass="legal-doc__primary"
@@ -100,7 +103,7 @@
         </div>
       } @else if (viewingHtml(); as html) {
         <div class="legal-doc__shell">
-          <!-- Angular sanitizes [innerHTML]; do not bypassSecurityTrustHtml. -->
+          <!-- SafeHtml after sanitizeRichTextHtml (keeps Quill color styles). -->
           <div
             class="legal-doc__text"
             [attr.dir]="locale() === 'ar' ? 'rtl' : 'ltr'"
@@ -119,6 +122,7 @@
           <h3>{{ emptyTitle() }}</h3>
           <p>{{ emptyHint() }}</p>
           <app-button
+            *appHasPermission="['help_support.create', 'help_support.update']"
             icon="pi pi-plus"
             iconPos="end"
             styleClass="legal-doc__primary"

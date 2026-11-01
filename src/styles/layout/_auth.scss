@@ -10,7 +10,7 @@
   height: 100vh;
   height: 100dvh;
   padding: clamp(8px, 1.2vw, 16px);
-  // background: #d7d9de;
+  background: #fff;
 }
 
 // Fluid layout: the design sizes (brand 810×870, panel 586×806, gap/padding 52)
@@ -51,7 +51,7 @@
   padding: clamp(24px, 3.6vw, 52px);
   overflow-y: auto;
   border: 1px solid #e3e8f2;
-  background: #f7f8fc;
+  background: #f7f7fe;
 }
 
 .auth-card,
@@ -63,11 +63,40 @@
 }
 
 .auth-card h1 {
-  margin: 8px 0 6px;
-  color: #16324f;
-  font-size: 2rem;
-  font-weight: 800;
+  margin: 0 0 6px;
+  color: #0f2744;
+  font-size: clamp(1.5rem, 2.2vw, 2rem);
+  font-weight: 900;
+  line-height: 1.35;
   text-align: start;
+}
+
+// Forgot / reset / verify: Figma uses a wider vertical rhythm than the login form.
+.auth-card .forgot-form,
+.auth-card .reset-form,
+.auth-card .verify-form {
+  width: min(482px, 100%);
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.auth-card .forgot-form h1,
+.auth-card .reset-form h1,
+.auth-card .verify-form h1 {
+  margin: 12px 0 0;
+  text-align: right;
+}
+
+// Figma "هل نسيت كلمة المرور؟": Milan Display Black → Thmanyah Sans 900 (no Milan files in repo).
+.auth-card .forgot-form h1 {
+  color: #002951;
+  font-family: var(--app-font);
+  font-weight: 900;
+  font-size: 30px;
+  line-height: 150%;
+  letter-spacing: 0;
+  text-align: right;
 }
 
 // The auth panel is designed to spec, so its fields use fixed design tokens instead of the
@@ -76,10 +105,10 @@
   --p-inputtext-background: #fff;
   --p-inputtext-color: #16324f;
   --p-inputtext-border-radius: 20px;
-  --p-inputtext-border-color: #1c81d3;
-  --p-inputtext-hover-border-color: #1c81d3;
+  --p-inputtext-border-color: #dce3eb;
+  --p-inputtext-hover-border-color: #c5d0dc;
   --p-inputtext-focus-border-color: #1c81d3;
-  // Same border colour in every state, so keyboard focus needs its own visible ring.
+  --p-inputtext-invalid-border-color: #e11d48;
   --p-inputtext-focus-ring-shadow: 0 0 0 3px rgb(28 129 211 / 25%);
   --p-inputtext-padding-x: 20px;
   --p-inputtext-padding-y: 12px;
@@ -87,9 +116,9 @@
   --p-form-field-padding-x: 20px;
   --p-inputtext-placeholder-color: #94a3b8;
   --p-iconfield-icon-color: #94a3b8;
-  --p-button-link-color: #1e3a5f;
-  --p-button-link-hover-color: #2f6fed;
-  --p-button-link-active-color: #2f6fed;
+  --p-button-link-color: #94a3b8;
+  --p-button-link-hover-color: #1c81d3;
+  --p-button-link-active-color: #1c81d3;
   --p-toggleswitch-background: #e8edf3;
   --p-toggleswitch-hover-background: #dbe3ec;
   --p-toggleswitch-checked-background: #93c5fd;
@@ -211,6 +240,75 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  color: #64748b;
+  gap: 12px;
+  color: #94a3b8;
   font-size: var(--app-font-sm);
+}
+
+.otp-footer__clock {
+  color: #0f2744;
+  font-weight: 700;
+}
+
+.otp-footer__resend.p-button {
+  color: #94a3b8;
+  font-weight: 500;
+}
+
+.otp-footer__resend.p-button:not(:disabled):hover {
+  color: #1c81d3;
+}
+
+.auth-success-dialog.p-dialog {
+  border: 0;
+  border-radius: 24px;
+  overflow: hidden;
+  box-shadow: 0 24px 64px rgb(15 39 68 / 18%);
+}
+
+.auth-success-dialog .p-dialog-header {
+  display: none;
+}
+
+.auth-success-dialog .p-dialog-content {
+  padding: 36px 28px 28px;
+}
+
+.auth-success {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  text-align: center;
+}
+
+.auth-success__badge {
+  display: grid;
+  place-items: center;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: #1c81d3;
+  color: #fff;
+  font-size: 1.5rem;
+}
+
+.auth-success__title {
+  margin: 4px 0 0;
+  color: #0f2744;
+  font-size: 1.35rem;
+  font-weight: 900;
+  line-height: 1.4;
+}
+
+.auth-success__body {
+  margin: 0;
+  color: #94a3b8;
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+.auth-success__action {
+  margin-top: 10px;
+  width: 100%;
 }

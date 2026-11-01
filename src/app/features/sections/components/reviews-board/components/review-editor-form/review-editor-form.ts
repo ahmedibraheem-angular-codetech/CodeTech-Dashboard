@@ -8,7 +8,7 @@ import {
   output,
   signal,
 } from '@angular/core';
-import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { type FormControl, type FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { IconField } from 'primeng/iconfield';
 import { InputIcon } from 'primeng/inputicon';
 import { InputText } from 'primeng/inputtext';
@@ -33,6 +33,11 @@ import {
   type UploadedVideoMeta,
   parseUploadedVideo,
 } from '../../../../../../shared/utils/video-upload';
+import type {
+  ReviewMediaDraft,
+  ReviewMediaFile,
+  ReviewMediaIntent,
+} from '../../../../models/review.model';
 
 export type ReviewEditorFormGroup = FormGroup<{
   nameAr: FormControl<string>;
@@ -47,10 +52,6 @@ export type ReviewEditorFormGroup = FormGroup<{
 
 export type ReviewEditorMode = 'create' | 'edit';
 
-/**
- * Create/edit review form body. Parent owns the FormGroup, API save, and `app-modal` wrapper.
- * Locale switch only toggles which bilingual fields are shown.
- */
 @Component({
   selector: 'app-review-editor-form',
   imports: [
@@ -82,6 +83,13 @@ export class ReviewEditorForm {
   readonly avatarError = signal('');
   readonly video = signal<UploadedVideoMeta | null>(null);
   readonly videoError = signal('');
+
+  /** Picked File for coat-check upload (never a display URL). */
+  private readonly avatarFile = signal<File | null>(null);
+  private readonly videoFile = signal<File | null>(null);
+
+  private readonly photoCleared = signal(false);
+  private readonly hadExistingPhoto = signal(false);
 
   readonly imageAccept = IMAGE_UPLOAD_ACCEPT;
   readonly videoAccept = VIDEO_UPLOAD_ACCEPT;
@@ -115,33 +123,36 @@ export class ReviewEditorForm {
     this.destroyRef.onDestroy(() => this.revokeAvatarPreview());
   }
 
-  /** Prefill / clear media when the parent opens create or edit. */
-  resetMedia(options?: { avatarUrl?: string; avatarName?: string }): void {
+  resetMedia(options?: { photo?: ReviewMediaFile | null }): void {
     this.revokeAvatarPreview();
     this.avatar.set(null);
     this.avatarPreview.set(null);
     this.avatarError.set('');
+    this.avatarFile.set(null);
     this.video.set(null);
     this.videoError.set('');
+    this.videoFile.set(null);
+    this.photoCleared.set(false);
+    this.hadExistingPhoto.set(false);
     this.locale.set(this.lang.language());
 
-    if (options?.avatarUrl) {
-      this.avatarPreview.set(options.avatarUrl);
+    const photo = options?.photo ?? null;
+    if (photo) {
+      this.hadExistingPhoto.set(true);
+      this.avatarPreview.set(photo.url);
       this.avatar.set({
-        name: options.avatarName ?? 'avatar.png',
-        size: 0,
+        name: photo.fileName || photo.name,
+        size: photo.size,
         uploadedAt: toIsoDate(new Date()),
       });
     }
   }
 
-  mediaSnapshot(): { avatarUrl: string; mediaUrl: string; mediaKind: 'video' | 'image' } {
-    const avatarUrl = this.avatarPreview() || 'images/avatar-placeholder.svg';
-    const hasVideo = !!this.video();
+  /** Coat-check intents for the parent save call. */
+  mediaDraft(): ReviewMediaDraft {
     return {
-      avatarUrl,
-      mediaUrl: hasVideo ? 'images/ceo.svg' : avatarUrl,
-      mediaKind: hasVideo ? 'video' : 'image',
+      photo: this.photoIntent(),
+      video: this.videoIntent(),
     };
   }
 
@@ -165,6 +176,10 @@ export class ReviewEditorForm {
     this.avatar.set(null);
     this.avatarPreview.set(null);
     this.avatarError.set('');
+    this.avatarFile.set(null);
+    if (this.hadExistingPhoto()) {
+      this.photoCleared.set(true);
+    }
   }
 
   protected onVideoPick(event: Event): void {
@@ -181,6 +196,26 @@ export class ReviewEditorForm {
   protected removeVideo(): void {
     this.video.set(null);
     this.videoError.set('');
+    this.videoFile.set(null);
+  }
+
+  private photoIntent(): ReviewMediaIntent {
+    const file = this.avatarFile();
+    if (file) {
+      return { kind: 'replace', file };
+    }
+    if (this.photoCleared()) {
+      return { kind: 'clear' };
+    }
+    return { kind: 'omit' };
+  }
+
+  private videoIntent(): ReviewMediaIntent {
+    const file = this.videoFile();
+    if (file) {
+      return { kind: 'replace', file };
+    }
+    return { kind: 'omit' };
   }
 
   private takeAvatar(file: File | undefined): void {
@@ -194,6 +229,8 @@ export class ReviewEditorForm {
     }
     this.revokeAvatarPreview();
     this.avatarError.set('');
+    this.photoCleared.set(false);
+    this.avatarFile.set(file ?? null);
     this.avatar.set(parsed.image);
     this.avatarPreview.set(file ? URL.createObjectURL(file) : null);
   }
@@ -208,6 +245,7 @@ export class ReviewEditorForm {
       return;
     }
     this.videoError.set('');
+    this.videoFile.set(file ?? null);
     this.video.set(parsed.video);
   }
 

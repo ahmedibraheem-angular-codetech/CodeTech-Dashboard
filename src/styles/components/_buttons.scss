@@ -16,40 +16,58 @@
 }
 
 .auth-submit {
-  --p-button-primary-background: #9ecff6;
-  --p-button-primary-hover-background: #8fc4f0;
-  --p-button-primary-active-background: #82b9e8;
+  --p-button-primary-background: #1c81d3;
+  --p-button-primary-hover-background: #1670b8;
+  --p-button-primary-active-background: #125f9c;
   --p-button-primary-border-color: transparent;
   --p-button-primary-hover-border-color: transparent;
   --p-button-primary-active-border-color: transparent;
-  --p-button-primary-color: #16324f;
-  --p-button-primary-hover-color: #16324f;
-  --p-button-primary-active-color: #16324f;
-  --p-button-border-radius: 14px;
+  --p-button-primary-color: #fff;
+  --p-button-primary-hover-color: #fff;
+  --p-button-primary-active-color: #fff;
+  --p-button-border-radius: 999px;
 
+  position: relative;
   min-height: 52px;
   font-size: 1rem;
+  font-weight: 700;
 }
 
-// The arrow sits at the end of the full-width button, the label stays centred.
+.auth-submit .p-button:disabled {
+  --p-button-primary-background: #a9c9e9;
+  --p-button-primary-border-color: transparent;
+  --p-button-primary-color: #fff;
+  opacity: 1;
+}
+
+// Arrow pinned to the physical left edge; the label stays centred.
 .auth-submit .p-button-icon {
   position: absolute;
-  inset-inline-end: 18px;
+  left: 18px;
+  right: auto;
 }
 
+// Figma back control: 48×48, radius 16, white fill, #ECEFF3 border; icon flipped −180°.
 .back-btn {
-  --p-button-icon-only-width: 42px;
-  --p-button-secondary-background: #f4f7fb;
-  --p-button-secondary-hover-background: #e8eef6;
-  --p-button-secondary-active-background: #e8eef6;
-  --p-button-secondary-border-color: transparent;
-  --p-button-secondary-hover-border-color: transparent;
-  --p-button-secondary-active-border-color: transparent;
+  --p-button-icon-only-width: 48px;
+  --p-button-secondary-background: #fff;
+  --p-button-secondary-hover-background: #fff;
+  --p-button-secondary-active-background: #f8fafc;
+  --p-button-secondary-border-color: #eceff3;
+  --p-button-secondary-hover-border-color: #eceff3;
+  --p-button-secondary-active-border-color: #dfe3e9;
   --p-button-secondary-color: #94a3b8;
   --p-button-secondary-hover-color: #64748b;
   --p-button-secondary-active-color: #64748b;
+  --p-button-border-radius: 16px;
 
-  height: 42px;
-  margin-bottom: 28px;
+  align-self: flex-start;
+  width: 48px;
+  height: 48px;
+  gap: 10px;
   font-size: 1.1rem;
+}
+
+.back-btn .p-button-icon {
+  transform: rotate(-180deg);
 }

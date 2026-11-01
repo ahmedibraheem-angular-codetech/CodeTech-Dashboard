@@ -31,7 +31,7 @@ export class AvatarCard {
   onFileChosen(event: Event): void {
     const input = event.target as HTMLInputElement;
     const file = input.files?.item(0);
-    // Reset so choosing the same file again still fires `change`.
+
     input.value = '';
     if (!file) {
       return;

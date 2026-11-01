@@ -1,10 +1,10 @@
 import { ChangeDetectionStrategy, Component, DestroyRef, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
-  AbstractControl,
+  type AbstractControl,
   FormBuilder,
   ReactiveFormsModule,
-  ValidationErrors,
+  type ValidationErrors,
   Validators,
 } from '@angular/forms';
 import { MessageService } from 'primeng/api';
@@ -54,10 +54,6 @@ const REQUIRED_KEYS: Record<FieldName, string> = {
   confirm: 'profile.confirmRequired',
 };
 
-/**
- * Cross-field rules, reported on the group: `same` (new equals current) and `mismatch`
- * (confirmation differs). Empty values are left to the `required` validators.
- */
 export function passwordRules(group: AbstractControl): ValidationErrors | null {
   const { current, next, confirm } = group.value as Record<FieldName, string>;
   const errors: ValidationErrors = {};

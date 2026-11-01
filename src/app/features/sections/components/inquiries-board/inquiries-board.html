@@ -5,28 +5,47 @@
       lang.language() === 'ar' ? 'إدارة الاستفسارات المستقبلة' : 'Manage incoming inquiries'
     "
   >
-    <button
-      type="button"
-      class="inquiries-menu"
-      [attr.aria-label]="lang.language() === 'ar' ? 'خيارات الصفحة' : 'Page options'"
-    >
-      <i class="pi pi-file-edit" aria-hidden="true"></i>
-      <i class="pi pi-chevron-down" aria-hidden="true"></i>
-    </button>
+    <p-datepicker
+      styleClass="knowledge-board__datepicker"
+      inputStyleClass="knowledge-board__datepicker-input"
+      panelStyleClass="knowledge-board__datepicker-panel"
+      dateFormat="yy-mm-dd"
+      dataType="string"
+      iconDisplay="button"
+      appendTo="body"
+      tooltipPosition="bottom"
+      [pTooltip]="lang.t('inquiry.filterByDate')"
+      [ngModel]="dateFilter()"
+      (ngModelChange)="setDateFilter($event)"
+      [showIcon]="true"
+      [showOnFocus]="false"
+      [showButtonBar]="true"
+      [disabled]="!loaded()"
+      [placeholder]="lang.t('inquiry.filterByDate')"
+      [ariaLabel]="lang.t('inquiry.filterByDate')"
+      [iconAriaLabel]="lang.t('inquiry.filterByDate')"
+    />
   </app-page-header>
   <app-statistics-cards [cards]="cards()" />
-  <app-data-table
-    [title]="heading()"
-    [rows]="rows()"
-    [columns]="columns()"
-    [filters]="filters()"
-    [filterLabel]="lang.language() === 'ar' ? 'كل الحالات' : 'All statuses'"
-    [exportLabel]="lang.language() === 'ar' ? 'تصدير' : 'Export'"
-    [searchLabel]="lang.language() === 'ar' ? 'بحث' : 'Search'"
-    [rowClickable]="true"
-    [(query)]="query"
-    [(selectedFilters)]="selectedFilters"
-    (export)="exported($event)"
-    (rowClick)="open($event)"
-  />
+  @if (isEmpty()) {
+    <article class="section-card">
+      <app-section-empty [title]="lang.t('inquiry.empty')" [hint]="lang.t('inquiry.emptyHint')" />
+    </article>
+  } @else {
+    <app-data-table
+      [title]="heading()"
+      [rows]="rows()"
+      [columns]="columns()"
+      [filters]="filters()"
+      [filterLabel]="lang.language() === 'ar' ? 'كل الحالات' : 'All statuses'"
+      [exportLabel]="lang.language() === 'ar' ? 'تصدير' : 'Export'"
+      [searchLabel]="lang.language() === 'ar' ? 'بحث' : 'Search'"
+      [emptyMessage]="lang.t('common.empty')"
+      [rowClickable]="true"
+      [(query)]="query"
+      [(selectedFilters)]="selectedFilters"
+      (export)="exported($event)"
+      (rowClick)="open($event)"
+    />
+  }
 </section>

@@ -2,24 +2,28 @@
   <img class="app-sector-card__media" [src]="imageUrl()" alt="" />
 }
 <strong class="app-sector-card__title">{{ title() }}</strong>
-@if (showActions()) {
+@if (showActions() && (showEdit() || showDelete())) {
   <span class="app-sector-card__actions">
-    <button
-      type="button"
-      class="app-sector-card__tool app-sector-card__tool--edit"
-      [attr.aria-label]="editLabel() || null"
-      (click)="editRequested.emit()"
-    >
-      <i class="pi pi-pen-to-square" aria-hidden="true"></i>
-    </button>
-    <button
-      type="button"
-      class="app-sector-card__tool app-sector-card__tool--delete"
-      [disabled]="deleteDisabled()"
-      [attr.aria-label]="deleteLabel() || null"
-      (click)="deleteRequested.emit()"
-    >
-      <i class="pi pi-trash" aria-hidden="true"></i>
-    </button>
+    @if (showEdit()) {
+      <button
+        type="button"
+        class="app-sector-card__tool app-sector-card__tool--edit"
+        [attr.aria-label]="editLabel() || null"
+        (click)="editRequested.emit()"
+      >
+        <i class="pi pi-pen-to-square" aria-hidden="true"></i>
+      </button>
+    }
+    @if (showDelete()) {
+      <button
+        type="button"
+        class="app-sector-card__tool app-sector-card__tool--delete"
+        [disabled]="deleteDisabled()"
+        [attr.aria-label]="deleteLabel() || null"
+        (click)="deleteRequested.emit()"
+      >
+        <i class="pi pi-trash" aria-hidden="true"></i>
+      </button>
+    }
   </span>
 }

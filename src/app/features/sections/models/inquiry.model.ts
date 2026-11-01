@@ -17,7 +17,6 @@ export interface InquiryReply extends InquiryStamp {
   author: string;
 }
 
-/** Full inquiry record. List rows read a subset; the details page reads the rest. */
 export interface Inquiry {
   id: string;
   customer: string;

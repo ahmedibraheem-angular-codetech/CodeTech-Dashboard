@@ -6,11 +6,10 @@ export interface PermissionResource {
   groupKey?: string;
 }
 
-/** Modules shown as single toggles in the add-role dialog (Figma grid). */
 export interface PermissionModule {
   id: string;
   labelKey: string;
-  /** Matrix resource ids this module toggle drives. */
+
   resourceIds: readonly string[];
 }
 
@@ -35,7 +34,6 @@ export const PERMISSION_RESOURCES: readonly PermissionResource[] = [
   { id: 'seo', labelKey: 'nav.seo' },
 ];
 
-/** 10-card create modal grid matching the reference (طلبات التواصل as one card). */
 export const PERMISSION_MODULES: readonly PermissionModule[] = [
   { id: 'home', labelKey: 'nav.home', resourceIds: ['home'] },
   { id: 'about', labelKey: 'nav.about', resourceIds: ['about'] },
@@ -51,7 +49,6 @@ export const PERMISSION_MODULES: readonly PermissionModule[] = [
 
 export const PERMISSION_ACTIONS: readonly PermissionAction[] = ['create', 'update', 'remove'];
 
-/** Seed matching the add-role reference toggles. */
 export const PERMISSION_DRAFT_SEED: Readonly<Record<string, boolean>> = {
   home: true,
   about: true,

@@ -14,6 +14,7 @@ import { MessageService } from 'primeng/api';
 import { InputText } from 'primeng/inputtext';
 import { Textarea } from 'primeng/textarea';
 
+import { isApiError } from '../../../../core/http/api-error';
 import type { AppLanguage } from '../../../../core/i18n/language';
 import { LanguageService } from '../../../../core/services/language.service';
 import { AppButton } from '../../../../shared/components/app-button/app-button';
@@ -21,10 +22,11 @@ import { ContentPanel } from '../../../../shared/components/content-panel/conten
 import { LocaleSwitch } from '../../../../shared/components/locale-switch/locale-switch';
 import { Modal } from '../../../../shared/components/modal/modal';
 import { SectionEmpty } from '../../../../shared/components/section-empty/section-empty';
+import { HasPermissionDirective } from '../../../../shared/directives/has-permission.directive';
 import { formatIsoDate } from '../../../../shared/utils/date';
 import { formatFileSize } from '../../../../shared/utils/file-size';
 import { parseUploadedImage } from '../../../../shared/utils/image-upload';
-import { AboutCeo, AboutCeoText, AboutImage } from '../../models/about.model';
+import { type AboutCeo, type AboutCeoText, type AboutImage } from '../../models/about.model';
 import { AboutService } from '../../services/about.service';
 
 const LOCALES: readonly AppLanguage[] = ['ar', 'en'];
@@ -65,6 +67,7 @@ function hasCopy(text: AboutCeoText): boolean {
     LocaleSwitch,
     Modal,
     SectionEmpty,
+    HasPermissionDirective,
   ],
   templateUrl: './about-ceo.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -92,6 +95,7 @@ export class AboutCeoSection {
     const other: AppLanguage = current === 'ar' ? 'en' : 'ar';
     return hasCopy(texts[current]) ? texts[current] : texts[other];
   });
+  readonly photoUrl = computed(() => this.content().image?.url ?? null);
   readonly imageSize = computed(() => formatFileSize(this.image()?.size ?? 0));
   readonly imageDate = computed(() =>
     formatIsoDate(this.image()?.uploadedAt ?? '1970-01-01', this.lang.language()),
@@ -146,18 +150,27 @@ export class AboutCeoSection {
     };
     this.saving.set(true);
     this.api
-      .saveCeo(next)
+      .saveCeo(next, this.content().image)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (saved) => {
           this.saving.set(false);
           this.saved.emit(saved);
           this.editorOpen.set(false);
-          this.messages.add({ severity: 'success', summary: this.lang.t('common.save') });
+          this.messages.add({
+            severity: 'success',
+            summary: this.lang.t('about.toastCeoSuccess'),
+          });
         },
-        error: () => {
+        error: (error: unknown) => {
           this.saving.set(false);
-          this.messages.add({ severity: 'error', summary: this.lang.t('common.error') });
+          this.messages.add({
+            severity: 'error',
+            summary:
+              isApiError(error) && error.serverMessage
+                ? error.serverMessage
+                : this.lang.t('about.toastSaveError'),
+          });
         },
       });
   }
@@ -181,7 +194,10 @@ export class AboutCeoSection {
       this.imageError.set(result.errorKey);
       return;
     }
+    if (!file) {
+      return;
+    }
     this.imageError.set('');
-    this.image.set(result.image);
+    this.image.set({ ...result.image, file, url: undefined, uuid: undefined });
   }
 }

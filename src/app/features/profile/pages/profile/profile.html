@@ -10,7 +10,7 @@
               class="profile-head__role"
               severity="info"
               [rounded]="true"
-              [value]="lang.t(profile.roleKey)"
+              [value]="roleName()"
             />
           </div>
           @if (lastLogin(); as login) {

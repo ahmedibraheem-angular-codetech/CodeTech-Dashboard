@@ -26,6 +26,8 @@ import { SeoPanel } from '../seo-panel/seo-panel';
 export class ThumbnailCard {
   readonly pageId = input.required<string>();
 
+  readonly editable = input(true);
+
   private readonly seo = inject(SeoService);
   private readonly destroyRef = inject(DestroyRef);
   readonly lang = inject(LanguageService);
@@ -37,6 +39,14 @@ export class ThumbnailCard {
   });
 
   constructor() {
+    effect(() => {
+      if (this.editable()) {
+        this.form.enable({ emitEvent: false });
+      } else {
+        this.form.disable({ emitEvent: false });
+      }
+    });
+
     effect(() => {
       const pageId = this.pageId();
       const locale = this.locale();
@@ -59,7 +69,6 @@ export class ThumbnailCard {
     });
   }
 
-  /** Field copy follows the card's language, not the application language. */
   text(key: string): string {
     const page = SEO_PAGES.find((item) => item.id === this.pageId());
     const name = page ? (this.lang.lookup(page.labelKey, this.locale()) ?? '') : '';
@@ -86,7 +95,7 @@ export class ThumbnailCard {
   }
 
   private take(file: File | undefined): void {
-    if (!file) {
+    if (!this.editable() || !file) {
       return;
     }
     if (!THUMB_TYPES.includes(file.type)) {
@@ -97,14 +106,8 @@ export class ThumbnailCard {
       this.errorKey.set('seo.fileSize');
       return;
     }
-    const previous = this.previewUrl();
-    if (previous.startsWith('blob:')) {
-      URL.revokeObjectURL(previous);
-    }
     this.errorKey.set('');
-    this.seo.patch(this.pageId(), this.locale(), {
-      thumbName: file.name,
-      thumbUrl: URL.createObjectURL(file),
-    });
+    // Service owns blob lifecycle and mirrors the thumbnail across locales.
+    this.seo.setThumbnail(this.pageId(), file, URL.createObjectURL(file));
   }
 }

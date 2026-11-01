@@ -1,0 +1,42 @@
+<section class="editor-section editor-section--soft">
+  <header class="editor-section__head">
+    <h2>{{ editor.copy('service.sectors') }}</h2>
+    <span class="icon-badge" aria-hidden="true"><i class="pi pi-globe"></i></span>
+  </header>
+  <div class="editor-section__body">
+    @for (sector of editor.draft().sectors; track sector.id; let index = $index) {
+      <article class="feature-card is-active">
+        <header class="feature-card__tab">
+          <span>{{ editor.copy('service.sectorItem') }} {{ index + 1 }}</span>
+          <button
+            type="button"
+            class="feature-card__remove"
+            [disabled]="editor.draft().sectors.length === 1 || editor.saving()"
+            [attr.aria-label]="editor.copy('service.removeItem')"
+            (click)="editor.removeSector(index)"
+          >
+            <i class="pi pi-times" aria-hidden="true"></i>
+          </button>
+        </header>
+        <div class="feature-card__body">
+          <div class="field">
+            <span class="field__label">{{ editor.copy('service.sectorImage') }}</span>
+            <app-product-upload
+              [keyPrefix]="uploadPrefix"
+              [locale]="editor.locale()"
+              [clearable]="true"
+              [name]="sector.imageName"
+              [url]="sector.imageUrl"
+              (picked)="editor.setSectorImage(index, $event)"
+              (cleared)="editor.clearSectorImage(index)"
+            />
+          </div>
+        </div>
+      </article>
+    }
+    <button type="button" class="add-row" (click)="editor.addSector()">
+      <span class="add-row__mark" aria-hidden="true"><i class="pi pi-plus"></i></span>
+      {{ editor.copy('service.addSector') }}
+    </button>
+  </div>
+</section>

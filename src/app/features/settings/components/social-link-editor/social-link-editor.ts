@@ -37,7 +37,7 @@ export class SocialLinkEditor {
   readonly visible = model(false);
   readonly platforms = input.required<SocialPlatformId[]>();
   readonly saving = input(false);
-  /** Prefer the parent page content locale when opening the modal. */
+
   readonly contentLocale = input<AppLanguage>();
 
   readonly saved = output<SocialChannelDraft>();
@@ -47,7 +47,6 @@ export class SocialLinkEditor {
   private readonly urlDraft = signal(emptyLocaleText());
   private readonly editing = signal<SocialChannel | null>(null);
 
-  /** Modal / form copy follows content locale — not the global UI language. */
   t(key: string): string {
     return this.lang.lookup(key, this.locale()) ?? key;
   }

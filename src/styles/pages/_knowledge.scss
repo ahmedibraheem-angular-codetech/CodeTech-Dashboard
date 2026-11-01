@@ -87,6 +87,43 @@ $kb-blue: #1c81d3;
   background: #fff;
 }
 
+// Header date filter: keep the 48px calendar trigger; hide the text field visually.
+.knowledge-board__datepicker.p-datepicker {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  width: 48px;
+  height: 48px;
+}
+
+.knowledge-board__datepicker .p-datepicker-input,
+.knowledge-board__datepicker-input {
+  position: absolute;
+  inset: 0;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  border: 0;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+}
+
+.knowledge-board__datepicker .p-datepicker-dropdown {
+  width: 48px;
+  height: 48px;
+  margin: 0;
+  border: 1px solid #eceff3;
+  border-radius: 16px;
+  background: #fff;
+  color: $kb-muted;
+}
+
+.knowledge-board__datepicker .p-datepicker-clear-icon {
+  inset-inline-end: 52px;
+}
+
 .kb-editor__action.p-button {
   --p-button-gap: 10px;
   --p-button-outlined-secondary-border-color: #eceff3;
@@ -119,7 +156,7 @@ $kb-blue: #1c81d3;
   --p-tabs-tab-border-color: transparent;
   --p-tabs-tab-hover-border-color: transparent;
   --p-tabs-tab-active-border-color: #f6f8f9;
-  --p-tabs-tab-font-weight: 600;
+  --p-tabs-tab-font-weight: 500;
   --p-tabs-tab-padding: 4px 16px;
 
   .p-tablist-tab-list {
@@ -141,7 +178,7 @@ $kb-blue: #1c81d3;
     background: transparent;
     color: #8b95a5;
     font-size: 14px;
-    font-weight: 600;
+    font-weight: 500;
     box-shadow: none;
   }
 
@@ -254,7 +291,7 @@ $kb-blue: #1c81d3;
   gap: 6px;
   color: $kb-muted;
   font-size: 13px;
-  font-weight: 600;
+  font-weight: 500;
   white-space: nowrap;
 
   .pi {
@@ -340,7 +377,7 @@ $kb-blue: #1c81d3;
   color: var(--app-text);
   font: inherit;
   font-size: 14px;
-  font-weight: 600;
+  font-weight: 500;
   text-align: start;
   cursor: pointer;
 }
@@ -462,7 +499,7 @@ $kb-blue: #1c81d3;
   color: #334155;
   font: inherit;
   font-size: 14px;
-  font-weight: 600;
+  font-weight: 500;
   cursor: pointer;
 
   i {
@@ -501,7 +538,7 @@ $kb-blue: #1c81d3;
   border-radius: 10px;
   color: #334155;
   font-size: 14px;
-  font-weight: 600;
+  font-weight: 500;
   cursor: pointer;
 
   &:hover {
@@ -555,7 +592,7 @@ $kb-blue: #1c81d3;
   margin: 0;
   color: #94a3b8;
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 500;
   line-height: 1.4;
 }
 
@@ -570,7 +607,7 @@ $kb-blue: #1c81d3;
   border: 1px solid transparent;
   border-radius: 999px;
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 500;
   line-height: 1.4;
   white-space: nowrap;
 
@@ -632,7 +669,7 @@ $kb-blue: #1c81d3;
 .kb-cat-card__label {
   color: #6f8bac;
   font-size: 13px;
-  font-weight: 600;
+  font-weight: 500;
   white-space: nowrap;
 }
 
@@ -648,7 +685,7 @@ $kb-blue: #1c81d3;
   gap: 6px;
   color: $kb-muted;
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 500;
   white-space: nowrap;
 
   .pi {
@@ -729,7 +766,7 @@ $kb-inner-border: #edeeee;
   .field__label {
     color: #6f8bac;
     font-size: 13px;
-    font-weight: 600;
+    font-weight: 500;
   }
 
   .p-inputtext,
@@ -918,7 +955,7 @@ $kb-inner-border: #edeeee;
   margin-block-start: 6px;
   color: #94a3b8;
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 500;
   font-variant-numeric: tabular-nums;
   text-align: end;
 }
@@ -1017,7 +1054,7 @@ $kb-inner-border: #edeeee;
   .p-editor-content,
   .ql-container.ql-snow {
     border: 0;
-    font-family: inherit;
+    font-family: var(--app-font);
   }
 
   .ql-editor {
@@ -1043,7 +1080,7 @@ $kb-inner-border: #edeeee;
   margin-block-start: 2px;
   color: $kb-muted;
   font-size: 13px;
-  font-weight: 600;
+  font-weight: 500;
   line-height: 1.4;
 
   span {
@@ -1225,7 +1262,7 @@ $kb-inner-border: #edeeee;
   border-block-start: 1px solid $kb-card-border;
   color: $kb-blue;
   font-size: 13px;
-  font-weight: 600;
+  font-weight: 500;
 }
 
 .kb-detail__share-actions {
@@ -1266,7 +1303,7 @@ $kb-inner-border: #edeeee;
   padding: 4px 12px;
   border-radius: 999px;
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 500;
   white-space: nowrap;
 
   &::after {
@@ -1432,7 +1469,7 @@ $kb-inner-border: #edeeee;
     color: #94a3b8;
     font-size: 13px;
     font-style: normal;
-    font-weight: 600;
+    font-weight: 500;
     text-align: start;
   }
 

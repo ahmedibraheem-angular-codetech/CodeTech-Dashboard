@@ -25,7 +25,6 @@ describe('SettingsPage', () => {
     const layout = TestBed.inject(LayoutService);
     const groups = root.querySelectorAll('p-selectbutton');
 
-    // Order in the template: density, language. Second option of the first group.
     groups[0].querySelectorAll<HTMLElement>('.p-togglebutton')[1].click();
     fixture.detectChanges();
 

@@ -3,6 +3,7 @@
     <h2>{{ view().title }}</h2>
     @if (filled()) {
       <app-button
+        *appHasPermission="'home.update'"
         styleClass="block-edit"
         icon="pi pi-pen-to-square"
         iconPos="right"
@@ -14,7 +15,11 @@
   @if (filled()) {
     <app-content-panel>
       <div class="story">
-        <div class="story__visual" aria-hidden="true"></div>
+        <div
+          class="story__visual"
+          aria-hidden="true"
+          [style.background-image]="visualUrl() ? 'url(' + visualUrl() + ')' : null"
+        ></div>
         <div class="story__text">
           <h3>{{ view().title }}</h3>
           <p>{{ view().body }}</p>
@@ -59,7 +64,8 @@
       [hint]="lang.t(kind() === 'about' ? 'home.aboutEmptyHint' : 'home.visionEmptyHint')"
     >
       <app-button
-        variant="outlined"
+        *appHasPermission="'home.create'"
+        styleClass="home-empty-cta"
         icon="pi pi-file"
         [label]="lang.t(kind() === 'about' ? 'home.aboutAdd' : 'home.visionAdd')"
         (clicked)="open()"
@@ -73,7 +79,6 @@
   [title]="view().title || lang.t('home.edit')"
   [icon]="icon()"
   [saving]="saving()"
-  [saveDisabled]="form.controls.ar.invalid"
   (save)="save()"
 >
   <div class="block-form">
@@ -93,7 +98,6 @@
                 [id]="'block-title-' + code"
                 [fluid]="true"
                 [formControl]="group.controls.title"
-                [attr.aria-required]="code === 'ar'"
                 [placeholder]="text('home.titlePh', code)"
               />
               <p-inputicon [class]="icon()" />
@@ -110,7 +114,6 @@
               [id]="'block-body-' + code"
               [fluid]="true"
               [formControl]="group.controls.body"
-              [attr.aria-required]="code === 'ar'"
               [placeholder]="text('home.bodyPh', code)"
             ></textarea>
           </div>
@@ -129,7 +132,6 @@
                       [id]="'block-point-' + code + '-' + i"
                       [fluid]="true"
                       [formControl]="point"
-                      [attr.aria-required]="code === 'ar'"
                       [placeholder]="text('home.pointPh', code)"
                     />
                     <app-button
@@ -177,7 +179,7 @@
       }
       @if (image(); as file) {
         <div class="image-file">
-          <img class="image-file__thumb" src="images/dashboardcodetech.svg" alt="" />
+          <img class="image-file__thumb" [src]="thumbUrl()" alt="" />
           <div class="image-file__text">
             <strong>{{ file.name }}</strong>
             <small

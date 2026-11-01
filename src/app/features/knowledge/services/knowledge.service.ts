@@ -1,5 +1,5 @@
 import { Injectable, inject, signal } from '@angular/core';
-import { Observable, map, timer } from 'rxjs';
+import { type Observable, map, timer } from 'rxjs';
 
 import { API_LATENCY_MS } from '../../../core/config/latency';
 import { toIsoDate } from '../../../shared/utils/date';
@@ -18,7 +18,6 @@ export class CategoryInUseError extends Error {
   }
 }
 
-/** In-memory Knowledge Center API. Swap the bodies for HTTP calls later. */
 @Injectable({ providedIn: 'root' })
 export class KnowledgeService {
   private readonly latency = inject(API_LATENCY_MS);
@@ -123,7 +122,7 @@ export class KnowledgeService {
 
   private nextId(): string {
     const taken = new Set(this.articles().map((item) => item.id));
-    let id = '';
+    let id: string;
     do {
       id = `${Math.floor(100000 + Math.random() * 900000)}`;
     } while (taken.has(id));
@@ -132,7 +131,7 @@ export class KnowledgeService {
 
   private nextCategoryId(): string {
     const taken = new Set(this.categories().map((item) => item.id));
-    let id = '';
+    let id: string;
     do {
       id = `${Math.floor(100000 + Math.random() * 900000)}`;
     } while (taken.has(id));

@@ -1,6 +1,7 @@
 <section class="page reviews-board">
   <app-page-header [title]="lang.t('review.manage')" [subtitle]="lang.t('review.subtitle')">
     <app-button
+      *appHasPermission="'testimonials.create'"
       styleClass="reviews-board__add"
       variant="primary"
       icon="pi pi-plus"
@@ -72,6 +73,8 @@
 
     @if (loading()) {
       <app-state-view mode="loading" />
+    } @else if (loadFailed()) {
+      <app-state-view mode="error" [message]="lang.t('common.error')" (retry)="reload()" />
     } @else if (visible().length === 0) {
       <app-state-view mode="empty" [message]="lang.t('review.empty')" />
     } @else {
@@ -82,21 +85,24 @@
             [role]="text(review).role"
             [externalId]="review.externalId"
             [idLabel]="lang.t('review.idLabel')"
-            [avatarUrl]="review.avatarUrl"
+            [avatarUrl]="avatarUrl(review)"
             [rating]="review.rating"
             [status]="statusOf(review)"
             [publishedLabel]="lang.t('review.published')"
             [unpublishedLabel]="lang.t('review.unpublished')"
-            [mediaUrl]="review.mediaUrl"
-            [mediaKind]="review.mediaKind"
+            [mediaUrl]="mediaUrl(review)"
+            [mediaKind]="mediaKind(review)"
             [playLabel]="lang.t('review.play')"
             [createdAt]="displayDate(review.createdAt)"
-            [createdTime]="displayTime(review.createdTime)"
+            [createdTime]="displayTime(review.createdAt)"
             [quote]="text(review).quote"
             [publishStatusLabel]="lang.t('review.publishStatus')"
             [published]="review.published"
             [editLabel]="lang.t('review.edit')"
             [deleteLabel]="lang.t('review.delete')"
+            [showEdit]="canUpdate()"
+            [showDelete]="canDelete()"
+            [showPublish]="canUpdate()"
             (publishedChange)="setPublished(review, $event)"
             (editRequested)="editReview(review)"
             (deleteRequested)="remove(review)"

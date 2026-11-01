@@ -4,7 +4,6 @@ import { LanguageService } from '../../../../core/services/language.service';
 import { ContentPanel } from '../../../../shared/components/content-panel/content-panel';
 import type { User } from '../../models/user.model';
 
-/** User detail fields card: identity, contact, role, status, and activity. */
 @Component({
   selector: 'app-user-detail-fields',
   imports: [ContentPanel],

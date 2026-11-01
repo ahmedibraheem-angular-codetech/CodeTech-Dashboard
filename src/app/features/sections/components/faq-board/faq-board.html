@@ -1,6 +1,7 @@
 <section class="page faq-board">
   <app-page-header [title]="pageTitle()" [subtitle]="pageSubtitle()">
     <app-button
+      *appHasPermission="'help_support.create'"
       icon="pi pi-plus"
       iconPos="end"
       styleClass="faq-board__add"
@@ -20,6 +21,9 @@
       <app-faq-questions-panel
         [items]="items()"
         [categories]="categories()"
+        [showEdit]="canUpdate()"
+        [showDelete]="canDelete()"
+        [showPublish]="canUpdate()"
         (edit)="openEdit($event)"
         (remove)="remove($event)"
         (publishedChange)="setPublished($event.item, $event.published)"
@@ -29,6 +33,9 @@
       <app-faq-categories-panel
         [categories]="categories()"
         [items]="items()"
+        [showEdit]="canUpdate()"
+        [showDelete]="canDelete()"
+        [showPublish]="canUpdate()"
         (edit)="openEditCategory($event)"
         (remove)="removeCategory($event)"
         (publishedChange)="setCategoryPublished($event.category, $event.published)"
@@ -53,7 +60,14 @@
   @if (editor() === 'create' || editor() === 'edit') {
     <app-faq-editor-form [form]="form" [categoryOptions]="categoryOptions()" (submitted)="save()" />
   } @else if (editor() === 'create-category' || editor() === 'edit-category') {
-    <app-faq-category-form [form]="categoryForm" (submitted)="save()" />
+    <app-category-form
+      [form]="categoryForm"
+      labelKey="faq.categoryName"
+      placeholderKey="faq.categoryNamePlaceholder"
+      requiredKey="faq.required"
+      publishedKey="faq.publishStatus"
+      (submitted)="save()"
+    />
   }
 </app-modal>
 

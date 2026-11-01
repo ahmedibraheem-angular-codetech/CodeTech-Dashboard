@@ -1,3 +1,5 @@
+import { provideHttpClient, withInterceptors } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 
@@ -18,7 +20,12 @@ describe('Profile entry points', () => {
     sessionStorage.clear();
     sessionStorage.setItem('codetech.session', JSON.stringify(SESSION));
     TestBed.configureTestingModule({
-      providers: [provideRouter([]), { provide: API_LATENCY_MS, useValue: 0 }],
+      providers: [
+        provideRouter([]),
+        provideHttpClient(withInterceptors([])),
+        provideHttpClientTesting(),
+        { provide: API_LATENCY_MS, useValue: 0 },
+      ],
     });
     const fixture = TestBed.createComponent(component);
     fixture.detectChanges();

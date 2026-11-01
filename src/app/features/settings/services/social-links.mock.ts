@@ -18,7 +18,7 @@ export const SOCIAL_LINKS_SEED: SocialLinksDocument = {
     name: { ar: 'المملكة العربية السعودية', en: 'Kingdom of Saudi Arabia' },
     mapUrl: 'WWW.CodeTech.Com',
   },
-  // Order matches Figma RTL grid: LinkedIn|Facebook, X|Instagram, Snapchat|TikTok, WhatsApp.
+
   channels: [
     {
       id: 'ch-linkedin',

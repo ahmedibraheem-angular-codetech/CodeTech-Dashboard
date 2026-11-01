@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, inject, input, output, signal } from '@angular/core';
-import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { type FormControl, type FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { IconField } from 'primeng/iconfield';
 import { InputIcon } from 'primeng/inputicon';
 import { InputText } from 'primeng/inputtext';
@@ -28,10 +28,6 @@ export interface FaqCategoryOption {
   label: string;
 }
 
-/**
- * Create/edit FAQ form body. The parent owns the FormGroup, validation, API save,
- * and wraps this in `app-modal`. Locale switch only toggles which bilingual fields are shown.
- */
 @Component({
   selector: 'app-faq-editor-form',
   imports: [

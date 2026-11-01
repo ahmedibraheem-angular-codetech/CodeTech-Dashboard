@@ -3,6 +3,7 @@ import {
   Component,
   DestroyRef,
   computed,
+  effect,
   inject,
   signal,
   viewChild,
@@ -17,6 +18,7 @@ import { InputText } from 'primeng/inputtext';
 import { Textarea } from 'primeng/textarea';
 import { startWith } from 'rxjs';
 
+import { AuthService } from '../../../../core/auth/auth.service';
 import type { AppLanguage } from '../../../../core/i18n/language';
 import { LanguageService } from '../../../../core/services/language.service';
 import { AppButton } from '../../../../shared/components/app-button/app-button';
@@ -24,6 +26,7 @@ import { ConfirmDialog } from '../../../../shared/components/confirm-dialog/conf
 import { LocaleSwitch } from '../../../../shared/components/locale-switch/locale-switch';
 import { PageHeader } from '../../../../shared/components/page-header/page-header';
 import { StateView } from '../../../../shared/components/state-view/state-view';
+import { HasPermissionDirective } from '../../../../shared/directives/has-permission.directive';
 import { formatIsoDate } from '../../../../shared/utils/date';
 import { SocialLinkCard } from '../../components/social-link-card/social-link-card';
 import type { SocialLinkCopyResult } from '../../components/social-link-card/social-link-url';
@@ -54,6 +57,7 @@ type LoadState = 'loading' | 'ready' | 'error';
     SocialLinkCard,
     SocialLinkEditor,
     ConfirmDialog,
+    HasPermissionDirective,
   ],
   templateUrl: './social-links.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -64,6 +68,7 @@ export class SocialLinksPage {
   private readonly destroyRef = inject(DestroyRef);
   private readonly fb = inject(FormBuilder);
   private readonly sanitizer = inject(DomSanitizer);
+  private readonly auth = inject(AuthService);
   readonly lang = inject(LanguageService);
 
   private readonly editor = viewChild.required(SocialLinkEditor);
@@ -108,14 +113,21 @@ export class SocialLinksPage {
     );
   });
 
-  /** Section copy follows content locale — not the global UI language. */
   t(key: string): string {
     return this.lang.lookup(key, this.locale()) ?? key;
   }
 
   readonly channels = computed(() => this.document()?.channels ?? []);
 
-  /** Live Google Maps embed driven by the location name field. */
+  readonly canUpdate = computed(() => {
+    const session = this.auth.session();
+    return !!session?.profileLoaded && this.auth.hasPermission('site_settings.update');
+  });
+  readonly canDelete = computed(() => {
+    const session = this.auth.session();
+    return !!session?.profileLoaded && this.auth.hasPermission('site_settings.delete');
+  });
+
   readonly mapEmbedUrl = computed(() => {
     const query = this.locationQuery().trim() || 'Saudi Arabia';
     const url = `https://maps.google.com/maps?q=${encodeURIComponent(query)}&z=6&output=embed`;
@@ -124,6 +136,13 @@ export class SocialLinksPage {
 
   constructor() {
     this.locale.set(this.lang.language());
+    effect(() => {
+      if (this.canUpdate()) {
+        this.form.enable({ emitEvent: false });
+      } else {
+        this.form.disable({ emitEvent: false });
+      }
+    });
     this.reload();
   }
 
@@ -259,11 +278,6 @@ export class SocialLinksPage {
       });
   }
 
-  /**
-   * Persists channel enabled state immediately (not deferred to Save).
-   * On failure, re-clone the document signal so the one-way toggle binding
-   * snaps back to the last persisted value.
-   */
   protected setEnabled(channel: SocialChannel, enabled: boolean): void {
     this.api
       .setChannelEnabled(channel.id, enabled)

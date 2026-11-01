@@ -3,6 +3,7 @@
     <h2>{{ lang.t('about.team') }} ({{ team().length }})</h2>
     @if (team().length) {
       <app-button
+        *appHasPermission="'about.create'"
         variant="outlined"
         icon="pi pi-plus"
         [label]="lang.t('about.memberAdd')"
@@ -14,7 +15,8 @@
   @if (team().length === 0) {
     <app-section-empty [title]="lang.t('about.teamEmpty')" [hint]="lang.t('about.teamEmptyHint')">
       <app-button
-        variant="outlined"
+        *appHasPermission="'about.create'"
+        styleClass="home-empty-cta"
         icon="pi pi-plus"
         [label]="lang.t('about.teamAdd')"
         (clicked)="open()"
@@ -24,10 +26,25 @@
     <app-content-panel>
       <div class="about-team">
         @for (member of team(); track member.id) {
+          @let view = viewOf(member);
           <article class="about-member">
             <div class="about-member__photo">
-              <img src="images/avatar-placeholder.svg" [alt]="member.name" />
+              <img
+                [src]="member.image?.url || 'images/avatar-placeholder.svg'"
+                [alt]="view.name"
+              />
               <div class="partner-card__tools">
+                <app-button
+                  *appHasPermission="'about.update'"
+                  variant="secondary"
+                  styleClass="partner-card__tool partner-card__tool--download"
+                  icon="pi pi-pen-to-square"
+                  size="small"
+                  [ariaLabel]="lang.t('about.editMember')"
+                  [pTooltip]="lang.t('about.editMember')"
+                  tooltipPosition="top"
+                  (clicked)="open(member)"
+                />
                 <app-button
                   variant="secondary"
                   styleClass="partner-card__tool partner-card__tool--download"
@@ -39,6 +56,7 @@
                   (clicked)="download(member)"
                 />
                 <app-button
+                  *appHasPermission="'about.delete'"
                   variant="secondary"
                   styleClass="partner-card__tool partner-card__tool--delete"
                   icon="pi pi-trash"
@@ -50,8 +68,8 @@
                 />
               </div>
             </div>
-            <h3>{{ member.name }}</h3>
-            <p>{{ member.role }}</p>
+            <h3>{{ view.name }}</h3>
+            <p>{{ view.role }}</p>
           </article>
         }
       </div>
@@ -64,20 +82,43 @@
   [title]="lang.t(editingId() ? 'about.editMember' : 'about.memberAdd')"
   icon="pi pi-users"
   [saving]="saving()"
-  [saveDisabled]="form.invalid"
+  [saveDisabled]="form.controls.ar.invalid"
   [saveLabel]="lang.t(editingId() ? 'common.saveChanges' : 'about.memberAdd')"
   [saveIcon]="editingId() ? 'pi pi-save' : ''"
   (save)="save()"
 >
   <div class="block-form">
-    <div class="field">
-      <label class="field__label" for="member-name">{{ lang.t('about.memberName') }}</label>
-      <input pInputText id="member-name" [fluid]="true" [formControl]="form.controls.name" />
-    </div>
-    <div class="field">
-      <label class="field__label" for="member-role">{{ lang.t('about.memberRole') }}</label>
-      <input pInputText id="member-role" [fluid]="true" [formControl]="form.controls.role" />
-    </div>
+    <app-locale-switch [value]="locale()" (picked)="locale.set($event)" />
+    @for (code of locales; track code) {
+      @if (locale() === code) {
+        @let group = form.controls[code];
+        <div class="block-form__lang" [attr.dir]="code === 'ar' ? 'rtl' : 'ltr'" [attr.lang]="code">
+          <div class="field">
+            <label class="field__label" [attr.for]="'member-name-' + code">{{
+              text('about.memberName', code)
+            }}</label>
+            <input
+              pInputText
+              [id]="'member-name-' + code"
+              [fluid]="true"
+              [formControl]="group.controls.name"
+              [attr.aria-required]="code === 'ar'"
+            />
+          </div>
+          <div class="field">
+            <label class="field__label" [attr.for]="'member-role-' + code">{{
+              text('about.memberRole', code)
+            }}</label>
+            <input
+              pInputText
+              [id]="'member-role-' + code"
+              [fluid]="true"
+              [formControl]="group.controls.role"
+            />
+          </div>
+        </div>
+      }
+    }
     <div class="field">
       <span class="field__label" id="member-image-label">{{ lang.t('home.image') }}</span>
       <label class="image-drop" (dragover)="$event.preventDefault()" (drop)="onDrop($event)">

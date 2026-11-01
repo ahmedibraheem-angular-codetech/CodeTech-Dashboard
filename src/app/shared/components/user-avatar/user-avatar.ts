@@ -3,10 +3,6 @@ import { Avatar } from 'primeng/avatar';
 
 import { ProfileService } from '../../../core/profile/profile.service';
 
-/**
- * The signed-in user's picture, falling back to their initial when there is none.
- * Decorative: put the accessible name on the link or button that wraps it.
- */
 @Component({
   selector: 'app-user-avatar',
   imports: [Avatar],
@@ -32,9 +28,9 @@ import { ProfileService } from '../../../core/profile/profile.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class UserAvatar {
-  /** Edge length in px. */
+
   readonly size = input(48);
-  /** Any CSS radius; `50%` makes it round. */
+
   readonly radius = input('50%');
 
   private readonly profile = inject(ProfileService);

@@ -13,21 +13,31 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MessageService } from 'primeng/api';
 import { Tooltip } from 'primeng/tooltip';
 
+import { isApiError } from '../../../../core/http/api-error';
 import { LanguageService } from '../../../../core/services/language.service';
 import { AppButton } from '../../../../shared/components/app-button/app-button';
 import { ConfirmDialog } from '../../../../shared/components/confirm-dialog/confirm-dialog';
 import { ContentPanel } from '../../../../shared/components/content-panel/content-panel';
 import { Modal } from '../../../../shared/components/modal/modal';
 import { SectionEmpty } from '../../../../shared/components/section-empty/section-empty';
+import { HasPermissionDirective } from '../../../../shared/directives/has-permission.directive';
 import { formatIsoDate } from '../../../../shared/utils/date';
 import { formatFileSize } from '../../../../shared/utils/file-size';
 import { parseUploadedImage } from '../../../../shared/utils/image-upload';
-import { BlockImage, Partner } from '../../models/homepage.model';
+import { type BlockImage, type Partner } from '../../models/homepage.model';
 import { HomepageService } from '../../services/homepage.service';
 
 @Component({
   selector: 'app-partners-section',
-  imports: [AppButton, Tooltip, SectionEmpty, ContentPanel, Modal, ConfirmDialog],
+  imports: [
+    AppButton,
+    Tooltip,
+    SectionEmpty,
+    ContentPanel,
+    Modal,
+    ConfirmDialog,
+    HasPermissionDirective,
+  ],
   templateUrl: './partners-section.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -39,15 +49,15 @@ export class PartnersSection {
   readonly lang = inject(LanguageService);
 
   readonly partners = input.required<Partner[]>();
-  /** Emitted after a partner was added or removed, so the parent can reload. */
+
   readonly changed = output<void>();
 
   readonly editorOpen = signal(false);
   readonly saving = signal(false);
   readonly image = signal<BlockImage | null>(null);
-  /** Object URL of the picked file, shown in the file row until the modal closes. */
+
   readonly preview = signal<string | null>(null);
-  /** Translation key of the last rejected image, or empty. */
+
   readonly imageError = signal('');
   readonly imageSize = computed(() => formatFileSize(this.image()?.size ?? 0));
   readonly imageDate = computed(() =>
@@ -55,9 +65,15 @@ export class PartnersSection {
   );
 
   download(partner: Partner): void {
+    const href = partner.image?.downloadUrl || partner.image?.url;
+    if (!href) {
+      return;
+    }
     const link = document.createElement('a');
-    link.href = 'images/codeTech.svg';
-    link.download = `${partner.name}.svg`;
+    link.href = href;
+    link.download = partner.image?.name || partner.name;
+    link.target = '_blank';
+    link.rel = 'noopener';
     link.click();
   }
 
@@ -85,12 +101,12 @@ export class PartnersSection {
 
   save(): void {
     const image = this.image();
-    if (!image || this.saving()) {
+    if (!image?.file || this.saving()) {
       return;
     }
     const base = image.name.replace(/\.[^.]+$/, '').trim() || image.name;
     const partner: Partner = {
-      id: crypto.randomUUID(),
+      id: 'new',
       name: base,
       monogram: base.charAt(0),
       image,
@@ -105,11 +121,17 @@ export class PartnersSection {
           this.editorOpen.set(false);
           this.clearImage();
           this.changed.emit();
-          this.messages.add({ severity: 'success', summary: this.lang.t('common.save') });
+          this.messages.add({
+            severity: 'success',
+            summary: this.lang.t('home.toastPartnerAddSuccess'),
+          });
         },
-        error: () => {
+        error: (error: unknown) => {
           this.saving.set(false);
-          this.notifyFailure();
+          this.messages.add({
+            severity: 'error',
+            summary: this.errorMessage(error, 'home.toastPartnerAddError'),
+          });
         },
       });
   }
@@ -130,7 +152,11 @@ export class PartnersSection {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: () => this.changed.emit(),
-        error: () => this.notifyFailure(),
+        error: (error: unknown) =>
+          this.messages.add({
+            severity: 'error',
+            summary: this.errorMessage(error, 'common.error'),
+          }),
       });
   }
 
@@ -149,7 +175,7 @@ export class PartnersSection {
     this.clearImage();
     this.imageError.set('');
     this.preview.set(URL.createObjectURL(file));
-    this.image.set(result.image);
+    this.image.set({ ...result.image, file, url: undefined });
   }
 
   private clearImage(): void {
@@ -161,7 +187,10 @@ export class PartnersSection {
     this.image.set(null);
   }
 
-  private notifyFailure(): void {
-    this.messages.add({ severity: 'error', summary: this.lang.t('common.error') });
+  private errorMessage(error: unknown, fallbackKey: string): string {
+    if (isApiError(error) && error.serverMessage) {
+      return error.serverMessage;
+    }
+    return this.lang.t(fallbackKey);
   }
 }

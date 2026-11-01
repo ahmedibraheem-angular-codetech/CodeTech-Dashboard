@@ -1,21 +1,18 @@
 import { ChangeDetectionStrategy, Component, DestroyRef, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { MessageService } from 'primeng/api';
-import { Button } from 'primeng/button';
-import { InputOtp } from 'primeng/inputotp';
 
 import { failureMessageKey, isAuthError } from '../../../../core/auth/auth.error';
 import { AuthService } from '../../../../core/auth/auth.service';
 import { LanguageService } from '../../../../core/services/language.service';
 import { AuthShell } from '../../../../layout/auth-layout/auth-shell';
-import { AppButton } from '../../../../shared/components/app-button/app-button';
-import { FieldError } from '../../../../shared/components/field-error/field-error';
+import { AuthOtpForm } from '../../components/auth-otp-form/auth-otp-form';
 
 @Component({
   selector: 'app-verify',
-  imports: [ReactiveFormsModule, Button, AppButton, AuthShell, InputOtp, FieldError],
+  imports: [AuthShell, AuthOtpForm],
   templateUrl: './verify.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -87,6 +84,7 @@ export class Verify {
   }
 
   back(): void {
+    this.auth.cancelPending();
     void this.router.navigate(['/login']);
   }
 

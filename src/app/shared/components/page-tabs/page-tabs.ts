@@ -10,7 +10,6 @@ import { Tab, TabList, Tabs } from 'primeng/tabs';
 
 import { LanguageService } from '../../../core/services/language.service';
 
-/** One tab. The parent owns which id is selected. */
 export interface PageTab {
   id: string;
   labelKey: string;

@@ -2,6 +2,8 @@ import { TestBed } from '@angular/core/testing';
 import { provideRouter, Router } from '@angular/router';
 import { MessageService } from 'primeng/api';
 
+import { authSession } from '../../../../core/auth/auth-session.fixture';
+import { AuthService } from '../../../../core/auth/auth.service';
 import { API_LATENCY_MS } from '../../../../core/config/latency';
 import { ConfirmDialog } from '../../../../shared/components/confirm-dialog/confirm-dialog';
 import { InquiryDetailPage } from './inquiry-detail';
@@ -13,6 +15,13 @@ type InquiryHarness = InquiryDetailPage & {
   remove(): Promise<void>;
 };
 
+const INQUIRY_GRANTS = [
+  'inquiries.view',
+  'inquiries.create',
+  'inquiries.update',
+  'inquiries.delete',
+] as const;
+
 describe('InquiryDetailPage', () => {
   afterEach(() => vi.restoreAllMocks());
 
@@ -21,8 +30,18 @@ describe('InquiryDetailPage', () => {
       imports: [InquiryDetailPage],
       providers: [MessageService, { provide: API_LATENCY_MS, useValue: 0 }, provideRouter([])],
     });
+    TestBed.inject(AuthService).session.set(
+      authSession({
+        token: 't',
+        email: 'admin@codetech.sa',
+        name: 'Admin',
+        profileLoaded: true,
+        permissions: [...INQUIRY_GRANTS],
+      }),
+    );
     const fixture = TestBed.createComponent(InquiryDetailPage);
     fixture.componentRef.setInput('id', id);
+    fixture.componentRef.setInput('permissionModule', 'inquiries');
     fixture.detectChanges();
     await new Promise((resolve) => setTimeout(resolve, 20));
     await fixture.whenStable();

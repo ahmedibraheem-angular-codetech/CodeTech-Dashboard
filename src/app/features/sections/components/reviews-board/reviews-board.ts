@@ -13,6 +13,7 @@ import { MessageService } from 'primeng/api';
 import { Checkbox } from 'primeng/checkbox';
 import { Popover } from 'primeng/popover';
 
+import { AuthService } from '../../../../core/auth/auth.service';
 import { LanguageService } from '../../../../core/services/language.service';
 import { AppButton } from '../../../../shared/components/app-button/app-button';
 import { ConfirmDialog } from '../../../../shared/components/confirm-dialog/confirm-dialog';
@@ -20,8 +21,15 @@ import { Modal } from '../../../../shared/components/modal/modal';
 import { PageHeader } from '../../../../shared/components/page-header/page-header';
 import { ReviewCard } from '../../../../shared/components/review-card/review-card';
 import { StateView } from '../../../../shared/components/state-view/state-view';
+import { HasPermissionDirective } from '../../../../shared/directives/has-permission.directive';
 import { formatIsoDate } from '../../../../shared/utils/date';
-import type { Review, ReviewStatusFilter } from '../../models/review.model';
+import {
+  REVIEW_AVATAR_PLACEHOLDER,
+  type Review,
+  type ReviewContentDraft,
+  type ReviewMediaDraft,
+  type ReviewStatusFilter,
+} from '../../models/review.model';
 import { ReviewsService } from '../../services/reviews.service';
 import {
   ReviewEditorForm,
@@ -34,6 +42,7 @@ interface FilterOption {
 }
 
 type EditorMode = ReviewEditorMode | null;
+type LoadState = 'loading' | 'ready' | 'error';
 
 @Component({
   selector: 'app-reviews-board',
@@ -48,6 +57,7 @@ type EditorMode = ReviewEditorMode | null;
     Popover,
     Checkbox,
     ReviewEditorForm,
+    HasPermissionDirective,
   ],
   templateUrl: './reviews-board.html',
   styleUrl: './reviews-board.scss',
@@ -58,6 +68,7 @@ export class ReviewsBoard {
   private readonly messages = inject(MessageService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly fb = inject(FormBuilder);
+  private readonly auth = inject(AuthService);
   private readonly confirm = viewChild.required(ConfirmDialog);
   private readonly editorForm = viewChild(ReviewEditorForm);
   readonly lang = inject(LanguageService);
@@ -65,8 +76,9 @@ export class ReviewsBoard {
   private readonly source = signal<Review[]>([]);
   readonly statusFilter = signal<ReviewStatusFilter>('all');
   readonly filterOpen = signal(false);
-  readonly loading = signal(true);
+  readonly loadState = signal<LoadState>('loading');
   readonly saving = signal(false);
+  readonly exporting = signal(false);
   readonly editor = signal<EditorMode>(null);
   readonly selected = signal<Review | null>(null);
 
@@ -86,20 +98,11 @@ export class ReviewsBoard {
   });
 
   constructor() {
-    this.api
-      .list()
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe({
-        next: (rows) => {
-          this.source.set(rows);
-          this.loading.set(false);
-        },
-        error: () => {
-          this.loading.set(false);
-          this.messages.add({ severity: 'error', summary: this.lang.t('common.error') });
-        },
-      });
+    this.reload();
   }
+
+  readonly loading = computed(() => this.loadState() === 'loading');
+  readonly loadFailed = computed(() => this.loadState() === 'error');
 
   readonly filterOptions = computed<FilterOption[]>(() => [
     { value: 'all', label: this.lang.t('review.filterAll') },
@@ -146,15 +149,46 @@ export class ReviewsBoard {
 
   readonly editorMode = computed<ReviewEditorMode>(() => this.editor() ?? 'create');
 
+  readonly canUpdate = computed(() => {
+    const session = this.auth.session();
+    return !!session?.profileLoaded && this.auth.hasPermission('testimonials.update');
+  });
+  readonly canDelete = computed(() => {
+    const session = this.auth.session();
+    return !!session?.profileLoaded && this.auth.hasPermission('testimonials.delete');
+  });
+
   protected text(review: Review): Review['texts'][keyof Review['texts']] {
     return review.texts[this.lang.language()];
   }
 
-  protected displayDate(iso: string): string {
-    return formatIsoDate(iso, this.lang.language());
+  protected avatarUrl(review: Review): string {
+    return review.photo?.url || REVIEW_AVATAR_PLACEHOLDER;
   }
 
-  protected displayTime(time: string): string {
+  protected mediaUrl(review: Review): string {
+    return review.photo?.url || '';
+  }
+
+  protected mediaKind(review: Review): 'video' | 'image' {
+    return review.video ? 'video' : 'image';
+  }
+
+  protected displayDate(iso: string): string {
+    const day = iso.includes('T') ? iso.slice(0, 10) : iso;
+    return formatIsoDate(day, this.lang.language());
+  }
+
+  protected displayTime(iso: string): string {
+    const date = new Date(iso);
+    if (Number.isNaN(date.getTime())) {
+      return '';
+    }
+    const time = date.toLocaleTimeString('en-US', {
+      hour: 'numeric',
+      minute: '2-digit',
+      hour12: true,
+    });
     if (this.lang.language() !== 'ar') {
       return time;
     }
@@ -175,11 +209,50 @@ export class ReviewsBoard {
     }
   }
 
+  protected reload(): void {
+    this.loadState.set('loading');
+    this.api
+      .list()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (rows) => {
+          this.source.set(rows);
+          this.loadState.set('ready');
+        },
+        error: () => {
+          this.loadState.set('error');
+          this.messages.add({ severity: 'error', summary: this.lang.t('common.error') });
+        },
+      });
+  }
+
   protected exportRows(): void {
-    this.messages.add({
-      severity: 'success',
-      summary: this.lang.t('review.export'),
-    });
+    if (this.exporting()) {
+      return;
+    }
+    this.exporting.set(true);
+    this.api
+      .exportCsv()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (blob) => {
+          this.exporting.set(false);
+          const href = URL.createObjectURL(blob);
+          const link = document.createElement('a');
+          link.href = href;
+          link.download = `testimonials-${new Date().toISOString().slice(0, 10)}.csv`;
+          link.click();
+          URL.revokeObjectURL(href);
+          this.messages.add({
+            severity: 'success',
+            summary: this.lang.t('review.export'),
+          });
+        },
+        error: () => {
+          this.exporting.set(false);
+          this.messages.add({ severity: 'error', summary: this.lang.t('common.error') });
+        },
+      });
   }
 
   protected addReview(): void {
@@ -211,12 +284,7 @@ export class ReviewsBoard {
       published: review.published,
     });
     this.editor.set('edit');
-    queueMicrotask(() =>
-      this.editorForm()?.resetMedia({
-        avatarUrl: review.avatarUrl,
-        avatarName: this.lang.t('review.avatarFile'),
-      }),
-    );
+    queueMicrotask(() => this.editorForm()?.resetMedia({ photo: review.photo }));
   }
 
   protected setEditorVisible(open: boolean): void {
@@ -242,14 +310,17 @@ export class ReviewsBoard {
     }
 
     const value = this.form.getRawValue();
-    const media = this.editorForm()?.mediaSnapshot() ?? {
-      avatarUrl: 'images/avatar-placeholder.svg',
-      mediaUrl: 'images/ceo.svg',
-      mediaKind: 'video' as const,
+    const draft: ReviewContentDraft = {
+      rating: value.rating,
+      published: value.published,
+      texts: {
+        ar: { name: value.nameAr, role: value.roleAr, quote: value.quoteAr },
+        en: { name: value.nameEn, role: value.roleEn, quote: value.quoteEn },
+      },
     };
-    const texts = {
-      ar: { name: value.nameAr, role: value.roleAr, quote: value.quoteAr },
-      en: { name: value.nameEn, role: value.roleEn, quote: value.quoteEn },
+    const media: ReviewMediaDraft = this.editorForm()?.mediaDraft() ?? {
+      photo: { kind: 'omit' },
+      video: { kind: 'omit' },
     };
 
     this.saving.set(true);
@@ -257,17 +328,8 @@ export class ReviewsBoard {
     const selected = this.selected();
 
     if (mode === 'edit' && selected) {
-      const next: Review = {
-        ...selected,
-        rating: value.rating,
-        published: value.published,
-        avatarUrl: media.avatarUrl || selected.avatarUrl,
-        mediaUrl: selected.mediaUrl,
-        mediaKind: selected.mediaKind,
-        texts,
-      };
       this.api
-        .update(next)
+        .update(selected.id, draft, media)
         .pipe(takeUntilDestroyed(this.destroyRef))
         .subscribe({
           next: (saved) => {
@@ -285,14 +347,7 @@ export class ReviewsBoard {
     }
 
     this.api
-      .create({
-        rating: value.rating,
-        published: value.published,
-        avatarUrl: media.avatarUrl,
-        mediaUrl: media.mediaUrl,
-        mediaKind: media.mediaKind,
-        texts,
-      })
+      .create(draft, media)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (saved) => {
@@ -317,8 +372,10 @@ export class ReviewsBoard {
       .setPublished(review.id, published)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
-        next: () =>
-          this.messages.add({ severity: 'success', summary: this.lang.t('review.updated') }),
+        next: (saved) => {
+          this.source.update((rows) => rows.map((row) => (row.id === saved.id ? saved : row)));
+          this.messages.add({ severity: 'success', summary: this.lang.t('review.updated') });
+        },
         error: () => {
           this.source.update((rows) =>
             rows.map((row) => (row.id === review.id ? { ...row, published: previous } : row)),

@@ -1,0 +1,161 @@
+:host {
+  display: block;
+}
+
+.projects-board__catalog {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: #16324f;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.projects-board__add {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 40px;
+  padding: 0 14px;
+  border: 1px solid #e6ebf2;
+  border-radius: 12px;
+  background: #fff;
+  color: #2f6fed;
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.project-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.project-tile {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 12px;
+  border: 1px solid #edeeee;
+  border-radius: 20px;
+  background: #fff;
+}
+
+.project-tile__media {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  border-radius: 16px;
+  aspect-ratio: 16 / 9;
+  background: #1b1b1b;
+}
+
+.project-tile__media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.project-tile__actions {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  display: flex;
+  gap: 8px;
+}
+
+.project-tile__icon {
+  display: grid;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  border: 0;
+  border-radius: 50%;
+  background: #fff;
+  color: #2f6fed;
+  box-shadow: 0 4px 12px rgb(22 50 79 / 12%);
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.project-tile__icon--danger {
+  background: #fff1f2;
+  color: #e11d48;
+}
+
+.project-tile__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.project-tile__head h2 {
+  margin: 0;
+  color: #002951;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.6;
+}
+
+.project-tile__head a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.project-tile p {
+  margin: 0;
+  color: #64748b;
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+.project-tile__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.project-tile__tags li {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 32px;
+  padding: 0 10px;
+  border-radius: 10px;
+  background: #f4f7fb;
+  color: #64748b;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.project-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-width: 640px;
+  padding: 20px;
+  border: 1px solid #edeeee;
+  border-radius: 20px;
+  background: #fff;
+}
+
+.project-form input,
+.project-form textarea {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid var(--app-border);
+  border-radius: 12px;
+  background: #f8fafc;
+  font: inherit;
+}
+
+@media (max-width: 800px) {
+  .project-grid {
+    grid-template-columns: 1fr;
+  }
+}

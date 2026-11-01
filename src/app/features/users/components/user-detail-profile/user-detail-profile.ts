@@ -18,10 +18,6 @@ export interface UserDetailStatusChoice {
   value: UserStatus;
 }
 
-/**
- * User detail profile header: avatar, identity badges, and primary actions.
- * Parent owns edit/delete/status persistence; this panel owns the status menu UI.
- */
 @Component({
   selector: 'app-user-detail-profile',
   imports: [Avatar, AppButton, Popover],
@@ -40,6 +36,9 @@ export class UserDetailProfile {
   readonly isBlocked = input(false);
   readonly saving = input(false);
   readonly statusChoices = input.required<UserDetailStatusChoice[]>();
+  readonly showEdit = input(true);
+  readonly showDelete = input(true);
+  readonly showStatus = input(true);
 
   readonly edit = output<void>();
   readonly remove = output<void>();

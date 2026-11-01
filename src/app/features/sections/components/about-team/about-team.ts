@@ -15,20 +15,43 @@ import { MessageService } from 'primeng/api';
 import { InputText } from 'primeng/inputtext';
 import { Tooltip } from 'primeng/tooltip';
 
+import { isApiError } from '../../../../core/http/api-error';
+import type { AppLanguage } from '../../../../core/i18n/language';
 import { LanguageService } from '../../../../core/services/language.service';
 import { AppButton } from '../../../../shared/components/app-button/app-button';
 import { ConfirmDialog } from '../../../../shared/components/confirm-dialog/confirm-dialog';
 import { ContentPanel } from '../../../../shared/components/content-panel/content-panel';
+import { LocaleSwitch } from '../../../../shared/components/locale-switch/locale-switch';
 import { Modal } from '../../../../shared/components/modal/modal';
 import { SectionEmpty } from '../../../../shared/components/section-empty/section-empty';
+import { HasPermissionDirective } from '../../../../shared/directives/has-permission.directive';
 import { formatIsoDate } from '../../../../shared/utils/date';
 import { formatFileSize } from '../../../../shared/utils/file-size';
 import { parseUploadedImage } from '../../../../shared/utils/image-upload';
-import { AboutImage, AboutMember } from '../../models/about.model';
+import { type AboutImage, type AboutMember, type AboutMemberText } from '../../models/about.model';
 import { AboutService } from '../../services/about.service';
 
-function control(value: string): FormControl<string> {
-  return new FormControl(value, { nonNullable: true, validators: [Validators.required] });
+const LOCALES: readonly AppLanguage[] = ['ar', 'en'];
+
+function control(value: string, required: boolean): FormControl<string> {
+  return new FormControl(value, {
+    nonNullable: true,
+    validators: required ? [Validators.required] : [],
+  });
+}
+
+function textGroup(requiredName: boolean): FormGroup<{
+  name: FormControl<string>;
+  role: FormControl<string>;
+}> {
+  return new FormGroup({
+    name: control('', requiredName),
+    role: control('', false),
+  });
+}
+
+function hasCopy(text: AboutMemberText): boolean {
+  return text.name.trim().length > 0 || text.role.trim().length > 0;
 }
 
 @Component({
@@ -40,8 +63,10 @@ function control(value: string): FormControl<string> {
     Tooltip,
     ConfirmDialog,
     ContentPanel,
+    LocaleSwitch,
     Modal,
     SectionEmpty,
+    HasPermissionDirective,
   ],
   templateUrl: './about-team.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -56,9 +81,11 @@ export class AboutTeamSection {
   readonly team = input.required<AboutMember[]>();
   readonly changed = output<AboutMember[]>();
 
+  readonly locales = LOCALES;
   readonly editorOpen = signal(false);
   readonly saving = signal(false);
   readonly editingId = signal<string | null>(null);
+  readonly locale = signal<AppLanguage>('ar');
   readonly image = signal<AboutImage | null>(null);
   readonly imageError = signal('');
 
@@ -67,24 +94,41 @@ export class AboutTeamSection {
     formatIsoDate(this.image()?.uploadedAt ?? '1970-01-01', this.lang.language()),
   );
 
-  readonly form = new FormGroup({
-    name: control(''),
-    role: control(''),
-  });
+  readonly form = new FormGroup({ ar: textGroup(true), en: textGroup(false) });
+
+  viewOf(member: AboutMember): AboutMemberText {
+    const current = this.lang.language();
+    const other: AppLanguage = current === 'ar' ? 'en' : 'ar';
+    return hasCopy(member.texts[current]) ? member.texts[current] : member.texts[other];
+  }
+
+  text(key: string, locale: AppLanguage): string {
+    return this.lang.lookup(key, locale) ?? key;
+  }
 
   download(member: AboutMember): void {
+    const href = member.image?.downloadUrl || member.image?.url;
+    if (!href) {
+      return;
+    }
     const link = document.createElement('a');
-    link.href = 'images/avatar-placeholder.svg';
-    link.download = `${member.name}.svg`;
+    link.href = href;
+    link.download = member.image?.name || this.viewOf(member).name;
+    link.target = '_blank';
+    link.rel = 'noopener';
     link.click();
   }
 
   open(member?: AboutMember): void {
     this.editingId.set(member?.id ?? null);
-    this.form.setValue({ name: member?.name ?? '', role: member?.role ?? '' });
+    for (const code of LOCALES) {
+      const text = member?.texts[code] ?? { name: '', role: '' };
+      this.form.controls[code].setValue({ name: text.name, role: text.role });
+    }
     this.form.markAsPristine();
     this.image.set(member?.image ?? null);
     this.imageError.set('');
+    this.locale.set(this.lang.language());
     this.editorOpen.set(true);
   }
 
@@ -105,29 +149,45 @@ export class AboutTeamSection {
   }
 
   save(): void {
-    if (this.form.invalid || this.saving()) {
-      this.form.markAllAsTouched();
+    if (this.form.controls.ar.invalid || this.saving()) {
+      this.form.controls.ar.markAllAsTouched();
       return;
     }
-    const value = this.form.getRawValue();
+    const editingId = this.editingId();
+    const previous =
+      editingId == null ? null : (this.team().find((item) => item.id === editingId)?.image ?? null);
     const member: AboutMember = {
-      id: this.editingId() ?? crypto.randomUUID(),
-      name: value.name.trim(),
-      role: value.role.trim(),
+      id: editingId ?? 'new',
+      texts: { ar: this.read('ar'), en: this.read('en') },
       image: this.image(),
     };
+    const isNew = !editingId;
     this.saving.set(true);
     this.api
-      .saveMember(member)
+      .saveMember(member, previous)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: () => {
           this.saving.set(false);
           this.editorOpen.set(false);
-          this.messages.add({ severity: 'success', summary: this.lang.t('common.save') });
+          if (isNew) {
+            this.messages.add({
+              severity: 'success',
+              summary: this.lang.t('about.toastMemberAddSuccess'),
+            });
+          }
           this.reload();
         },
-        error: () => this.fail(),
+        error: (error: unknown) => {
+          this.saving.set(false);
+          this.messages.add({
+            severity: 'error',
+            summary:
+              isApiError(error) && error.serverMessage
+                ? error.serverMessage
+                : this.lang.t(isNew ? 'about.toastAddError' : 'about.toastSaveError'),
+          });
+        },
       });
   }
 
@@ -146,8 +206,21 @@ export class AboutTeamSection {
       .removeMember(member.id)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
-        next: () => this.reload(),
-        error: () => this.fail(),
+        next: () => {
+          this.reload();
+          this.messages.add({
+            severity: 'success',
+            summary: this.lang.t('about.toastMemberDeleteSuccess'),
+          });
+        },
+        error: (error: unknown) =>
+          this.messages.add({
+            severity: 'error',
+            summary:
+              isApiError(error) && error.serverMessage
+                ? error.serverMessage
+                : this.lang.t('about.toastDeleteError'),
+          }),
       });
   }
 
@@ -157,13 +230,23 @@ export class AboutTeamSection {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (content) => this.changed.emit(content.team),
-        error: () => this.fail(),
+        error: (error: unknown) =>
+          this.messages.add({
+            severity: 'error',
+            summary:
+              isApiError(error) && error.serverMessage
+                ? error.serverMessage
+                : this.lang.t('about.toastSaveError'),
+          }),
       });
   }
 
-  private fail(): void {
-    this.saving.set(false);
-    this.messages.add({ severity: 'error', summary: this.lang.t('common.error') });
+  private read(locale: AppLanguage): AboutMemberText {
+    const value = this.form.controls[locale].getRawValue();
+    return {
+      name: value.name.trim(),
+      role: value.role.trim(),
+    };
   }
 
   private takeImage(file: File | undefined): void {
@@ -175,7 +258,10 @@ export class AboutTeamSection {
       this.imageError.set(result.errorKey);
       return;
     }
+    if (!file) {
+      return;
+    }
     this.imageError.set('');
-    this.image.set(result.image);
+    this.image.set({ ...result.image, file, url: undefined, uuid: undefined });
   }
 }

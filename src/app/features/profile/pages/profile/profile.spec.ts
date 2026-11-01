@@ -1,8 +1,12 @@
+import { provideHttpClient, withInterceptors } from '@angular/common/http';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { Router, provideRouter } from '@angular/router';
 import { MessageService } from 'primeng/api';
 
+import { environment } from '../../../../../environments/environment';
 import { AuthService } from '../../../../core/auth/auth.service';
+import { apiUrl } from '../../../../core/config/api';
 import { API_LATENCY_MS } from '../../../../core/config/latency';
 import { ProfilePage } from './profile';
 
@@ -11,6 +15,7 @@ const SESSION = {
   email: 'admin@codetech.sa',
   name: 'أحمد محمد',
   roleKey: 'roles.superAdmin',
+  remember: false,
 };
 
 describe('ProfilePage', () => {
@@ -34,7 +39,13 @@ describe('ProfilePage', () => {
     sessionStorage.setItem('codetech.session', JSON.stringify(SESSION));
     TestBed.configureTestingModule({
       imports: [ProfilePage],
-      providers: [provideRouter([]), MessageService, { provide: API_LATENCY_MS, useValue: 0 }],
+      providers: [
+        provideRouter([]),
+        provideHttpClient(withInterceptors([])),
+        provideHttpClientTesting(),
+        MessageService,
+        { provide: API_LATENCY_MS, useValue: 0 },
+      ],
     });
     const navigate = vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
     const fixture = TestBed.createComponent(ProfilePage);
@@ -76,6 +87,9 @@ describe('ProfilePage', () => {
   it('signs out and goes to the login page', () => {
     const { fixture, root, navigate } = render();
     root.querySelector<HTMLElement>('.profile-head__logout button')?.click();
+    TestBed.inject(HttpTestingController)
+      .expectOne(apiUrl(environment.apiUrl, 'admin/auth/logout'))
+      .flush('', { status: 204, statusText: 'No Content' });
     fixture.detectChanges();
 
     expect(TestBed.inject(AuthService).isAuthenticated()).toBe(false);

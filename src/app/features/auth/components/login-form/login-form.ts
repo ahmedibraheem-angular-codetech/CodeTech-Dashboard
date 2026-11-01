@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, inject, input, model, output } from '@angular/core';
-import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { type FormControl, type FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Button } from 'primeng/button';
 import { IconField } from 'primeng/iconfield';
 import { InputIcon } from 'primeng/inputicon';
@@ -15,10 +15,6 @@ export type LoginFormGroup = FormGroup<{
   password: FormControl<string>;
 }>;
 
-/**
- * Login credentials form: email, password, remember-me, and forgot link.
- * Parent owns AuthService submit and the reset-dialog open state.
- */
 @Component({
   selector: 'app-login-form',
   imports: [
@@ -42,10 +38,7 @@ export class LoginForm {
   readonly submitting = input(false);
   readonly credentialError = input(false);
   readonly showPassword = model(false);
-  /**
-   * Cosmetic only for now: not sent to AuthService and nothing is persisted.
-   * See Login page / README "Remember me".
-   */
+
   readonly remember = model(false);
 
   readonly forgot = output<void>();

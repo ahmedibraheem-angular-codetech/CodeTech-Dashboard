@@ -9,7 +9,7 @@ import {
   output,
   signal,
 } from '@angular/core';
-import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { type FormControl, type FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { IconField } from 'primeng/iconfield';
 import { InputIcon } from 'primeng/inputicon';
 import { InputText } from 'primeng/inputtext';
@@ -38,11 +38,6 @@ interface PhotoPreview {
   dateLabel: string;
 }
 
-/**
- * Shared add/edit user form body. Owns form-scoped locale, direction, and photo preview only.
- * The parent keeps the FormGroup, validation rules, and API save/cancel — and wraps this in
- * `app-modal`.
- */
 @Component({
   selector: 'app-user-editor-form',
   imports: [
@@ -64,7 +59,7 @@ export class UserEditorForm {
   private photoObjectUrl = '';
 
   readonly form = input.required<UserEditorFormGroup>();
-  /** Form-only language; does not change the page language. */
+
   readonly locale = model.required<AppLanguage>();
   readonly submitted = output<void>();
 
@@ -91,12 +86,10 @@ export class UserEditorForm {
     this.destroyRef.onDestroy(() => this.clearPhoto());
   }
 
-  /** Copy for this form only (follows `locale`, not the page language). */
   t(key: string): string {
     return this.lang.lookup(key, this.locale()) ?? key;
   }
 
-  /** Drop the local photo preview (call when opening/closing the editor). */
   clearPhoto(): void {
     if (this.photoObjectUrl.startsWith('blob:')) {
       URL.revokeObjectURL(this.photoObjectUrl);

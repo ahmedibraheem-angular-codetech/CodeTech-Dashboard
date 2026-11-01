@@ -8,11 +8,13 @@ import {
   viewChild,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { FormBuilder, Validators } from '@angular/forms';
+import { FormBuilder, FormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { MessageService } from 'primeng/api';
+import { DatePickerModule } from 'primeng/datepicker';
 import { forkJoin } from 'rxjs';
 
+import { AuthService } from '../../../../core/auth/auth.service';
 import { LanguageService } from '../../../../core/services/language.service';
 import { AppButton } from '../../../../shared/components/app-button/app-button';
 import { ConfirmDialog } from '../../../../shared/components/confirm-dialog/confirm-dialog';
@@ -20,7 +22,8 @@ import { Modal } from '../../../../shared/components/modal/modal';
 import { PageHeader } from '../../../../shared/components/page-header/page-header';
 import { PageTabs, type PageTab } from '../../../../shared/components/page-tabs/page-tabs';
 import { StateView } from '../../../../shared/components/state-view/state-view';
-import { FaqCategoryForm } from '../../../sections/components/faq-board/components/faq-category-form/faq-category-form';
+import { CategoryForm } from '../../../../shared/components/category-form/category-form';
+import { HasPermissionDirective } from '../../../../shared/directives/has-permission.directive';
 import {
   ArticlesPanel,
   type ArticleStatusChange,
@@ -34,7 +37,6 @@ type LoadState = 'loading' | 'ready' | 'error';
 type BoardTab = 'articles' | 'categories';
 type CategoryEditor = 'create' | 'edit' | null;
 
-/** Knowledge Center list page: header, tabs, load/error state and category modal. */
 @Component({
   selector: 'app-knowledge-board',
   imports: [
@@ -42,11 +44,14 @@ type CategoryEditor = 'create' | 'edit' | null;
     ArticlesPanel,
     CategoriesPanel,
     ConfirmDialog,
-    FaqCategoryForm,
+    DatePickerModule,
+    CategoryForm,
+    FormsModule,
     Modal,
     PageHeader,
     PageTabs,
     StateView,
+    HasPermissionDirective,
   ],
   templateUrl: './knowledge-board.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -58,6 +63,7 @@ export class KnowledgeBoard {
   private readonly router = inject(Router);
   private readonly destroyRef = inject(DestroyRef);
   private readonly fb = inject(FormBuilder);
+  private readonly auth = inject(AuthService);
   private readonly confirm = viewChild.required(ConfirmDialog);
   readonly lang = inject(LanguageService);
 
@@ -65,6 +71,8 @@ export class KnowledgeBoard {
   readonly saving = signal(false);
   readonly tab = signal<BoardTab>('articles');
   readonly articles = signal<Article[]>([]);
+
+  readonly dateFilter = signal<string | null>(null);
   private readonly rawCategories = signal<ArticleCategory[]>([]);
   readonly editor = signal<CategoryEditor>(null);
   readonly selectedCategory = signal<ArticleCategory | null>(null);
@@ -75,13 +83,30 @@ export class KnowledgeBoard {
     published: this.fb.nonNullable.control(true),
   });
 
-  /** Counts follow the live article list, so deleting an article updates its category card. */
   readonly categories = computed(() => {
     const articles = this.articles();
     return this.rawCategories().map((category) => ({
       ...category,
       articleCount: articles.filter((item) => item.categoryId === category.id).length,
     }));
+  });
+
+  readonly filteredArticles = computed(() => {
+    const day = this.dateFilter();
+    const list = this.articles();
+    if (!day) {
+      return list;
+    }
+    return list.filter((item) => item.publishedAt.slice(0, 10) === day);
+  });
+
+  readonly filteredCategories = computed(() => {
+    const day = this.dateFilter();
+    const list = this.categories();
+    if (!day) {
+      return list;
+    }
+    return list.filter((item) => item.createdAt.slice(0, 10) === day);
   });
 
   readonly tabs = computed<readonly PageTab[]>(() => [
@@ -99,6 +124,15 @@ export class KnowledgeBoard {
   readonly addLabel = computed(() => {
     this.lang.language();
     return this.lang.t(this.tab() === 'categories' ? 'knowledge.addCategory' : 'knowledge.add');
+  });
+
+  readonly canUpdate = computed(() => {
+    const session = this.auth.session();
+    return !!session?.profileLoaded && this.auth.hasPermission('knowledge_center.update');
+  });
+  readonly canDelete = computed(() => {
+    const session = this.auth.session();
+    return !!session?.profileLoaded && this.auth.hasPermission('knowledge_center.delete');
   });
 
   readonly editorTitle = computed(() => {
@@ -135,6 +169,21 @@ export class KnowledgeBoard {
 
   protected reload(): void {
     this.load();
+  }
+
+  protected setDateFilter(value: string | Date | null): void {
+    if (!value) {
+      this.dateFilter.set(null);
+      return;
+    }
+    if (value instanceof Date) {
+      const y = value.getFullYear();
+      const m = `${value.getMonth() + 1}`.padStart(2, '0');
+      const d = `${value.getDate()}`.padStart(2, '0');
+      this.dateFilter.set(`${y}-${m}-${d}`);
+      return;
+    }
+    this.dateFilter.set(value.slice(0, 10) || null);
   }
 
   protected view(article: Article): void {

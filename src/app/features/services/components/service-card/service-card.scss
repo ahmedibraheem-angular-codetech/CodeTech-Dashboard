@@ -1,0 +1,120 @@
+// Services list card. Encapsulation is off so the PrimeNG buttons and switch inside can be
+// sized; every selector is namespaced under `.service-card`.
+app-service-card {
+  display: block;
+}
+
+.service-card {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  height: 100%;
+  min-height: 209px;
+  padding: 15px;
+  border: 1px solid #f5f5f8;
+  border-radius: 12px;
+  background: var(--app-surface, #fff);
+  cursor: pointer;
+}
+
+.service-card__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.service-card__icon {
+  display: grid;
+  width: 42px;
+  height: 42px;
+  place-items: center;
+  border-radius: 12px;
+  background: #f7f7f7;
+  color: #3f4a5c;
+  font-size: 16px;
+}
+
+.service-card__actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.service-card .p-button.service-card__action {
+  width: 42px;
+  height: 42px;
+  padding: 0;
+  border-width: 1px;
+  border-radius: 14px;
+  background: #fff;
+}
+
+.service-card .p-button.service-card__action .p-button-icon {
+  font-size: 14px;
+}
+
+.service-card .p-button.service-card__action.p-button-primary,
+.service-card .p-button.service-card__action:not(.p-button-danger) {
+  border-color: #e6eef5;
+  color: #1b81d3;
+}
+
+.service-card .p-button.service-card__action.p-button-danger {
+  border-color: #ece3e4;
+  color: #d64545;
+}
+
+// Pushes the title block to the bottom so every card in a row aligns, as in the design.
+.service-card__head {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 10px;
+  margin-top: auto;
+}
+
+.service-card__head h2 {
+  margin: 0;
+  color: var(--app-text);
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1.6;
+}
+
+// The title is a real button so keyboard users can open the details; it looks like plain text.
+.service-card__open {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: start;
+  cursor: pointer;
+}
+
+.service-card__open:focus-visible {
+  border-radius: 4px;
+  outline: 2px solid var(--app-primary);
+  outline-offset: 2px;
+}
+
+.service-card .p-toggleswitch {
+  --p-toggleswitch-width: 32px;
+  --p-toggleswitch-height: 18px;
+  --p-toggleswitch-handle-size: 12px;
+  --p-toggleswitch-gap: 3px;
+  --p-toggleswitch-background: #e2e2e2;
+  --p-toggleswitch-hover-background: #d9d9d9;
+  flex-shrink: 0;
+  width: 32px;
+  height: 18px;
+}
+
+.service-card__description {
+  margin: 0;
+  color: #6b7384;
+  font-size: 11.2px;
+  line-height: 25px;
+}

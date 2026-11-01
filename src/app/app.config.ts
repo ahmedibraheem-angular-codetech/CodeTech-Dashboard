@@ -1,5 +1,5 @@
 import {
-  ApplicationConfig,
+  type ApplicationConfig,
   inject,
   provideAppInitializer,
   provideBrowserGlobalErrorListeners,
@@ -10,6 +10,7 @@ import { MessageService } from 'primeng/api';
 import { providePrimeNG } from 'primeng/config';
 
 import { routes } from './app.routes';
+import { apiInterceptor } from './core/interceptors/api.interceptor';
 import { authInterceptor } from './core/interceptors/auth.interceptor';
 import { LanguageService } from './core/services/language.service';
 import { LayoutService } from './core/services/layout.service';
@@ -20,7 +21,7 @@ export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
     provideRouter(routes, withComponentInputBinding()),
-    provideHttpClient(withInterceptors([authInterceptor])),
+    provideHttpClient(withInterceptors([apiInterceptor, authInterceptor])),
     providePrimeNG({
       theme: {
         preset: AppTheme,
@@ -32,8 +33,7 @@ export const appConfig: ApplicationConfig = {
     }),
     MessageService,
     { provide: TitleStrategy, useClass: AppTitleStrategy },
-    // These services apply <html> attributes (lang, dir, density) from their
-    // constructors, so create them up front instead of relying on a component to do it.
+
     provideAppInitializer(() => {
       inject(LanguageService);
       inject(LayoutService);

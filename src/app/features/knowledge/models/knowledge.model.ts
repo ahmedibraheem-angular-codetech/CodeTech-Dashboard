@@ -2,9 +2,8 @@ export type ArticleStatus = 'published' | 'draft' | 'unpublished';
 
 export const ARTICLE_STATUSES: readonly ArticleStatus[] = ['published', 'draft', 'unpublished'];
 
-/** Full article record. The list reads a subset; the editor and detail pages read the rest. */
 export interface Article {
-  /** Numeric string. Doubles as the ID column and the route parameter. */
+
   id: string;
   titleAr: string;
   titleEn: string;
@@ -14,7 +13,7 @@ export interface Article {
   readingMinutes: number;
   status: ArticleStatus;
   featured: boolean;
-  /** ISO local date-time: `yyyy-mm-ddThh:mm`. */
+
   publishedAt: string;
   authorNameAr: string;
   authorNameEn: string;
@@ -38,7 +37,7 @@ export interface Article {
   seoDescriptionEn: string;
   seoKeywordsAr: string;
   seoKeywordsEn: string;
-  /** ISO date: `yyyy-mm-dd`. */
+
   createdAt: string;
 }
 
@@ -48,12 +47,12 @@ export interface ArticleCategory {
   id: string;
   nameAr: string;
   nameEn: string;
-  /** Display order shown on the category card. */
+
   order: number;
   published: boolean;
-  /** Derived by the service from the articles that reference this category. */
+
   articleCount: number;
-  /** ISO date: `yyyy-mm-dd`. */
+
   createdAt: string;
 }
 

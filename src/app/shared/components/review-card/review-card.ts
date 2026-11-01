@@ -35,6 +35,12 @@ export class ReviewCard {
   readonly editLabel = input('');
   readonly deleteLabel = input('');
 
+  readonly showEdit = input(true);
+
+  readonly showDelete = input(true);
+
+  readonly showPublish = input(true);
+
   readonly publishedChange = output<boolean>();
   readonly editRequested = output<void>();
   readonly deleteRequested = output<void>();

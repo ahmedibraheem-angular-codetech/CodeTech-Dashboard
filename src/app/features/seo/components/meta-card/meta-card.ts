@@ -28,6 +28,8 @@ import { SeoPanel } from '../seo-panel/seo-panel';
 })
 export class MetaCard {
   readonly pageId = input.required<string>();
+
+  readonly editable = input(true);
   readonly max = DESCRIPTION_MAX;
 
   private readonly seo = inject(SeoService);
@@ -42,6 +44,14 @@ export class MetaCard {
   });
 
   constructor() {
+    effect(() => {
+      if (this.editable()) {
+        this.form.enable({ emitEvent: false });
+      } else {
+        this.form.disable({ emitEvent: false });
+      }
+    });
+
     effect(() => {
       const pageId = this.pageId();
       const locale = this.locale();

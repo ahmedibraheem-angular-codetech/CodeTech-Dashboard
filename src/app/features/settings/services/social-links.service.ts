@@ -1,5 +1,5 @@
 import { Injectable, inject, signal } from '@angular/core';
-import { Observable, map, timer } from 'rxjs';
+import { type Observable, map, timer } from 'rxjs';
 
 import { API_LATENCY_MS } from '../../../core/config/latency';
 import { toIsoDate } from '../../../shared/utils/date';
@@ -98,7 +98,6 @@ export class SocialLinksService {
     );
   }
 
-  /** Platforms still available when adding a new channel. */
   availablePlatforms(excludeId?: string): SocialPlatformId[] {
     const used = new Set(
       this.document()

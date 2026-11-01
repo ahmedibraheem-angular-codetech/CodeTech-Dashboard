@@ -1,4 +1,4 @@
-/** Result of a copy-to-clipboard attempt from SocialLinkCard. */
+
 export type SocialLinkCopyResult =
   { ok: true } | { ok: false; reason: 'empty' | 'unsupported' | 'denied' };
 

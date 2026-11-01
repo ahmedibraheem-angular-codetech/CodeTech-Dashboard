@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 
-import { StatisticsCard } from './statistics-card.model';
+import { type StatisticsCard } from './statistics-card.model';
 import { StatisticsCards } from './statistics-cards';
 
 describe('StatisticsCards', () => {

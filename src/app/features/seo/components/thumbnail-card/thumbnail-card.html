@@ -11,12 +11,14 @@
     <div class="field">
       <span class="field__label">{{ text('seo.uploadLabel') }}</span>
       <label class="seo-drop" (dragover)="$event.preventDefault()" (drop)="onDrop($event)">
-        <input
-          type="file"
-          accept="image/png,image/jpeg"
-          [attr.aria-label]="text('seo.uploadLabel')"
-          (change)="onPick($event)"
-        />
+        @if (editable()) {
+          <input
+            type="file"
+            accept="image/png,image/jpeg"
+            [attr.aria-label]="text('seo.uploadLabel')"
+            (change)="onPick($event)"
+          />
+        }
         @if (previewUrl()) {
           <img class="seo-drop__preview" [src]="previewUrl()" alt="" />
         } @else {

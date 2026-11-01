@@ -1,6 +1,6 @@
 <nav class="crumbs" [attr.aria-label]="lang.t('nav.home')">
   <i class="pi pi-home" aria-hidden="true"></i>
-  @for (crumb of crumbs.crumbs(); track crumb.key; let last = $last) {
+  @for (crumb of crumbs.crumbs(); track crumb.url; let last = $last) {
     @if (!last) {
       <a [routerLink]="crumb.url">{{ lang.t(crumb.key) }}</a>
       <i class="pi pi-angle-left" aria-hidden="true"></i>

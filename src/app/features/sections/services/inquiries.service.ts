@@ -1,10 +1,10 @@
 import { Injectable, inject, signal } from '@angular/core';
-import { Observable, map, timer } from 'rxjs';
+import { type Observable, map, timer } from 'rxjs';
 
 import { API_LATENCY_MS } from '../../../core/config/latency';
 import { AuthService } from '../../../core/auth/auth.service';
 import { toIsoDate } from '../../../shared/utils/date';
-import { Inquiry, InquiryNote, InquiryReply, InquiryStamp } from '../models/inquiry.model';
+import { type Inquiry, type InquiryNote, type InquiryReply, type InquiryStamp } from '../models/inquiry.model';
 import { INQUIRIES_SEED } from './inquiries.mock';
 
 @Injectable({ providedIn: 'root' })

@@ -10,9 +10,11 @@ export interface FaqCategory {
   name: FaqLocaleText;
   order: number;
   published: boolean;
-  /** Display code shown as `#255663 ID` on category cards. */
+
   code: string;
   createdAt: string;
+
+  faqsCount?: number;
 }
 
 export type FaqCategoryDraft = Omit<FaqCategory, 'id'>;

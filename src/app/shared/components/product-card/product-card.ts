@@ -25,6 +25,10 @@ export class ProductCard {
   readonly viewLabel = input('');
   readonly moreLabel = input('');
 
+  readonly showDelete = input(true);
+
+  readonly showEdit = input(true);
+
   readonly deleteRequested = output<void>();
   readonly editRequested = output<void>();
   readonly viewRequested = output<void>();

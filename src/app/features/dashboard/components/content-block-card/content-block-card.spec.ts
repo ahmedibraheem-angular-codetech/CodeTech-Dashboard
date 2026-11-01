@@ -1,17 +1,23 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideHttpClient, withInterceptors } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { type ComponentFixture, TestBed } from '@angular/core/testing';
 import { MessageService } from 'primeng/api';
+import { Subject, of } from 'rxjs';
 
-import { API_LATENCY_MS } from '../../../../core/config/latency';
-import { ContentBlock } from '../../models/homepage.model';
+import { authSession } from '../../../../core/auth/auth-session.fixture';
+import { AuthService } from '../../../../core/auth/auth.service';
+import { type ContentBlock } from '../../models/homepage.model';
 import { HomepageService } from '../../services/homepage.service';
 import { ContentBlockCard } from './content-block-card';
+
+const HOME_GRANTS = ['home.view', 'home.create', 'home.update', 'home.delete'] as const;
 
 const block: ContentBlock = {
   texts: {
     ar: { title: 'عن كود التقنية', body: 'نبذة', points: ['نقطة ١', 'نقطة ٢'] },
     en: { title: 'About', body: 'Summary', points: ['Point 1'] },
   },
-  image: { name: 'about.png', size: 320512, uploadedAt: '2026-08-31' },
+  image: { name: 'about.png', size: 320512, uploadedAt: '2026-08-31', uuid: 'about-image' },
 };
 
 const emptyText = { title: '', body: '', points: [] };
@@ -20,8 +26,21 @@ describe('ContentBlockCard', () => {
   async function setup(value: ContentBlock = block): Promise<ComponentFixture<ContentBlockCard>> {
     TestBed.configureTestingModule({
       imports: [ContentBlockCard],
-      providers: [MessageService, { provide: API_LATENCY_MS, useValue: 0 }],
+      providers: [
+        MessageService,
+        provideHttpClient(withInterceptors([])),
+        provideHttpClientTesting(),
+      ],
     });
+    TestBed.inject(AuthService).session.set(
+      authSession({
+        token: 't',
+        email: 'admin@codetech.sa',
+        name: 'Admin',
+        profileLoaded: true,
+        permissions: [...HOME_GRANTS],
+      }),
+    );
     const fixture = TestBed.createComponent(ContentBlockCard);
     fixture.componentRef.setInput('kind', 'about');
     fixture.componentRef.setInput('block', value);
@@ -31,6 +50,12 @@ describe('ContentBlockCard', () => {
   }
 
   const root = (fixture: ComponentFixture<ContentBlockCard>): HTMLElement => fixture.nativeElement;
+
+  const dialogRoot = (): HTMLElement => document.body;
+
+  afterEach(() => {
+    document.querySelectorAll('.p-dialog-mask, .p-dialog').forEach((node) => node.remove());
+  });
 
   function file(name: string, type: string, size = 1024): File {
     return new File([new Uint8Array(size)], name, { type });
@@ -65,9 +90,9 @@ describe('ContentBlockCard', () => {
     expect(component.form.controls.en.controls.points.length).toBe(1);
     expect(component.form.controls.en.controls.title.value).toBe('About');
     expect(component.image()?.name).toBe('about.png');
-    expect(root(fixture).querySelector('.p-dialog.app-modal')).not.toBeNull();
-    expect(root(fixture).querySelectorAll('.point-row')).toHaveLength(2);
-    expect(root(fixture).querySelector('.image-file strong')?.textContent).toBe('about.png');
+    expect(dialogRoot().querySelector('.p-dialog.app-modal')).not.toBeNull();
+    expect(dialogRoot().querySelectorAll('.point-row')).toHaveLength(2);
+    expect(dialogRoot().querySelector('.image-file strong')?.textContent).toBe('about.png');
   });
 
   it('shows the fields of the picked language tab', async () => {
@@ -77,12 +102,12 @@ describe('ContentBlockCard', () => {
     await fixture.whenStable();
     fixture.detectChanges();
 
-    root(fixture).querySelectorAll<HTMLButtonElement>('.locale-switch__option')[0].click();
+    dialogRoot().querySelectorAll<HTMLButtonElement>('.locale-switch__option')[0].click();
     fixture.detectChanges();
 
     expect(fixture.componentInstance.locale()).toBe('en');
-    expect(root(fixture).querySelector('.block-form__lang')?.getAttribute('dir')).toBe('ltr');
-    expect(root(fixture).querySelectorAll('.point-row')).toHaveLength(1);
+    expect(dialogRoot().querySelector('.block-form__lang')?.getAttribute('dir')).toBe('ltr');
+    expect(dialogRoot().querySelectorAll('.point-row')).toHaveLength(1);
   });
 
   it('adds and removes points independently per language', async () => {
@@ -102,16 +127,18 @@ describe('ContentBlockCard', () => {
     expect(fixture.componentInstance.image()).toBeNull();
   });
 
-  it('requires the Arabic text but not the English one', async () => {
+  it('allows saving with no required fields in either language', async () => {
     const fixture = await setup({ ...block, texts: { ar: emptyText, en: emptyText }, image: null });
     const component = fixture.componentInstance;
     component.open();
-    expect(component.form.controls.ar.invalid).toBe(true);
+    expect(component.form.controls.ar.valid).toBe(true);
     expect(component.form.controls.en.valid).toBe(true);
 
-    const save = vi.spyOn(TestBed.inject(HomepageService), 'saveBlock');
+    const save = vi
+      .spyOn(TestBed.inject(HomepageService), 'saveBlock')
+      .mockReturnValue(of({ texts: { ar: emptyText, en: emptyText }, image: null }));
     component.save();
-    expect(save).not.toHaveBeenCalled();
+    expect(save).toHaveBeenCalled();
   });
 
   it('saves trimmed text, drops blank points and tells the parent', async () => {
@@ -119,15 +146,16 @@ describe('ContentBlockCard', () => {
     const component = fixture.componentInstance;
     const saved = vi.fn();
     component.blockSaved.subscribe(saved);
+    vi.spyOn(TestBed.inject(HomepageService), 'saveBlock').mockImplementation((_kind, next) =>
+      of(next),
+    );
 
     component.open();
     component.form.controls.ar.controls.title.setValue('  عنوان  ');
     component.addPoint('en');
     component.form.controls.en.controls.points.at(1).setValue('   ');
     component.save();
-    expect(component.saving()).toBe(true);
-
-    await new Promise((resolve) => setTimeout(resolve, 20));
+    await fixture.whenStable();
     expect(component.saving()).toBe(false);
     expect(component.editorOpen()).toBe(false);
     const result: ContentBlock = saved.mock.calls[0][0];
@@ -138,11 +166,16 @@ describe('ContentBlockCard', () => {
 
   it('ignores a second save while the first one is in flight', async () => {
     const fixture = await setup();
-    const save = vi.spyOn(TestBed.inject(HomepageService), 'saveBlock');
+    const pending = new Subject<ContentBlock>();
+    const save = vi
+      .spyOn(TestBed.inject(HomepageService), 'saveBlock')
+      .mockReturnValue(pending.asObservable());
     fixture.componentInstance.open();
     fixture.componentInstance.save();
     fixture.componentInstance.save();
     expect(save).toHaveBeenCalledTimes(1);
+    pending.next(block);
+    pending.complete();
   });
 
   it('rejects an unsupported or oversized image and keeps the current one', async () => {
@@ -165,6 +198,7 @@ describe('ContentBlockCard', () => {
 
     component.onDrop(dropOf(file('new.jpg', 'image/jpeg', 2048)));
     expect(component.image()).toMatchObject({ name: 'new.jpg', size: 2048 });
+    expect(component.image()?.file).toBeInstanceOf(File);
     expect(component.imageError()).toBe('');
 
     component.removeImage();

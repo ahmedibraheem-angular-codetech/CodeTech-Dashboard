@@ -1,3 +1,5 @@
+import { provideHttpClient, withInterceptors } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { firstValueFrom } from 'rxjs';
 
@@ -7,7 +9,11 @@ import { InquiriesService } from './inquiries.service';
 describe('InquiriesService', () => {
   function setup() {
     TestBed.configureTestingModule({
-      providers: [{ provide: API_LATENCY_MS, useValue: 0 }],
+      providers: [
+        provideHttpClient(withInterceptors([])),
+        provideHttpClientTesting(),
+        { provide: API_LATENCY_MS, useValue: 0 },
+      ],
     });
     return TestBed.inject(InquiriesService);
   }

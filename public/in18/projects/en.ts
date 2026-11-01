@@ -33,7 +33,7 @@ export const en = {
   'project.step.identity': 'Digital identity',
   'project.step.seo': 'SEO',
   'project.info': 'Project data',
-  'project.categories': 'Project categories',
+  'project.categories': 'Project categories (Tags)',
   'project.categoryItem': 'Category',
   'project.categoryTitle': 'Category title',
   'project.categoryTitlePh': 'Enter the category title',

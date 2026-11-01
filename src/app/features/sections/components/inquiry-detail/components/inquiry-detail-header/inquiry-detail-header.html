@@ -17,6 +17,7 @@
   <div class="page-header__actions inquiry__actions">
     @if (inquiry().status === 'new' && !inquiry().reply) {
       <app-button
+        *appHasPermission="updatePermission()"
         variant="outlined"
         styleClass="inquiry-btn inquiry-btn--reply"
         icon="pi pi-send"
@@ -27,6 +28,7 @@
       />
     } @else if (inquiry().status !== 'closed') {
       <app-button
+        *appHasPermission="updatePermission()"
         variant="outlined"
         styleClass="inquiry-btn inquiry-btn--reply"
         icon="pi pi-times-circle"
@@ -37,6 +39,7 @@
       />
     }
     <app-button
+      *appHasPermission="updatePermission()"
       variant="outlined"
       styleClass="inquiry-btn"
       icon="pi pi-file-edit"
@@ -46,6 +49,7 @@
       (clicked)="addNote.emit()"
     />
     <app-button
+      *appHasPermission="deletePermission()"
       variant="danger"
       [outlined]="true"
       styleClass="inquiry-btn inquiry-btn--danger"

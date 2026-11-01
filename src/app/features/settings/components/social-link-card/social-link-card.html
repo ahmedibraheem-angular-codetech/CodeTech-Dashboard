@@ -1,11 +1,13 @@
 <article class="social-card" [class.social-card--wide]="wide()">
   <header class="social-card__head">
     <h3>{{ title() }}</h3>
-    <p-toggleswitch
-      [ngModel]="channel().enabled"
-      (ngModelChange)="enabledChange.emit($event)"
-      [ariaLabel]="title()"
-    />
+    @if (showToggle()) {
+      <p-toggleswitch
+        [ngModel]="channel().enabled"
+        (ngModelChange)="enabledChange.emit($event)"
+        [ariaLabel]="title()"
+      />
+    }
   </header>
 
   <!-- URL bar is LTR: external (left) → text → copy (right) = matches RTL visual. -->
@@ -39,25 +41,31 @@
     </button>
   </div>
 
-  <div class="social-card__actions">
-    <app-button
-      [outlined]="true"
-      icon="pi pi-pencil"
-      iconPos="start"
-      [fluid]="true"
-      styleClass="social-card__edit"
-      [label]="editLabel()"
-      (clicked)="edit.emit()"
-    />
-    <app-button
-      variant="danger"
-      [outlined]="true"
-      icon="pi pi-trash"
-      iconPos="start"
-      [fluid]="true"
-      styleClass="social-card__delete"
-      [label]="deleteLabel()"
-      (clicked)="remove.emit()"
-    />
-  </div>
+  @if (showEdit() || showDelete()) {
+    <div class="social-card__actions">
+      @if (showEdit()) {
+        <app-button
+          [outlined]="true"
+          icon="pi pi-pencil"
+          iconPos="start"
+          [fluid]="true"
+          styleClass="social-card__edit"
+          [label]="editLabel()"
+          (clicked)="edit.emit()"
+        />
+      }
+      @if (showDelete()) {
+        <app-button
+          variant="danger"
+          [outlined]="true"
+          icon="pi pi-trash"
+          iconPos="start"
+          [fluid]="true"
+          styleClass="social-card__delete"
+          [label]="deleteLabel()"
+          (clicked)="remove.emit()"
+        />
+      }
+    </div>
+  }
 </article>

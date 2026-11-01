@@ -32,10 +32,6 @@ interface StatusFilterOption {
   selectAll?: boolean;
 }
 
-/**
- * Categories tab panel. Owns search/status filter UI state.
- * Parent supplies categories/items and handles edit/delete/publish API actions.
- */
 @Component({
   selector: 'app-faq-categories-panel',
   imports: [FormsModule, AppButton, Checkbox, Popover, StateView, ToggleSwitch],
@@ -47,6 +43,9 @@ export class FaqCategoriesPanel {
 
   readonly categories = input.required<readonly FaqCategory[]>();
   readonly items = input.required<readonly FaqItem[]>();
+  readonly showEdit = input(true);
+  readonly showDelete = input(true);
+  readonly showPublish = input(true);
 
   readonly edit = output<FaqCategory>();
   readonly remove = output<FaqCategory>();
@@ -168,7 +167,7 @@ export class FaqCategoriesPanel {
     }
     const active = statuses.includes('active') && category.published;
     const inactive = statuses.includes('inactive') && !category.published;
-    // Closed has no model flag yet; keep the option for UI parity with the reference.
+
     return active || inactive;
   }
 }

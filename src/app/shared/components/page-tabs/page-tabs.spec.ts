@@ -27,7 +27,7 @@ describe('PageTabs', () => {
     const fixture = TestBed.createComponent(PageTabs);
     fixture.componentRef.setInput('tabs', TABS);
     fixture.componentRef.setInput('value', value);
-    const selected: Array<string | number | undefined> = [];
+    const selected: (string | number | undefined)[] = [];
     fixture.componentInstance.valueChange.subscribe((next) => selected.push(next));
     fixture.detectChanges();
     return { fixture, root: fixture.nativeElement as HTMLElement, selected };

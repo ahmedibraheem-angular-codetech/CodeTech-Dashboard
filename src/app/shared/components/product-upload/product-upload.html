@@ -1,16 +1,6 @@
 @if (actions()) {
   <div class="uploader__actions" role="tablist">
-    <button
-      type="button"
-      class="uploader__action"
-      role="tab"
-      [class.uploader__action--primary]="source() === 'library'"
-      [attr.aria-selected]="source() === 'library'"
-      (click)="source.set('library')"
-    >
-      {{ copy('chooseLibrary') }}
-      <i class="pi pi-face-smile" aria-hidden="true"></i>
-    </button>
+    <!-- Upload first so it sits on the inline-start edge in RTL (Figma). -->
     <button
       type="button"
       class="uploader__action"
@@ -22,9 +12,20 @@
       {{ copy('uploadIcon') }}
       <i class="pi pi-upload" aria-hidden="true"></i>
     </button>
+    <button
+      type="button"
+      class="uploader__action"
+      role="tab"
+      [class.uploader__action--primary]="source() === 'library'"
+      [attr.aria-selected]="source() === 'library'"
+      (click)="source.set('library')"
+    >
+      {{ copy('chooseLibrary') }}
+      <i class="pi pi-face-smile" aria-hidden="true"></i>
+    </button>
   </div>
 }
-<div class="uploader-shell">
+<div class="uploader-shell mt-2" [class.uploader-shell--dragging]="dragging()">
   @if (clearable() && hasMedia()) {
     <button
       type="button"
@@ -46,7 +47,7 @@
           [attr.aria-selected]="iconSelected(icon)"
           (click)="pickIcon(icon)"
         >
-          <i [class]="'pi ' + icon" aria-hidden="true"></i>
+          <img class="icon-library__img" [src]="iconSrc(icon)" [alt]="icon" />
         </button>
       }
     </div>
@@ -62,7 +63,7 @@
         <img class="uploader__preview" [src]="url()" alt="" />
       } @else if (iconName(); as icon) {
         <span class="uploader__mark uploader__mark--icon" aria-hidden="true">
-          <i [class]="'pi ' + icon"></i>
+          <img class="icon-library__img icon-library__img--preview" [src]="iconSrc(icon)" alt="" />
         </span>
       } @else {
         <span class="uploader__mark" aria-hidden="true">

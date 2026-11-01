@@ -2,7 +2,7 @@ import { Component, signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 
 import { DataTable, DataTableCellTemplate } from './data-table';
-import { DataTableColumn, DataTableFilterOption } from './data-table.model';
+import { type DataTableColumn, type DataTableFilterOption } from './data-table.model';
 
 interface Row {
   id: string;

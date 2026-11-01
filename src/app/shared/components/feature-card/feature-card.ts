@@ -5,7 +5,6 @@ import { Textarea } from 'primeng/textarea';
 import type { AppLanguage } from '../../../core/i18n/language';
 import { ProductUpload } from '../product-upload/product-upload';
 
-/** One product feature: tab, title, description, and icon. */
 @Component({
   selector: 'app-feature-card',
   imports: [InputText, Textarea, ProductUpload],
@@ -22,23 +21,23 @@ export class FeatureCard {
   readonly body = input('');
   readonly bodyLabel = input.required<string>();
   readonly bodyPlaceholder = input('');
-  /** Visible rows of the description field; other editors keep the default of three. */
+
   readonly bodyRows = input(3);
   readonly iconLabel = input.required<string>();
   readonly imageName = input('');
   readonly imageUrl = input('');
   readonly locale = input<AppLanguage | null>(null);
-  /** Forwarded to `app-product-upload` (`product` default, `project` for the projects wizard). */
+
   readonly uploadKeyPrefix = input('product');
-  /** Opt-in clear control; Products leave the default off. */
+
   readonly clearable = input(false);
-  /** Library and upload tabs. Plain image drop zones leave this off. */
+
   readonly actions = input(true);
   readonly showIcon = input(true);
   readonly removeDisabled = input(false);
   readonly removeLabel = input('');
   readonly removeIcon = input('pi-trash');
-  /** When false, only the tab stays visible so a parent can show one panel at a time. */
+
   readonly active = input(true);
 
   readonly titleChange = output<Event>();

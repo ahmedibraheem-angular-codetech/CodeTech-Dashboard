@@ -1,10 +1,9 @@
-import type { Environment } from './environment.model';
+import { TEMPORARY_DEMO_OTP, type Environment } from './environment.model';
 
 export const environment: Environment = {
   production: false,
-  apiUrl: '/api',
+  apiUrl: 'https://webdash.codetech-sa-dev.com/api/v1',
   demo: {
-    password: '12345678',
-    otp: '1111',
+    otp: TEMPORARY_DEMO_OTP,
   },
 };

@@ -1,18 +1,22 @@
+import { provideHttpClient, withInterceptors } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { FormControl } from '@angular/forms';
 import { TestBed } from '@angular/core/testing';
 import { MessageService } from 'primeng/api';
 
+import { authSession } from '../../../../core/auth/auth-session.fixture';
 import { AuthService } from '../../../../core/auth/auth.service';
 import { API_LATENCY_MS } from '../../../../core/config/latency';
 import { ProfileService } from '../../../../core/profile/profile.service';
 import { PersonalData, noWhitespaceOnly } from './personal-data';
 
-const SESSION = {
+const SESSION = authSession({
   token: 't',
   email: 'admin@codetech.sa',
   name: 'أحمد محمد',
   roleKey: 'roles.superAdmin',
-};
+  remember: false,
+});
 
 describe('noWhitespaceOnly', () => {
   it('flags values made only of spaces', () => {
@@ -33,7 +37,12 @@ describe('PersonalData', () => {
     }
     TestBed.configureTestingModule({
       imports: [PersonalData],
-      providers: [MessageService, { provide: API_LATENCY_MS, useValue: 0 }],
+      providers: [
+        MessageService,
+        provideHttpClient(withInterceptors([])),
+        provideHttpClientTesting(),
+        { provide: API_LATENCY_MS, useValue: 0 },
+      ],
     });
     const fixture = TestBed.createComponent(PersonalData);
     fixture.detectChanges();
@@ -55,7 +64,6 @@ describe('PersonalData', () => {
     await settle(fixture);
   }
 
-  /** Types into an input the way a user would, so the control becomes dirty. */
   function type(fixture: Fixture, id: string, value: string): void {
     const input = (fixture.nativeElement as HTMLElement).querySelector<HTMLInputElement>(`#${id}`);
     if (!input) {
@@ -110,7 +118,6 @@ describe('PersonalData', () => {
       type(fixture, 'profile-name', '   ');
       await submit(fixture);
 
-      // The save step trims first, so the field ends up empty and reports "required".
       expect(fixture.componentInstance.form.controls.name.value).toBe('');
       expect(root.querySelector('#profile-name-error')?.textContent).toContain('الاسم مطلوب');
     });

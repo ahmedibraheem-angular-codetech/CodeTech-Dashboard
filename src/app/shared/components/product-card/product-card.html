@@ -4,24 +4,28 @@
       <img [src]="imageUrl()" alt="" />
     }
     <span class="product-card__actions">
-      <app-button
-        type="button"
-        icon="pi pi-trash"
-        [rounded]="true"
-        variant="ghost"
-        styleClass="product-card__action product-card__action--danger"
-        [ariaLabel]="deleteLabel()"
-        (clicked)="deleteRequested.emit()"
-      />
-      <app-button
-        type="button"
-        icon="pi pi-pencil"
-        [rounded]="true"
-        variant="ghost"
-        styleClass="product-card__action product-card__action--edit"
-        [ariaLabel]="editLabel()"
-        (clicked)="editRequested.emit()"
-      />
+      @if (showDelete()) {
+        <app-button
+          type="button"
+          icon="pi pi-trash"
+          [rounded]="true"
+          variant="ghost"
+          styleClass="product-card__action product-card__action--danger"
+          [ariaLabel]="deleteLabel()"
+          (clicked)="deleteRequested.emit()"
+        />
+      }
+      @if (showEdit()) {
+        <app-button
+          type="button"
+          icon="pi pi-pencil"
+          [rounded]="true"
+          variant="ghost"
+          styleClass="product-card__action product-card__action--edit"
+          [ariaLabel]="editLabel()"
+          (clicked)="editRequested.emit()"
+        />
+      }
       <app-button
         type="button"
         icon="pi pi-eye"

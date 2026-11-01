@@ -53,22 +53,28 @@
               </p>
             </div>
 
-            <div class="faq-card__actions">
-              <app-button
-                variant="outlined"
-                styleClass="faq-card__action faq-card__action--edit"
-                icon="pi pi-pencil"
-                [ariaLabel]="lang.t('faq.edit')"
-                (clicked)="edit.emit(item)"
-              />
-              <app-button
-                variant="outlined"
-                styleClass="faq-card__action faq-card__action--danger"
-                icon="pi pi-trash"
-                [ariaLabel]="lang.t('faq.delete')"
-                (clicked)="remove.emit(item)"
-              />
-            </div>
+            @if (showEdit() || showDelete()) {
+              <div class="faq-card__actions">
+                @if (showEdit()) {
+                  <app-button
+                    variant="outlined"
+                    styleClass="faq-card__action faq-card__action--edit"
+                    icon="pi pi-pencil"
+                    [ariaLabel]="lang.t('faq.edit')"
+                    (clicked)="edit.emit(item)"
+                  />
+                }
+                @if (showDelete()) {
+                  <app-button
+                    variant="outlined"
+                    styleClass="faq-card__action faq-card__action--danger"
+                    icon="pi pi-trash"
+                    [ariaLabel]="lang.t('faq.delete')"
+                    (clicked)="remove.emit(item)"
+                  />
+                }
+              </div>
+            }
           </div>
 
           <p class="faq-card__answer">{{ text(item.answer) }}</p>
@@ -85,14 +91,16 @@
                 {{ categoryLabel(item.categoryId) }}
               </span>
             </div>
-            <label class="faq-card__cell faq-card__publish">
-              <span class="faq-card__meta-label">{{ lang.t('faq.publishStatus') }}</span>
-              <p-toggleswitch
-                [ngModel]="item.published"
-                (ngModelChange)="publishedChange.emit({ item, published: $event })"
-                [ariaLabel]="lang.t('faq.publishStatus')"
-              />
-            </label>
+            @if (showPublish()) {
+              <label class="faq-card__cell faq-card__publish">
+                <span class="faq-card__meta-label">{{ lang.t('faq.publishStatus') }}</span>
+                <p-toggleswitch
+                  [ngModel]="item.published"
+                  (ngModelChange)="publishedChange.emit({ item, published: $event })"
+                  [ariaLabel]="lang.t('faq.publishStatus')"
+                />
+              </label>
+            }
           </footer>
         </article>
       }

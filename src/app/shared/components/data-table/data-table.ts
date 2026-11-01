@@ -20,15 +20,14 @@ import { TableModule } from 'primeng/table';
 import { LanguageService } from '../../../core/services/language.service';
 import { AppButton } from '../app-button/app-button';
 import {
-  DataTableBadgeValue,
-  DataTableCellContext,
-  DataTableColumn,
-  DataTableDateValue,
-  DataTableFilterOption,
-  DataTableIconValue,
+  type DataTableBadgeValue,
+  type DataTableCellContext,
+  type DataTableColumn,
+  type DataTableDateValue,
+  type DataTableFilterOption,
+  type DataTableIconValue,
 } from './data-table.model';
 
-/** Marks a custom cell. `appDataCell` is the column `key`. */
 @Directive({
   selector: 'ng-template[appDataCell]',
 })
@@ -67,7 +66,7 @@ export class DataTable<T extends object = Record<string, unknown>> {
   readonly pageSize = input(10);
   readonly pageSizeOptions = input<number[]>([10, 20, 50]);
   readonly selectionMode = input<'single' | 'multiple' | null>(null);
-  /** When true, a row click emits `rowClick`. Toolbar and cell controls stay on the parent. */
+
   readonly rowClickable = input(false);
 
   readonly query = model('');

@@ -11,7 +11,7 @@ export interface Crumb {
 export class BreadcrumbService {
   private readonly router = inject(Router);
   private readonly tick = signal(0);
-  /** Optional display labels for `:id` crumbs (e.g. a user name instead of the raw id). */
+
   private readonly labels = signal<Readonly<Record<string, string>>>({});
 
   readonly crumbs = computed(() => {
@@ -30,12 +30,10 @@ export class BreadcrumbService {
     });
   }
 
-  /** Sets a human-readable label for a `:id` breadcrumb URL. */
   setLabel(url: string, label: string): void {
     this.labels.update((current) => ({ ...current, [url]: label }));
   }
 
-  /** Clears a previously set `:id` breadcrumb label. */
   clearLabel(url: string): void {
     this.labels.update((current) => {
       const next = { ...current };
@@ -55,7 +53,11 @@ export class BreadcrumbService {
         ? (this.labels()[next] ?? route.paramMap.get('id') ?? '')
         : route.data['breadcrumb'];
     if (typeof key === 'string' && key) {
-      acc.push({ key, url: next || '/' });
+      const crumb = { key, url: next || '/' };
+
+      if (acc.at(-1)?.url !== crumb.url) {
+        acc.push(crumb);
+      }
     }
     for (const child of route.children) {
       this.collect(child, acc, next);

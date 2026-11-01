@@ -1,0 +1,216 @@
+:host {
+  display: block;
+}
+
+/* Shared with the list board: edit CTA reuses the list “add” control chrome. */
+.projects-board__add {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 40px;
+  padding: 0 14px;
+  border: 1px solid #e6ebf2;
+  border-radius: 12px;
+  background: #fff;
+  color: #2f6fed;
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+/* Shared with the list board: detail panels reuse the tile card surface. */
+.project-tile {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 12px;
+  border: 1px solid #edeeee;
+  border-radius: 20px;
+  background: #fff;
+}
+
+.project-tile p {
+  margin: 0;
+  color: #64748b;
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+.project-tile__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.project-tile__tags li {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 32px;
+  padding: 0 10px;
+  border-radius: 10px;
+  background: #f4f7fb;
+  color: #64748b;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.project-detail {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.project-detail__cover {
+  width: 100%;
+  border-radius: 16px;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+}
+
+.project-detail__badge {
+  display: inline-flex;
+  align-items: center;
+  height: 32px;
+  padding: 0 12px;
+  border-radius: 999px;
+  background: #f1f5f9;
+  color: #64748b;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.project-detail__badge.is-live {
+  background: #ecfdf5;
+  color: #059669;
+}
+
+.project-detail__panel {
+  gap: 16px;
+}
+
+.project-detail__panel h2,
+.project-detail__panel h3 {
+  margin: 0;
+  color: #002951;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.project-detail__list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.project-detail__list li {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 12px;
+  border: 1px solid #edeeee;
+  border-radius: 14px;
+  background: #f9fafb;
+}
+
+.project-detail__list strong {
+  color: #002951;
+  font-size: 14px;
+}
+
+.project-detail__list span {
+  color: #64748b;
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+.project-detail__mark {
+  width: 1.25rem;
+  color: #0f6cbd;
+  font-size: 1.1rem;
+}
+
+.project-detail__thumb {
+  width: 100%;
+  max-width: 180px;
+  border-radius: 10px;
+  aspect-ratio: 16 / 10;
+  object-fit: cover;
+  background: #1b1b1b;
+}
+
+.project-detail__tool {
+  margin: 0;
+  display: grid;
+  gap: 8px;
+}
+
+.project-detail__tool figcaption {
+  color: #002951;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.project-detail__solutions-image {
+  width: 100%;
+  border-radius: 14px;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  background: #1b1b1b;
+}
+
+.project-detail__gallery {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.project-detail__gallery img {
+  width: 100%;
+  border-radius: 14px;
+  aspect-ratio: 16 / 10;
+  object-fit: cover;
+  background: #1b1b1b;
+}
+
+.project-detail__identity {
+  display: grid;
+  gap: 16px;
+}
+
+.project-detail__seo {
+  display: grid;
+  gap: 14px;
+  margin: 0;
+}
+
+.project-detail__seo div {
+  display: grid;
+  gap: 4px;
+}
+
+.project-detail__seo dt {
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.project-detail__seo dd {
+  margin: 0;
+  color: #002951;
+  font-size: 14px;
+  line-height: 1.6;
+  word-break: break-word;
+}
+
+@media (max-width: 800px) {
+  .project-detail__gallery {
+    grid-template-columns: 1fr;
+  }
+}

@@ -44,16 +44,6 @@ export interface SocialChannelDraft {
   url: LocaleText;
 }
 
-export const SOCIAL_PLATFORMS: readonly SocialPlatformId[] = [
-  'linkedin',
-  'facebook',
-  'instagram',
-  'twitter',
-  'tiktok',
-  'snapchat',
-  'whatsapp',
-] as const;
-
 export function emptyLocaleText(): LocaleText {
   return { ar: '', en: '' };
 }

@@ -1,14 +1,13 @@
 import type { AppLanguage } from '../../../core/i18n/language';
-import {
-  IMAGE_UPLOAD_MAX_BYTES,
-  IMAGE_UPLOAD_TYPES,
-  type UploadedImageMeta,
-} from '../../../shared/utils/image-upload';
+import { type UploadedImageMeta } from '../../../shared/utils/image-upload';
 
-/** Metadata of an uploaded image. `uploadedAt` is an ISO date (`yyyy-mm-dd`). */
-export type AboutImage = UploadedImageMeta;
+export interface AboutImage extends UploadedImageMeta {
+  uuid?: string;
+  url?: string;
+  downloadUrl?: string;
+  file?: File;
+}
 
-/** One titled checklist. `highlight` is the tinted note under the points. */
 export interface AboutPointGroup {
   id: string;
   title: string;
@@ -16,7 +15,6 @@ export interface AboutPointGroup {
   points: string[];
 }
 
-/** A bilingual checklist section. Story and vision share this shape; only story has an image. */
 export interface AboutGroups {
   texts: Record<AppLanguage, AboutPointGroup[]>;
   image: AboutImage | null;
@@ -34,19 +32,28 @@ export interface AboutCeo {
   image: AboutImage | null;
 }
 
-export interface AboutMember {
-  id: string;
+export interface AboutMemberText {
   name: string;
   role: string;
+}
+
+export interface AboutMember {
+  id: string;
+  texts: Record<AppLanguage, AboutMemberText>;
+  image: AboutImage | null;
+}
+
+export interface AboutPartner {
+  id: string;
+  name: string;
+  monogram: string;
   image: AboutImage | null;
 }
 
 export interface AboutContent {
   story: AboutGroups;
   vision: AboutGroups;
+  partners: AboutPartner[];
   ceo: AboutCeo;
   team: AboutMember[];
 }
-
-export const ABOUT_IMAGE_TYPES = IMAGE_UPLOAD_TYPES;
-export const ABOUT_IMAGE_MAX_BYTES = IMAGE_UPLOAD_MAX_BYTES;

@@ -44,10 +44,6 @@ export interface UsersTableOption<T extends string> {
   value: T;
 }
 
-/**
- * Users list table: filters, rows, row actions menu, and pagination.
- * Parent owns data loading, row mapping, and CRUD/navigation handlers.
- */
 @Component({
   selector: 'app-users-table',
   imports: [
@@ -72,6 +68,8 @@ export class UsersTable {
   readonly totalRecords = input.required<number>();
   readonly roleOptions = input.required<UsersTableOption<UserRole | 'all'>[]>();
   readonly statusOptions = input.required<UsersTableOption<UserStatus | 'all'>[]>();
+  readonly showEdit = input(true);
+  readonly showDelete = input(true);
 
   readonly query = model.required<string>();
   readonly role = model.required<UserRole | 'all'>();

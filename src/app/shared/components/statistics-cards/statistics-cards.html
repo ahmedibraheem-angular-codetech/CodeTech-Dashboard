@@ -29,9 +29,6 @@
   <p class="stat-card__value">{{ valueOf(card) }}</p>
   @if (trendOf(card) || card.caption) {
     <div class="stat-card__foot">
-      @if (card.caption) {
-        <span class="stat-card__caption">{{ card.caption }}</span>
-      }
       @if (trendOf(card); as trend) {
         <span
           class="stat-card__trend"
@@ -41,6 +38,9 @@
           <i [class]="iconFor(direction(card))" aria-hidden="true"></i>
           <span>{{ trend }}</span>
         </span>
+      }
+      @if (card.caption) {
+        <span class="stat-card__caption">{{ card.caption }}</span>
       }
     </div>
   }

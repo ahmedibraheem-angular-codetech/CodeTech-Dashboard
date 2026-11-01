@@ -28,7 +28,6 @@ interface StatusOption {
   selectAll?: boolean;
 }
 
-/** Categories tab: card grid with search and a status filter. The board owns every write. */
 @Component({
   selector: 'app-knowledge-categories-panel',
   imports: [FormsModule, AppButton, Checkbox, Popover, StateView],
@@ -39,6 +38,8 @@ export class CategoriesPanel {
   readonly lang = inject(LanguageService);
 
   readonly categories = input.required<readonly ArticleCategory[]>();
+  readonly showEdit = input(true);
+  readonly showDelete = input(true);
 
   readonly edit = output<ArticleCategory>();
   readonly remove = output<ArticleCategory>();

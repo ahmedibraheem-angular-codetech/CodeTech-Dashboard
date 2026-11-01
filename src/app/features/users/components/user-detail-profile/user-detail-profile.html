@@ -31,37 +31,45 @@
     </div>
   </div>
 
-  <div class="user-detail__actions">
-    <!-- DOM end → visual left in RTL: Delete | Change status | Edit -->
-    <app-button
-      variant="outlined"
-      styleClass="user-detail__btn user-detail__btn--edit"
-      icon="pi pi-pencil"
-      iconPos="end"
-      [label]="lang.t('users.edit')"
-      [disabled]="saving()"
-      (clicked)="edit.emit()"
-    />
-    <app-button
-      variant="outlined"
-      styleClass="user-detail__btn"
-      icon="pi pi-angle-down"
-      iconPos="end"
-      [label]="lang.t('users.changeStatus')"
-      [disabled]="saving()"
-      (clicked)="openStatusMenu($event)"
-    />
-    <app-button
-      variant="danger"
-      [outlined]="true"
-      styleClass="user-detail__btn user-detail__btn--danger"
-      icon="pi pi-trash"
-      iconPos="end"
-      [label]="lang.t('users.deleteUser')"
-      [disabled]="saving()"
-      (clicked)="remove.emit()"
-    />
-  </div>
+  @if (showEdit() || showStatus() || showDelete()) {
+    <div class="user-detail__actions">
+      <!-- DOM end → visual left in RTL: Delete | Change status | Edit -->
+      @if (showEdit()) {
+        <app-button
+          variant="outlined"
+          styleClass="user-detail__btn user-detail__btn--edit"
+          icon="pi pi-pencil"
+          iconPos="end"
+          [label]="lang.t('users.edit')"
+          [disabled]="saving()"
+          (clicked)="edit.emit()"
+        />
+      }
+      @if (showStatus()) {
+        <app-button
+          variant="outlined"
+          styleClass="user-detail__btn"
+          icon="pi pi-angle-down"
+          iconPos="end"
+          [label]="lang.t('users.changeStatus')"
+          [disabled]="saving()"
+          (clicked)="openStatusMenu($event)"
+        />
+      }
+      @if (showDelete()) {
+        <app-button
+          variant="danger"
+          [outlined]="true"
+          styleClass="user-detail__btn user-detail__btn--danger"
+          icon="pi pi-trash"
+          iconPos="end"
+          [label]="lang.t('users.deleteUser')"
+          [disabled]="saving()"
+          (clicked)="remove.emit()"
+        />
+      }
+    </div>
+  }
 </article>
 
 <p-popover #statusMenu appendTo="body" styleClass="user-detail-status-menu">

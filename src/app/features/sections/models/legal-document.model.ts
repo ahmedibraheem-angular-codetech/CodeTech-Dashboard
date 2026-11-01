@@ -8,7 +8,8 @@ export interface LegalLocaleHtml {
 export interface LegalDocument {
   kind: LegalDocumentKind;
   content: LegalLocaleHtml;
-  updatedAt: string;
+
+  updatedAt: string | null;
 }
 
 export type LegalDocumentDraft = Pick<LegalDocument, 'content'>;

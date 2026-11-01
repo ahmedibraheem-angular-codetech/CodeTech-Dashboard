@@ -32,16 +32,17 @@ import { FieldError } from '../../../../shared/components/field-error/field-erro
 import { LocaleSwitch } from '../../../../shared/components/locale-switch/locale-switch';
 import { PageHeader } from '../../../../shared/components/page-header/page-header';
 import { StateView } from '../../../../shared/components/state-view/state-view';
+import { HasPermissionDirective } from '../../../../shared/directives/has-permission.directive';
 import { formatIsoDate } from '../../../../shared/utils/date';
 import { formatFileSize } from '../../../../shared/utils/file-size';
 import { IMAGE_UPLOAD_ACCEPT, parseUploadedImage } from '../../../../shared/utils/image-upload';
 import {
-  LEGAL_QUILL_FONT_REGISTRAR,
+  QUILL_FONT_REGISTRAR,
   applyQuillDirection,
   hasVisibleHtml,
-  wireLegalToolbarHandlers,
-  type LegalQuill,
-} from '../../../sections/components/legal-document-board/legal-quill';
+  wireQuillToolbarHandlers,
+  type AppQuill,
+} from '../../../../shared/editor/quill';
 import {
   blankArticle,
   type Article,
@@ -61,11 +62,10 @@ interface SlotImage {
   url: string;
   name: string;
   size: number;
-  /** ISO date, already shown through `formatIsoDate`. */
+
   date: string;
 }
 
-/** Fields the user edits as text. Images and status live outside the form. */
 type FormKey = Exclude<
   keyof ArticleDraft,
   'status' | 'featured' | 'publishedAt' | 'authorAvatarUrl' | 'thumbnailUrl' | 'coverUrl'
@@ -77,10 +77,6 @@ const EMPTY_IMAGES: Record<ImageSlot, SlotImage | null> = {
   cover: null,
 };
 
-/**
- * Create / edit article page. One form holds both languages. The locale switch only chooses
- * which side of every bilingual field is shown, and each language has its own Quill instance.
- */
 @Component({
   selector: 'app-article-editor',
   imports: [
@@ -100,6 +96,7 @@ const EMPTY_IMAGES: Record<ImageSlot, SlotImage | null> = {
     Select,
     StateView,
     Textarea,
+    HasPermissionDirective,
   ],
   templateUrl: './article-editor.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -112,11 +109,10 @@ export class ArticleEditor {
   private readonly route = inject(ActivatedRoute);
   private readonly destroyRef = inject(DestroyRef);
   private readonly fb = inject(FormBuilder);
-  private readonly registerQuillFont = inject(LEGAL_QUILL_FONT_REGISTRAR);
+  private readonly registerQuillFont = inject(QUILL_FONT_REGISTRAR);
   private readonly confirm = viewChild.required(ConfirmDialog);
   readonly lang = inject(LanguageService);
 
-  /** Bound from `/knowledge/:id/edit`. Empty while creating. */
   readonly id = input('');
   readonly mode: 'create' | 'edit' =
     this.route.snapshot.data['mode'] === 'edit' ? 'edit' : 'create';
@@ -129,12 +125,12 @@ export class ArticleEditor {
   readonly categories = signal<ArticleCategory[]>([]);
   readonly images = signal<Record<ImageSlot, SlotImage | null>>({ ...EMPTY_IMAGES });
   readonly imageErrors = signal<Partial<Record<ImageSlot, string>>>({});
-  /** Control names flagged by the last failed validation. Cleared per field as it is filled. */
+
   readonly flagged = signal<ReadonlySet<string>>(new Set());
   readonly quillReady = signal(false);
-  /** In-progress text for the SEO keyword chip input. */
+
   readonly keywordDraft = signal('');
-  /** Bumped when keyword chips are rewritten so the template recomputes. */
+
   private readonly keywordRevision = signal(0);
 
   readonly form = this.fb.nonNullable.group({
@@ -182,7 +178,6 @@ export class ArticleEditor {
       .map((item) => ({ value: item.id, label: categoryName(item, locale) }));
   });
 
-  /** Figma reading-time dropdown; values stay as `readingMinutes` numbers. */
   readonly readingOptions = computed(() => {
     const locale = this.locale();
     const current = Number(this.form.controls.readingMinutes.value) || 5;
@@ -221,20 +216,14 @@ export class ArticleEditor {
     });
   }
 
-  /** `title` → `titleAr` / `titleEn`, following the locale switch. */
   protected key(base: string): FormKey {
     return `${base}${this.suffix()}` as FormKey;
   }
 
-  /**
-   * Field chrome (labels / placeholders) follows the content locale switch,
-   * so Arabic ↔ English actually changes the visible form text.
-   */
   protected ct(key: string): string {
     return this.lang.lookup(key, this.locale()) ?? this.lang.t(key);
   }
 
-  /** Figma meta-description counter (`0/160`); presentation-only. */
   protected seoDescriptionLength(): number {
     return String(this.form.get(this.key('seoDescription'))?.value ?? '').length;
   }
@@ -293,8 +282,8 @@ export class ArticleEditor {
   }
 
   protected onEditorInit(event: EditorInitEvent): void {
-    const quill = event.editor as LegalQuill;
-    wireLegalToolbarHandlers(quill);
+    const quill = event.editor as AppQuill;
+    wireQuillToolbarHandlers(quill);
     applyQuillDirection(quill, this.locale());
   }
 
@@ -473,10 +462,6 @@ export class ArticleEditor {
     return url ? { url, name: url.split('/').pop() ?? url, size: 0, date } : null;
   }
 
-  /**
-   * Flags what is missing and, when the visible language is fine but the other one is not,
-   * switches to the other language so the user lands on the problem.
-   */
   private validate(strictness: Strictness): boolean {
     const missing = new Set<string>();
     const value = this.form.getRawValue();

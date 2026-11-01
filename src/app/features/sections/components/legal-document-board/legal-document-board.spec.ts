@@ -1,17 +1,18 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { type ComponentFixture, TestBed } from '@angular/core/testing';
 import { MessageService } from 'primeng/api';
-import { Observable, Subject, of, throwError } from 'rxjs';
+import { type Observable, Subject, of, throwError } from 'rxjs';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { API_LATENCY_MS } from '../../../../core/config/latency';
+import { MediaService } from '../../../../core/media/media.service';
+import {
+  QUILL_FONT_REGISTRAR,
+  resetQuillFontRegistrationForTests,
+  type AppQuill,
+} from '../../../../shared/editor/quill';
 import type { LegalDocument, LegalDocumentKind } from '../../models/legal-document.model';
 import { LegalDocumentService } from '../../services/legal-document.service';
 import { LegalDocumentBoard } from './legal-document-board';
-import {
-  LEGAL_QUILL_FONT_REGISTRAR,
-  resetQuillFontRegistrationForTests,
-  type LegalQuill,
-} from './legal-quill';
 
 const termsDoc: LegalDocument = {
   kind: 'terms',
@@ -31,13 +32,13 @@ const privacyDoc: LegalDocument = {
   updatedAt: '2026-10-09',
 };
 
-type ApiMock = {
+interface ApiMock {
   get: (kind: LegalDocumentKind) => Observable<LegalDocument>;
   save: (
     kind: LegalDocumentKind,
     draft: { content: { ar: string; en: string } },
   ) => Observable<LegalDocument>;
-};
+}
 
 async function settle(fixture: ComponentFixture<LegalDocumentBoard>): Promise<void> {
   fixture.detectChanges();
@@ -51,6 +52,8 @@ describe('LegalDocumentBoard', () => {
     resetQuillFontRegistrationForTests();
     vi.restoreAllMocks();
   });
+
+  let uploadEditorImage: ReturnType<typeof vi.fn>;
 
   async function render(
     kind: LegalDocumentKind = 'terms',
@@ -69,6 +72,19 @@ describe('LegalDocumentBoard', () => {
         }),
     };
 
+    uploadEditorImage = vi.fn(() =>
+      of({
+        uuid: 'img-1',
+        name: 'inline',
+        file_name: 'inline.png',
+        mime_type: 'image/png',
+        size: 1,
+        url: 'https://cdn.test/inline.png',
+        download_url: 'https://cdn.test/download',
+        created_at: '2026-11-01T00:00:00.000000Z',
+      }),
+    );
+
     TestBed.configureTestingModule({
       imports: [LegalDocumentBoard],
       providers: [
@@ -78,8 +94,12 @@ describe('LegalDocumentBoard', () => {
           provide: LegalDocumentService,
           useValue: { ...defaults, ...api },
         },
+        {
+          provide: MediaService,
+          useValue: { uploadEditorImage },
+        },
         ...(extras.registerFont
-          ? [{ provide: LEGAL_QUILL_FONT_REGISTRAR, useValue: extras.registerFont }]
+          ? [{ provide: QUILL_FONT_REGISTRAR, useValue: extras.registerFont }]
           : []),
       ],
     });
@@ -113,7 +133,7 @@ describe('LegalDocumentBoard', () => {
     fixture.detectChanges();
   }
 
-  function fakeQuill(html = '<p>live</p>'): LegalQuill {
+  function fakeQuill(html = '<p>live</p>'): AppQuill {
     const rootEl = document.createElement('div');
     rootEl.innerHTML = html;
     const container = document.createElement('div');
@@ -257,7 +277,7 @@ describe('LegalDocumentBoard', () => {
 
       component.setDraft('<p>AR saved</p>');
       component.setLocale('en');
-      // Simulate a stale Quill text-change for the previous language.
+
       component.setDraft('<p>AR leaked</p>');
       await settle(fixture);
 
@@ -265,7 +285,6 @@ describe('LegalDocumentBoard', () => {
       expect(component.draftEn()).toBe(termsDoc.content.en);
       expect(component.draftEn()).not.toContain('AR leaked');
 
-      // After render sync completes, normal writes target the active locale again.
       component.setDraft('<p>EN after sync</p>');
       expect(component.draftEn()).toBe('<p>EN after sync</p>');
       expect(component.draftAr()).toBe('<p>AR saved</p>');
@@ -280,8 +299,7 @@ describe('LegalDocumentBoard', () => {
 
       component.setDraft('<p>AR-A</p>');
       component.setLocale('en');
-      // Quill still exposes the previous language HTML; a second switch must not
-      // flush that HTML into the English draft.
+
       component.setLocale('ar');
       component.setLocale('en');
       await settle(fixture);
@@ -317,7 +335,7 @@ describe('LegalDocumentBoard', () => {
       expect(component.mode()).toBe('view');
       expect(component.draftAr()).toBe('');
       expect(component.draftEn()).toBe('');
-      // Locale stays on English after cancel; persisted EN content is shown again.
+
       expect(root(fixture).textContent).toContain('English terms');
       expect(root(fixture).textContent).not.toContain('AR dirty');
       expect(root(fixture).textContent).not.toContain('EN dirty');
@@ -423,6 +441,21 @@ describe('LegalDocumentBoard', () => {
       expect((window as Window & { __legalXss?: number }).__legalXss).toBeUndefined();
     });
 
+    it('preserves Quill text color in view mode', async () => {
+      const colored: LegalDocument = {
+        kind: 'terms',
+        content: {
+          ar: '<p><span style="color:rgb(240,102,102);">نص أحمر</span></p>',
+          en: '<p>Safe</p>',
+        },
+        updatedAt: '2026-10-09',
+      };
+      const fixture = await render('terms', { get: () => of(colored) });
+      const span = root(fixture).querySelector('.legal-doc__text span');
+      expect(span?.textContent).toContain('نص أحمر');
+      expect(span?.getAttribute('style') ?? '').toMatch(/color:\s*rgb\(240,\s*102,\s*102\)/i);
+    });
+
     it('keeps legitimate legal formatting tags', async () => {
       const fixture = await render();
       const text = root(fixture).querySelector('.legal-doc__text');
@@ -442,10 +475,11 @@ describe('LegalDocumentBoard', () => {
       board(fixture).onEditorInit({ editor: quill });
       board(fixture).onEditorInit({ editor: quill });
 
-      expect(addHandler).toHaveBeenCalledTimes(3);
+      expect(addHandler).toHaveBeenCalledTimes(4);
       expect(addHandler).toHaveBeenCalledWith('undo', expect.any(Function));
       expect(addHandler).toHaveBeenCalledWith('redo', expect.any(Function));
       expect(addHandler).toHaveBeenCalledWith('hr', expect.any(Function));
+      expect(addHandler).toHaveBeenCalledWith('image', expect.any(Function));
     });
 
     it('still wires handlers for a newly created editor instance', async () => {
@@ -461,8 +495,40 @@ describe('LegalDocumentBoard', () => {
       board(fixture).onEditorInit({ editor: first });
       board(fixture).onEditorInit({ editor: second });
 
-      expect(firstAdd).toHaveBeenCalledTimes(3);
-      expect(secondAdd).toHaveBeenCalledTimes(3);
+      expect(firstAdd).toHaveBeenCalledTimes(4);
+      expect(secondAdd).toHaveBeenCalledTimes(4);
+    });
+
+    it('uploads editor images through MediaService when the image handler runs', async () => {
+      const fixture = await render();
+      enterEditWithoutQuill(fixture);
+      const handlers = new Map<string, () => void>();
+      const insertEmbed = vi.fn();
+      const quill = fakeQuill();
+      quill.insertEmbed = insertEmbed;
+      quill.getModule = () => ({
+        addHandler: (name: string, handler: () => void) => {
+          handlers.set(name, handler);
+        },
+      });
+
+      const file = new File(['x'], 'inline.png', { type: 'image/png' });
+      const originalCreate = document.createElement.bind(document);
+      const input = originalCreate('input') as HTMLInputElement;
+      vi.spyOn(input, 'click').mockImplementation(() => {
+        Object.defineProperty(input, 'files', { value: [file], configurable: true });
+        input.dispatchEvent(new Event('change'));
+      });
+      vi.spyOn(document, 'createElement').mockImplementation((tag: string) =>
+        tag === 'input' ? input : originalCreate(tag),
+      );
+
+      board(fixture).onEditorInit({ editor: quill });
+      handlers.get('image')?.();
+      await settle(fixture);
+
+      expect(uploadEditorImage).toHaveBeenCalledWith(file);
+      expect(insertEmbed).toHaveBeenCalledWith(0, 'image', 'https://cdn.test/inline.png');
     });
 
     it('stays in view mode when font registration fails', async () => {

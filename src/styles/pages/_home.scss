@@ -6,6 +6,145 @@
   box-shadow: none;
 }
 
+// Shared homepage CTA: Add partner + Re-upload (Figma 136×48, r16, pad 12/16, gap 10).
+.home-cta {
+  --p-button-primary-background: #1c81d3;
+  --p-button-primary-hover-background: #1670b8;
+  --p-button-primary-active-background: #125f9c;
+  --p-button-primary-border-color: #eceff3;
+  --p-button-primary-hover-border-color: #eceff3;
+  --p-button-primary-active-border-color: #eceff3;
+  --p-button-primary-color: #fff;
+  --p-button-primary-hover-color: #fff;
+  --p-button-primary-active-color: #fff;
+  --p-button-border-radius: 16px;
+  --p-button-padding-y: 12px;
+  --p-button-padding-x: 16px;
+  --p-button-gap: 10px;
+
+  box-sizing: border-box;
+  width: 136px;
+  height: 48px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.home-cta.p-button,
+.home-cta .p-button,
+p-fileupload.home-cta .p-button,
+.home-cta.p-fileupload .p-button,
+.home-cta .p-fileupload-choose-button {
+  box-sizing: border-box;
+  width: 136px;
+  height: 48px;
+  padding: 12px 16px;
+  gap: 10px;
+  border-radius: 16px;
+  border: 1px solid #eceff3;
+  background: #1c81d3;
+  color: #fff;
+}
+
+// Empty-state CTAs on homepage (video upload, add partner, about, vision).
+// Figma: 176×48, r16, pad 12/16, gap 10, border #DFE3E9.
+.home-empty-cta {
+  --p-button-primary-background: #fff;
+  --p-button-primary-hover-background: #f8fafc;
+  --p-button-primary-active-background: #f1f5f9;
+  --p-button-primary-border-color: #dfe3e9;
+  --p-button-primary-hover-border-color: #dfe3e9;
+  --p-button-primary-active-border-color: #dfe3e9;
+  --p-button-primary-color: #16324f;
+  --p-button-primary-hover-color: #16324f;
+  --p-button-primary-active-color: #16324f;
+  --p-button-border-radius: 16px;
+  --p-button-padding-y: 12px;
+  --p-button-padding-x: 16px;
+  --p-button-gap: 10px;
+
+  box-sizing: border-box;
+  min-width: 176px;
+  width: max-content;
+  max-width: 100%;
+  height: 48px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.home-empty-cta.p-button,
+.home-empty-cta .p-button,
+p-fileupload.home-empty-cta .p-button,
+.home-empty-cta.p-fileupload .p-button,
+.home-empty-cta .p-fileupload-choose-button {
+  box-sizing: border-box;
+  min-width: 176px;
+  width: max-content;
+  max-width: 100%;
+  height: 48px;
+  padding: 12px 16px;
+  gap: 10px;
+  border-radius: 16px;
+  border: 1px solid #dfe3e9;
+  background: #fff;
+  color: #16324f;
+}
+
+// Homepage delete (video): 48×48, r16, pad 12/16, gap 10, bg #FCEEEE.
+.home-delete {
+  --p-button-primary-background: #fceeee;
+  --p-button-primary-hover-background: #f8e0e0;
+  --p-button-primary-active-background: #f8e0e0;
+  --p-button-primary-border-color: transparent;
+  --p-button-primary-hover-border-color: transparent;
+  --p-button-primary-active-border-color: transparent;
+  --p-button-primary-color: #e11d48;
+  --p-button-primary-hover-color: #e11d48;
+  --p-button-primary-active-color: #e11d48;
+  --p-button-border-radius: 16px;
+  --p-button-padding-y: 0;
+  --p-button-padding-x: 0;
+  --p-button-gap: 0;
+  --p-button-icon-only-width: 48px;
+
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+}
+
+.home-delete.p-button,
+.home-delete .p-button {
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  padding: 0;
+  gap: 0;
+  border: 0;
+  border-radius: 16px;
+  background: #fceeee;
+  color: #e11d48;
+}
+
+// Trash icon inside homepage delete (Figma 21×21, r150), centered in the 48×48 button.
+.home-delete .p-button-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  box-sizing: border-box;
+  width: 21px;
+  height: 21px;
+  border-radius: 150px;
+  font-size: 21px;
+  line-height: 1;
+  opacity: 1;
+}
+
 .partner-grid {
   display: flex;
   flex-wrap: wrap;
@@ -14,6 +153,7 @@
 }
 
 .partner-card {
+  position: relative;
   display: flex;
   height: 135px;
   padding: 8px;
@@ -24,15 +164,26 @@
   max-width: calc((100% - 36px) / 4);
   border-radius: 16px;
   border: 1px solid #edeeee;
-  background:
-    url('/images/codeTech.svg') center / cover no-repeat,
-    #fff;
+background:#fff;
 }
 
 .partner-card__tools {
+  position: relative;
+  z-index: 1;
   display: flex;
   align-items: flex-start;
   gap: 8px;
+}
+
+.partner-card__logo {
+  position: absolute;
+  inset: 28px 16px 16px;
+  width: auto;
+  max-width: calc(100% - 32px);
+  max-height: calc(100% - 44px);
+  margin: auto;
+  object-fit: contain;
+  pointer-events: none;
 }
 
 // Both partner actions are 28px rounded squares. Only the colour differs.
@@ -344,6 +495,20 @@
   background: #fff;
   text-align: center;
   cursor: pointer;
+  opacity: 1;
+}
+
+// Partner modal drop zone (Figma 684×127, r16, pad 16, gap 12, dashed #1C81D366).
+.image-drop--partner {
+  width: 100%;
+  max-width: 684px;
+  height: 127px;
+  min-height: 127px;
+  padding: 16px;
+  gap: 12px;
+  border-radius: 16px;
+  border: 1px dashed #1c81d366;
+  background: #f9fafb;
   opacity: 1;
 }
 

@@ -8,7 +8,11 @@
 
     <app-partners-section [partners]="partners()" (changed)="reload(true)" />
 
-    <app-video-section [(enabled)]="videoEnabled" [(name)]="videoName" />
+    <app-video-section
+      [(enabled)]="videoEnabled"
+      [(name)]="videoName"
+      [(url)]="videoUrl"
+    />
 
     @if (about(); as block) {
       <app-content-block-card kind="about" [block]="block" (blockSaved)="about.set($event)" />

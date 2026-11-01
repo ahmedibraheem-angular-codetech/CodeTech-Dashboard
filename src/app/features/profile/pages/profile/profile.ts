@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { Tag } from 'primeng/tag';
 
 import { AuthService } from '../../../../core/auth/auth.service';
+import { roleLabel } from '../../../../core/auth/role-label';
 import { ProfileService } from '../../../../core/profile/profile.service';
 import { LanguageService } from '../../../../core/services/language.service';
 import { AppButton } from '../../../../shared/components/app-button/app-button';
@@ -29,17 +30,19 @@ export class ProfilePage {
   ];
   readonly tab = signal<string | number | undefined>('data');
 
-  /** Last sign in, split so the date and the time can carry their own icons. */
+  readonly roleName = computed(() => roleLabel(this.lang, this.user()?.roleKey));
+
   readonly lastLogin = computed(() => {
     const profile = this.user();
-    if (!profile) {
+    const iso = profile?.lastLogin;
+    if (!iso) {
       return null;
     }
-    const at = new Date(profile.lastLogin);
+    const at = new Date(iso);
     const locale = this.lang.language() === 'ar' ? 'ar-EG-u-nu-latn' : 'en-GB';
     return {
-      iso: profile.lastLogin,
-      date: profile.lastLogin.slice(0, 10),
+      iso,
+      date: iso.slice(0, 10),
       time: new Intl.DateTimeFormat(locale, { hour: '2-digit', minute: '2-digit' }).format(at),
     };
   });

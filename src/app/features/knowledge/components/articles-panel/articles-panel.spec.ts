@@ -1,5 +1,5 @@
 import { signal } from '@angular/core';
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { type ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { LanguageService } from '../../../../core/services/language.service';
 import { blankArticle, type Article, type ArticleStatus } from '../../models/knowledge.model';

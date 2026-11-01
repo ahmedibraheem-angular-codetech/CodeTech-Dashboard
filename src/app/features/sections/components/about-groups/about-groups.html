@@ -3,6 +3,7 @@
     <h2>{{ heading() }}</h2>
     @if (filled()) {
       <app-button
+        *appHasPermission="'about.update'"
         styleClass="block-edit"
         icon="pi pi-pen-to-square"
         iconPos="right"
@@ -16,7 +17,11 @@
     <app-content-panel>
       @if (section() === 'story') {
         <div class="about-story">
-          <div class="about-visual" aria-hidden="true"></div>
+          <div
+            class="about-visual"
+            aria-hidden="true"
+            [style.background-image]="visualUrl() ? 'url(' + visualUrl() + ')' : null"
+          ></div>
           <div class="about-notes">
             @for (group of view(); track group.id) {
               <div class="about-note">
@@ -104,7 +109,13 @@
     </app-content-panel>
   } @else {
     <app-section-empty [title]="emptyTitle()" [hint]="emptyHint()">
-      <app-button variant="outlined" icon="pi pi-file" [label]="emptyAction()" (clicked)="open()" />
+      <app-button
+        *appHasPermission="'about.create'"
+        styleClass="home-empty-cta"
+        icon="pi pi-file"
+        [label]="emptyAction()"
+        (clicked)="open()"
+      />
     </app-section-empty>
   }
 </article>

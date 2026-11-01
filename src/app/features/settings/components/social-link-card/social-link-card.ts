@@ -20,18 +20,24 @@ export class SocialLinkCard {
   readonly url = input.required<string>();
   readonly editLabel = input.required<string>();
   readonly deleteLabel = input.required<string>();
-  /** Accessible label for the open-in-new-tab control. */
+
   readonly openLabel = input.required<string>();
-  /** Accessible label for the copy-link control. */
+
   readonly copyLabel = input.required<string>();
-  /** Accessible name for the readonly URL field (focusable for select/copy). */
+
   readonly urlFieldLabel = input.required<string>();
   readonly wide = input(false);
+
+  readonly showEdit = input(true);
+
+  readonly showDelete = input(true);
+
+  readonly showToggle = input(true);
 
   readonly enabledChange = output<boolean>();
   readonly edit = output<void>();
   readonly remove = output<void>();
-  /** Parent shows toast; card stays presentational. */
+
   readonly copyResult = output<SocialLinkCopyResult>();
 
   protected openUrl(): void {
@@ -53,7 +59,7 @@ export class SocialLinkCard {
       return;
     }
     try {
-      // Copy the stored value (trimmed), not the normalized open URL.
+
       await navigator.clipboard.writeText(href);
       this.copyResult.emit({ ok: true });
     } catch {

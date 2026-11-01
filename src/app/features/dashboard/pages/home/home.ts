@@ -7,7 +7,7 @@ import { StateView } from '../../../../shared/components/state-view/state-view';
 import { ContentBlockCard } from '../../components/content-block-card/content-block-card';
 import { PartnersSection } from '../../components/partners-section/partners-section';
 import { VideoSection } from '../../components/video-section/video-section';
-import { ContentBlock, Partner } from '../../models/homepage.model';
+import { type ContentBlock, type Partner } from '../../models/homepage.model';
 import { HomepageService } from '../../services/homepage.service';
 
 type Status = 'loading' | 'ready' | 'error';
@@ -27,6 +27,7 @@ export class Home {
   readonly partners = signal<Partner[]>([]);
   readonly videoEnabled = signal(true);
   readonly videoName = signal<string | null>(null);
+  readonly videoUrl = signal<string | null>(null);
   readonly about = signal<ContentBlock | null>(null);
   readonly vision = signal<ContentBlock | null>(null);
 
@@ -46,6 +47,7 @@ export class Home {
           this.partners.set(content.partners);
           this.videoEnabled.set(content.videoEnabled);
           this.videoName.set(content.videoName);
+          this.videoUrl.set(content.videoUrl);
           this.about.set(content.about);
           this.vision.set(content.vision);
           this.status.set('ready');

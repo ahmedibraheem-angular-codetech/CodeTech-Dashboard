@@ -1,7 +1,11 @@
+import { provideHttpClient, withInterceptors } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { Component } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { Router, provideRouter } from '@angular/router';
 
+import { authSession } from '../../../core/auth/auth-session.fixture';
+import { AuthService } from '../../../core/auth/auth.service';
 import { API_LATENCY_MS } from '../../../core/config/latency';
 import { NAV_ITEMS } from '../../../core/config/navigation';
 import { LanguageService } from '../../../core/services/language.service';
@@ -10,24 +14,37 @@ import { Sidebar } from './sidebar';
 @Component({ template: '', selector: 'app-sidebar-test-page' })
 class TestPage {}
 
-const SESSION = {
-  token: 't',
-  email: 'admin@codetech.sa',
-  name: 'أحمد محمد',
-  roleKey: 'roles.superAdmin',
-};
+const SESSION_PERMISSIONS = [
+  'home.view',
+  'services.view',
+  'seo.view',
+  'products.view',
+  'projects.view',
+] as const;
 
 describe('Sidebar Services matching', () => {
   async function renderAt(url: string) {
     localStorage.setItem('codetech.language', 'ar');
-    sessionStorage.setItem('codetech.session', JSON.stringify(SESSION));
+    sessionStorage.clear();
     TestBed.configureTestingModule({
       providers: [
         provideRouter([{ path: '**', component: TestPage }]),
+        provideHttpClient(withInterceptors([])),
+        provideHttpClientTesting(),
         { provide: API_LATENCY_MS, useValue: 0 },
       ],
     });
     TestBed.inject(LanguageService).set('ar');
+    TestBed.inject(AuthService).session.set(
+      authSession({
+        token: 't',
+        email: 'admin@codetech.sa',
+        name: 'أحمد محمد',
+        roleKey: 'roles.superAdmin',
+        profileLoaded: true,
+        permissions: [...SESSION_PERMISSIONS],
+      }),
+    );
     const fixture = TestBed.createComponent(Sidebar);
     fixture.detectChanges();
     await TestBed.inject(Router).navigateByUrl(url);

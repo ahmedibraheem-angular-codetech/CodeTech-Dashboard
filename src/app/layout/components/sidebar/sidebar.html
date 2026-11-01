@@ -1,7 +1,7 @@
 <aside class="sidebar">
   <app-brand-logo tone="color" />
   <nav class="sidebar__nav" [attr.aria-label]="lang.t('nav.home')">
-    @for (item of items; track item.id) {
+    @for (item of items(); track item.id) {
       @if (item.children?.length) {
         <div class="sidebar__group" [class.is-open]="isOpen(item.id)">
           <button
@@ -67,7 +67,7 @@
       <app-user-avatar [size]="42" />
       <span class="sidebar__user-copy">
         <strong>{{ auth.session()?.name }}</strong>
-        <small>{{ lang.t(auth.session()?.roleKey ?? 'roles.superAdmin') }}</small>
+        <small>{{ roleName() }}</small>
       </span>
     </a>
     <button

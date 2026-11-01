@@ -1,0 +1,52 @@
+// Services editor chrome. The shared `.editor-*`, `.feature-card*`, and `.add-row` rules come
+// from the global product-editor styles; this file adds the host overrides Products and
+// Projects apply, plus the Services-only pieces. Encapsulation is off, and every rule is
+// scoped to `app-service-editor`.
+app-service-editor {
+  display: block;
+}
+
+app-service-editor .editor-card {
+  gap: 16px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+
+app-service-editor .locale-switch {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  background: transparent;
+  gap: 8px;
+}
+
+app-service-editor .locale-switch__option {
+  height: 48px;
+  border-radius: 14px;
+}
+
+app-service-editor .locale-switch__option.is-active {
+  background: var(--app-canvas);
+  color: var(--app-text);
+  box-shadow: none;
+}
+
+app-service-editor .service-projects-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+app-service-editor .service-projects-hint {
+  margin: 0;
+  color: #64748b;
+  font-size: 13px;
+  text-align: start;
+}
+
+@media (max-width: 900px) {
+  app-service-editor .service-projects-grid {
+    grid-template-columns: 1fr;
+  }
+}

@@ -21,7 +21,6 @@ export class LanguageService {
     return this.lookup(key, this.language()) ?? key;
   }
 
-  /** A translation in a chosen language, or undefined when the key is absent. */
   lookup(key: string, language: AppLanguage): string | undefined {
     return TRANSLATIONS[key]?.[language];
   }

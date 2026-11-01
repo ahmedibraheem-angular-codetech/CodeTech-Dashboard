@@ -8,22 +8,26 @@ import {
   signal,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { MessageService } from 'primeng/api';
+import { DatePickerModule } from 'primeng/datepicker';
+import { Tooltip } from 'primeng/tooltip';
 
 import { LanguageService } from '../../../../core/services/language.service';
 import { DataTable } from '../../../../shared/components/data-table/data-table';
 import {
-  DataTableBadgeValue,
-  DataTableColumn,
-  DataTableDateValue,
-  DataTableFilterOption,
-  DataTableIconValue,
+  type DataTableBadgeValue,
+  type DataTableColumn,
+  type DataTableDateValue,
+  type DataTableFilterOption,
+  type DataTableIconValue,
 } from '../../../../shared/components/data-table/data-table.model';
 import { PageHeader } from '../../../../shared/components/page-header/page-header';
+import { SectionEmpty } from '../../../../shared/components/section-empty/section-empty';
 import { StatisticsCards } from '../../../../shared/components/statistics-cards/statistics-cards';
-import { StatisticsCard } from '../../../../shared/components/statistics-cards/statistics-card.model';
-import { Inquiry, InquiryStatus } from '../../models/inquiry.model';
+import { type StatisticsCard } from '../../../../shared/components/statistics-cards/statistics-card.model';
+import { type Inquiry, type InquiryStatus } from '../../models/inquiry.model';
 import { InquiriesService } from '../../services/inquiries.service';
 
 interface InquiryRow {
@@ -38,9 +42,16 @@ interface InquiryRow {
 
 @Component({
   selector: 'app-inquiries-board',
-  imports: [PageHeader, StatisticsCards, DataTable],
+  imports: [
+    DatePickerModule,
+    FormsModule,
+    PageHeader,
+    SectionEmpty,
+    StatisticsCards,
+    DataTable,
+    Tooltip,
+  ],
   templateUrl: './inquiries-board.html',
-  styleUrl: './inquiries-board.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class InquiriesBoard {
@@ -50,28 +61,48 @@ export class InquiriesBoard {
   private readonly destroyRef = inject(DestroyRef);
   readonly lang = inject(LanguageService);
 
-  /** Overrides the page and table title. Inquiries keeps its own title when this is empty. */
-  readonly pageTitle = input('');
-  /** List prefix used when a row opens its details page. */
-  readonly detailPath = input('/contact/inquiries');
+  readonly pageTitle = input('', {
+    transform: (value: string | undefined) => value ?? '',
+  });
+
+  readonly pageTitleKey = input('', {
+    transform: (value: string | undefined) => value ?? '',
+  });
+
+  readonly detailPath = input('/contact/inquiries', {
+    transform: (value: string | undefined) => value ?? '/contact/inquiries',
+  });
 
   readonly heading = computed(() => {
+    this.lang.language();
     const custom = this.pageTitle().trim();
     if (custom) {
       return custom;
+    }
+    const key = this.pageTitleKey().trim();
+    if (key) {
+      return this.lang.t(key);
     }
     return this.lang.t('nav.inquiries');
   });
 
   readonly query = signal('');
   readonly selectedFilters = signal<string[]>([]);
+
+  readonly dateFilter = signal<string | null>(null);
   private readonly source = signal<Inquiry[]>([]);
+
+  readonly isEmpty = computed(() => this.loaded() && this.source().length === 0);
+  readonly loaded = signal(false);
 
   constructor() {
     this.api
       .list()
       .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe((rows) => this.source.set(rows));
+      .subscribe((rows) => {
+        this.source.set(rows);
+        this.loaded.set(true);
+      });
   }
 
   readonly cards = computed<StatisticsCard[]>(() => {
@@ -168,14 +199,31 @@ export class InquiriesBoard {
   readonly rows = computed(() => {
     const query = this.query().trim();
     const selected = this.selectedFilters();
+    const day = this.dateFilter();
     return this.source()
       .filter((row) => {
         const statusOk = selected.length === 0 || selected.includes(row.status);
+        const dateOk = !day || row.date.slice(0, 10) === day;
         const haystack = `${row.id} ${row.customer} ${row.org} ${row.phone} ${row.product}`;
-        return statusOk && (!query || haystack.includes(query));
+        return statusOk && dateOk && (!query || haystack.includes(query));
       })
       .map((row) => this.toRow(row));
   });
+
+  protected setDateFilter(value: string | Date | null): void {
+    if (!value) {
+      this.dateFilter.set(null);
+      return;
+    }
+    if (value instanceof Date) {
+      const y = value.getFullYear();
+      const m = `${value.getMonth() + 1}`.padStart(2, '0');
+      const d = `${value.getDate()}`.padStart(2, '0');
+      this.dateFilter.set(`${y}-${m}-${d}`);
+      return;
+    }
+    this.dateFilter.set(value.slice(0, 10) || null);
+  }
 
   protected exported(rows: readonly InquiryRow[]): void {
     this.messages.add({

@@ -1,0 +1,105 @@
+<form class="reset-form" [formGroup]="form()" (ngSubmit)="onSubmit()" novalidate>
+  <h1>{{ lang.t('auth.resetTitle') }}</h1>
+
+  <label class="field">
+    <span class="field__label">{{ lang.t('auth.newPassword') }}</span>
+    <p-iconfield>
+      <input
+        pInputText
+        [fluid]="true"
+        id="reset-password"
+        [type]="showPassword() ? 'text' : 'password'"
+        formControlName="password"
+        autocomplete="new-password"
+        [placeholder]="lang.t('auth.newPasswordPlaceholder')"
+        [invalid]="form().controls.password.touched && form().controls.password.invalid"
+        [attr.aria-invalid]="form().controls.password.invalid"
+        [attr.aria-describedby]="
+          form().controls.password.touched && form().controls.password.invalid
+            ? 'reset-password-error'
+            : null
+        "
+      />
+      <app-button
+        class="field__toggle"
+        type="button"
+        variant="ghost"
+        [rounded]="true"
+        size="small"
+        [icon]="showPassword() ? 'pi pi-eye-slash' : 'pi pi-eye'"
+        [ariaLabel]="lang.t(showPassword() ? 'auth.hidePassword' : 'auth.showPassword')"
+        (clicked)="showPassword.set(!showPassword())"
+      />
+    </p-iconfield>
+    @if (form().controls.password.touched && form().controls.password.hasError('required')) {
+      <app-field-error id="reset-password-error">{{
+        lang.t('auth.passwordRequired')
+      }}</app-field-error>
+    } @else if (
+      form().controls.password.touched && form().controls.password.hasError('minlength')
+    ) {
+      <app-field-error id="reset-password-error">{{
+        lang.t('auth.passwordShort')
+      }}</app-field-error>
+    }
+  </label>
+
+  <label class="field">
+    <span class="field__label">{{ lang.t('auth.confirmPassword') }}</span>
+    <p-iconfield>
+      <input
+        pInputText
+        [fluid]="true"
+        id="reset-confirm"
+        [type]="showConfirm() ? 'text' : 'password'"
+        formControlName="confirmPassword"
+        autocomplete="new-password"
+        [placeholder]="lang.t('auth.confirmPasswordPlaceholder')"
+        [invalid]="
+          form().controls.confirmPassword.touched &&
+          (form().controls.confirmPassword.invalid || form().hasError('mismatch'))
+        "
+        [attr.aria-invalid]="form().controls.confirmPassword.invalid || form().hasError('mismatch')"
+        [attr.aria-describedby]="
+          form().controls.confirmPassword.touched &&
+          (form().controls.confirmPassword.invalid || form().hasError('mismatch'))
+            ? 'reset-confirm-error'
+            : null
+        "
+      />
+      <app-button
+        class="field__toggle"
+        type="button"
+        variant="ghost"
+        [rounded]="true"
+        size="small"
+        [icon]="showConfirm() ? 'pi pi-eye-slash' : 'pi pi-eye'"
+        [ariaLabel]="lang.t(showConfirm() ? 'auth.hidePassword' : 'auth.showPassword')"
+        (clicked)="showConfirm.set(!showConfirm())"
+      />
+    </p-iconfield>
+    @if (
+      form().controls.confirmPassword.touched &&
+      form().controls.confirmPassword.hasError('required')
+    ) {
+      <app-field-error id="reset-confirm-error">{{
+        lang.t('auth.passwordRequired')
+      }}</app-field-error>
+    } @else if (form().controls.confirmPassword.touched && form().hasError('mismatch')) {
+      <app-field-error id="reset-confirm-error" [icon]="true">{{
+        lang.t('auth.passwordMismatch')
+      }}</app-field-error>
+    }
+  </label>
+
+  <app-button
+    styleClass="auth-submit"
+    type="submit"
+    icon="pi pi-angle-left"
+    iconPos="right"
+    size="large"
+    [fluid]="true"
+    [label]="lang.t('auth.resetSubmit')"
+    [loading]="submitting()"
+  />
+</form>

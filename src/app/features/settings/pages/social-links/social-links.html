@@ -6,6 +6,7 @@
   <section class="page social-page" [attr.dir]="locale() === 'ar' ? 'rtl' : 'ltr'">
     <app-page-header [title]="t('nav.social')">
       <app-button
+        *appHasPermission="'site_settings.create'"
         icon="pi pi-plus"
         iconPos="end"
         styleClass="social-page__add"
@@ -72,15 +73,19 @@
         </header>
         <div class="social-panel__shell">
           <label class="social-upload">
-            <input type="file" accept="image/*" hidden (change)="onImagePicked($event)" />
+            @if (canUpdate()) {
+              <input type="file" accept="image/*" hidden (change)="onImagePicked($event)" />
+            }
             @if (document()?.site?.imageUrl; as imageUrl) {
               <img [src]="imageUrl" [alt]="document()?.site?.imageName ?? ''" />
             } @else {
               <span class="social-upload__empty">{{ t('social.uploadHint') }}</span>
             }
-            <span class="social-upload__badge" aria-hidden="true">
-              <i class="pi pi-download"></i>
-            </span>
+            @if (canUpdate()) {
+              <span class="social-upload__badge" aria-hidden="true">
+                <i class="pi pi-download"></i>
+              </span>
+            }
           </label>
         </div>
       </article>
@@ -152,6 +157,9 @@
             [copyLabel]="copyLinkLabel(channel)"
             [urlFieldLabel]="urlFieldLabel(channel)"
             [wide]="channel.platform === 'whatsapp'"
+            [showEdit]="canUpdate()"
+            [showDelete]="canDelete()"
+            [showToggle]="canUpdate()"
             (enabledChange)="setEnabled(channel, $event)"
             (edit)="openEdit(channel)"
             (remove)="removeChannel(channel)"
@@ -162,23 +170,25 @@
     </section>
 
     <footer class="social-footer">
-      <div class="social-footer__actions">
-        <app-button
-          icon="pi pi-save"
-          iconPos="start"
-          styleClass="social-page__save"
-          [label]="t('common.saveChanges')"
-          [loading]="saving()"
-          (clicked)="save()"
-        />
-        <app-button
-          variant="outlined"
-          styleClass="social-page__cancel"
-          [label]="t('common.cancel')"
-          [disabled]="saving()"
-          (clicked)="cancel()"
-        />
-      </div>
+      @if (canUpdate()) {
+        <div class="social-footer__actions">
+          <app-button
+            icon="pi pi-save"
+            iconPos="start"
+            styleClass="social-page__save"
+            [label]="t('common.saveChanges')"
+            [loading]="saving()"
+            (clicked)="save()"
+          />
+          <app-button
+            variant="outlined"
+            styleClass="social-page__cancel"
+            [label]="t('common.cancel')"
+            [disabled]="saving()"
+            (clicked)="cancel()"
+          />
+        </div>
+      }
       <p class="social-footer__meta">{{ updatedLabel() }}</p>
     </footer>
   </section>

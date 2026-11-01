@@ -1,18 +1,47 @@
 <app-auth-shell>
-  <app-login-form
-    [form]="form"
-    [submitting]="submitting()"
-    [credentialError]="credentialError()"
-    [(showPassword)]="showPassword"
-    [(remember)]="remember"
-    (forgot)="resetOpen.set(true)"
-    (submitted)="submit()"
-  />
+  @switch (view()) {
+    @case ('login') {
+      <app-login-form
+        [form]="form"
+        [submitting]="submitting()"
+        [credentialError]="credentialError()"
+        [(showPassword)]="showPassword"
+        [(remember)]="remember"
+        (forgot)="openForgot()"
+        (submitted)="submit()"
+      />
+    }
+    @case ('forgot') {
+      <app-login-forgot-form
+        [form]="resetForm"
+        [submitting]="resetSubmitting()"
+        (back)="backToLogin()"
+        (submitted)="sendReset()"
+      />
+    }
+    @case ('forgot-otp') {
+      <app-auth-otp-form
+        [form]="otpForm"
+        [invalid]="otpInvalid()"
+        [submitting]="otpSubmitting()"
+        [remaining]="otpRemaining()"
+        [clock]="otpClock()"
+        (back)="backToForgot()"
+        (submitted)="submitOtp()"
+        (resend)="resendOtp()"
+        (cleared)="clearOtpInvalid()"
+      />
+    }
+    @case ('forgot-reset') {
+      <app-login-reset-form
+        [form]="newPasswordForm"
+        [submitting]="resetSubmitting()"
+        [(showPassword)]="showResetPassword"
+        [(showConfirm)]="showResetConfirm"
+        (submitted)="submitNewPassword()"
+      />
+    }
+  }
 </app-auth-shell>
 
-<app-login-reset-dialog
-  [(visible)]="resetOpen"
-  [sent]="resetSent()"
-  [form]="resetForm"
-  (send)="sendReset()"
-/>
+<app-login-reset-success [(visible)]="successOpen" (confirmed)="finishResetSuccess()" />

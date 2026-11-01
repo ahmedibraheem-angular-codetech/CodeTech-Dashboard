@@ -1,6 +1,7 @@
 <section class="page users-page">
   <app-page-header [title]="lang.t('nav.manageUsers')" [subtitle]="lang.t('users.pageSubtitle')">
     <app-button
+      *appHasPermission="'users.create'"
       icon="pi pi-plus"
       iconPos="end"
       styleClass="users-add"
@@ -23,6 +24,8 @@
       [totalRecords]="filtered().length"
       [roleOptions]="roleOptions()"
       [statusOptions]="statusOptions()"
+      [showEdit]="canUpdate()"
+      [showDelete]="canDelete()"
       [(query)]="query"
       [(role)]="role"
       [(status)]="status"

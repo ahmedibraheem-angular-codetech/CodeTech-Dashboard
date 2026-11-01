@@ -39,8 +39,41 @@
   min-width: 0;
 }
 
+// Routed page host only (header/sidebar stay still). Clips the enter translate.
+.shell__page {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  gap: space(2);
+  width: 100%;
+  min-width: 0;
+  overflow-x: clip;
+}
+
+.shell__page--enter {
+  animation: route-page-in 1.5s ease both;
+}
+
+@keyframes route-page-in {
+  from {
+    opacity: 0;
+    transform: translateX(2.75rem);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@include reduced-motion {
+  .shell__page--enter {
+    animation: none;
+  }
+}
+
 // The outlet element is an empty marker; hiding it keeps it from adding a flex gap.
-.shell__content > router-outlet {
+.shell__page > router-outlet {
   display: none;
 }
 

@@ -3,6 +3,7 @@
     <h2>{{ lang.t('about.ceo') }}</h2>
     @if (filled()) {
       <app-button
+        *appHasPermission="'about.update'"
         styleClass="block-edit"
         icon="pi pi-pen-to-square"
         iconPos="right"
@@ -15,7 +16,12 @@
   @if (filled()) {
     <app-content-panel>
       <div class="about-ceo">
-        <div class="about-ceo__photo" role="img" [attr.aria-label]="view().name"></div>
+        <div
+          class="about-ceo__photo"
+          role="img"
+          [attr.aria-label]="view().name"
+          [style.background-image]="photoUrl() ? 'url(' + photoUrl() + ')' : null"
+        ></div>
         <div class="about-ceo__copy">
           <p class="about-ceo__role">{{ view().role }}</p>
           <h3>{{ view().name }}</h3>
@@ -33,7 +39,8 @@
   } @else {
     <app-section-empty [title]="lang.t('about.ceoEmpty')" [hint]="lang.t('about.ceoEmptyHint')">
       <app-button
-        variant="outlined"
+        *appHasPermission="'about.create'"
+        styleClass="home-empty-cta"
         icon="pi pi-file"
         [label]="lang.t('about.ceoAdd')"
         (clicked)="open()"

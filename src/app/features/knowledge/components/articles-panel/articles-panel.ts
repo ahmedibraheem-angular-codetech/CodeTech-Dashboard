@@ -42,7 +42,7 @@ import {
 
 interface ArticleRow {
   id: string;
-  /** Figma list label (`ART-0222`). Routes still use `source.id`. */
+
   displayId: string;
   article: { title: string; excerpt: string; thumbnailUrl: string; featured: boolean };
   category: string;
@@ -52,21 +52,19 @@ interface ArticleRow {
   source: Article;
 }
 
-/** Badge tones come from the shared table: published → new, draft → progress, unpublished → closed. */
 const STATUS_TONE: Record<ArticleStatus, DataTableBadgeValue['tone']> = {
   published: 'new',
   draft: 'progress',
   unpublished: 'closed',
 };
 
-/** Static KPI chrome; values are filled in `cards` from a single status pass. */
 interface ArticleStatDef {
   readonly id: string;
   readonly titleKey: string;
   readonly icon: string;
   readonly iconColor: string;
   readonly iconBackground: string;
-  /** `total` uses the list length; otherwise the matching status count. */
+
   readonly metric: 'total' | ArticleStatus;
 }
 
@@ -122,10 +120,6 @@ function countArticlesByStatus(articles: readonly Article[]): Record<ArticleStat
   return counts;
 }
 
-/**
- * Articles tab: KPI cards plus the shared data table with its own search, status filter and
- * pagination state. The board owns the data and every write.
- */
 @Component({
   selector: 'app-knowledge-articles-panel',
   imports: [AppButton, AppPaginator, DataTable, DataTableCellTemplate, Popover, StatisticsCards],
@@ -138,6 +132,8 @@ export class ArticlesPanel {
 
   readonly articles = input.required<readonly Article[]>();
   readonly categories = input.required<readonly ArticleCategory[]>();
+  readonly showEdit = input(true);
+  readonly showDelete = input(true);
 
   readonly view = output<Article>();
   readonly edit = output<Article>();

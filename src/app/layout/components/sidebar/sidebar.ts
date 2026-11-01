@@ -1,7 +1,14 @@
-import { ChangeDetectionStrategy, Component, DestroyRef, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  DestroyRef,
+  computed,
+  inject,
+  signal,
+} from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
-  IsActiveMatchOptions,
+  type IsActiveMatchOptions,
   NavigationEnd,
   Router,
   RouterLink,
@@ -10,7 +17,8 @@ import {
 import { filter } from 'rxjs';
 
 import { AuthService } from '../../../core/auth/auth.service';
-import { NAV_ITEMS, type NavItem } from '../../../core/config/navigation';
+import { roleLabel } from '../../../core/auth/role-label';
+import { NAV_ITEMS, filterNavItems, type NavItem } from '../../../core/config/navigation';
 import { LanguageService } from '../../../core/services/language.service';
 import { LayoutService } from '../../../core/services/layout.service';
 import { BrandLogo } from '../../../shared/components/brand-logo/brand-logo';
@@ -24,8 +32,18 @@ import { UserAvatar } from '../../../shared/components/user-avatar/user-avatar';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Sidebar {
-  readonly items = NAV_ITEMS;
-  /** Exact path match: `/products` must not stay highlighted on `/products/page`. */
+  readonly lang = inject(LanguageService);
+  readonly layout = inject(LayoutService);
+  readonly auth = inject(AuthService);
+  private readonly router = inject(Router);
+
+  readonly items = computed(() =>
+    filterNavItems(NAV_ITEMS, {
+      profileLoaded: this.auth.session()?.profileLoaded === true,
+      hasPermission: (name) => this.auth.hasPermission(name),
+    }),
+  );
+
   readonly childMatch: IsActiveMatchOptions = {
     paths: 'exact',
     queryParams: 'ignored',
@@ -42,11 +60,11 @@ export class Sidebar {
   linkMatch(item: NavItem): IsActiveMatchOptions {
     return item.exact === false ? this.childPrefixMatch : this.childMatch;
   }
-  readonly lang = inject(LanguageService);
-  readonly layout = inject(LayoutService);
-  readonly auth = inject(AuthService);
-  private readonly router = inject(Router);
   private readonly openIds = signal<ReadonlySet<string>>(new Set());
+
+  roleName(): string {
+    return roleLabel(this.lang, this.auth.session()?.roleKey);
+  }
 
   constructor() {
     this.router.events
@@ -77,7 +95,6 @@ export class Sidebar {
     });
   }
 
-  /** `/products/new` and `/products/:id` stay on المنتجات, without matching `/products/page`. */
   productSectionActive(): boolean {
     const url = this.router.url.split('?')[0];
     if (url === '/products') {
@@ -108,7 +125,7 @@ export class Sidebar {
   }
 
   private expandActive(): void {
-    for (const item of this.items) {
+    for (const item of this.items()) {
       if (item.children && this.childActive(item)) {
         this.openIds.update((current) => new Set(current).add(item.id));
       }

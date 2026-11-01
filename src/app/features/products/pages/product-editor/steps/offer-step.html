@@ -1,0 +1,66 @@
+<section class="editor-section">
+  <header class="editor-section__head">
+    <h2>{{ editor.copy('product.offer') }}</h2>
+    <span class="icon-badge" aria-hidden="true"><i class="pi pi-list"></i></span>
+  </header>
+  <div class="editor-section__body">
+    @for (item of editor.draft().offer; track item.id; let index = $index) {
+      <app-feature-card
+        [label]="editor.copy('product.featureItem') + ' ' + (index + 1)"
+        [title]="editor.text(item.title)"
+        [titleLabel]="editor.copy('product.featureTitle')"
+        [titlePlaceholder]="editor.copy('product.featureTitlePh')"
+        [body]="editor.text(item.body)"
+        [bodyLabel]="editor.copy('product.featureBody')"
+        [bodyPlaceholder]="editor.copy('product.featureBody')"
+        [iconLabel]="editor.copy('product.icon')"
+        [imageName]="item.imageName"
+        [imageUrl]="item.imageUrl"
+        [locale]="editor.locale()"
+        [removeDisabled]="editor.draft().offer.length === 1"
+        [removeLabel]="editor.copy('product.deleteTitle')"
+        (titleChange)="editor.setPoint('offer', index, 'title', $event)"
+        (bodyChange)="editor.setPoint('offer', index, 'body', $event)"
+        (imageChange)="editor.setPointImage('offer', index, $event)"
+        (removed)="editor.removePoint('offer', index)"
+      />
+    }
+    <button type="button" class="add-row" (click)="editor.addPoint('offer')">
+      <span class="add-row__mark" aria-hidden="true"><i class="pi pi-plus"></i></span>
+      {{ editor.copy('product.addFeature') }}
+    </button>
+  </div>
+</section>
+<section class="editor-section">
+  <header class="editor-section__head">
+    <h2>{{ editor.copy('product.results') }}</h2>
+    <span class="icon-badge" aria-hidden="true"><i class="pi pi-chart-bar"></i></span>
+  </header>
+  <div class="editor-section__body">
+    @for (item of editor.draft().results; track item.id; let index = $index) {
+      <app-feature-card
+        [label]="editor.copy('product.resultItem') + ' ' + (index + 1)"
+        [title]="editor.text(item.title)"
+        [titleLabel]="editor.copy('product.resultTitle')"
+        [titlePlaceholder]="editor.copy('product.resultTitlePh')"
+        [body]="editor.text(item.body)"
+        [bodyLabel]="editor.copy('product.resultBody')"
+        [bodyPlaceholder]="editor.copy('product.resultBodyPh')"
+        [iconLabel]="editor.copy('product.icon')"
+        [imageName]="item.imageName"
+        [imageUrl]="item.imageUrl"
+        [locale]="editor.locale()"
+        [removeDisabled]="editor.draft().results.length === 1"
+        [removeLabel]="editor.copy('product.deleteTitle')"
+        (titleChange)="editor.setPoint('results', index, 'title', $event)"
+        (bodyChange)="editor.setPoint('results', index, 'body', $event)"
+        (imageChange)="editor.setPointImage('results', index, $event)"
+        (removed)="editor.removePoint('results', index)"
+      />
+    }
+    <button type="button" class="add-row" (click)="editor.addPoint('results')">
+      <span class="add-row__mark" aria-hidden="true"><i class="pi pi-plus"></i></span>
+      {{ editor.copy('product.addResult') }}
+    </button>
+  </div>
+</section>

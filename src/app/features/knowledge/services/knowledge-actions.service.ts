@@ -1,23 +1,18 @@
 import { Injectable, inject } from '@angular/core';
 import { MessageService } from 'primeng/api';
-import { Observable, firstValueFrom } from 'rxjs';
+import { type Observable, firstValueFrom } from 'rxjs';
 
 import { LanguageService } from '../../../core/services/language.service';
 import type { ConfirmDialog } from '../../../shared/components/confirm-dialog/confirm-dialog';
 import type { Article, ArticleStatus } from '../models/knowledge.model';
 import { KnowledgeService } from './knowledge.service';
 
-/**
- * Confirm + API + toast flows shared by the list, the editor and the detail page.
- * The caller passes its own `ConfirmDialog` and applies the returned article to its state.
- */
 @Injectable({ providedIn: 'root' })
 export class KnowledgeActions {
   private readonly api = inject(KnowledgeService);
   private readonly messages = inject(MessageService);
   private readonly lang = inject(LanguageService);
 
-  /** Resolves `true` once the article is deleted. */
   async remove(article: Article, confirm: ConfirmDialog): Promise<boolean> {
     const accepted = await confirm.ask({
       title: this.lang.t('knowledge.deleteTitle'),
@@ -36,7 +31,6 @@ export class KnowledgeActions {
     return true;
   }
 
-  /** Features the article, or asks before removing the featured mark. */
   async toggleFeatured(article: Article, confirm: ConfirmDialog): Promise<Article | null> {
     if (article.featured) {
       const accepted = await confirm.ask({
@@ -61,7 +55,6 @@ export class KnowledgeActions {
     return next;
   }
 
-  /** Moving an article back to draft asks first. Other transitions apply directly. */
   async changeStatus(
     article: Article,
     status: ArticleStatus,
@@ -81,7 +74,6 @@ export class KnowledgeActions {
     return result.value;
   }
 
-  /** The "save as draft" confirmation shared with the editor. */
   confirmDraft(confirm: ConfirmDialog): Promise<boolean> {
     return confirm.ask({
       title: this.lang.t('knowledge.draftTitle'),
@@ -91,7 +83,6 @@ export class KnowledgeActions {
     });
   }
 
-  /** Wraps the result so a `void` request can still be told apart from a failure. */
   private async run<T>(request: Observable<T>): Promise<{ value: T } | null> {
     try {
       return { value: await firstValueFrom(request) };

@@ -1,30 +1,39 @@
 <section class="page seo-page">
   <app-page-header [title]="title()" [subtitle]="lang.t('seo.subtitle')">
     <app-button
+      *appHasPermission="'seo.update'"
       class="seo-save"
       styleClass="seo-btn"
       icon="pi pi-save"
       iconPos="right"
       [label]="lang.t('seo.save')"
+      [disabled]="saving() || loading() || loadFailed()"
       (clicked)="save()"
     />
     <app-button
+      *appHasPermission="'seo.update'"
       class="seo-revert"
       styleClass="seo-btn"
       icon="pi pi-undo"
       iconPos="right"
       variant="outlined"
       [label]="lang.t('seo.revert')"
-      [disabled]="!dirty()"
+      [disabled]="!dirty() || saving() || loading() || loadFailed()"
       (clicked)="revert()"
     />
   </app-page-header>
 
-  <app-page-tabs [tabs]="pages" [value]="active()" (valueChange)="select($event)" />
+  @if (loading()) {
+    <app-state-view mode="loading" />
+  } @else if (loadFailed()) {
+    <app-state-view mode="error" [message]="lang.t('common.error')" (retry)="reload()" />
+  } @else {
+    <app-page-tabs [tabs]="pages" [value]="active()" (valueChange)="select($event)" />
 
-  <!-- First card sits on the right in RTL, matching the design: SEO beside the sidebar. -->
-  <div class="seo-grid">
-    <app-meta-card [pageId]="active()" />
-    <app-thumbnail-card [pageId]="active()" />
-  </div>
+    <!-- First card sits on the right in RTL, matching the design: SEO beside the sidebar. -->
+    <div class="seo-grid">
+      <app-meta-card [pageId]="active()" [editable]="canUpdate()" />
+      <app-thumbnail-card [pageId]="active()" [editable]="canUpdate()" />
+    </div>
+  }
 </section>

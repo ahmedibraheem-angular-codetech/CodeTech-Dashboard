@@ -5,10 +5,14 @@ import { provideRouter } from '@angular/router';
 import { MessageService } from 'primeng/api';
 import { of } from 'rxjs';
 
+import { authSession } from '../../../../core/auth/auth-session.fixture';
+import { AuthService } from '../../../../core/auth/auth.service';
 import { LanguageService } from '../../../../core/services/language.service';
-import { User } from '../../models/user.model';
+import { type User } from '../../models/user.model';
 import { UsersService } from '../../services/users.service';
 import { UserDetailPage } from './user-detail';
+
+const USER_GRANTS = ['users.view', 'users.create', 'users.update', 'users.delete'] as const;
 
 describe('UserDetailPage', () => {
   const user: User = {
@@ -47,6 +51,16 @@ describe('UserDetailPage', () => {
         },
       ],
     }).compileComponents();
+
+    TestBed.inject(AuthService).session.set(
+      authSession({
+        token: 't',
+        email: 'admin@codetech.sa',
+        name: 'Admin',
+        profileLoaded: true,
+        permissions: [...USER_GRANTS],
+      }),
+    );
   });
 
   it('renders the suspended user detail sections', () => {

@@ -69,7 +69,7 @@
   --p-tabs-tab-border-color: transparent;
   --p-tabs-tab-hover-border-color: transparent;
   --p-tabs-tab-active-border-color: #f6f8f9;
-  --p-tabs-tab-font-weight: 600;
+  --p-tabs-tab-font-weight: 500;
   --p-tabs-tab-padding: 4px 16px;
 }
 
@@ -92,7 +92,7 @@
   background: transparent;
   color: #8b95a5;
   font-size: 14px;
-  font-weight: 600;
+  font-weight: 500;
   box-shadow: none;
 }
 
@@ -188,7 +188,7 @@
   color: #334155;
   font: inherit;
   font-size: 14px;
-  font-weight: 600;
+  font-weight: 500;
   cursor: pointer;
 }
 
@@ -230,7 +230,7 @@
   border-radius: 10px;
   color: #334155;
   font-size: 14px;
-  font-weight: 600;
+  font-weight: 500;
   cursor: pointer;
 }
 
@@ -336,7 +336,7 @@
   margin: 0;
   color: #94a3b8;
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 500;
   line-height: 1.4;
 }
 
@@ -350,7 +350,7 @@
   padding: 4px 10px;
   border-radius: 999px;
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 500;
   line-height: 1.4;
   white-space: nowrap;
 }
@@ -397,7 +397,7 @@
 .faq-cat-card__label {
   color: #6f8bac;
   font-size: 13px;
-  font-weight: 600;
+  font-weight: 500;
   white-space: nowrap;
 }
 
@@ -413,7 +413,7 @@
   gap: 6px;
   color: #64748b;
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 500;
   white-space: nowrap;
 }
 
@@ -515,7 +515,7 @@
   margin: 0;
   color: #94a3b8;
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 500;
   line-height: 1.4;
 }
 
@@ -565,14 +565,14 @@
   margin: 0;
   color: #0f2744;
   font-size: 13px;
-  font-weight: 600;
+  font-weight: 500;
   cursor: pointer;
 }
 
 .faq-card__meta-label {
   color: #94a3b8;
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 500;
   white-space: nowrap;
 }
 
@@ -646,13 +646,13 @@
 }
 
 .p-dialog.app-modal:has(.faq-editor-form),
-.p-dialog.app-modal:has(.faq-category-form) {
+.p-dialog.app-modal:has(.category-form) {
   width: min(640px, calc(100vw - 32px));
   max-height: calc(100vh - 32px);
 }
 
 .p-dialog.app-modal:has(.faq-editor-form) .p-dialog-content,
-.p-dialog.app-modal:has(.faq-category-form) .p-dialog-content {
+.p-dialog.app-modal:has(.category-form) .p-dialog-content {
   overflow: auto;
 }
 
@@ -690,20 +690,20 @@
   text-align: center;
 }
 
-.p-dialog.app-modal:has(.faq-category-form) .p-dialog-header {
+.p-dialog.app-modal:has(.category-form) .p-dialog-header {
   min-height: 80px;
   background: #fff;
 }
 
-.p-dialog.app-modal:has(.faq-category-form) .app-modal__heading {
+.p-dialog.app-modal:has(.category-form) .app-modal__heading {
   gap: 12px;
 }
 
-.p-dialog.app-modal:has(.faq-category-form) .app-modal__icon {
+.p-dialog.app-modal:has(.category-form) .app-modal__icon {
   color: #6f8bac;
 }
 
-.p-dialog.app-modal:has(.faq-category-form) .app-modal__title {
+.p-dialog.app-modal:has(.category-form) .app-modal__title {
   color: #0f2744;
   font-size: 18px;
   font-weight: 700;
@@ -711,7 +711,7 @@
 }
 
 .p-dialog.app-modal:has(.faq-editor-form) .app-modal__action .p-button,
-.p-dialog.app-modal:has(.faq-category-form) .app-modal__action .p-button {
+.p-dialog.app-modal:has(.category-form) .app-modal__action .p-button {
   --p-button-gap: 10px;
 
   box-sizing: border-box;
@@ -723,7 +723,7 @@
 }
 
 .p-dialog.app-modal:has(.faq-editor-form) .app-modal__action .p-button:not(.p-button-outlined),
-.p-dialog.app-modal:has(.faq-category-form) .app-modal__action .p-button:not(.p-button-outlined) {
+.p-dialog.app-modal:has(.category-form) .app-modal__action .p-button:not(.p-button-outlined) {
   --p-button-primary-background: #1c81d3;
   --p-button-primary-hover-background: #1874be;
   --p-button-primary-active-background: #1669ab;
@@ -736,7 +736,7 @@
 }
 
 .faq-editor-form,
-.faq-category-form {
+.category-form {
   display: flex;
   flex-direction: column;
   gap: 14px;
@@ -754,22 +754,22 @@
 }
 
 .faq-editor-form .locale-switch,
-.faq-category-form .locale-switch {
+.category-form .locale-switch {
   width: 100%;
 }
 
 .faq-editor-form .field__label,
-.faq-category-form .field__label {
+.category-form .field__label {
   color: #6f8bac;
   font-size: 13px;
-  font-weight: 600;
+  font-weight: 500;
   text-align: start;
 }
 
 .faq-editor-form .p-inputtext,
 .faq-editor-form .p-select,
 .faq-editor-form .p-textarea,
-.faq-category-form .p-inputtext {
+.category-form .p-inputtext {
   min-height: 48px;
   border-color: #edeeee;
   border-radius: 12px;
@@ -786,12 +786,12 @@
 .faq-editor-form .p-inputtext,
 .faq-editor-form .p-select-label,
 .faq-editor-form .p-textarea,
-.faq-category-form .p-inputtext {
+.category-form .p-inputtext {
   text-align: start;
 }
 
 .faq-editor-form .p-iconfield,
-.faq-category-form .p-iconfield {
+.category-form .p-iconfield {
   width: 100%;
 }
 
@@ -802,7 +802,7 @@
 }
 
 .faq-editor-form__publish,
-.faq-category-form__publish {
+.category-form__publish {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -814,7 +814,7 @@
   background: #f9fafb;
   color: #0f2744;
   font-size: 14px;
-  font-weight: 600;
+  font-weight: 500;
   cursor: pointer;
 }
 

@@ -6,10 +6,6 @@ import { ToggleSwitch } from 'primeng/toggleswitch';
 import { LanguageService } from '../../../../core/services/language.service';
 import type { PermissionModule } from '../../models/permissions.model';
 
-/**
- * Add-role modal body: role name and module permission toggles.
- * Parent owns visibility, save validation, and role creation.
- */
 @Component({
   selector: 'app-permissions-role-form',
   imports: [FormsModule, InputText, ToggleSwitch],

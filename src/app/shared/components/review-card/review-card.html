@@ -50,35 +50,43 @@
 
     <blockquote class="review-card__quote">“{{ quote() }}”</blockquote>
 
-    <div class="review-card__publish">
-      <span>{{ publishStatusLabel() }}</span>
-      <p-toggleswitch
-        [ngModel]="published()"
-        (ngModelChange)="publishedChange.emit($event)"
-        [ariaLabel]="publishStatusLabel()"
-      />
-    </div>
+    @if (showPublish()) {
+      <div class="review-card__publish">
+        <span>{{ publishStatusLabel() }}</span>
+        <p-toggleswitch
+          [ngModel]="published()"
+          (ngModelChange)="publishedChange.emit($event)"
+          [ariaLabel]="publishStatusLabel()"
+        />
+      </div>
+    }
   </div>
 
-  <footer class="review-card__actions">
-    <app-button
-      type="button"
-      variant="outlined"
-      icon="pi pi-pencil"
-      iconPos="start"
-      styleClass="review-card__action review-card__action--edit"
-      [label]="editLabel()"
-      (clicked)="editRequested.emit()"
-    />
-    <app-button
-      type="button"
-      variant="danger"
-      [outlined]="true"
-      icon="pi pi-trash"
-      iconPos="start"
-      styleClass="review-card__action review-card__action--delete"
-      [label]="deleteLabel()"
-      (clicked)="deleteRequested.emit()"
-    />
-  </footer>
+  @if (showEdit() || showDelete()) {
+    <footer class="review-card__actions">
+      @if (showEdit()) {
+        <app-button
+          type="button"
+          variant="outlined"
+          icon="pi pi-pencil"
+          iconPos="start"
+          styleClass="review-card__action review-card__action--edit"
+          [label]="editLabel()"
+          (clicked)="editRequested.emit()"
+        />
+      }
+      @if (showDelete()) {
+        <app-button
+          type="button"
+          variant="danger"
+          [outlined]="true"
+          icon="pi pi-trash"
+          iconPos="start"
+          styleClass="review-card__action review-card__action--delete"
+          [label]="deleteLabel()"
+          (clicked)="deleteRequested.emit()"
+        />
+      }
+    </footer>
+  }
 </article>

@@ -18,26 +18,32 @@
         [ariaLabel]="lang.t('users.role')"
       />
     </label>
-    <div class="permissions-toolbar__actions">
-      <app-button
-        [outlined]="true"
-        icon="pi pi-save"
-        iconPos="end"
-        styleClass="permissions-save"
-        [label]="lang.t('common.saveChanges')"
-        (clicked)="save.emit()"
-      />
-      <app-button
-        variant="danger"
-        [outlined]="true"
-        icon="pi pi-trash"
-        iconPos="end"
-        styleClass="permissions-delete"
-        [label]="lang.t('settings.deleteRole')"
-        [disabled]="!canDelete()"
-        (clicked)="remove.emit()"
-      />
-    </div>
+    @if (showUpdate() || showDelete()) {
+      <div class="permissions-toolbar__actions">
+        @if (showUpdate()) {
+          <app-button
+            [outlined]="true"
+            icon="pi pi-save"
+            iconPos="end"
+            styleClass="permissions-save"
+            [label]="lang.t('common.saveChanges')"
+            (clicked)="save.emit()"
+          />
+        }
+        @if (showDelete()) {
+          <app-button
+            variant="danger"
+            [outlined]="true"
+            icon="pi pi-trash"
+            iconPos="end"
+            styleClass="permissions-delete"
+            [label]="lang.t('settings.deleteRole')"
+            [disabled]="!canDelete()"
+            (clicked)="remove.emit()"
+          />
+        }
+      </div>
+    }
   </div>
 
   <div class="permissions-table" role="table">
@@ -55,6 +61,7 @@
             <p-toggleswitch
               [ngModel]="granted(resource.id, action)"
               (ngModelChange)="setGrant(resource.id, action, $event)"
+              [disabled]="!showUpdate()"
               [ariaLabel]="resourceLabel(resource) + ' ' + actionLabel(action)"
             />
           </span>

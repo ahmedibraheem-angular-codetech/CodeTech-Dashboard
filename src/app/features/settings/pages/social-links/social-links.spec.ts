@@ -3,9 +3,18 @@ import { MessageService } from 'primeng/api';
 import { throwError } from 'rxjs';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
+import { authSession } from '../../../../core/auth/auth-session.fixture';
+import { AuthService } from '../../../../core/auth/auth.service';
 import { API_LATENCY_MS } from '../../../../core/config/latency';
 import { SocialLinksService } from '../../services/social-links.service';
 import { SocialLinksPage } from './social-links';
+
+const SITE_SETTINGS_GRANTS = [
+  'site_settings.view',
+  'site_settings.create',
+  'site_settings.update',
+  'site_settings.delete',
+] as const;
 
 describe('SocialLinksPage', () => {
   async function render() {
@@ -14,6 +23,15 @@ describe('SocialLinksPage', () => {
       imports: [SocialLinksPage],
       providers: [MessageService, { provide: API_LATENCY_MS, useValue: 0 }],
     });
+    TestBed.inject(AuthService).session.set(
+      authSession({
+        token: 't',
+        email: 'admin@codetech.sa',
+        name: 'Admin',
+        profileLoaded: true,
+        permissions: [...SITE_SETTINGS_GRANTS],
+      }),
+    );
     const fixture = TestBed.createComponent(SocialLinksPage);
     fixture.detectChanges();
     await new Promise((resolve) => setTimeout(resolve, 20));
@@ -41,7 +59,7 @@ describe('SocialLinksPage', () => {
   it('opens the edit-channel modal from a social card action', async () => {
     const fixture = await render();
     const root: HTMLElement = fixture.nativeElement;
-    // Seed already uses every platform, so Add is a no-op; Edit always opens.
+
     const edit = [...root.querySelectorAll('button')].find((btn) =>
       (btn.textContent ?? '').includes('تعديل'),
     );

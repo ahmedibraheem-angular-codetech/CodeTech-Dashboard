@@ -2,6 +2,7 @@
   <app-page-header [title]="title()" [subtitle]="lang.t('knowledge.editorSubtitle')">
     @if (mode === 'edit') {
       <app-button
+        *appHasPermission="'knowledge_center.delete'"
         styleClass="kb-editor__action"
         variant="danger"
         [outlined]="true"
@@ -12,6 +13,7 @@
         (clicked)="remove()"
       />
       <app-button
+        *appHasPermission="'knowledge_center.update'"
         styleClass="kb-editor__action"
         variant="outlined"
         [icon]="article()?.featured ? 'pi pi-star-fill' : 'pi pi-star'"

@@ -1,4 +1,4 @@
-import { User } from '../models/user.model';
+import { type User } from '../models/user.model';
 
 export const USERS_SEED: User[] = [
   {

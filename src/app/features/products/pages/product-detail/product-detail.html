@@ -1,0 +1,79 @@
+<section class="page">
+  @if (status() === 'loading') {
+    <app-state-view mode="loading" [message]="lang.t('common.loading')" />
+  } @else if (status() === 'missing' || !item()) {
+    <app-state-view mode="empty" [message]="lang.t('product.notFound')" />
+  } @else if (item(); as product) {
+    <app-page-header [title]="text(product.name)" [subtitle]="text(product.summary)">
+      <span class="detail-status" [class.is-draft]="!product.published">
+        {{ product.published ? lang.t('product.live') : lang.t('product.draft') }}
+      </span>
+      <a
+        *appHasPermission="'products.update'"
+        class="detail-edit"
+        [routerLink]="['/products', product.id, 'edit']"
+      >
+        <i class="pi pi-pen-to-square" aria-hidden="true"></i>
+        {{ lang.t('product.editAction') }}
+      </a>
+      <button
+        *appHasPermission="'products.delete'"
+        type="button"
+        class="detail-delete"
+        (click)="removeProduct()"
+      >
+        <i class="pi pi-trash" aria-hidden="true"></i>
+        {{ lang.t('about.delete') }}
+      </button>
+    </app-page-header>
+
+    <app-page-tabs [tabs]="tabs" [value]="tab()" (valueChange)="selectTab($event)" />
+
+    @switch (tab()) {
+      @case ('info') {
+        <app-product-detail-info
+          [product]="product"
+          [locale]="locale()"
+          [(statIndex)]="statIndex"
+          (copyCode)="copyCode($event)"
+          (removeItem)="onRemoveItem($event)"
+        />
+      }
+      @case ('sectors') {
+        <app-product-detail-sectors
+          [product]="product"
+          [locale]="locale()"
+          (openEditor)="openEditor()"
+          (removeItem)="onRemoveItem($event)"
+        />
+      }
+      @case ('offer') {
+        <app-product-detail-offer
+          [product]="product"
+          [locale]="locale()"
+          (removeItem)="onRemoveItem($event)"
+        />
+      }
+      @case ('units') {
+        <app-product-detail-units
+          [product]="product"
+          [locale]="locale()"
+          [(unitIndex)]="unitIndex"
+          (removeItem)="onRemoveItem($event)"
+        />
+      }
+      @case ('identity') {
+        <app-product-detail-identity
+          [product]="product"
+          [locale]="locale()"
+          [(identityIndex)]="identityIndex"
+          (removeItem)="onRemoveItem($event)"
+        />
+      }
+      @case ('faq') {
+        <app-product-detail-faq [product]="product" [locale]="locale()" />
+      }
+    }
+    <app-confirm-dialog />
+  }
+</section>

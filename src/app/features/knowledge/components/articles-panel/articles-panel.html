@@ -75,26 +75,30 @@
       <button type="button" (click)="choose('open')">
         <i class="pi pi-eye" aria-hidden="true"></i>{{ lang.t('knowledge.view') }}
       </button>
-      <button type="button" (click)="choose('edit')">
-        <i class="pi pi-pencil" aria-hidden="true"></i>{{ lang.t('knowledge.editAction') }}
-      </button>
-      <button type="button" (click)="choose('feature')">
-        <i
-          class="pi"
-          [class.pi-star-fill]="current.featured"
-          [class.pi-star]="!current.featured"
-          aria-hidden="true"
-        ></i>
-        {{ lang.t(current.featured ? 'knowledge.unfeature' : 'knowledge.feature') }}
-      </button>
-      @for (status of otherStatuses(current); track status) {
-        <button type="button" (click)="changeStatus(status)">
-          <i class="pi pi-sync" aria-hidden="true"></i>{{ lang.t(statusActionKey(status)) }}
+      @if (showEdit()) {
+        <button type="button" (click)="choose('edit')">
+          <i class="pi pi-pencil" aria-hidden="true"></i>{{ lang.t('knowledge.editAction') }}
+        </button>
+        <button type="button" (click)="choose('feature')">
+          <i
+            class="pi"
+            [class.pi-star-fill]="current.featured"
+            [class.pi-star]="!current.featured"
+            aria-hidden="true"
+          ></i>
+          {{ lang.t(current.featured ? 'knowledge.unfeature' : 'knowledge.feature') }}
+        </button>
+        @for (status of otherStatuses(current); track status) {
+          <button type="button" (click)="changeStatus(status)">
+            <i class="pi pi-sync" aria-hidden="true"></i>{{ lang.t(statusActionKey(status)) }}
+          </button>
+        }
+      }
+      @if (showDelete()) {
+        <button type="button" class="kb-menu__danger" (click)="choose('remove')">
+          <i class="pi pi-trash" aria-hidden="true"></i>{{ lang.t('knowledge.delete') }}
         </button>
       }
-      <button type="button" class="kb-menu__danger" (click)="choose('remove')">
-        <i class="pi pi-trash" aria-hidden="true"></i>{{ lang.t('knowledge.delete') }}
-      </button>
     </div>
   }
 </p-popover>

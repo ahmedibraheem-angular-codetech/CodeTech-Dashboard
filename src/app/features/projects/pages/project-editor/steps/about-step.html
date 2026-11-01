@@ -1,0 +1,202 @@
+<div class="editor-layout">
+  <div class="editor-layout__main">
+    <section class="editor-section editor-section--info">
+      <header class="editor-section__head">
+        <h2>{{ editor.copy('project.info') }}</h2>
+        <span class="icon-badge" aria-hidden="true"><i class="pi pi-briefcase"></i></span>
+      </header>
+      <div class="editor-section__body">
+        <label class="field">
+          <span class="field__label">{{ editor.copy('project.name') }}</span>
+          <p-iconfield>
+            <input
+              pInputText
+              [fluid]="true"
+              [value]="editor.text(editor.draft().name)"
+              [placeholder]="editor.copy('project.namePh')"
+              (input)="editor.setField('name', $event)"
+            />
+            <p-inputicon class="pi pi-file-edit" />
+          </p-iconfield>
+          @if (editor.nameError()) {
+            <app-field-error>{{ editor.copy('project.required') }}</app-field-error>
+          }
+        </label>
+        <label class="field">
+          <span class="field__label">{{ editor.copy('project.summary') }}</span>
+          <textarea
+            pTextarea
+            [fluid]="true"
+            rows="6"
+            [value]="editor.text(editor.draft().summary)"
+            [placeholder]="editor.copy('project.summaryPh')"
+            (input)="editor.setField('summary', $event)"
+          ></textarea>
+        </label>
+      </div>
+    </section>
+
+    <section class="editor-section editor-section--features">
+      <header class="editor-section__head">
+        <h2>{{ editor.copy('project.categories') }}</h2>
+        <span class="icon-badge" aria-hidden="true"><i class="pi pi-th-large"></i></span>
+      </header>
+      <div class="editor-section__body">
+        @for (item of editor.draft().categories; track item.id; let index = $index) {
+          <app-feature-card
+            [label]="editor.copy('project.categoryItem') + ' ' + (index + 1)"
+            [title]="editor.text(item.title)"
+            [titleLabel]="editor.copy('project.categoryTitle')"
+            [titlePlaceholder]="editor.copy('project.categoryTitlePh')"
+            [body]="editor.text(item.body)"
+            [bodyLabel]="editor.copy('project.categoryBody')"
+            [bodyPlaceholder]="editor.copy('project.categoryBodyPh')"
+            [iconLabel]="editor.copy('project.icon')"
+            [imageName]="item.imageName"
+            [imageUrl]="item.imageUrl"
+            [locale]="editor.locale()"
+            [uploadKeyPrefix]="uploadPrefix"
+            [clearable]="true"
+            [active]="categoryTab() === index"
+            [removeDisabled]="editor.draft().categories.length === 1"
+            [removeLabel]="editor.copy('project.deleteTitle')"
+            (selected)="selectCategory(index)"
+            (titleChange)="editor.setPoint('categories', index, 'title', $event)"
+            (bodyChange)="editor.setPoint('categories', index, 'body', $event)"
+            (imageChange)="editor.setPointImage('categories', index, $event)"
+            (imageCleared)="editor.clearPointImage('categories', index)"
+            (removed)="removeCategory(index)"
+          />
+        }
+        <button type="button" class="add-row" (click)="addCategory()">
+          {{ editor.copy('project.addCategory') }}
+          <span class="add-row__mark" aria-hidden="true"><i class="pi pi-plus"></i></span>
+        </button>
+      </div>
+    </section>
+  </div>
+
+  <div class="editor-layout__side">
+    <section class="editor-section editor-section--cover">
+      <header class="editor-section__head">
+        <h2>{{ editor.copy('project.cover') }}</h2>
+        <span class="icon-badge" aria-hidden="true"><i class="pi pi-upload"></i></span>
+      </header>
+      <div class="editor-section__body">
+        <div class="field">
+          <span class="field__label">{{ editor.copy('project.uploadLabel') }}</span>
+          <app-product-upload
+            [keyPrefix]="uploadPrefix"
+            [locale]="editor.locale()"
+            [clearable]="true"
+            [name]="editor.draft().coverName"
+            [url]="editor.draft().coverUrl"
+            (picked)="editor.setCover('cover', $event)"
+            (cleared)="editor.clearCover('cover')"
+          />
+        </div>
+        <label class="field">
+          <span class="field__label">{{ editor.copy('project.imageTitle') }}</span>
+          <input
+            pInputText
+            [fluid]="true"
+            [value]="editor.text(editor.draft().coverTitle)"
+            [placeholder]="editor.copy('project.imageTitlePh')"
+            (input)="editor.setCoverText('coverTitle', $event)"
+          />
+        </label>
+        <label class="field">
+          <span class="field__label">{{ editor.copy('project.imageAlt') }}</span>
+          <input
+            pInputText
+            [fluid]="true"
+            [value]="editor.text(editor.draft().coverAlt)"
+            [placeholder]="editor.copy('project.imageAltPh')"
+            (input)="editor.setCoverText('coverAlt', $event)"
+          />
+        </label>
+      </div>
+    </section>
+
+    <section class="editor-section editor-section--thumb">
+      <header class="editor-section__head">
+        <h2>{{ editor.copy('project.thumb') }}</h2>
+        <span class="icon-badge" aria-hidden="true"><i class="pi pi-image"></i></span>
+      </header>
+      <div class="editor-section__body">
+        <div class="field">
+          <span class="field__label">{{ editor.copy('project.uploadLabel') }}</span>
+          <app-product-upload
+            [keyPrefix]="uploadPrefix"
+            [locale]="editor.locale()"
+            [clearable]="true"
+            [name]="editor.draft().thumbName"
+            [url]="editor.draft().thumbUrl"
+            (picked)="editor.setCover('thumb', $event)"
+            (cleared)="editor.clearCover('thumb')"
+          />
+        </div>
+        <label class="field">
+          <span class="field__label">{{ editor.copy('project.thumbTitle') }}</span>
+          <input
+            pInputText
+            [fluid]="true"
+            [value]="editor.text(editor.draft().thumbTitle)"
+            [placeholder]="editor.copy('project.thumbTitlePh')"
+            (input)="editor.setCoverText('thumbTitle', $event)"
+          />
+        </label>
+        <label class="field">
+          <span class="field__label">{{ editor.copy('project.thumbAlt') }}</span>
+          <input
+            pInputText
+            [fluid]="true"
+            [value]="editor.text(editor.draft().thumbAlt)"
+            [placeholder]="editor.copy('project.thumbAltPh')"
+            (input)="editor.setCoverText('thumbAlt', $event)"
+          />
+        </label>
+      </div>
+    </section>
+  </div>
+</div>
+
+<section class="editor-section editor-section--soft">
+  <header class="editor-section__head">
+    <h2>{{ editor.copy('project.aboutCards') }}</h2>
+    <span class="icon-badge" aria-hidden="true"><i class="pi pi-id-card"></i></span>
+  </header>
+  <div class="editor-section__body">
+    @for (card of editor.draft().aboutCards; track card.id; let index = $index) {
+      <app-feature-card
+        [label]="editor.copy('project.aboutItem') + ' ' + (index + 1)"
+        [title]="editor.text(card.title)"
+        [titleLabel]="editor.copy('project.aboutTitle')"
+        [titlePlaceholder]="editor.copy('project.aboutTitlePh')"
+        [body]="editor.text(card.body)"
+        [bodyLabel]="editor.copy('project.aboutBody')"
+        [bodyPlaceholder]="editor.copy('project.aboutBodyPh')"
+        [iconLabel]="editor.copy('project.aboutBg')"
+        [imageName]="card.imageName"
+        [imageUrl]="card.imageUrl"
+        [locale]="editor.locale()"
+        [uploadKeyPrefix]="uploadPrefix"
+        [clearable]="true"
+        [actions]="false"
+        [active]="aboutTab() === index"
+        [removeDisabled]="editor.draft().aboutCards.length === 1"
+        [removeLabel]="editor.copy('project.deleteTitle')"
+        (selected)="selectAbout(index)"
+        (titleChange)="editor.setPoint('aboutCards', index, 'title', $event)"
+        (bodyChange)="editor.setPoint('aboutCards', index, 'body', $event)"
+        (imageChange)="editor.setPointImage('aboutCards', index, $event)"
+        (imageCleared)="editor.clearPointImage('aboutCards', index)"
+        (removed)="removeAbout(index)"
+      />
+    }
+  </div>
+  <button type="button" class="add-row" (click)="addAbout()">
+    {{ editor.copy('project.addAboutCard') }}
+    <span class="add-row__mark" aria-hidden="true"><i class="pi pi-plus"></i></span>
+  </button>
+</section>

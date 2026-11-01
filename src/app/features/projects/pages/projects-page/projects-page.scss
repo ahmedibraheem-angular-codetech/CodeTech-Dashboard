@@ -1,0 +1,228 @@
+:host {
+  display: block;
+}
+
+.projects-manage {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.projects-manage app-page-header .page-header {
+  width: 100%;
+  padding: 16px;
+  border: 1px solid #edeeee;
+  border-radius: 16px;
+  background: #fff;
+}
+
+/* White shell that wraps `.projects-numbers` — Figma: #FFFFFF, 16px padding, 12px gap */
+.projects-numbers-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  padding: 16px;
+  border: 1px solid #f0f1f3;
+  border-radius: 16px;
+  background: #fff;
+}
+
+/* Gray numbers tray inside the white shell — Figma: #F9FAFB, 12px padding, 8px gap */
+.projects-numbers {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #edeeee;
+  border-radius: 16px;
+  background: #f9fafb;
+}
+
+.projects-numbers.is-off {
+  opacity: 0.55;
+}
+
+.projects-numbers__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.projects-numbers__title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.projects-numbers__title h2 {
+  margin: 0;
+  color: #0f2744;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.projects-numbers__edit {
+  display: grid;
+  width: 40px;
+  height: 40px;
+  place-items: center;
+  border: 1px solid #e6edf5;
+  border-radius: 50%;
+  background: #fff;
+  color: #2f6fed;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.projects-numbers__grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.projects-numbers__card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 72px;
+  min-height: 240px;
+  padding: 20px;
+  border: 0;
+  border-top: 2px solid #f7f7f7;
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 0 0 1px #f0f1f3;
+}
+
+.projects-numbers__delete {
+  display: grid;
+  width: 40px;
+  height: 40px;
+  place-items: center;
+  align-self: flex-start;
+  border: 0;
+  border-radius: 12px;
+  background: #fdecec;
+  color: #f04438;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.projects-numbers__copy {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  text-align: start;
+}
+
+.projects-numbers__copy strong {
+  color: #0f2744;
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1.45;
+}
+
+.projects-numbers__copy p {
+  margin: 0;
+  color: #2f6fed;
+  font-size: 40px;
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+}
+
+.projects-numbers-editor {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding-block: 4px 8px;
+}
+
+.projects-numbers-editor__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+/* Editor point card — Figma: #F9FAFB, 12px padding, 14px gap, 16px radius */
+.projects-numbers-editor__card {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  width: 100%;
+  min-height: 216px;
+  padding: 12px;
+  border: 1px solid #edeeee;
+  border-radius: 16px;
+  background: #f9fafb;
+}
+
+.projects-numbers-editor__card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.projects-numbers-editor__card-head strong {
+  color: #0f2744;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.projects-numbers-editor__delete {
+  display: grid;
+  width: 40px;
+  height: 40px;
+  place-items: center;
+  border: 0;
+  border-radius: 12px;
+  background: #fdecec;
+  color: #f04438;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.projects-numbers-editor .field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.projects-numbers-editor .field__label {
+  color: #64748b;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.projects-numbers-editor .field input {
+  width: 100%;
+}
+
+@media (max-width: 1000px) {
+  .projects-numbers__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .projects-numbers__head {
+    flex-wrap: wrap;
+  }
+
+  .projects-numbers__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .projects-numbers__card {
+    min-height: 0;
+    gap: 24px;
+  }
+
+  .projects-numbers-editor__grid {
+    grid-template-columns: 1fr;
+  }
+}

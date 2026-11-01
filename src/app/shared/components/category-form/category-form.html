@@ -1,0 +1,49 @@
+<form
+  class="category-form"
+  [attr.dir]="locale() === 'ar' ? 'rtl' : 'ltr'"
+  [formGroup]="form()"
+  (ngSubmit)="onSubmit()"
+>
+  <app-locale-switch [value]="locale()" (picked)="locale.set($event)" />
+
+  @if (locale() === 'ar') {
+    <label class="field">
+      <span class="field__label">{{ lang.t(labelKey()) }}</span>
+      <p-iconfield>
+        <input
+          pInputText
+          [fluid]="true"
+          formControlName="nameAr"
+          [placeholder]="lang.t(placeholderKey())"
+          [invalid]="form().controls.nameAr.touched && form().controls.nameAr.invalid"
+        />
+        <p-inputicon class="pi pi-th-large" />
+      </p-iconfield>
+      @if (form().controls.nameAr.touched && form().controls.nameAr.invalid) {
+        <app-field-error>{{ lang.t(requiredKey()) }}</app-field-error>
+      }
+    </label>
+  } @else {
+    <label class="field">
+      <span class="field__label">{{ lang.t(labelKey()) }}</span>
+      <p-iconfield>
+        <input
+          pInputText
+          [fluid]="true"
+          formControlName="nameEn"
+          [placeholder]="lang.t(placeholderKey())"
+          [invalid]="form().controls.nameEn.touched && form().controls.nameEn.invalid"
+        />
+        <p-inputicon class="pi pi-th-large" />
+      </p-iconfield>
+      @if (form().controls.nameEn.touched && form().controls.nameEn.invalid) {
+        <app-field-error>{{ lang.t(requiredKey()) }}</app-field-error>
+      }
+    </label>
+  }
+
+  <label class="category-form__publish">
+    <span>{{ lang.t(publishedKey()) }}</span>
+    <p-toggleswitch formControlName="published" [ariaLabel]="lang.t(publishedKey())" />
+  </label>
+</form>

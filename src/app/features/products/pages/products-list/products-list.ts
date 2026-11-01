@@ -1,0 +1,194 @@
+import {
+  ChangeDetectionStrategy,
+  Component,
+  DestroyRef,
+  computed,
+  inject,
+  signal,
+  viewChild,
+} from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { FormsModule } from '@angular/forms';
+import { Router, RouterLink } from '@angular/router';
+import { MessageService } from 'primeng/api';
+import { type PaginatorState } from 'primeng/paginator';
+import { Popover } from 'primeng/popover';
+import { ToggleSwitch } from 'primeng/toggleswitch';
+
+import { AuthService } from '../../../../core/auth/auth.service';
+import { LanguageService } from '../../../../core/services/language.service';
+import { AppPaginator } from '../../../../shared/components/app-paginator/app-paginator';
+import { ConfirmDialog } from '../../../../shared/components/confirm-dialog/confirm-dialog';
+import { PageHeader } from '../../../../shared/components/page-header/page-header';
+import {
+  ProductCard,
+  type ProductCardFeature,
+} from '../../../../shared/components/product-card/product-card';
+import { StateView } from '../../../../shared/components/state-view/state-view';
+import { HasPermissionDirective } from '../../../../shared/directives/has-permission.directive';
+import { readLocale, type Product, type ProductPoint } from '../../models/product.model';
+import { ProductsService } from '../../services/products.service';
+
+type LoadState = 'loading' | 'ready' | 'error';
+
+@Component({
+  selector: 'app-products-page',
+  imports: [
+    FormsModule,
+    PageHeader,
+    ProductCard,
+    RouterLink,
+    StateView,
+    ToggleSwitch,
+    AppPaginator,
+    Popover,
+    ConfirmDialog,
+    HasPermissionDirective,
+  ],
+  templateUrl: './products-list.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+})
+export class ProductsPage {
+  private readonly messages = inject(MessageService);
+  private readonly router = inject(Router);
+  private readonly auth = inject(AuthService);
+  private readonly destroyRef = inject(DestroyRef);
+  private readonly confirm = viewChild.required(ConfirmDialog);
+  private readonly menu = viewChild.required(Popover);
+  readonly lang = inject(LanguageService);
+  readonly api = inject(ProductsService);
+  private readonly source = signal<Product[]>([]);
+  readonly status = signal<LoadState>('loading');
+  readonly menuProduct = signal<Product | null>(null);
+  readonly first = signal(0);
+  readonly rows = signal(10);
+  /** Bumps on every load so a slower, older response cannot overwrite a newer one. */
+  private loadSeq = 0;
+
+  constructor() {
+    this.load();
+  }
+
+  readonly total = computed(() => this.source().length);
+  readonly visible = computed(() => this.source().slice(this.first(), this.first() + this.rows()));
+
+  readonly canUpdate = computed(() => {
+    const session = this.auth.session();
+    return !!session?.profileLoaded && this.auth.hasPermission('products.update');
+  });
+  readonly canDelete = computed(() => {
+    const session = this.auth.session();
+    return !!session?.profileLoaded && this.auth.hasPermission('products.delete');
+  });
+
+  protected text(product: Product): string {
+    return this.display(product.name);
+  }
+
+  protected summary(product: Product): string {
+    return this.display(product.summary);
+  }
+
+  protected features(product: Product): ProductPoint[] {
+    return product.features.slice(0, 4);
+  }
+
+  protected featureText(point: ProductPoint, field: 'title' | 'body'): string {
+    return this.display(point[field]);
+  }
+
+  private display(value: ProductPoint['title']): string {
+    return readLocale(value, this.lang.language()) || value.ar;
+  }
+
+  protected cardFeatures(product: Product): ProductCardFeature[] {
+    return this.features(product).map((feature) => ({
+      id: feature.id,
+      title: this.featureText(feature, 'title'),
+      body: this.featureText(feature, 'body'),
+    }));
+  }
+
+  protected openDetails(product: Product): void {
+    void this.router.navigate(['/products', product.id]);
+  }
+
+  protected openEditor(product: Product): void {
+    void this.router.navigate(['/products', product.id, 'edit']);
+  }
+
+  protected page(event: PaginatorState): void {
+    this.first.set(event.first ?? 0);
+    this.rows.set(event.rows ?? this.rows());
+  }
+
+  protected closeMenu(): void {
+    this.menu().hide();
+  }
+
+  protected openMenu(event: Event, product: Product): void {
+    this.menuProduct.set(product);
+    this.menu().toggle(event);
+  }
+
+  protected retry(): void {
+    this.load();
+  }
+
+  protected async remove(product: Product): Promise<void> {
+    this.menu().hide();
+    const accepted = await this.confirm().ask({
+      title: this.lang.t('product.deleteTitle'),
+      message: this.lang.t('product.deleteMessage'),
+      confirmLabel: this.lang.t('about.delete'),
+      cancelLabel: this.lang.t('common.cancel'),
+      danger: true,
+    });
+    if (!accepted) {
+      return;
+    }
+    this.api
+      .remove(product.id)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => {
+          this.source.update((items) => items.filter((item) => item.id !== product.id));
+          this.stepBackIfPageEmpty();
+          this.messages.add({ severity: 'success', summary: this.lang.t('product.deleted') });
+        },
+        error: () => {
+          this.messages.add({ severity: 'error', summary: this.lang.t('common.error') });
+        },
+      });
+  }
+
+  private load(): void {
+    const seq = ++this.loadSeq;
+    this.status.set('loading');
+    this.api
+      .list()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (items) => {
+          if (seq !== this.loadSeq) {
+            return;
+          }
+          this.source.set(items);
+          this.status.set('ready');
+        },
+        error: () => {
+          if (seq !== this.loadSeq) {
+            return;
+          }
+          this.status.set('error');
+        },
+      });
+  }
+
+  private stepBackIfPageEmpty(): void {
+    const total = this.source().length;
+    if (this.first() > 0 && this.first() >= total) {
+      this.first.set(Math.max(0, Math.floor((total - 1) / this.rows()) * this.rows()));
+    }
+  }
+}

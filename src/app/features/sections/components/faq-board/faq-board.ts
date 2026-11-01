@@ -10,7 +10,9 @@ import {
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, Validators } from '@angular/forms';
 import { MessageService } from 'primeng/api';
+import { forkJoin } from 'rxjs';
 
+import { AuthService } from '../../../../core/auth/auth.service';
 import { LanguageService } from '../../../../core/services/language.service';
 import { AppButton } from '../../../../shared/components/app-button/app-button';
 import { ConfirmDialog } from '../../../../shared/components/confirm-dialog/confirm-dialog';
@@ -18,11 +20,12 @@ import { Modal } from '../../../../shared/components/modal/modal';
 import { PageHeader } from '../../../../shared/components/page-header/page-header';
 import { PageTabs, type PageTab } from '../../../../shared/components/page-tabs/page-tabs';
 import { StateView } from '../../../../shared/components/state-view/state-view';
+import { CategoryForm } from '../../../../shared/components/category-form/category-form';
+import { HasPermissionDirective } from '../../../../shared/directives/has-permission.directive';
 import { toIsoDate } from '../../../../shared/utils/date';
 import type { FaqCategory, FaqCategoryId, FaqItem } from '../../models/faq.model';
 import { FaqService } from '../../services/faq.service';
 import { FaqCategoriesPanel } from './components/faq-categories-panel/faq-categories-panel';
-import { FaqCategoryForm } from './components/faq-category-form/faq-category-form';
 import { FaqEditorForm } from './components/faq-editor-form/faq-editor-form';
 import { FaqQuestionsPanel } from './components/faq-questions-panel/faq-questions-panel';
 
@@ -30,23 +33,20 @@ type LoadState = 'loading' | 'ready' | 'error';
 type BoardTab = 'questions' | 'categories';
 type EditorMode = 'create' | 'edit' | 'create-category' | 'edit-category' | null;
 
-/**
- * FAQ page container: header, tabs, load/error, API orchestration, and editor modal.
- * Tab bodies and the form live in focused child components.
- */
 @Component({
   selector: 'app-faq-board',
   imports: [
     AppButton,
     ConfirmDialog,
     FaqCategoriesPanel,
-    FaqCategoryForm,
+    CategoryForm,
     FaqEditorForm,
     FaqQuestionsPanel,
     Modal,
     PageHeader,
     PageTabs,
     StateView,
+    HasPermissionDirective,
   ],
   templateUrl: './faq-board.html',
   styleUrl: './faq-board.scss',
@@ -57,6 +57,7 @@ export class FaqBoard {
   private readonly messages = inject(MessageService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly fb = inject(FormBuilder);
+  private readonly auth = inject(AuthService);
   private readonly confirm = viewChild.required(ConfirmDialog);
   readonly lang = inject(LanguageService);
 
@@ -74,7 +75,7 @@ export class FaqBoard {
     questionEn: ['', Validators.required],
     answerAr: ['', Validators.required],
     answerEn: ['', Validators.required],
-    categoryId: this.fb.nonNullable.control<FaqCategoryId>('services', Validators.required),
+    categoryId: this.fb.nonNullable.control<FaqCategoryId>('', Validators.required),
     order: this.fb.nonNullable.control(1, [Validators.required, Validators.min(1)]),
     published: this.fb.nonNullable.control(true),
   });
@@ -106,6 +107,15 @@ export class FaqBoard {
   readonly addLabel = computed(() => {
     this.lang.language();
     return this.lang.t(this.tab() === 'categories' ? 'faq.addCategory' : 'faq.add');
+  });
+
+  readonly canUpdate = computed(() => {
+    const session = this.auth.session();
+    return !!session?.profileLoaded && this.auth.hasPermission('help_support.update');
+  });
+  readonly canDelete = computed(() => {
+    const session = this.auth.session();
+    return !!session?.profileLoaded && this.auth.hasPermission('help_support.delete');
   });
 
   readonly categoryOptions = computed(() => {
@@ -189,7 +199,7 @@ export class FaqBoard {
       questionEn: '',
       answerAr: '',
       answerEn: '',
-      categoryId: 'services',
+      categoryId: this.defaultCategoryId(),
       order: this.items().length + 1,
       published: true,
     });
@@ -360,7 +370,9 @@ export class FaqBoard {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: () => {
+
           this.categories.update((list) => list.filter((row) => row.id !== category.id));
+          this.items.update((list) => list.filter((row) => row.categoryId !== category.id));
           this.messages.add({ severity: 'success', summary: this.lang.t('faq.categoryDeleted') });
         },
         error: () => this.fail(),
@@ -413,25 +425,24 @@ export class FaqBoard {
 
   private load(): void {
     this.state.set('loading');
-    this.api
-      .listCategories()
+
+    forkJoin({
+      categories: this.api.listCategories(),
+      items: this.api.list(),
+    })
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
-        next: (categories) => {
+        next: ({ categories, items }) => {
           this.categories.set(categories);
-          this.api
-            .list()
-            .pipe(takeUntilDestroyed(this.destroyRef))
-            .subscribe({
-              next: (items) => {
-                this.items.set(items);
-                this.state.set('ready');
-              },
-              error: () => this.state.set('error'),
-            });
+          this.items.set(items);
+          this.state.set('ready');
         },
         error: () => this.state.set('error'),
       });
+  }
+
+  private defaultCategoryId(): FaqCategoryId {
+    return this.categories()[0]?.id ?? '';
   }
 
   private fail(): void {

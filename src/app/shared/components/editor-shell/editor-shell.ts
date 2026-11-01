@@ -7,7 +7,6 @@ import { PageTabs, type PageTab } from '../page-tabs/page-tabs';
 import { StateView } from '../state-view/state-view';
 import { WizardStepper, type WizardStepItem } from '../wizard-stepper/wizard-stepper';
 
-/** Already translated labels. The shell does not know a feature's translation keys. */
 export interface EditorShellLabels {
   saveDraft: string;
   publish: string;
@@ -21,10 +20,6 @@ export interface EditorShellLabels {
   error: string;
 }
 
-/**
- * Shared editor frame: header actions, load states, stepper or tabs, locale switch, and footer.
- * The feature owns the draft and projects the step body.
- */
 @Component({
   selector: 'app-editor-shell',
   imports: [PageHeader, AppButton, LocaleSwitch, StateView, WizardStepper, PageTabs],

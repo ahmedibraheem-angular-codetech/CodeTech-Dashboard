@@ -55,10 +55,14 @@
   @if (menuUser(); as current) {
     <div class="users-menu__list">
       <button type="button" (click)="onView(current)">{{ lang.t('users.view') }}</button>
-      <button type="button" (click)="onEdit(current)">{{ lang.t('users.edit') }}</button>
-      <button type="button" class="users-menu__danger" (click)="onRemove(current)">
-        {{ lang.t('users.delete') }}
-      </button>
+      @if (showEdit()) {
+        <button type="button" (click)="onEdit(current)">{{ lang.t('users.edit') }}</button>
+      }
+      @if (showDelete()) {
+        <button type="button" class="users-menu__danger" (click)="onRemove(current)">
+          {{ lang.t('users.delete') }}
+        </button>
+      }
     </div>
   }
 </p-popover>

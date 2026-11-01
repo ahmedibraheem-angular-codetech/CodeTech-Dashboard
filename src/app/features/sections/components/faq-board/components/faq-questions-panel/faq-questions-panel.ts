@@ -24,10 +24,6 @@ import type {
   FaqLocaleText,
 } from '../../../../models/faq.model';
 
-/**
- * Questions tab panel. Owns search, category filter, and pagination UI state.
- * Parent supplies items/categories and handles edit/delete/publish API actions.
- */
 @Component({
   selector: 'app-faq-questions-panel',
   imports: [FormsModule, AppButton, AppPaginator, StateView, ToggleSwitch],
@@ -39,6 +35,9 @@ export class FaqQuestionsPanel {
 
   readonly items = input.required<readonly FaqItem[]>();
   readonly categories = input.required<readonly FaqCategory[]>();
+  readonly showEdit = input(true);
+  readonly showDelete = input(true);
+  readonly showPublish = input(true);
 
   readonly edit = output<FaqItem>();
   readonly remove = output<FaqItem>();

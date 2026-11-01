@@ -16,11 +16,12 @@ import { FormControl, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { MessageService } from 'primeng/api';
 
+import type { PermissionName } from '../../../../core/auth/auth.model';
 import { LanguageService } from '../../../../core/services/language.service';
 import { ConfirmDialog } from '../../../../shared/components/confirm-dialog/confirm-dialog';
 import { Modal } from '../../../../shared/components/modal/modal';
 import { StateView } from '../../../../shared/components/state-view/state-view';
-import { Inquiry, InquiryStatus } from '../../models/inquiry.model';
+import { type Inquiry, type InquiryStatus } from '../../models/inquiry.model';
 import { InquiriesService } from '../../services/inquiries.service';
 import { InquiryDetailComposer } from './components/inquiry-detail-composer/inquiry-detail-composer';
 import { InquiryDetailDetails } from './components/inquiry-detail-details/inquiry-detail-details';
@@ -33,10 +34,8 @@ import {
 type Status = 'loading' | 'ready' | 'error' | 'missing';
 type Composer = 'note' | 'reply';
 
-/**
- * Inquiry detail container: loads the request, owns note/reply/close/delete
- * workflows, and composes header, details, timeline, and composer panels.
- */
+export type InquiryPermissionModule = 'inquiries' | 'project_requests';
+
 @Component({
   selector: 'app-inquiry-detail',
   imports: [
@@ -61,8 +60,9 @@ export class InquiryDetailPage {
   private readonly confirm = viewChild.required(ConfirmDialog);
   readonly lang = inject(LanguageService);
 
-  /** Bound from `/contact/inquiries/:id` or `/contact/start/:id`. */
   readonly id = input.required<string>();
+
+  readonly permissionModule = input<InquiryPermissionModule>('inquiries');
 
   readonly status = signal<Status>('loading');
   readonly item = signal<Inquiry | null>(null);
@@ -79,6 +79,13 @@ export class InquiryDetailPage {
   });
 
   readonly steps = computed(() => this.buildSteps(this.item()));
+
+  readonly updatePermission = computed(
+    (): PermissionName => `${this.permissionModule()}.update`,
+  );
+  readonly deletePermission = computed(
+    (): PermissionName => `${this.permissionModule()}.delete`,
+  );
 
   readonly composerCopy = computed(() => {
     const reply = this.composer() === 'reply';
@@ -180,7 +187,6 @@ export class InquiryDetailPage {
     this.load(this.id());
   }
 
-  /** Delete returns to the list that opened this request. */
   private listPath(): string {
     const path = this.router.url.split('?')[0];
     return path.startsWith('/contact/start') ? '/contact/start' : '/contact/inquiries';

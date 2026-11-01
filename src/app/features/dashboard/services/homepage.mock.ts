@@ -1,50 +1,80 @@
-import { HomepageContent } from '../models/homepage.model';
+import type { HomePageDto } from '../models/homepage.api';
 
-const point = 'نص قصير تعريفي عن كود التقنية يتم كتابته — مصحوبة بفريق العمل لاحقاً';
-const pointEn = 'A short introduction to CodeTech, written later — accompanied by the team';
-
-export const HOMEPAGE_SEED: HomepageContent = {
-  videoEnabled: true,
-  videoName: 'intro-video.mp4',
-  contactRequests: 12,
-  partners: [
-    { id: 'p1', name: 'شريك التقنية', monogram: 'ك', image: null },
-    { id: 'p2', name: 'شريك التحول', monogram: 'ت', image: null },
-    { id: 'p3', name: 'شريك الابتكار', monogram: 'ق', image: null },
-    { id: 'p4', name: 'شريك النمو', monogram: 'ن', image: null },
-    { id: 'p5', name: 'شريك المعرفة', monogram: 'م', image: null },
-    { id: 'p6', name: 'شريك الجودة', monogram: 'ج', image: null },
-    { id: 'p7', name: 'شريك الرؤية', monogram: 'ر', image: null },
-    { id: 'p8', name: 'شريك التمكين', monogram: 'س', image: null },
-  ],
+export const HOME_PAGE_DTO: HomePageDto = {
   about: {
-    texts: {
-      ar: {
-        title: 'عن كود التقنية',
-        body: 'نساعد الجهات الحكومية والشركات والعلامات على تطوير الأنظمة والتطبيقات والمنتجات الرقمية التي تعزز التحول الرقمي، وتحقق قيمة مستدامة بشكل دقيق وجذاب للمستخدم والجهة المستهدفة.',
-        points: [point, point, point],
-      },
-      en: {
-        title: 'About CodeTech',
-        body: 'We help government entities, companies and brands build the digital systems, applications and products that drive digital transformation and deliver lasting value, with precision and appeal for the user and the target audience.',
-        points: [pointEn, pointEn, pointEn],
-      },
+    title: { ar: 'عن كود التقنية', en: 'About CodeTech' },
+    description: {
+      ar: 'شركة سعودية متخصصة في الحلول الرقمية.',
+      en: 'A Saudi company focused on digital solutions.',
     },
-    image: { name: 'ملف صورة عن كود.png', size: 320512, uploadedAt: '2026-08-31' },
-  },
-  vision: {
-    texts: {
-      ar: {
-        title: 'نواكب رؤية المملكة 2030',
-        body: 'نؤمن بدور التقنية في تمكين الطموحات الوطنية، ونسعى إلى تطوير حلول رقمية تساهم في دعم التحول الرقمي ونمو الاقتصاد الرقمي في المملكة.',
-        points: [point, point, point],
-      },
-      en: {
-        title: 'Aligned with Saudi Vision 2030',
-        body: 'We believe in the role of technology in enabling national ambitions, and we build digital solutions that support digital transformation and the growth of the digital economy in the Kingdom.',
-        points: [pointEn, pointEn, pointEn],
-      },
+    points: {
+      ar: ['خبرة تزيد عن 10 سنوات', 'فريق سعودي'],
+      en: ['10+ years of experience', 'A Saudi team'],
     },
-    image: { name: 'vision-2030.png', size: 204800, uploadedAt: '2026-08-31' },
+    image: {
+      uuid: 'about-image',
+      name: 'about',
+      file_name: 'about.png',
+      mime_type: 'image/png',
+      size: 320512,
+      url: 'https://webdash.codetech-sa-dev.com/storage/about.png',
+      download_url: 'https://webdash.codetech-sa-dev.com/api/v1/admin/media/about-image/download',
+      created_at: '2026-10-29T10:00:00.000000Z',
+    },
   },
+  vision_2030: {
+    title: { ar: '', en: null },
+    description: { ar: null, en: null },
+    points: { ar: [], en: [] },
+    image: null,
+  },
+  intro_video: {
+    video: {
+      uuid: 'video-1',
+      name: 'intro',
+      file_name: 'intro-video.mp4',
+      mime_type: 'video/mp4',
+      size: 1_024_000,
+      url: 'https://webdash.codetech-sa-dev.com/storage/intro-video.mp4',
+      download_url: 'https://webdash.codetech-sa-dev.com/api/v1/admin/media/video-1/download',
+      created_at: '2026-10-29T10:00:00.000000Z',
+    },
+    is_visible: true,
+  },
+  partners: [
+    {
+      id: 1,
+      logo: {
+        uuid: 'logo-1',
+        name: 'maarej',
+        file_name: 'maarej.png',
+        mime_type: 'image/png',
+        size: 42681,
+        url: 'https://webdash.codetech-sa-dev.com/storage/maarej.png',
+        download_url: 'https://webdash.codetech-sa-dev.com/api/v1/admin/media/logo-1/download',
+        created_at: '2026-10-29T10:00:00.000000Z',
+      },
+      sort_order: 1,
+      created_at: '2026-10-29T10:00:00.000000Z',
+      updated_at: '2026-10-29T10:00:00.000000Z',
+    },
+    {
+      id: 2,
+      logo: {
+        uuid: 'logo-2',
+        name: 'partner-two',
+        file_name: 'partner-two.png',
+        mime_type: 'image/png',
+        size: 12000,
+        url: 'https://webdash.codetech-sa-dev.com/storage/partner-two.png',
+        download_url: 'https://webdash.codetech-sa-dev.com/api/v1/admin/media/logo-2/download',
+        created_at: '2026-10-29T10:00:00.000000Z',
+      },
+      sort_order: 2,
+      created_at: '2026-10-29T10:00:00.000000Z',
+      updated_at: '2026-10-29T10:00:00.000000Z',
+    },
+  ],
+  updated_by: { id: 1, name: 'المدير العام' },
+  updated_at: '2026-10-29T10:00:00.000000Z',
 };

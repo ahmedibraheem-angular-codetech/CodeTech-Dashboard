@@ -17,7 +17,7 @@ export interface WizardStepItem {
 export class WizardStepper {
   readonly steps = input.required<readonly WizardStepItem[]>();
   readonly active = input.required<number>();
-  /** Highest index the user has already left. */
+
   readonly passed = input(-1);
   readonly picked = output<number>();
 

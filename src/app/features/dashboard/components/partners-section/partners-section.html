@@ -7,7 +7,13 @@
       </h2>
     </div>
     @if (partners().length) {
-      <app-button icon="pi pi-plus" [label]="lang.t('home.addPartner')" (clicked)="open()" />
+      <app-button
+        *appHasPermission="'home.create'"
+        styleClass="home-cta"
+        icon="pi pi-plus"
+        [label]="lang.t('home.addPartner')"
+        (clicked)="open()"
+      />
     }
   </div>
   @if (partners().length === 0) {
@@ -16,7 +22,8 @@
       [hint]="lang.t('home.partnersEmptyHint')"
     >
       <app-button
-        variant="outlined"
+        *appHasPermission="'home.create'"
+        styleClass="home-empty-cta"
         icon="pi pi-plus"
         [label]="lang.t('home.addPartner')"
         (clicked)="open()"
@@ -39,6 +46,7 @@
                 (clicked)="download(partner)"
               />
               <app-button
+                *appHasPermission="'home.delete'"
                 variant="secondary"
                 styleClass="partner-card__tool partner-card__tool--delete"
                 icon="pi pi-trash"
@@ -49,6 +57,9 @@
                 (clicked)="remove(partner)"
               />
             </div>
+            @if (partner.image?.url; as logo) {
+              <img class="partner-card__logo" [src]="logo" [alt]="partner.name" />
+            }
             <span class="visually-hidden">{{ partner.monogram }}</span>
           </article>
         }
@@ -70,7 +81,11 @@
 >
   <div class="field">
     <span class="field__label" id="partner-image-label">{{ lang.t('home.partnerImage') }}</span>
-    <label class="image-drop" (dragover)="$event.preventDefault()" (drop)="onDrop($event)">
+    <label
+      class="image-drop image-drop--partner"
+      (dragover)="$event.preventDefault()"
+      (drop)="onDrop($event)"
+    >
       <input
         type="file"
         tabindex="-1"

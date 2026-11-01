@@ -18,10 +18,6 @@ export interface PermissionsGrantChange {
   value: boolean;
 }
 
-/**
- * Roles matrix panel: role select, save/delete actions, and resource×action toggles.
- * Parent owns role records and persistence.
- */
 @Component({
   selector: 'app-permissions-matrix',
   imports: [FormsModule, AppButton, Select, ToggleSwitch],
@@ -35,7 +31,12 @@ export class PermissionsMatrix {
   readonly actions = input.required<readonly PermissionAction[]>();
   readonly roleOptions = input.required<PermissionsRoleOption[]>();
   readonly grants = input.required<Record<string, Record<PermissionAction, boolean>>>();
+
   readonly canDelete = input(false);
+
+  readonly showUpdate = input(true);
+
+  readonly showDelete = input(true);
   readonly selectedId = model.required<string>();
 
   readonly save = output<void>();
