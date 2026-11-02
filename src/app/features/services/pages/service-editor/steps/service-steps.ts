@@ -8,25 +8,17 @@ import { FeatureCard } from '../../../../../shared/components/feature-card/featu
 import { FieldError } from '../../../../../shared/components/field-error/field-error';
 import { StateView } from '../../../../../shared/components/state-view/state-view';
 import { ProductUpload } from '../../../../../shared/components/product-upload/product-upload';
-import { ServiceIconPicker } from '../../../components/service-icon-picker/service-icon-picker';
+import { SERVICE_UPLOAD_PREFIX } from '../../../constants/service.constants';
 import { ServiceProjectCard } from '../../../components/service-project-card/service-project-card';
 import { EditorStep } from './editor-step';
 
 const stepHost = { style: 'display: contents' };
 
-const uploadPrefix = 'service';
+const uploadPrefix = SERVICE_UPLOAD_PREFIX;
 
 @Component({
   selector: 'app-service-why-step',
-  imports: [
-    IconField,
-    InputIcon,
-    InputText,
-    Textarea,
-    ProductUpload,
-    FieldError,
-    ServiceIconPicker,
-  ],
+  imports: [IconField, InputIcon, InputText, Textarea, ProductUpload, FieldError],
   templateUrl: './why-step.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: stepHost,

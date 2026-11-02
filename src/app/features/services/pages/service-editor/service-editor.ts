@@ -37,6 +37,19 @@ import {
 import { ObjectUrls } from '../../../../shared/components/product-upload/object-urls';
 import { ServicesService } from '../../services/services.service';
 import {
+  type ServicePageStatus,
+  type ServiceProjectsStatus,
+} from '../../constants/service.constants';
+import {
+  mapAt,
+  patchLocaleField,
+  withImage,
+  withoutAt,
+  withoutImage,
+  writeLocale,
+  type ServiceImageFile,
+} from '../../utils/service-draft';
+import {
   FaqStep,
   FeaturesStep,
   ProjectsStep,
@@ -47,7 +60,7 @@ import {
 } from './steps/service-steps';
 
 export type ServicePointList = 'solutions' | 'stages' | 'features';
-export interface ServiceImageFile { name: string; url: string }
+export type { ServiceImageFile };
 
 @Component({
   selector: 'app-service-editor',
@@ -82,14 +95,14 @@ export class ServiceEditor {
   readonly step = signal(0);
   readonly passed = signal(-1);
   readonly draft = signal<Service>(blankService());
-  readonly status = signal<'loading' | 'ready' | 'missing' | 'error'>(
+  readonly status = signal<ServicePageStatus>(
     this.route.snapshot.data['mode'] === 'edit' ? 'loading' : 'ready',
   );
   readonly saving = signal(false);
   readonly nameError = signal(false);
 
   readonly projects = signal<Project[]>([]);
-  readonly projectsStatus = signal<'loading' | 'ready' | 'error'>('loading');
+  readonly projectsStatus = signal<ServiceProjectsStatus>('loading');
   private readonly reload = signal(0);
 
   readonly mode = toSignal(
@@ -262,28 +275,24 @@ export class ServiceEditor {
     }
     this.draft.update((current) => ({
       ...current,
-      [key]: this.writeLocale(current[key], value),
+      [key]: writeLocale(current[key], this.locale(), value),
     }));
     if (key === 'name') {
       this.nameError.set(false);
     }
   }
 
-  setIcon(icon: string): void {
-    this.draft.update((current) => ({ ...current, icon }));
-  }
-
   setWhyImage(file: ServiceImageFile): void {
     this.draft.update((current) => ({
       ...current,
-      whyImage: this.withImage(current.whyImage, file),
+      whyImage: withImage(current.whyImage, file),
     }));
   }
 
   clearWhyImage(): void {
     this.draft.update((current) => ({
       ...current,
-      whyImage: { ...current.whyImage, imageName: '', imageUrl: '', imageUuid: null },
+      whyImage: withoutImage(current.whyImage),
     }));
   }
 
@@ -296,7 +305,7 @@ export class ServiceEditor {
       ...current,
       whyImage: {
         ...current.whyImage,
-        title: this.writeLocale(current.whyImage.title, value),
+        title: writeLocale(current.whyImage.title, this.locale(), value),
       },
     }));
   }
@@ -308,21 +317,21 @@ export class ServiceEditor {
     }
     this.draft.update((current) => ({
       ...current,
-      whyItems: this.patchLocaleField(current.whyItems, index, 'title', value),
+      whyItems: patchLocaleField(current.whyItems, index, 'title', this.locale(), value),
     }));
   }
 
   setWhyIcon(index: number, file: ServiceImageFile): void {
     this.draft.update((current) => ({
       ...current,
-      whyItems: this.mapAt(current.whyItems, index, (item) => this.withImage(item, file)),
+      whyItems: mapAt(current.whyItems, index, (item) => withImage(item, file)),
     }));
   }
 
   clearWhyIcon(index: number): void {
     this.draft.update((current) => ({
       ...current,
-      whyItems: this.mapAt(current.whyItems, index, (item) => this.withoutImage(item)),
+      whyItems: mapAt(current.whyItems, index, (item) => withoutImage(item)),
     }));
   }
 
@@ -336,7 +345,7 @@ export class ServiceEditor {
   removeWhy(index: number): void {
     this.draft.update((current) => ({
       ...current,
-      whyItems: this.withoutAt(current.whyItems, index),
+      whyItems: withoutAt(current.whyItems, index),
     }));
   }
 
@@ -347,7 +356,7 @@ export class ServiceEditor {
     }
     this.draft.update((current) => ({
       ...current,
-      [list]: this.patchLocaleField(current[list], index, field, value),
+      [list]: patchLocaleField(current[list], index, field, this.locale(), value),
     }));
   }
 
@@ -356,20 +365,20 @@ export class ServiceEditor {
   }
 
   removePoint(list: ServicePointList, index: number): void {
-    this.draft.update((current) => ({ ...current, [list]: this.withoutAt(current[list], index) }));
+    this.draft.update((current) => ({ ...current, [list]: withoutAt(current[list], index) }));
   }
 
   setPointImage(list: ServicePointList, index: number, file: ServiceImageFile): void {
     this.draft.update((current) => ({
       ...current,
-      [list]: this.mapAt(current[list], index, (item) => this.withImage(item, file)),
+      [list]: mapAt(current[list], index, (item) => withImage(item, file)),
     }));
   }
 
   clearPointImage(list: ServicePointList, index: number): void {
     this.draft.update((current) => ({
       ...current,
-      [list]: this.mapAt(current[list], index, (item) => this.withoutImage(item)),
+      [list]: mapAt(current[list], index, (item) => withoutImage(item)),
     }));
   }
 
@@ -402,7 +411,7 @@ export class ServiceEditor {
   removeSector(index: number): void {
     this.draft.update((current) => ({
       ...current,
-      sectors: this.withoutAt(current.sectors, index),
+      sectors: withoutAt(current.sectors, index),
     }));
   }
 
@@ -410,11 +419,11 @@ export class ServiceEditor {
     const language = this.locale();
     this.draft.update((current) => ({
       ...current,
-      sectors: this.mapAt(current.sectors, index, (item) => ({
+      sectors: mapAt(current.sectors, index, (item) => ({
         ...item,
         image: {
           ...item.image,
-          [language]: this.withImage(item.image[language], file),
+          [language]: withImage(item.image[language], file),
         },
       })),
     }));
@@ -424,11 +433,11 @@ export class ServiceEditor {
     const language = this.locale();
     this.draft.update((current) => ({
       ...current,
-      sectors: this.mapAt(current.sectors, index, (item) => ({
+      sectors: mapAt(current.sectors, index, (item) => ({
         ...item,
         image: {
           ...item.image,
-          [language]: this.withoutImage(item.image[language]),
+          [language]: withoutImage(item.image[language]),
         },
       })),
     }));
@@ -441,7 +450,7 @@ export class ServiceEditor {
     }
     this.draft.update((current) => ({
       ...current,
-      faqs: this.patchLocaleField(current.faqs, index, field, value),
+      faqs: patchLocaleField(current.faqs, index, field, this.locale(), value),
     }));
   }
 
@@ -450,7 +459,7 @@ export class ServiceEditor {
   }
 
   removeFaq(index: number): void {
-    this.draft.update((current) => ({ ...current, faqs: this.withoutAt(current.faqs, index) }));
+    this.draft.update((current) => ({ ...current, faqs: withoutAt(current.faqs, index) }));
   }
 
   private persist(
@@ -515,42 +524,5 @@ export class ServiceEditor {
       return target.value;
     }
     return undefined;
-  }
-
-  private writeLocale(current: LocaleText, value: string): LocaleText {
-    return { ...current, [this.locale()]: value };
-  }
-
-  private mapAt<T>(items: readonly T[], index: number, update: (item: T) => T): T[] {
-    return items.map((item, itemIndex) => (itemIndex === index ? update(item) : item));
-  }
-
-  private withoutAt<T>(items: readonly T[], index: number): T[] {
-    return items.length > 1 ? items.filter((_, item) => item !== index) : [...items];
-  }
-
-  private patchLocaleField<T extends Record<K, LocaleText>, K extends keyof T>(
-    items: readonly T[],
-    index: number,
-    field: K,
-    value: string,
-  ): T[] {
-    return this.mapAt(items, index, (item) => ({
-      ...item,
-      [field]: this.writeLocale(item[field], value),
-    }));
-  }
-
-  private withImage<T extends { imageName: string; imageUrl: string; imageUuid?: string | null }>(
-    item: T,
-    file: ServiceImageFile,
-  ): T {
-    return { ...item, imageName: file.name, imageUrl: file.url, imageUuid: null };
-  }
-
-  private withoutImage<
-    T extends { imageName: string; imageUrl: string; imageUuid?: string | null },
-  >(item: T): T {
-    return { ...item, imageName: '', imageUrl: '', imageUuid: null };
   }
 }

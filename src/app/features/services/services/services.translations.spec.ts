@@ -43,7 +43,6 @@ describe('service translations', () => {
       'service.publishToggle',
       'service.live',
       'service.draft',
-      'service.icon',
       'service.projects',
       'service.faq',
       'service.deleteMessage',

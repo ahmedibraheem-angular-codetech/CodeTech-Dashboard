@@ -122,12 +122,10 @@ describe('ServiceEditor', () => {
       editor.setField('name', inputEvent('اسم'));
       editor.addPoint('solutions');
       editor.setProject('wasly', true);
-      editor.setIcon('pi-cloud');
 
       expect(second.draft().name.ar).toBe('');
       expect(second.draft().solutions).toHaveLength(1);
       expect(second.draft().projectIds).toEqual([]);
-      expect(second.draft().icon).toBe('');
       expect(editor.draft().whyItems).not.toBe(second.draft().whyItems);
       expect(SERVICES_SEED.every((item) => item.name.ar !== 'اسم')).toBe(true);
       fixture.destroy();
@@ -169,7 +167,6 @@ describe('ServiceEditor', () => {
       editor.useLocale('en');
       editor.setField('name', inputEvent('Service'));
       editor.setField('description', inputEvent('Description'));
-      editor.setIcon('pi-shield');
       editor.setWhyImage({ name: 'why.png', url: 'blob:why' });
 
       for (const [index, host] of hosts.entries()) {
@@ -187,7 +184,6 @@ describe('ServiceEditor', () => {
       fixture.detectChanges();
       expect(editor.draft().name).toEqual(localeText('خدمة', 'Service'));
       expect(editor.draft().description.en).toBe('Description');
-      expect(editor.draft().icon).toBe('pi-shield');
       expect(editor.draft().whyImage).toMatchObject({ imageName: 'why.png', imageUrl: 'blob:why' });
     });
 
@@ -237,7 +233,6 @@ describe('ServiceEditor', () => {
       const saved = items[0];
       expect(saved?.id).toMatch(/^svc-/);
       expect(saved).toMatchObject({
-        icon: 'pi-cloud',
         published: true,
         name: { ar: 'خدمة جديدة', en: 'New service' },
         description: { ar: 'وصف', en: 'Description' },

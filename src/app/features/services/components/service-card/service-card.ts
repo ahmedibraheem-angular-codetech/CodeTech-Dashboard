@@ -10,10 +10,7 @@ import { FormsModule } from '@angular/forms';
 import { ToggleSwitch } from 'primeng/toggleswitch';
 
 import { AppButton } from '../../../../shared/components/app-button/app-button';
-
-const FALLBACK_ICON = 'pi-cog';
-
-const ICON_CLASS = /^pi-[a-z0-9-]+$/;
+import { serviceIconClass } from '../../utils/service-visual';
 
 @Component({
   selector: 'app-service-card',
@@ -53,8 +50,7 @@ export class ServiceCard {
     if (this.mediaIcon()) {
       return '';
     }
-    const icon = this.icon();
-    return `pi ${ICON_CLASS.test(icon) ? icon : FALLBACK_ICON}`;
+    return serviceIconClass(this.icon());
   });
 
   protected openFromCard(event: Event): void {

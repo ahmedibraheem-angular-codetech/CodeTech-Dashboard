@@ -31,15 +31,6 @@
         (input)="editor.setField('description', $event)"
       ></textarea>
     </label>
-    <div class="field">
-      <span class="field__label">{{ editor.copy('service.icon') }}</span>
-      <app-service-icon-picker
-        [value]="editor.draft().icon"
-        [groupLabel]="editor.copy('service.iconPick')"
-        [optionLabel]="editor.copy('service.iconOption')"
-        (picked)="editor.setIcon($event)"
-      />
-    </div>
   </div>
 </section>
 

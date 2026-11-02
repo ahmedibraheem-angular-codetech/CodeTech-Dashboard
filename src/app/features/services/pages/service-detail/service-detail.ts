@@ -39,15 +39,18 @@ import {
   type ServiceSector,
 } from '../../models/service.model';
 import { ServicesService } from '../../services/services.service';
+import {
+  type ServicePageStatus,
+  type ServiceProjectsStatus,
+} from '../../constants/service.constants';
+import { filledLocale } from '../../utils/service-locale';
+import {
+  serviceIconClass,
+  serviceVisual,
+  type ServiceVisual,
+} from '../../utils/service-visual';
 
-const FALLBACK_ICON = 'pi-cog';
-
-const ICON_CLASS = /^pi-[a-z0-9-]+$/;
-
-export interface ServiceVisual {
-  icon: string;
-  image: string;
-}
+export type { ServiceVisual };
 
 @Component({
   selector: 'app-service-detail',
@@ -81,10 +84,10 @@ export class ServiceDetailPage {
 
   readonly id = input('');
   readonly item = signal<Service | null>(null);
-  readonly status = signal<'loading' | 'ready' | 'missing' | 'error'>('loading');
+  readonly status = signal<ServicePageStatus>('loading');
   readonly tab = signal<string>(SERVICE_STEPS[0].id);
   readonly projects = signal<Project[]>([]);
-  readonly projectsStatus = signal<'loading' | 'ready' | 'error'>('loading');
+  readonly projectsStatus = signal<ServiceProjectsStatus>('loading');
   private readonly reload = signal(0);
 
   readonly tabs: readonly PageTab[] = [
@@ -116,7 +119,7 @@ export class ServiceDetailPage {
   });
 
   protected readonly whyItems = computed(() =>
-    (this.item()?.whyItems ?? []).filter((entry) => this.filled(entry.title) || entry.imageUrl),
+    (this.item()?.whyItems ?? []).filter((entry) => filledLocale(entry.title) || entry.imageUrl),
   );
   protected readonly whyImage = computed(() => this.item()?.whyImage ?? null);
   protected readonly solutions = computed(() => this.points('solutions'));
@@ -124,7 +127,7 @@ export class ServiceDetailPage {
 
   protected readonly features = computed(() =>
     (this.item()?.features ?? []).filter(
-      (entry) => this.filled(entry.title) || this.filled(entry.body),
+      (entry) => filledLocale(entry.title) || filledLocale(entry.body),
     ),
   );
 
@@ -133,7 +136,7 @@ export class ServiceDetailPage {
   );
   protected readonly faqs = computed(() =>
     (this.item()?.faqs ?? []).filter(
-      (entry) => this.filled(entry.question) || this.filled(entry.answer),
+      (entry) => filledLocale(entry.question) || filledLocale(entry.answer),
     ),
   );
 
@@ -304,7 +307,7 @@ export class ServiceDetailPage {
   }
 
   protected iconClass(icon: string): string {
-    return `pi ${ICON_CLASS.test(icon) ? icon : FALLBACK_ICON}`;
+    return serviceIconClass(icon);
   }
 
   protected sectorMedia(sector: ServiceSector): ServiceImage {
@@ -313,12 +316,7 @@ export class ServiceDetailPage {
   }
 
   protected visual(image: ServiceImage): ServiceVisual {
-    const url = image.imageUrl;
-    if (url.startsWith('icon:')) {
-      const icon = url.slice('icon:'.length);
-      return { icon: ICON_CLASS.test(icon) ? icon : '', image: '' };
-    }
-    return { icon: '', image: url };
+    return serviceVisual(image);
   }
 
   protected sectorLabel(index: number): string {
@@ -331,11 +329,7 @@ export class ServiceDetailPage {
 
   private points(list: 'solutions' | 'stages' | 'features') {
     return (this.item()?.[list] ?? []).filter(
-      (entry) => this.filled(entry.title) || this.filled(entry.body) || entry.imageUrl,
+      (entry) => filledLocale(entry.title) || filledLocale(entry.body) || entry.imageUrl,
     );
-  }
-
-  private filled(value: LocaleText): boolean {
-    return value.ar.trim().length > 0 || value.en.trim().length > 0;
   }
 }

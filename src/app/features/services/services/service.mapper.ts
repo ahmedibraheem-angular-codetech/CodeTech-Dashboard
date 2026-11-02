@@ -23,16 +23,13 @@ import {
   type ServiceSector,
   type ServiceWhyItem,
 } from '../models/service.model';
+import { filledLocale } from '../utils/service-locale';
 
 function locale(value: ServiceLocaleDto | null | undefined): LocaleText {
   return localeText(
     typeof value?.ar === 'string' ? value.ar : '',
     typeof value?.en === 'string' ? value.en : '',
   );
-}
-
-function filled(value: LocaleText): boolean {
-  return !!(value.ar.trim() || value.en.trim());
 }
 
 function serverId(id: string): number | undefined {
@@ -220,7 +217,7 @@ export function toServiceWrite(service: Service): ServiceWriteDto {
   applyTicket(body as unknown as Record<string, unknown>, 'why_image', ticket(service.whyImage, true));
 
   body.needs = service.whyItems
-    .filter((item) => filled(item.title))
+    .filter((item) => filledLocale(item.title))
     .map((item): ServiceNeedWriteDto => {
       const row: ServiceNeedWriteDto = withOptionalId(item.id, {
         title: { ar: item.title.ar.trim(), en: item.title.en.trim() },
@@ -230,7 +227,7 @@ export function toServiceWrite(service: Service): ServiceWriteDto {
     });
 
   body.solutions = service.solutions
-    .filter((item) => filled(item.title) || filled(item.body))
+    .filter((item) => filledLocale(item.title) || filledLocale(item.body))
     .map((item): ServiceSolutionWriteDto => {
       const row: ServiceSolutionWriteDto = withOptionalId(item.id, {
         title: { ar: item.title.ar.trim(), en: item.title.en.trim() },
@@ -241,7 +238,7 @@ export function toServiceWrite(service: Service): ServiceWriteDto {
     });
 
   body.stages = service.stages
-    .filter((item) => filled(item.title) || filled(item.body))
+    .filter((item) => filledLocale(item.title) || filledLocale(item.body))
     .map((item): ServiceStageWriteDto => {
       const row: ServiceStageWriteDto = withOptionalId(item.id, {
         title: { ar: item.title.ar.trim(), en: item.title.en.trim() },
@@ -252,7 +249,7 @@ export function toServiceWrite(service: Service): ServiceWriteDto {
     });
 
   body.features = service.features
-    .filter((item) => filled(item.title) || filled(item.body))
+    .filter((item) => filledLocale(item.title) || filledLocale(item.body))
     .map((item): ServiceFeatureWriteDto => {
       const row: ServiceFeatureWriteDto = withOptionalId(item.id, {
         title: { ar: item.title.ar.trim(), en: item.title.en.trim() },
@@ -276,7 +273,7 @@ export function toServiceWrite(service: Service): ServiceWriteDto {
     });
 
   body.faqs = service.faqs
-    .filter((item) => filled(item.question) || filled(item.answer))
+    .filter((item) => filledLocale(item.question) || filledLocale(item.answer))
     .map(
       (item): ServiceFaqWriteDto =>
         withOptionalId(item.id, {

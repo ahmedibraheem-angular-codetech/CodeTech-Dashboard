@@ -32,7 +32,7 @@ describe('ServicesPage', () => {
       imports: [ServicesPage],
       providers: [
         MessageService,
-        { provide: API_LATENCY_MS, useValue: 0 }, { provide: ServicesService, useClass: ServicesMemoryService },
+        { provide: API_LATENCY_MS, useValue: 0 },
         { provide: ServicesService, useClass: ServicesMemoryService },
         provideRouter([]),
       ],

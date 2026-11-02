@@ -22,10 +22,12 @@ import { PageHeader } from '../../../../shared/components/page-header/page-heade
 import { StateView } from '../../../../shared/components/state-view/state-view';
 import { HasPermissionDirective } from '../../../../shared/directives/has-permission.directive';
 import { ServiceCard } from '../../components/service-card/service-card';
+import {
+  SERVICE_LIST_PAGE_SIZE,
+  type ServiceLoadState,
+} from '../../constants/service.constants';
 import { readLocale, type Service } from '../../models/service.model';
 import { ServicesService } from '../../services/services.service';
-
-type LoadState = 'loading' | 'ready' | 'error';
 
 @Component({
   selector: 'app-services-page',
@@ -52,9 +54,9 @@ export class ServicesPage {
   private readonly confirm = viewChild.required(ConfirmDialog);
   readonly lang = inject(LanguageService);
   readonly items = signal<Service[]>([]);
-  readonly status = signal<LoadState>('loading');
+  readonly status = signal<ServiceLoadState>('loading');
   readonly first = signal(0);
-  readonly rows = signal(10);
+  readonly rows = signal(SERVICE_LIST_PAGE_SIZE);
   readonly visible = computed(() => this.items().slice(this.first(), this.first() + this.rows()));
 
   readonly canUpdate = computed(() => {
