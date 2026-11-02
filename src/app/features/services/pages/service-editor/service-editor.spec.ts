@@ -10,6 +10,7 @@ import { blankProject } from '../../../projects/models/project.model';
 import { ProjectsService } from '../../../projects/services/projects.service';
 import { SERVICE_STEPS, blankService, localeText, type Service } from '../../models/service.model';
 import { SERVICES_SEED } from '../../services/services.mock';
+import { ServicesMemoryService } from '../../services/services.memory';
 import { ServicesService } from '../../services/services.service';
 import { ServiceEditor } from './service-editor';
 
@@ -46,7 +47,7 @@ describe('ServiceEditor', () => {
       imports: [ServiceEditor],
       providers: [
         MessageService,
-        { provide: API_LATENCY_MS, useValue: 0 },
+        { provide: API_LATENCY_MS, useValue: 0 }, { provide: ServicesService, useClass: ServicesMemoryService },
         provideRouter([{ path: 'services', component: RouteStub }]),
         { provide: ActivatedRoute, useValue: { data: of({ mode }), snapshot: { data: { mode } } } },
       ],
@@ -95,12 +96,16 @@ describe('ServiceEditor', () => {
       const blank = blankService();
       expect(id).toBe('');
       expect(rest).toEqual({
+        code: blank.code,
         icon: blank.icon,
+        iconUrl: blank.iconUrl,
+        iconUuid: blank.iconUuid,
         published: blank.published,
         name: blank.name,
         description: blank.description,
         whyImage: blank.whyImage,
         projectIds: [],
+        linkedProjects: [],
       });
       for (const list of [whyItems, solutions, stages, features, sectors, faqs]) {
         expect(list).toHaveLength(1);

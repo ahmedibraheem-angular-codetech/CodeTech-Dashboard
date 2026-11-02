@@ -98,10 +98,21 @@ export class ServicesPage {
   }
 
   protected publish(id: string, published: boolean): void {
-    this.api.setPublished(id, published);
-    this.items.update((items) =>
-      items.map((item) => (item.id === id ? { ...item, published } : item)),
-    );
+    this.api
+      .setPublished(id, published)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (saved) => {
+          this.items.update((items) =>
+            items.map((item) => (item.id === id ? { ...item, ...saved, published: saved.published } : item)),
+          );
+        },
+        error: () => {
+          this.messages.add({ severity: 'error', summary: this.lang.t('common.error') });
+          // Reload to restore the switch to the server value.
+          this.load();
+        },
+      });
   }
 
   protected retry(): void {

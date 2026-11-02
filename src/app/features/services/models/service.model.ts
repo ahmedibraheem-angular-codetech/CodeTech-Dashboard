@@ -16,6 +16,8 @@ export function localeText(ar = '', en = ''): LocaleText {
 export interface ServiceImage {
   imageName: string;
   imageUrl: string;
+  /** Media coat-check UUID when known from the API or a fresh upload. */
+  imageUuid?: string | null;
 }
 
 export interface ServiceWhyItem extends ServiceImage {
@@ -43,10 +45,25 @@ export interface ServiceFaq {
   answer: LocaleText;
 }
 
+/** Project link returned on service detail (Projects module stays separate). */
+export interface ServiceLinkedProject {
+  id: string;
+  title: LocaleText;
+  description: LocaleText;
+  coverUrl: string;
+  published: boolean;
+  visible: boolean;
+}
+
 export interface Service {
   id: string;
+  code: string;
 
+  /** Local PrimeIcon class for the picker (not sent as media). */
   icon: string;
+  /** Display URL when the API icon is a media file. */
+  iconUrl: string;
+  iconUuid: string | null;
   published: boolean;
   name: LocaleText;
   description: LocaleText;
@@ -62,6 +79,8 @@ export interface Service {
   features: ServicePoint[];
 
   projectIds: string[];
+
+  linkedProjects: ServiceLinkedProject[];
 
   sectors: ServiceSector[];
 
@@ -88,15 +107,22 @@ export function serviceItemId(prefix: string): string {
 }
 
 export function serviceWhyItem(title = localeText()): ServiceWhyItem {
-  return { id: serviceItemId('why'), title, imageName: '', imageUrl: '' };
+  return { id: serviceItemId('why'), title, imageName: '', imageUrl: '', imageUuid: null };
 }
 
 export function servicePoint(title = localeText(), body = localeText()): ServicePoint {
-  return { id: serviceItemId('point'), title, body, imageName: '', imageUrl: '' };
+  return {
+    id: serviceItemId('point'),
+    title,
+    body,
+    imageName: '',
+    imageUrl: '',
+    imageUuid: null,
+  };
 }
 
 export function serviceSector(): ServiceSector {
-  return { id: serviceItemId('sector'), imageName: '', imageUrl: '' };
+  return { id: serviceItemId('sector'), imageName: '', imageUrl: '', imageUuid: null };
 }
 
 export function serviceFaq(): ServiceFaq {
@@ -106,16 +132,20 @@ export function serviceFaq(): ServiceFaq {
 export function blankService(): Service {
   return {
     id: '',
+    code: '',
     icon: '',
+    iconUrl: '',
+    iconUuid: null,
     published: true,
     name: localeText(),
     description: localeText(),
-    whyImage: { title: localeText(), imageName: '', imageUrl: '' },
+    whyImage: { title: localeText(), imageName: '', imageUrl: '', imageUuid: null },
     whyItems: [serviceWhyItem()],
     solutions: [servicePoint()],
     stages: [servicePoint()],
     features: [servicePoint()],
     projectIds: [],
+    linkedProjects: [],
     sectors: [serviceSector()],
     faqs: [serviceFaq()],
   };

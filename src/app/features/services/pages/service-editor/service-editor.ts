@@ -283,7 +283,7 @@ export class ServiceEditor {
   clearWhyImage(): void {
     this.draft.update((current) => ({
       ...current,
-      whyImage: { ...current.whyImage, imageName: '', imageUrl: '' },
+      whyImage: { ...current.whyImage, imageName: '', imageUrl: '', imageUuid: null },
     }));
   }
 
@@ -467,6 +467,7 @@ export class ServiceEditor {
       )
       .subscribe({
         next: (saved) => {
+          this.objectUrls.sync(current, saved);
           this.draft.set(saved);
           this.nameError.set(false);
           this.messages.add({ severity: 'success', summary: this.lang.t(message) });
@@ -526,14 +527,16 @@ export class ServiceEditor {
     }));
   }
 
-  private withImage<T extends { imageName: string; imageUrl: string }>(
+  private withImage<T extends { imageName: string; imageUrl: string; imageUuid?: string | null }>(
     item: T,
     file: ServiceImageFile,
   ): T {
-    return { ...item, imageName: file.name, imageUrl: file.url };
+    return { ...item, imageName: file.name, imageUrl: file.url, imageUuid: null };
   }
 
-  private withoutImage<T extends { imageName: string; imageUrl: string }>(item: T): T {
-    return { ...item, imageName: '', imageUrl: '' };
+  private withoutImage<
+    T extends { imageName: string; imageUrl: string; imageUuid?: string | null },
+  >(item: T): T {
+    return { ...item, imageName: '', imageUrl: '', imageUuid: null };
   }
 }

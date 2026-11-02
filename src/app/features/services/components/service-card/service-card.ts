@@ -26,6 +26,8 @@ const ICON_CLASS = /^pi-[a-z0-9-]+$/;
 export class ServiceCard {
 
   readonly icon = input('');
+  /** Media icon URL from the API; preferred over the PrimeIcon class when set. */
+  readonly iconUrl = input('');
   readonly title = input.required<string>();
   readonly description = input('');
   readonly published = input(false);
@@ -45,7 +47,12 @@ export class ServiceCard {
 
   readonly openRequested = output<void>();
 
+  protected readonly mediaIcon = computed(() => this.iconUrl().trim());
+
   protected readonly iconClass = computed(() => {
+    if (this.mediaIcon()) {
+      return '';
+    }
     const icon = this.icon();
     return `pi ${ICON_CLASS.test(icon) ? icon : FALLBACK_ICON}`;
   });

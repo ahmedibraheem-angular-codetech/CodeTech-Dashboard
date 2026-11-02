@@ -137,17 +137,41 @@ export class ServiceDetailPage {
   );
 
   protected readonly relatedProjects = computed(() => {
+    const linked = this.item()?.linkedProjects ?? [];
+    if (linked.length) {
+      return linked.map((item) => ({
+        id: item.id,
+        name: item.title,
+        summary: item.description,
+        coverUrl: item.coverUrl,
+        published: item.visible,
+      }));
+    }
     const byId = new Map(this.projects().map((project) => [project.id, project]));
     return (this.item()?.projectIds ?? []).flatMap((projectId) => {
       const match = byId.get(projectId);
-      return match ? [match] : [];
+      return match
+        ? [
+            {
+              id: match.id,
+              name: match.name,
+              summary: match.summary,
+              coverUrl: match.coverUrl,
+              published: match.published,
+            },
+          ]
+        : [];
     });
   });
-  protected readonly projectsUnavailable = computed(
-    () =>
+  protected readonly projectsUnavailable = computed(() => {
+    if ((this.item()?.linkedProjects.length ?? 0) > 0) {
+      return false;
+    }
+    return (
       this.projectsStatus() === 'ready' &&
-      this.relatedProjects().length < (this.item()?.projectIds.length ?? 0),
-  );
+      this.relatedProjects().length < (this.item()?.projectIds.length ?? 0)
+    );
+  });
 
   constructor() {
     toObservable(computed(() => ({ id: this.id(), reload: this.reload() })))
@@ -223,6 +247,30 @@ export class ServiceDetailPage {
   }
 
   protected publishProject(id: string, published: boolean): void {
+    const service = this.item();
+    if (service?.linkedProjects.length) {
+      this.api
+        .setProjectVisible(service.id, id, published)
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe({
+          next: () => {
+            this.item.update((current) =>
+              current
+                ? {
+                    ...current,
+                    linkedProjects: current.linkedProjects.map((item) =>
+                      item.id === id ? { ...item, visible: published } : item,
+                    ),
+                  }
+                : current,
+            );
+          },
+          error: () => {
+            this.messages.add({ severity: 'error', summary: this.lang.t('common.error') });
+          },
+        });
+      return;
+    }
     this.projectsApi.setPublished(id, published);
     this.projects.update((items) =>
       items.map((item) => (item.id === id ? { ...item, published } : item)),

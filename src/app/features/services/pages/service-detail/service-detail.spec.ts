@@ -22,6 +22,7 @@ import {
   type Service,
 } from '../../models/service.model';
 import { SERVICES_SEED } from '../../services/services.mock';
+import { ServicesMemoryService } from '../../services/services.memory';
 import { ServicesService } from '../../services/services.service';
 import { ServiceDetailPage } from './service-detail';
 
@@ -83,7 +84,7 @@ describe('ServiceDetailPage', () => {
     TestBed.configureTestingModule({
       providers: [
         MessageService,
-        { provide: API_LATENCY_MS, useValue: 0 },
+        { provide: API_LATENCY_MS, useValue: 0 }, { provide: ServicesService, useClass: ServicesMemoryService },
         provideRouter(
           [
             { path: 'services', component: RouteStub },
@@ -242,9 +243,10 @@ describe('ServiceDetailPage', () => {
     });
 
     it('never writes to the service when it is viewed', async () => {
-      const save = vi.spyOn(ServicesService.prototype, 'save');
-      const setPublished = vi.spyOn(ServicesService.prototype, 'setPublished');
       const { harness, root } = await open('/services/web-development');
+      const api = TestBed.inject(ServicesService);
+      const save = vi.spyOn(api, 'save');
+      const setPublished = vi.spyOn(api, 'setPublished');
       for (const label of ['حلول الخدمة', 'مشاريع الخدمة', 'القطاعات والأسئلة الشائعة']) {
         await showTab(harness, root, label);
       }
@@ -298,8 +300,10 @@ describe('ServiceDetailPage', () => {
     });
 
     it('asks before deleting and returns to the list when confirmed', async () => {
-      const remove = vi.spyOn(ServicesService.prototype, 'remove').mockReturnValue(of(undefined));
       const { harness, root } = await open('/services/web-development');
+      const remove = vi
+        .spyOn(TestBed.inject(ServicesService), 'remove')
+        .mockReturnValue(of(undefined));
       root.querySelector<HTMLButtonElement>('.service-detail__delete')?.click();
       await settle(harness);
 

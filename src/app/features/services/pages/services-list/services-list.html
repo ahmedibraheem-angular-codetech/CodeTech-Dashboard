@@ -23,6 +23,7 @@
         @for (service of visible(); track service.id) {
           <app-service-card
             [icon]="service.icon"
+            [iconUrl]="service.iconUrl"
             [title]="name(service)"
             [description]="description(service)"
             [published]="service.published"
