@@ -287,9 +287,13 @@ export class ProductEditor {
   }
 
   setPointImage(list: PointList, index: number, file: { name: string; url: string }): void {
+    const language = this.locale();
     this.draft.update((current) => ({
       ...current,
-      [list]: this.mapAt(current[list], index, (item) => this.withImage(item, file)),
+      [list]: this.mapAt(current[list], index, (item) => ({
+        ...item,
+        image: { ...item.image, [language]: this.withImage(item.image[language], file) },
+      })),
     }));
   }
 
@@ -305,9 +309,13 @@ export class ProductEditor {
   }
 
   setMediaImage(list: MediaList, index: number, file: { name: string; url: string }): void {
+    const language = this.locale();
     this.draft.update((current) => ({
       ...current,
-      [list]: this.mapAt(current[list], index, (item) => this.withImage(item, file)),
+      [list]: this.mapAt(current[list], index, (item) => ({
+        ...item,
+        image: { ...item.image, [language]: this.withImage(item.image[language], file) },
+      })),
     }));
   }
 
@@ -382,18 +390,29 @@ export class ProductEditor {
   }
 
   setSingleImage(key: 'solution', file: { name: string; url: string }): void {
+    const language = this.locale();
     this.draft.update((current) => ({
       ...current,
-      [key]: this.withImage(current[key], file),
+      [key]: {
+        ...current[key],
+        image: {
+          ...current[key].image,
+          [language]: this.withImage(current[key].image[language], file),
+        },
+      },
     }));
   }
 
   setCover(kind: 'cover' | 'thumb', file: { name: string; url: string }): void {
-    this.draft.update((current) =>
-      kind === 'cover'
-        ? { ...current, coverName: file.name, coverUrl: file.url, coverUuid: null }
-        : { ...current, thumbName: file.name, thumbUrl: file.url, thumbUuid: null },
-    );
+    const language = this.locale();
+    this.draft.update((current) => {
+      const slot = kind === 'cover' ? current.cover : current.thumb;
+      const next = {
+        ...slot,
+        [language]: this.withImage(slot[language], file),
+      };
+      return kind === 'cover' ? { ...current, cover: next } : { ...current, thumb: next };
+    });
   }
 
   setCoverText(key: 'coverTitle' | 'coverAlt' | 'thumbTitle' | 'thumbAlt', event: Event): void {
@@ -427,9 +446,13 @@ export class ProductEditor {
   }
 
   setStatImage(index: number, file: { name: string; url: string }): void {
+    const language = this.locale();
     this.draft.update((current) => ({
       ...current,
-      stats: this.mapAt(current.stats, index, (item) => this.withImage(item, file)),
+      stats: this.mapAt(current.stats, index, (item) => ({
+        ...item,
+        image: { ...item.image, [language]: this.withImage(item.image[language], file) },
+      })),
     }));
   }
 
@@ -459,9 +482,13 @@ export class ProductEditor {
   }
 
   setUnitImage(index: number, file: { name: string; url: string }): void {
+    const language = this.locale();
     this.draft.update((current) => ({
       ...current,
-      units: this.mapAt(current.units, index, (item) => this.withImage(item, file)),
+      units: this.mapAt(current.units, index, (item) => ({
+        ...item,
+        image: { ...item.image, [language]: this.withImage(item.image[language], file) },
+      })),
     }));
   }
 
@@ -488,13 +515,20 @@ export class ProductEditor {
     pointIndex: number,
     file: { name: string; url: string },
   ): void {
+    const language = this.locale();
     this.draft.update((current) => ({
       ...current,
       units: current.units.map((unit, index) =>
         index === unitIndex
           ? {
               ...unit,
-              points: this.mapAt(unit.points, pointIndex, (point) => this.withImage(point, file)),
+              points: this.mapAt(unit.points, pointIndex, (point) => ({
+                ...point,
+                image: {
+                  ...point.image,
+                  [language]: this.withImage(point.image[language], file),
+                },
+              })),
             }
           : unit,
       ),
@@ -641,16 +675,18 @@ export class ProductEditor {
     }));
   }
 
-  private withImage<T extends { imageName: string; imageUrl: string; imageUuid?: string | null }>(
-    item: T,
+  private withImage(
+    item: { imageName: string; imageUrl: string; imageUuid?: string | null },
     file: { name: string; url: string },
-  ): T {
-    return { ...item, imageName: file.name, imageUrl: file.url, imageUuid: null };
+  ): { imageName: string; imageUrl: string; imageUuid: null } {
+    return { imageName: file.name, imageUrl: file.url, imageUuid: null };
   }
 
-  private withoutImage<T extends { imageName: string; imageUrl: string; imageUuid?: string | null }>(
-    item: T,
-  ): T {
+  private withoutImage(item: {
+    imageName: string;
+    imageUrl: string;
+    imageUuid?: string | null;
+  }): { imageName: string; imageUrl: string; imageUuid: null } {
     return { ...item, imageName: '', imageUrl: '', imageUuid: null };
   }
 }

@@ -23,10 +23,10 @@
     <div class="logo-grid">
       @for (item of product().integrations; track item.id; let index = $index) {
         <article class="logo-card">
-          @if (iconClass(item.imageUrl); as icon) {
+          @if (iconClass(media(item.image).imageUrl); as icon) {
             <i [class]="icon" aria-hidden="true"></i>
-          } @else if (item.imageUrl) {
-            <img [src]="item.imageUrl" [alt]="text(item.title)" />
+          } @else if (media(item.image).imageUrl; as integrationUrl) {
+            <img [src]="integrationUrl" [alt]="text(item.title)" />
           }
           @if (canUpdate()) {
             <span class="sector-card__actions">

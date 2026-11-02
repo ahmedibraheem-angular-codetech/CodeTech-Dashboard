@@ -40,8 +40,8 @@
       <h2>{{ lang.t('product.photo') }}</h2>
       <span class="icon-badge"><i class="pi pi-image" aria-hidden="true"></i></span>
     </header>
-    @if (product().coverUrl) {
-      <img class="detail-photo" [src]="product().coverUrl" alt="" />
+    @if (media(product().cover).imageUrl; as coverUrl) {
+      <img class="detail-photo" [src]="coverUrl" alt="" />
     }
   </article>
 
@@ -93,8 +93,8 @@
               </strong>
             </div>
           </div>
-          @if (stat.imageUrl) {
-            <img class="detail-photo" [src]="stat.imageUrl" alt="" />
+          @if (media(stat.image).imageUrl; as statImageUrl) {
+            <img class="detail-photo" [src]="statImageUrl" alt="" />
           }
         </div>
       }
@@ -114,10 +114,10 @@
             <small>{{ text(feature.body) }}</small>
           </span>
           <span class="detail-features__icon">
-            @if (iconClass(feature.imageUrl); as icon) {
+            @if (iconClass(media(feature.image).imageUrl); as icon) {
               <i [class]="icon" aria-hidden="true"></i>
-            } @else if (feature.imageUrl) {
-              <img [src]="feature.imageUrl" alt="" />
+            } @else if (media(feature.image).imageUrl; as featureImageUrl) {
+              <img [src]="featureImageUrl" alt="" />
             } @else {
               <i class="pi pi-star" aria-hidden="true"></i>
             }

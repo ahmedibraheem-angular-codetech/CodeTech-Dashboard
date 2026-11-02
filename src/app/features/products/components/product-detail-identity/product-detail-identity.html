@@ -11,8 +11,8 @@
             <strong>{{ index + 1 }}. {{ text(step.title) }}</strong>
             <p>{{ text(step.body) }}</p>
           </div>
-          @if (step.imageUrl) {
-            <img [src]="step.imageUrl" alt="" />
+          @if (media(step.image).imageUrl; as stepUrl) {
+            <img [src]="stepUrl" alt="" />
           }
         </article>
       }
@@ -78,8 +78,10 @@
         <h2>{{ lang.t('product.unitImage') }}</h2>
         <span class="icon-badge"><i class="pi pi-image" aria-hidden="true"></i></span>
       </header>
-      @if (product().identity[identityIndex()]?.imageUrl; as image) {
-        <img class="detail-photo detail-photo--tall" [src]="image" alt="" />
+      @if (product().identity[identityIndex()]; as identityItem) {
+        @if (media(identityItem.image).imageUrl; as image) {
+          <img class="detail-photo detail-photo--tall" [src]="image" alt="" />
+        }
       }
     </article>
   </div>

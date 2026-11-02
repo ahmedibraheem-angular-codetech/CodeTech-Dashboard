@@ -6,7 +6,7 @@
         <small>{{ text(item.body) }}</small>
       </span>
       <span class="detail-features__icon">
-        @if (iconClass(item.imageUrl); as icon) {
+        @if (iconClass(media(item.image).imageUrl); as icon) {
           <i [class]="icon" aria-hidden="true"></i>
         } @else {
           <i [class]="'pi ' + fallback()" aria-hidden="true"></i>

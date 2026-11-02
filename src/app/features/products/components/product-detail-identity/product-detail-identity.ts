@@ -11,7 +11,14 @@ import {
 import { AuthService } from '../../../../core/auth/auth.service';
 import type { AppLanguage } from '../../../../core/i18n/language';
 import { LanguageService } from '../../../../core/services/language.service';
-import { readLocale, type LocaleText, type Product } from '../../models/product.model';
+import {
+  readLocale,
+  readMedia,
+  type LocaleText,
+  type LocalizedMedia,
+  type Product,
+  type ProductImage,
+} from '../../models/product.model';
 import type { ProductDetailRemoveEvent } from '../../pages/product-detail/product-detail.types';
 
 @Component({
@@ -35,5 +42,9 @@ export class ProductDetailIdentity {
 
   protected text(value: LocaleText): string {
     return readLocale(value, this.locale());
+  }
+
+  protected media(image: LocalizedMedia): ProductImage {
+    return readMedia(image, this.locale());
   }
 }

@@ -28,7 +28,7 @@
       <div class="product-grid">
         @for (product of visible(); track product.id; let index = $index) {
           <app-product-card
-            [imageUrl]="product.coverUrl"
+            [imageUrl]="coverImage(product)"
             [title]="text(product)"
             [summary]="summary(product)"
             [features]="cardFeatures(product)"

@@ -13,9 +13,11 @@ import type {
   ProductWriteDto,
 } from '../models/product.api';
 import {
+  emptyLocalizedMedia,
   emptyProductImage,
   localeText,
   type LocaleText,
+  type LocalizedMedia,
   type Product,
   type ProductFaq,
   type ProductImage,
@@ -52,16 +54,20 @@ export function mapProductMedia(file: FileObject | null | undefined): ProductIma
   };
 }
 
-function mapPoint(
-  dto: ProductPointDto,
-  mediaKey: 'icon' | 'image' = 'icon',
-): ProductPoint {
-  const media = mapProductMedia(mediaKey === 'icon' ? dto.icon : dto.image);
+/**
+ * Shared API file → editor slots. Only Arabic is seeded so the English tab
+ * starts empty and can hold an independent preview while editing.
+ */
+function sharedMedia(file: FileObject | null | undefined): LocalizedMedia {
+  return { ar: mapProductMedia(file), en: emptyProductImage() };
+}
+
+function mapPoint(dto: ProductPointDto, mediaKey: 'icon' | 'image' = 'icon'): ProductPoint {
   return {
     id: String(dto.id),
     title: locale(dto.title),
     body: locale(dto.short_description),
-    ...media,
+    image: sharedMedia(mediaKey === 'icon' ? dto.icon : dto.image),
   };
 }
 
@@ -71,20 +77,17 @@ function mapMediaCard(dto: ProductPointDto, mediaKey: 'icon' | 'image' = 'icon')
     id: point.id,
     title: point.title,
     body: point.body,
-    imageName: point.imageName,
-    imageUrl: point.imageUrl,
-    imageUuid: point.imageUuid,
+    image: point.image,
   };
 }
 
 function mapStat(dto: ProductDetailDto['stats'][number]): ProductStat {
-  const media = mapProductMedia(dto.background);
   return {
     id: String(dto.id),
     label: locale(dto.title),
     value: locale(dto.value),
     body: localeText(),
-    ...media,
+    image: sharedMedia(dto.background),
   };
 }
 
@@ -99,12 +102,11 @@ function mapSector(dto: ProductDetailDto['sectors'][number]): ProductSector {
 }
 
 function mapUnit(dto: ProductDetailDto['modules'][number]): ProductUnit {
-  const media = mapProductMedia(dto.image);
   return {
     id: String(dto.id),
     title: locale(dto.title),
     body: locale(dto.short_description),
-    ...media,
+    image: sharedMedia(dto.image),
     points: (dto.features ?? []).map((item) => mapPoint(item, 'icon')),
   };
 }
@@ -128,7 +130,9 @@ function joinKeywords(value: readonly string[] | null | undefined): string {
   return (value ?? []).map((part) => part.trim()).filter(Boolean).join(', ');
 }
 
-function mapCore(dto: ProductListDto): Pick<
+function mapCore(
+  dto: ProductListDto,
+): Pick<
   Product,
   | 'id'
   | 'code'
@@ -136,21 +140,15 @@ function mapCore(dto: ProductListDto): Pick<
   | 'name'
   | 'summary'
   | 'category'
-  | 'coverName'
-  | 'coverUrl'
-  | 'coverUuid'
+  | 'cover'
   | 'coverTitle'
   | 'coverAlt'
-  | 'thumbName'
-  | 'thumbUrl'
-  | 'thumbUuid'
+  | 'thumb'
   | 'thumbTitle'
   | 'thumbAlt'
   | 'features'
   | 'seo'
 > {
-  const cover = mapProductMedia(dto.cover);
-  const thumb = mapProductMedia(dto.thumbnail);
   const summary = locale(dto.short_description);
   const description = locale(dto.description);
   return {
@@ -160,14 +158,10 @@ function mapCore(dto: ProductListDto): Pick<
     name: locale(dto.title),
     summary: filled(summary) ? summary : description,
     category: localeText(),
-    coverName: cover.imageName,
-    coverUrl: cover.imageUrl,
-    coverUuid: cover.imageUuid ?? null,
+    cover: sharedMedia(dto.cover),
     coverTitle: localeText(),
     coverAlt: localeText(),
-    thumbName: thumb.imageName,
-    thumbUrl: thumb.imageUrl,
-    thumbUuid: thumb.imageUuid ?? null,
+    thumb: sharedMedia(dto.thumbnail),
     thumbTitle: localeText(),
     thumbAlt: localeText(),
     features: (dto.features ?? []).map((item) => mapPoint(item, 'icon')),
@@ -181,17 +175,13 @@ function mapCore(dto: ProductListDto): Pick<
 }
 
 export function mapProductListItem(dto: ProductListDto): Product {
-  const core = mapCore(dto);
   return {
     ...blankNested(),
-    ...core,
+    ...mapCore(dto),
   };
 }
 
 export function mapProductDetail(dto: ProductDetailDto): Product {
-  const cover = mapProductMedia(dto.cover);
-  const thumb = mapProductMedia(dto.thumbnail);
-  const solutionMedia = mapProductMedia(dto.solution_image);
   const summary = locale(dto.short_description);
   const description = locale(dto.description);
   return {
@@ -201,14 +191,10 @@ export function mapProductDetail(dto: ProductDetailDto): Product {
     name: locale(dto.title),
     summary: filled(summary) ? summary : description,
     category: localeText(),
-    coverName: cover.imageName,
-    coverUrl: cover.imageUrl,
-    coverUuid: cover.imageUuid ?? null,
+    cover: sharedMedia(dto.cover),
     coverTitle: locale(dto.cover_title),
     coverAlt: locale(dto.cover_alt),
-    thumbName: thumb.imageName,
-    thumbUrl: thumb.imageUrl,
-    thumbUuid: thumb.imageUuid ?? null,
+    thumb: sharedMedia(dto.thumbnail),
     thumbTitle: locale(dto.thumbnail_title),
     thumbAlt: locale(dto.thumbnail_alt),
     features: (dto.features ?? []).map((item) => mapPoint(item, 'icon')),
@@ -219,7 +205,7 @@ export function mapProductDetail(dto: ProductDetailDto): Product {
       id: 'solution',
       title: locale(dto.solution_title),
       body: locale(dto.solution_description),
-      ...solutionMedia,
+      image: sharedMedia(dto.solution_image),
     },
     offer: (dto.offerings ?? []).map((item) => mapPoint(item, 'icon')),
     results: (dto.results ?? []).map((item) => mapPoint(item, 'icon')),
@@ -228,7 +214,7 @@ export function mapProductDetail(dto: ProductDetailDto): Product {
       id: String(item.id),
       title: localeText(),
       body: localeText(),
-      ...mapProductMedia(item.image),
+      image: sharedMedia(item.image),
     })),
     units: (dto.modules ?? []).map(mapUnit),
     steps: (dto.workflow_steps ?? []).map((item) => mapPoint(item, 'icon')),
@@ -255,14 +241,10 @@ function blankNested(): Omit<
   | 'name'
   | 'summary'
   | 'category'
-  | 'coverName'
-  | 'coverUrl'
-  | 'coverUuid'
+  | 'cover'
   | 'coverTitle'
   | 'coverAlt'
-  | 'thumbName'
-  | 'thumbUrl'
-  | 'thumbUuid'
+  | 'thumb'
   | 'thumbTitle'
   | 'thumbAlt'
   | 'features'
@@ -272,7 +254,12 @@ function blankNested(): Omit<
     stats: [],
     sectors: [],
     challenges: [],
-    solution: { id: 'solution', title: localeText(), body: localeText(), ...emptyProductImage() },
+    solution: {
+      id: 'solution',
+      title: localeText(),
+      body: localeText(),
+      image: emptyLocalizedMedia(),
+    },
     offer: [],
     results: [],
     tools: [],
@@ -304,6 +291,17 @@ function ticket(image: ProductImage, clearEmpty: boolean): string | null | undef
   return undefined;
 }
 
+/** API still accepts one UUID for shared media — prefer Arabic, then English. */
+function sharedTicket(image: LocalizedMedia, clearEmpty: boolean): string | null | undefined {
+  if (image.ar.imageUrl) {
+    return ticket(image.ar, clearEmpty);
+  }
+  if (image.en.imageUrl) {
+    return ticket(image.en, clearEmpty);
+  }
+  return clearEmpty ? null : undefined;
+}
+
 function applyTicket(
   target: Record<string, unknown>,
   key: string,
@@ -314,6 +312,10 @@ function applyTicket(
   }
 }
 
+function hasMedia(image: LocalizedMedia): boolean {
+  return !!(image.ar.imageUrl || image.en.imageUrl);
+}
+
 function pointWrite(
   item: ProductPoint | ProductMedia,
   mediaKey: 'icon' | 'image',
@@ -322,12 +324,12 @@ function pointWrite(
     title: { ar: item.title.ar.trim(), en: item.title.en.trim() },
     short_description: { ar: item.body.ar.trim(), en: item.body.en.trim() },
   });
-  applyTicket(row as unknown as Record<string, unknown>, mediaKey, ticket(item, true));
+  applyTicket(row as unknown as Record<string, unknown>, mediaKey, sharedTicket(item.image, true));
   return row;
 }
 
 function sectorHasMedia(item: ProductSector): boolean {
-  return !!(item.image.ar.imageUrl || item.image.en.imageUrl);
+  return hasMedia(item.image);
 }
 
 export function toProductWrite(product: Product): ProductWriteDto {
@@ -359,20 +361,16 @@ export function toProductWrite(product: Product): ProductWriteDto {
   const slug = (product.seo.slug.en || product.seo.slug.ar).trim();
   body.slug = slug || null;
 
-  applyTicket(body as unknown as Record<string, unknown>, 'cover', ticket({
-    imageUrl: product.coverUrl,
-    imageName: product.coverName,
-    imageUuid: product.coverUuid,
-  }, true));
-  applyTicket(body as unknown as Record<string, unknown>, 'thumbnail', ticket({
-    imageUrl: product.thumbUrl,
-    imageName: product.thumbName,
-    imageUuid: product.thumbUuid,
-  }, true));
+  applyTicket(body as unknown as Record<string, unknown>, 'cover', sharedTicket(product.cover, true));
+  applyTicket(
+    body as unknown as Record<string, unknown>,
+    'thumbnail',
+    sharedTicket(product.thumb, true),
+  );
   applyTicket(
     body as unknown as Record<string, unknown>,
     'solution_image',
-    ticket(product.solution, true),
+    sharedTicket(product.solution.image, true),
   );
 
   body.features = product.features
@@ -386,7 +384,11 @@ export function toProductWrite(product: Product): ProductWriteDto {
         title: { ar: item.label.ar.trim(), en: item.label.en.trim() },
         value: { ar: item.value.ar.trim(), en: item.value.en.trim() },
       });
-      applyTicket(row as unknown as Record<string, unknown>, 'background', ticket(item, true));
+      applyTicket(
+        row as unknown as Record<string, unknown>,
+        'background',
+        sharedTicket(item.image, true),
+      );
       return row;
     });
 
@@ -418,10 +420,14 @@ export function toProductWrite(product: Product): ProductWriteDto {
     .map((item) => pointWrite(item, 'icon'));
 
   body.integrations = product.integrations
-    .filter((item) => !!(item.imageUrl || item.imageUuid))
+    .filter((item) => hasMedia(item.image))
     .map((item): ProductIntegrationWriteDto => {
       const row: ProductIntegrationWriteDto = withOptionalId(item.id, {});
-      applyTicket(row as unknown as Record<string, unknown>, 'image', ticket(item, true));
+      applyTicket(
+        row as unknown as Record<string, unknown>,
+        'image',
+        sharedTicket(item.image, true),
+      );
       return row;
     });
 
@@ -435,7 +441,11 @@ export function toProductWrite(product: Product): ProductWriteDto {
           .filter((point) => filled(point.title) || filled(point.body))
           .map((point) => pointWrite(point, 'icon')),
       });
-      applyTicket(row as unknown as Record<string, unknown>, 'image', ticket(item, true));
+      applyTicket(
+        row as unknown as Record<string, unknown>,
+        'image',
+        sharedTicket(item.image, true),
+      );
       return row;
     });
 
@@ -444,7 +454,7 @@ export function toProductWrite(product: Product): ProductWriteDto {
     .map((item) => pointWrite(item, 'icon'));
 
   body.identity_items = product.identity
-    .filter((item) => filled(item.title) || filled(item.body) || item.imageUrl)
+    .filter((item) => filled(item.title) || filled(item.body) || hasMedia(item.image))
     .map((item) => pointWrite(item, 'image'));
 
   body.reasons = product.highlights

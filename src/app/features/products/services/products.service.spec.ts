@@ -170,9 +170,14 @@ describe('ProductsService (HTTP)', () => {
           id: 'feat-new',
           title: localeText('ميزة', 'Feature'),
           body: localeText('سطر', 'Line'),
-          imageName: 'f.png',
-          imageUrl: 'blob:https://local/feature',
-          imageUuid: null,
+          image: {
+            ar: {
+              imageName: 'f.png',
+              imageUrl: 'blob:https://local/feature',
+              imageUuid: null,
+            },
+            en: { imageName: '', imageUrl: '', imageUuid: null },
+          },
         },
       ],
       stats: [],

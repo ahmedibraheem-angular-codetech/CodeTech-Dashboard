@@ -266,6 +266,39 @@ describe('ProductEditor', () => {
     );
   });
 
+  it('keeps cover and feature images independent per locale tab', async () => {
+    const fixture = await render('create');
+    const editor = fixture.componentInstance;
+
+    editor.useLocale('ar');
+    editor.setCover('cover', { name: 'ar-cover.png', url: 'blob:cover-ar' });
+    editor.setPointImage('features', 0, { name: 'ar-feat.png', url: 'blob:feat-ar' });
+
+    editor.useLocale('en');
+    expect(editor.draft().cover.en.imageUrl).toBe('');
+    expect(editor.draft().features[0]?.image.en.imageUrl).toBe('');
+
+    editor.setCover('cover', { name: 'en-cover.png', url: 'blob:cover-en' });
+    editor.setPointImage('features', 0, { name: 'en-feat.png', url: 'blob:feat-en' });
+
+    expect(editor.draft().cover.ar).toMatchObject({
+      imageName: 'ar-cover.png',
+      imageUrl: 'blob:cover-ar',
+    });
+    expect(editor.draft().cover.en).toMatchObject({
+      imageName: 'en-cover.png',
+      imageUrl: 'blob:cover-en',
+    });
+    expect(editor.draft().features[0]?.image.ar).toMatchObject({
+      imageName: 'ar-feat.png',
+      imageUrl: 'blob:feat-ar',
+    });
+    expect(editor.draft().features[0]?.image.en).toMatchObject({
+      imageName: 'en-feat.png',
+      imageUrl: 'blob:feat-en',
+    });
+  });
+
   it('removes a sector and a unit point and keeps the last one', async () => {
     const fixture = await render('edit', 'info-system');
     const root: HTMLElement = fixture.nativeElement;
@@ -274,7 +307,9 @@ describe('ProductEditor', () => {
     tabs[1]?.click();
     fixture.detectChanges();
     const sectors = () => [
-      ...root.querySelectorAll<HTMLButtonElement>('.field > .feature-card__remove'),
+      ...(root
+        .querySelectorAll('.editor-section--soft')[0]
+        ?.querySelectorAll<HTMLButtonElement>('.feature-card__remove') ?? []),
     ];
     expect(sectors()).toHaveLength(8);
     while (sectors().length > 1) {
@@ -400,7 +435,7 @@ describe('ProductEditor', () => {
 
       pickFile(root, '.editor-section--cover input[type="file"]', 'cover.png');
       await settle(fixture);
-      const url = editor.draft().coverUrl;
+      const url = editor.draft().cover.ar.imageUrl;
       expect(url).toBe('blob:product/1');
 
       editor.select(1);
@@ -410,7 +445,7 @@ describe('ProductEditor', () => {
       await settle(fixture);
 
       expect(revoke).not.toHaveBeenCalled();
-      expect(editor.draft().coverUrl).toBe(url);
+      expect(editor.draft().cover.ar.imageUrl).toBe(url);
       expect(
         root.querySelector('.editor-section--cover img.uploader__preview')?.getAttribute('src'),
       ).toBe(url);
@@ -432,7 +467,7 @@ describe('ProductEditor', () => {
 
       expect(revoke).toHaveBeenCalledTimes(1);
       expect(revoke).toHaveBeenCalledWith('blob:product/1');
-      expect(editor.draft().coverUrl).toBe('blob:product/2');
+      expect(editor.draft().cover.ar.imageUrl).toBe('blob:product/2');
     });
 
     it('revokes a newly selected unsaved image when the editor is closed', async () => {
@@ -441,7 +476,7 @@ describe('ProductEditor', () => {
 
       pickFile(fixture.nativeElement, '.editor-section--cover input[type="file"]', 'cover.png');
       await settle(fixture);
-      const url = editor.draft().coverUrl;
+      const url = editor.draft().cover.ar.imageUrl;
 
       fixture.destroy();
       expect(revoke).toHaveBeenCalledTimes(1);
@@ -457,11 +492,11 @@ describe('ProductEditor', () => {
       await settle(fixture);
       clickButton(root, 'حفظ كمسودة');
       await settle(fixture);
-      const saved = (await firstValueFrom(api.get('info-system')))?.coverUrl;
+      const saved = (await firstValueFrom(api.get('info-system')))?.cover.ar.imageUrl;
 
       fixture.destroy();
       expect(revoke).not.toHaveBeenCalled();
-      expect((await firstValueFrom(api.get('info-system')))?.coverUrl).toBe(saved);
+      expect((await firstValueFrom(api.get('info-system')))?.cover.ar.imageUrl).toBe(saved);
     });
 
     it('does not break a saved cover when an unsaved edit replaces it, then closes', async () => {
@@ -474,18 +509,18 @@ describe('ProductEditor', () => {
       await settle(fixture);
       clickButton(root, 'حفظ كمسودة');
       await settle(fixture);
-      const saved = editor.draft().coverUrl;
-      expect((await firstValueFrom(api.get('info-system')))?.coverUrl).toBe(saved);
+      const saved = editor.draft().cover.ar.imageUrl;
+      expect((await firstValueFrom(api.get('info-system')))?.cover.ar.imageUrl).toBe(saved);
 
       pickFile(root, '.editor-section--cover input[type="file"]', 'unsaved.png');
       await settle(fixture);
       expect(revoke).not.toHaveBeenCalled();
-      expect(editor.draft().coverUrl).toBe('blob:product/2');
+      expect(editor.draft().cover.ar.imageUrl).toBe('blob:product/2');
 
       fixture.destroy();
       expect(revoke).toHaveBeenCalledTimes(1);
       expect(revoke).toHaveBeenCalledWith('blob:product/2');
-      expect((await firstValueFrom(api.get('info-system')))?.coverUrl).toBe(saved);
+      expect((await firstValueFrom(api.get('info-system')))?.cover.ar.imageUrl).toBe(saved);
     });
 
     it('revokes the previous cover once a later save no longer uses it, and keeps the new one after close', async () => {
@@ -498,7 +533,7 @@ describe('ProductEditor', () => {
       await settle(fixture);
       clickButton(root, 'حفظ كمسودة');
       await settle(fixture);
-      const first = editor.draft().coverUrl;
+      const first = editor.draft().cover.ar.imageUrl;
 
       pickFile(root, '.editor-section--cover input[type="file"]', 'second.png');
       await settle(fixture);
@@ -508,11 +543,11 @@ describe('ProductEditor', () => {
 
       expect(revoke).toHaveBeenCalledTimes(1);
       expect(revoke).toHaveBeenCalledWith(first);
-      expect((await firstValueFrom(api.get('info-system')))?.coverUrl).toBe('blob:product/2');
+      expect((await firstValueFrom(api.get('info-system')))?.cover.ar.imageUrl).toBe('blob:product/2');
 
       fixture.destroy();
       expect(revoke).toHaveBeenCalledTimes(1);
-      expect((await firstValueFrom(api.get('info-system')))?.coverUrl).toBe('blob:product/2');
+      expect((await firstValueFrom(api.get('info-system')))?.cover.ar.imageUrl).toBe('blob:product/2');
     });
   });
 });

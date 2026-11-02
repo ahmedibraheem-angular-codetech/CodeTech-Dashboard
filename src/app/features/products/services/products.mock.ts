@@ -6,6 +6,7 @@ import {
   productSector,
   productStat,
   productUnit,
+  type LocalizedMedia,
   type Product,
   type ProductSector,
 } from '../models/product.model';
@@ -21,8 +22,16 @@ const story = localeText(
   'A short description written by the team later.',
 );
 
+function localeImage(imageUrl: string, imageName = 'image.jpg'): LocalizedMedia {
+  const image = { ...emptyProductImage(), imageName, imageUrl };
+  return { ar: { ...image }, en: emptyProductImage() };
+}
+
 function marked(ar: string, en: string, icon: string, body = story) {
-  return { ...productPoint(localeText(ar, en), body), imageUrl: `icon:${icon}` };
+  return {
+    ...productPoint(localeText(ar, en), body),
+    image: localeImage(`icon:${icon}`, `${icon}.svg`),
+  };
 }
 
 function seedSector(imageUrl: string, imageName: string): ProductSector {
@@ -44,45 +53,17 @@ function featured(): Product {
       'A platform for IT services, requests, assets, changes, reports, and dashboards.',
     ),
     category: localeText('أنظمة تشغيلية', 'Operations systems'),
-    coverName: 'cover.jpg',
-    coverUrl: DESK,
-    coverUuid: null,
+    cover: localeImage(DESK, 'cover.jpg'),
     coverTitle: localeText(),
     coverAlt: localeText(),
-    thumbName: 'thumb.jpg',
-    thumbUrl: DESK,
-    thumbUuid: null,
+    thumb: localeImage(DESK, 'thumb.jpg'),
     thumbTitle: localeText(),
     thumbAlt: localeText(),
     features: [
-      {
-        ...productPoint(
-          localeText('إدارة الأصول', 'Asset management'),
-          localeText('وصف يمكن استبدالة لاحقاً', 'Description can be replaced later.'),
-        ),
-        imageUrl: 'icon:pi-cog',
-      },
-      {
-        ...productPoint(
-          localeText('إدارة الطلبات', 'Request management'),
-          localeText('وصف يمكن استبدالة لاحقاً', 'Description can be replaced later.'),
-        ),
-        imageUrl: 'icon:pi-th-large',
-      },
-      {
-        ...productPoint(
-          localeText('Workflow', 'Workflow'),
-          localeText('وصف يمكن استبدالة لاحقاً', 'Description can be replaced later.'),
-        ),
-        imageUrl: 'icon:pi-sitemap',
-      },
-      {
-        ...productPoint(
-          localeText('التقارير', 'Reports'),
-          localeText('وصف يمكن استبدالة لاحقاً', 'Description can be replaced later.'),
-        ),
-        imageUrl: 'icon:pi-clock',
-      },
+      marked('إدارة الأصول', 'Asset management', 'pi-cog'),
+      marked('إدارة الطلبات', 'Request management', 'pi-th-large'),
+      marked('Workflow', 'Workflow', 'pi-sitemap'),
+      marked('التقارير', 'Reports', 'pi-clock'),
     ],
     stats: [
       {
@@ -90,32 +71,28 @@ function featured(): Product {
         value: localeText('+10', '+10'),
         label: localeText('شركات تستخدم النظام', 'Companies using the system'),
         body: localeText('جهات تستخدم النظام يومياً.', 'Organizations using the system daily.'),
-        imageName: 'stat.jpg',
-        imageUrl: WOOD,
+        image: localeImage(WOOD, 'stat.jpg'),
       },
       {
         ...productStat(),
         value: localeText('+24', '+24'),
         label: localeText('طلب يومي', 'Daily requests'),
         body: localeText('طلبات تُغلق في نفس اليوم.', 'Requests closed the same day.'),
-        imageName: 'stat-2.jpg',
-        imageUrl: DESK,
+        image: localeImage(DESK, 'stat-2.jpg'),
       },
       {
         ...productStat(),
         value: localeText('+8', '+8'),
         label: localeText('فرق عمل', 'Teams'),
         body: localeText('فرق تتابع الأصول والطلبات.', 'Teams following assets and requests.'),
-        imageName: 'stat-3.jpg',
-        imageUrl: FLAT,
+        image: localeImage(FLAT, 'stat-3.jpg'),
       },
       {
         ...productStat(),
         value: localeText('+3', '+3'),
         label: localeText('لوحات متابعة', 'Dashboards'),
         body: localeText('لوحات تعرض حالة العمل.', 'Boards that show the work status.'),
-        imageName: 'stat-4.jpg',
-        imageUrl: DESK,
+        image: localeImage(DESK, 'stat-4.jpg'),
       },
     ],
     sectors: [
@@ -135,16 +112,7 @@ function featured(): Product {
       ['تأخر تنفيذ الطلبات', 'Slow request delivery', 'pi-sitemap'],
       ['كثرة الأخطاء البشرية', 'Too many manual errors', 'pi-exclamation-circle'],
       ['صعوبة متابعة الأداء', 'Hard to follow performance', 'pi-chart-line'],
-    ].map(([ar, en, icon]) => ({
-      ...productPoint(
-        localeText(ar, en),
-        localeText(
-          'وصف نصي قصير تعريفي عن كود التقنية يتم كتابته — مصدرها فريق العمل لاحقًا.',
-          'A short description written by the team later.',
-        ),
-      ),
-      imageUrl: `icon:${icon}`,
-    })),
+    ].map(([ar, en, icon]) => marked(ar, en, icon)),
     solution: {
       ...productMedia(),
       title: localeText(
@@ -155,24 +123,14 @@ function featured(): Product {
         'أتمتة شاملة بنسبة 100%. ربط كامل لجميع الأنظمة بشكل منسق ومتكامل. تقارير وتحليلات بضغطة زر فورية.',
         'Full automation. Every system connected in one flow, with reports in one click.',
       ),
-      imageName: 'solution.jpg',
-      imageUrl: POSTER,
+      image: localeImage(POSTER, 'solution.jpg'),
     },
     offer: [
       ['ما هو؟', 'What is it?', 'pi-list'],
       ['أين يستخدم؟', 'Where is it used?', 'pi-cog'],
       ['لمن صُمم؟', 'Who is it for?', 'pi-clock'],
       ['ما القيمة؟', 'What is the value?', 'pi-sitemap'],
-    ].map(([ar, en, icon]) => ({
-      ...productPoint(
-        localeText(ar, en),
-        localeText(
-          'وصف نصي قصير تعريفي عن كود التقنية يتم كتابته — مصدرها فريق العمل لاحقًا.',
-          'A short description written by the team later.',
-        ),
-      ),
-      imageUrl: `icon:${icon}`,
-    })),
+    ].map(([ar, en, icon]) => marked(ar, en, icon)),
     results: [
       ['تقليل الوقت', 'Less time', 'pi-list'],
       ['تقليل الأخطاء', 'Fewer errors', 'pi-cog'],
@@ -180,30 +138,19 @@ function featured(): Product {
       ['تحسين اتخاذ القرار', 'Better decisions', 'pi-sitemap'],
       ['زيادة الكفاءة', 'More efficiency', 'pi-clock'],
       ['سهولة التوسع', 'Easier growth', 'pi-chart-line'],
-    ].map(([ar, en, icon]) => ({
-      ...productPoint(
-        localeText(ar, en),
-        localeText(
-          'وصف نصي قصير تعريفي عن كود التقنية يتم كتابته — مصدرها فريق العمل لاحقًا.',
-          'A short description written by the team later.',
-        ),
-      ),
-      imageUrl: `icon:${icon}`,
-    })),
+    ].map(([ar, en, icon]) => marked(ar, en, icon)),
     tools: [
       {
         ...productMedia(),
         title: localeText('لوحة المتابعة', 'Tracking board'),
         body: localeText('عرض حالة الطلبات والأصول.', 'See the state of requests and assets.'),
-        imageName: 'tool.jpg',
-        imageUrl: DESK,
+        image: localeImage(DESK, 'tool.jpg'),
       },
     ],
     integrations: ['pi-prime', 'pi-mobile', 'pi-box', 'pi-code', 'pi-hashtag', 'pi-cog'].map(
       (icon) => ({
         ...productMedia(),
-        imageName: `${icon}.svg`,
-        imageUrl: `icon:${icon}`,
+        image: localeImage(`icon:${icon}`, `${icon}.svg`),
       }),
     ),
     units: [
@@ -214,8 +161,7 @@ function featured(): Product {
           'حل متكامل يساعد شركات السفر والسياحة على إدارة الحجوزات، والرحلات، والعملاء، والعمليات اليومية من منصة واحدة.',
           'One platform for bookings, trips, customers, and daily operations.',
         ),
-        imageName: 'unit.jpg',
-        imageUrl: DESK,
+        image: localeImage(DESK, 'unit.jpg'),
         points: [
           marked('إدارة الحجوزات', 'Booking management', 'pi-clock', brief),
           marked('الرحلات', 'Trips', 'pi-clock', brief),
@@ -230,8 +176,7 @@ function featured(): Product {
           'متابعة الحالة والأرقام من لوحة واحدة.',
           'Follow status and numbers from one board.',
         ),
-        imageName: 'board.jpg',
-        imageUrl: POSTER,
+        image: localeImage(POSTER, 'board.jpg'),
         points: [
           marked('المؤشرات', 'Indicators', 'pi-chart-bar', brief),
           marked('التنبيهات', 'Alerts', 'pi-bell', brief),
@@ -241,8 +186,7 @@ function featured(): Product {
         ...productUnit(),
         title: localeText('إدارة التقارير', 'Report management'),
         body: localeText('تقارير جاهزة لحالة العمل.', 'Ready reports for the work status.'),
-        imageName: 'reports.jpg',
-        imageUrl: WOOD,
+        image: localeImage(WOOD, 'reports.jpg'),
         points: [
           marked('تقرير يومي', 'Daily report', 'pi-file', brief),
           marked('تقرير الأداء', 'Performance report', 'pi-chart-line', brief),
@@ -252,8 +196,7 @@ function featured(): Product {
         ...productUnit(),
         title: localeText('إدارة الخدمات', 'Service management'),
         body: localeText('تنظيم الخدمات ومساراتها.', 'Organize services and their paths.'),
-        imageName: 'services.jpg',
-        imageUrl: PROJECT,
+        image: localeImage(PROJECT, 'services.jpg'),
         points: [
           marked('كتالوج الخدمات', 'Service catalog', 'pi-list', brief),
           marked('مسار الخدمة', 'Service path', 'pi-share-alt', brief),
@@ -262,8 +205,7 @@ function featured(): Product {
     ],
     steps: [DESK, WOOD, FLAT, PROJECT, POSTER, DESK].map((imageUrl) => ({
       ...productPoint(localeText('إعداد النظام', 'System setup'), story),
-      imageName: 'step.jpg',
-      imageUrl,
+      image: localeImage(imageUrl, 'step.jpg'),
     })),
     identity: [
       ['الواجهة الرئيسية', 'Main interface', DESK],
@@ -274,8 +216,7 @@ function featured(): Product {
       ...productMedia(),
       title: localeText(ar, en),
       body: story,
-      imageName: `${en}.jpg`,
-      imageUrl,
+      image: localeImage(imageUrl, `${en}.jpg`),
     })),
     faqs: [1, 2, 3, 4].map((number) => ({
       id: `faq-${number}`,
@@ -351,10 +292,8 @@ function card(id: string, cover: string): Product {
   const product = structuredClone(featured());
   product.id = id;
   product.code = id;
-  product.coverUrl = cover;
-  product.coverUuid = null;
-  product.thumbUrl = cover;
-  product.thumbUuid = null;
+  product.cover = localeImage(cover, 'cover.jpg');
+  product.thumb = localeImage(cover, 'thumb.jpg');
   product.seo.slug = localeText(id, id);
   return product;
 }

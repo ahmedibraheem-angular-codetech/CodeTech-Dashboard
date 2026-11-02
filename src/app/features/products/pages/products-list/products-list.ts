@@ -27,7 +27,7 @@ import {
 } from '../../../../shared/components/product-card/product-card';
 import { StateView } from '../../../../shared/components/state-view/state-view';
 import { HasPermissionDirective } from '../../../../shared/directives/has-permission.directive';
-import { readLocale, type Product, type ProductPoint } from '../../models/product.model';
+import { readLocale, readMedia, type Product, type ProductPoint } from '../../models/product.model';
 import { ProductsService } from '../../services/products.service';
 
 type LoadState = 'loading' | 'ready' | 'error';
@@ -100,6 +100,10 @@ export class ProductsPage {
 
   private display(value: ProductPoint['title']): string {
     return readLocale(value, this.lang.language()) || value.ar;
+  }
+
+  protected coverImage(product: Product): string {
+    return readMedia(product.cover, this.lang.language()).imageUrl;
   }
 
   protected cardFeatures(product: Product): ProductCardFeature[] {

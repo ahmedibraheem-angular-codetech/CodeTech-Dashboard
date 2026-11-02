@@ -5,7 +5,7 @@ import { API_LATENCY_MS } from '../../../core/config/latency';
 import type { PaginatedEnvelope } from '../../../core/http/api.model';
 import { ObjectUrls } from '../../../shared/components/product-upload/object-urls';
 import type { ProductListDto, ProductListQuery } from '../models/product.api';
-import type { Product } from '../models/product.model';
+import { readMedia, type Product } from '../models/product.model';
 import { PRODUCTS_SEED } from './products.mock';
 import { PRODUCTS_PAGE_SEED } from './products-page.mock';
 
@@ -71,8 +71,6 @@ export class ProductsMemoryService {
       ...structuredClone(product),
       id: product.id || this.newId(),
       code: product.code || product.id || '',
-      coverUuid: product.coverUuid ?? null,
-      thumbUuid: product.thumbUuid ?? null,
     };
     const previous = this.state().find((item) => item.id === next.id) ?? null;
     this.objectUrls.sync(previous, next);
@@ -160,21 +158,26 @@ export class ProductsMemoryService {
 
   private toListDto(item: Product, fallbackId: number): ProductListDto {
     const numericId = /^\d+$/.test(item.id) ? Number(item.id) : fallbackId;
+    const coverUrl = readMedia(item.cover, 'ar').imageUrl;
+    const thumbUrl = readMedia(item.thumb, 'ar').imageUrl;
     return {
       id: numericId,
       code: item.code,
       title: { ar: item.name.ar, en: item.name.en },
       description: { ar: item.summary.ar, en: item.summary.en },
       short_description: { ar: item.summary.ar, en: item.summary.en },
-      cover: item.coverUrl ? ({ url: item.coverUrl } as ProductListDto['cover']) : null,
-      thumbnail: item.thumbUrl ? ({ url: item.thumbUrl } as ProductListDto['thumbnail']) : null,
-      features: item.features.map((feature, sort) => ({
-        id: sort + 1,
-        title: { ar: feature.title.ar, en: feature.title.en },
-        short_description: { ar: feature.body.ar, en: feature.body.en },
-        icon: feature.imageUrl ? ({ url: feature.imageUrl } as ProductListDto['features'][0]['icon']) : null,
-        sort_order: sort,
-      })),
+      cover: coverUrl ? ({ url: coverUrl } as ProductListDto['cover']) : null,
+      thumbnail: thumbUrl ? ({ url: thumbUrl } as ProductListDto['thumbnail']) : null,
+      features: item.features.map((feature, sort) => {
+        const iconUrl = readMedia(feature.image, 'ar').imageUrl;
+        return {
+          id: sort + 1,
+          title: { ar: feature.title.ar, en: feature.title.en },
+          short_description: { ar: feature.body.ar, en: feature.body.en },
+          icon: iconUrl ? ({ url: iconUrl } as ProductListDto['features'][0]['icon']) : null,
+          sort_order: sort,
+        };
+      }),
       status: item.published ? 'published' : 'draft',
       slug: item.seo.slug.en || item.seo.slug.ar || null,
       sort_order: fallbackId,

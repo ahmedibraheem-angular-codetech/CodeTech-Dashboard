@@ -38,8 +38,10 @@ describe('product.mapper', () => {
       updated_at: '2026-11-01T00:00:00.000000Z',
     });
     expect(item.published).toBe(false);
-    expect(item.coverUuid).toBe('cover-1');
-    expect(item.features[0]?.imageUuid).toBe('feat-1');
+    expect(item.cover.ar.imageUuid).toBe('cover-1');
+    expect(item.cover.en.imageUrl).toBe('');
+    expect(item.features[0]?.image.ar.imageUuid).toBe('feat-1');
+    expect(item.features[0]?.image.en.imageUrl).toBe('');
     expect(item.units).toEqual([]);
     expect(item.faqs).toEqual([]);
   });
@@ -129,27 +131,44 @@ describe('product.mapper', () => {
       published: true,
       name: localeText('منتج', 'Product'),
       summary: localeText('وصف', 'Desc'),
-      coverUuid: 'cover-1',
-      coverUrl: 'https://cdn.test/cover.png',
-      coverName: 'cover.png',
-      thumbUuid: null,
-      thumbUrl: '',
+      cover: {
+        ar: {
+          imageName: 'cover.png',
+          imageUrl: 'https://cdn.test/cover.png',
+          imageUuid: 'cover-1',
+        },
+        en: { imageName: '', imageUrl: '', imageUuid: null },
+      },
+      thumb: {
+        ar: { imageName: '', imageUrl: '', imageUuid: null },
+        en: { imageName: '', imageUrl: '', imageUuid: null },
+      },
       solution: {
         id: 'solution',
         title: localeText('حل', 'Solution'),
         body: localeText('نص', 'Text'),
-        imageName: 's.png',
-        imageUrl: 'https://cdn.test/s.png',
-        imageUuid: 'sol-1',
+        image: {
+          ar: {
+            imageName: 's.png',
+            imageUrl: 'https://cdn.test/s.png',
+            imageUuid: 'sol-1',
+          },
+          en: { imageName: '', imageUrl: '', imageUuid: null },
+        },
       },
       features: [
         {
           id: '11',
           title: localeText('ميزة', 'Feature'),
           body: localeText('سطر', 'Line'),
-          imageName: 'f.png',
-          imageUrl: 'https://cdn.test/f.png',
-          imageUuid: 'feat-1',
+          image: {
+            ar: {
+              imageName: 'f.png',
+              imageUrl: 'https://cdn.test/f.png',
+              imageUuid: 'feat-1',
+            },
+            en: { imageName: '', imageUrl: '', imageUuid: null },
+          },
         },
       ],
       stats: [],
@@ -174,9 +193,14 @@ describe('product.mapper', () => {
           id: 'new-tool',
           title: localeText('أداة', 'Tool'),
           body: localeText('وصف', 'Body'),
-          imageName: 't.png',
-          imageUrl: 'https://cdn.test/t.png',
-          imageUuid: 'tool-1',
+          image: {
+            ar: {
+              imageName: 't.png',
+              imageUrl: 'https://cdn.test/t.png',
+              imageUuid: 'tool-1',
+            },
+            en: { imageName: '', imageUrl: '', imageUuid: null },
+          },
         },
       ],
       integrations: [],

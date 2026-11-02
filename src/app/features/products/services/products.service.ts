@@ -187,69 +187,87 @@ export class ProductsService {
   private prepareUploads(product: Product): Observable<Product> {
     const next = structuredClone(product);
     return forkJoin({
-      cover: this.uploadSlot({
-        imageUrl: next.coverUrl,
-        imageName: next.coverName || 'cover.png',
-        imageUuid: next.coverUuid,
-      }),
-      thumb: this.uploadSlot({
-        imageUrl: next.thumbUrl,
-        imageName: next.thumbName || 'thumb.png',
-        imageUuid: next.thumbUuid,
-      }),
-      solution: this.uploadSlot(next.solution),
-      features: this.uploadSlots(next.features),
-      stats: this.uploadSlots(next.stats),
+      cover: this.uploadLocalized(next.cover),
+      thumb: this.uploadLocalized(next.thumb),
+      solution: this.uploadLocalized(next.solution.image),
+      features: this.uploadItemImages(next.features),
+      stats: this.uploadItemImages(next.stats),
       sectors: this.uploadSectors(next.sectors),
-      challenges: this.uploadSlots(next.challenges),
-      offer: this.uploadSlots(next.offer),
-      results: this.uploadSlots(next.results),
-      tools: this.uploadSlots(next.tools),
-      integrations: this.uploadSlots(next.integrations),
+      challenges: this.uploadItemImages(next.challenges),
+      offer: this.uploadItemImages(next.offer),
+      results: this.uploadItemImages(next.results),
+      tools: this.uploadItemImages(next.tools),
+      integrations: this.uploadItemImages(next.integrations),
       units: this.uploadUnits(next.units),
-      steps: this.uploadSlots(next.steps),
-      identity: this.uploadSlots(next.identity),
-      highlights: this.uploadSlots(next.highlights),
+      steps: this.uploadItemImages(next.steps),
+      identity: this.uploadItemImages(next.identity),
+      highlights: this.uploadItemImages(next.highlights),
     }).pipe(
       map((uploaded) => ({
         ...next,
-        coverUrl: uploaded.cover.imageUrl,
-        coverName: uploaded.cover.imageName,
-        coverUuid: uploaded.cover.imageUuid ?? null,
-        thumbUrl: uploaded.thumb.imageUrl,
-        thumbName: uploaded.thumb.imageName,
-        thumbUuid: uploaded.thumb.imageUuid ?? null,
-        solution: { ...next.solution, ...uploaded.solution },
-        features: next.features.map((item, index) => ({ ...item, ...uploaded.features[index] })),
-        stats: next.stats.map((item, index) => ({ ...item, ...uploaded.stats[index] })),
+        cover: uploaded.cover,
+        thumb: uploaded.thumb,
+        solution: { ...next.solution, image: uploaded.solution },
+        features: next.features.map((item, index) => ({
+          ...item,
+          image: uploaded.features[index] ?? item.image,
+        })),
+        stats: next.stats.map((item, index) => ({
+          ...item,
+          image: uploaded.stats[index] ?? item.image,
+        })),
         sectors: uploaded.sectors,
         challenges: next.challenges.map((item, index) => ({
           ...item,
-          ...uploaded.challenges[index],
+          image: uploaded.challenges[index] ?? item.image,
         })),
-        offer: next.offer.map((item, index) => ({ ...item, ...uploaded.offer[index] })),
-        results: next.results.map((item, index) => ({ ...item, ...uploaded.results[index] })),
-        tools: next.tools.map((item, index) => ({ ...item, ...uploaded.tools[index] })),
+        offer: next.offer.map((item, index) => ({
+          ...item,
+          image: uploaded.offer[index] ?? item.image,
+        })),
+        results: next.results.map((item, index) => ({
+          ...item,
+          image: uploaded.results[index] ?? item.image,
+        })),
+        tools: next.tools.map((item, index) => ({
+          ...item,
+          image: uploaded.tools[index] ?? item.image,
+        })),
         integrations: next.integrations.map((item, index) => ({
           ...item,
-          ...uploaded.integrations[index],
+          image: uploaded.integrations[index] ?? item.image,
         })),
         units: uploaded.units,
-        steps: next.steps.map((item, index) => ({ ...item, ...uploaded.steps[index] })),
-        identity: next.identity.map((item, index) => ({ ...item, ...uploaded.identity[index] })),
+        steps: next.steps.map((item, index) => ({
+          ...item,
+          image: uploaded.steps[index] ?? item.image,
+        })),
+        identity: next.identity.map((item, index) => ({
+          ...item,
+          image: uploaded.identity[index] ?? item.image,
+        })),
         highlights: next.highlights.map((item, index) => ({
           ...item,
-          ...uploaded.highlights[index],
+          image: uploaded.highlights[index] ?? item.image,
         })),
       })),
     );
   }
 
-  private uploadSlots(items: readonly ProductImage[]): Observable<ProductImage[]> {
+  private uploadLocalized(image: Product['cover']): Observable<Product['cover']> {
+    return forkJoin({
+      ar: this.uploadSlot(image.ar),
+      en: this.uploadSlot(image.en),
+    });
+  }
+
+  private uploadItemImages(
+    items: readonly { image: Product['cover'] }[],
+  ): Observable<Product['cover'][]> {
     if (items.length === 0) {
       return of([]);
     }
-    return forkJoin(items.map((item) => this.uploadSlot(item)));
+    return forkJoin(items.map((item) => this.uploadLocalized(item.image)));
   }
 
   private uploadSectors(items: readonly ProductSector[]): Observable<ProductSector[]> {
@@ -258,10 +276,7 @@ export class ProductsService {
     }
     return forkJoin(
       items.map((sector) =>
-        forkJoin({
-          ar: this.uploadSlot(sector.image.ar),
-          en: this.uploadSlot(sector.image.en),
-        }).pipe(map((image) => ({ ...sector, image }))),
+        this.uploadLocalized(sector.image).pipe(map((image) => ({ ...sector, image }))),
       ),
     );
   }
@@ -273,13 +288,16 @@ export class ProductsService {
     return forkJoin(
       items.map((unit) =>
         forkJoin({
-          media: this.uploadSlot(unit),
-          points: this.uploadSlots(unit.points),
+          image: this.uploadLocalized(unit.image),
+          points: this.uploadItemImages(unit.points),
         }).pipe(
-          map(({ media, points }) => ({
+          map(({ image, points }) => ({
             ...unit,
-            ...media,
-            points: unit.points.map((point, index) => ({ ...point, ...points[index] })),
+            image,
+            points: unit.points.map((point, index) => ({
+              ...point,
+              image: points[index] ?? point.image,
+            })),
           })),
         ),
       ),

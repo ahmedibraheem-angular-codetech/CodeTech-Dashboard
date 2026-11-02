@@ -16,36 +16,62 @@ export interface ProductImage {
   imageUuid?: string | null;
 }
 
-export interface ProductPoint extends ProductImage {
+/** Per-locale media slots used in the product editor (AR/EN tabs). */
+export type LocalizedMedia = Record<AppLanguage, ProductImage>;
+
+export function emptyProductImage(): ProductImage {
+  return { imageName: '', imageUrl: '', imageUuid: null };
+}
+
+export function emptyLocalizedMedia(): LocalizedMedia {
+  return { ar: emptyProductImage(), en: emptyProductImage() };
+}
+
+/**
+ * Active-locale media with Arabic fallback (matches website behavior when EN is empty).
+ */
+export function readMedia(image: LocalizedMedia, language: AppLanguage): ProductImage {
+  const current = image[language];
+  if (current.imageUrl) {
+    return current;
+  }
+  return image.ar.imageUrl ? image.ar : current;
+}
+
+export interface ProductPoint {
   id: string;
   title: LocaleText;
   body: LocaleText;
+  image: LocalizedMedia;
 }
 
-export interface ProductStat extends ProductImage {
+export interface ProductStat {
   id: string;
   /** Bilingual figure text (API `value.{ar,en}`). */
   value: LocaleText;
   label: LocaleText;
   body: LocaleText;
+  image: LocalizedMedia;
 }
 
-export interface ProductMedia extends ProductImage {
+export interface ProductMedia {
   id: string;
   title: LocaleText;
   body: LocaleText;
+  image: LocalizedMedia;
 }
 
-/** Product-owned sector tiles: bilingual images only (API `sectors.*.image`). */
+/** Product-owned sector tiles: bilingual images (API `sectors.*.image`). */
 export interface ProductSector {
   id: string;
-  image: Record<AppLanguage, ProductImage>;
+  image: LocalizedMedia;
 }
 
-export interface ProductUnit extends ProductImage {
+export interface ProductUnit {
   id: string;
   title: LocaleText;
   body: LocaleText;
+  image: LocalizedMedia;
   points: ProductPoint[];
 }
 
@@ -74,14 +100,12 @@ export interface Product {
    * kept so the editor field is not deleted; value is not persisted by the API.
    */
   category: LocaleText;
-  coverName: string;
-  coverUrl: string;
-  coverUuid: string | null;
+  /** Cover image per editor locale. API still stores one shared cover file. */
+  cover: LocalizedMedia;
   coverTitle: LocaleText;
   coverAlt: LocaleText;
-  thumbName: string;
-  thumbUrl: string;
-  thumbUuid: string | null;
+  /** Thumbnail per editor locale. API still stores one shared thumbnail file. */
+  thumb: LocalizedMedia;
   thumbTitle: LocaleText;
   thumbAlt: LocaleText;
   features: ProductPoint[];
@@ -125,12 +149,8 @@ export function productId(prefix: string): string {
   return `${prefix}-${sequence}`;
 }
 
-export function emptyProductImage(): ProductImage {
-  return { imageName: '', imageUrl: '', imageUuid: null };
-}
-
 export function productPoint(title = localeText(), body = localeText()): ProductPoint {
-  return { id: productId('point'), title, body, ...emptyProductImage() };
+  return { id: productId('point'), title, body, image: emptyLocalizedMedia() };
 }
 
 export function productStat(): ProductStat {
@@ -139,7 +159,7 @@ export function productStat(): ProductStat {
     value: localeText(),
     label: localeText(),
     body: localeText(),
-    ...emptyProductImage(),
+    image: emptyLocalizedMedia(),
   };
 }
 
@@ -148,14 +168,14 @@ export function productMedia(): ProductMedia {
     id: productId('media'),
     title: localeText(),
     body: localeText(),
-    ...emptyProductImage(),
+    image: emptyLocalizedMedia(),
   };
 }
 
 export function productSector(): ProductSector {
   return {
     id: productId('sector'),
-    image: { ar: emptyProductImage(), en: emptyProductImage() },
+    image: emptyLocalizedMedia(),
   };
 }
 
@@ -164,7 +184,7 @@ export function productUnit(): ProductUnit {
     id: productId('unit'),
     title: localeText(),
     body: localeText(),
-    ...emptyProductImage(),
+    image: emptyLocalizedMedia(),
     points: [productPoint(), productPoint(), productPoint(), productPoint()],
   };
 }
@@ -181,14 +201,10 @@ export function blankProduct(): Product {
     name: localeText(),
     summary: localeText(),
     category: localeText(),
-    coverName: '',
-    coverUrl: '',
-    coverUuid: null,
+    cover: emptyLocalizedMedia(),
     coverTitle: localeText(),
     coverAlt: localeText(),
-    thumbName: '',
-    thumbUrl: '',
-    thumbUuid: null,
+    thumb: emptyLocalizedMedia(),
     thumbTitle: localeText(),
     thumbAlt: localeText(),
     features: [productPoint()],

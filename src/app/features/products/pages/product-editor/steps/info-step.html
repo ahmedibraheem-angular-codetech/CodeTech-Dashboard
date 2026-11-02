@@ -51,8 +51,8 @@
             [bodyLabel]="editor.copy('product.featureBody')"
             [bodyPlaceholder]="editor.copy('product.featureBody')"
             [iconLabel]="editor.copy('product.icon')"
-            [imageName]="feature.imageName"
-            [imageUrl]="feature.imageUrl"
+            [imageName]="feature.image[editor.locale()].imageName"
+            [imageUrl]="feature.image[editor.locale()].imageUrl"
             [locale]="editor.locale()"
             [active]="featureTab() === index"
             [removeDisabled]="editor.draft().features.length === 1"
@@ -82,8 +82,8 @@
           <span class="field__label">{{ editor.copy('product.uploadLabel') }}</span>
           <app-product-upload
             [locale]="editor.locale()"
-            [name]="editor.draft().coverName"
-            [url]="editor.draft().coverUrl"
+            [name]="editor.draft().cover[editor.locale()].imageName"
+            [url]="editor.draft().cover[editor.locale()].imageUrl"
             (picked)="editor.setCover('cover', $event)"
           />
         </div>
@@ -119,8 +119,8 @@
           <span class="field__label">{{ editor.copy('product.uploadLabel') }}</span>
           <app-product-upload
             [locale]="editor.locale()"
-            [name]="editor.draft().thumbName"
-            [url]="editor.draft().thumbUrl"
+            [name]="editor.draft().thumb[editor.locale()].imageName"
+            [url]="editor.draft().thumb[editor.locale()].imageUrl"
             (picked)="editor.setCover('thumb', $event)"
           />
         </div>
@@ -163,8 +163,8 @@
           [bodyLabel]="editor.copy('product.statAnswer')"
           [bodyPlaceholder]="editor.copy('product.featureBody')"
           [iconLabel]="editor.copy('product.statBg')"
-          [imageName]="stat.imageName"
-          [imageUrl]="stat.imageUrl"
+          [imageName]="stat.image[editor.locale()].imageName"
+          [imageUrl]="stat.image[editor.locale()].imageUrl"
           [locale]="editor.locale()"
           [actions]="false"
           [active]="statTab() === index"
