@@ -354,50 +354,6 @@ describe('ServiceEditor', () => {
       }
     });
 
-    it('shows the stored icon as selected and does not reset it', async () => {
-      const { fixture, editor, root } = await render('edit', 'cloud-devops');
-      const selected = root.querySelectorAll<HTMLElement>('.service-icons__item.is-selected');
-      expect(selected).toHaveLength(1);
-      expect(selected[0]?.dataset['icon']).toBe('pi-cloud');
-
-      editor.setField('name', inputEvent('اسم جديد'));
-      editor.select(3);
-      editor.select(0);
-      await settle(fixture);
-      expect(editor.draft().icon).toBe('pi-cloud');
-    });
-
-    it('keeps and shows an icon that is outside the picker library', async () => {
-      const custom: Service = { ...seed('web-development'), icon: 'pi-unknown-icon' };
-      const save = vi.fn((service: Service) => of(service));
-      const { editor, root } = await render('edit', 'web-development', {
-        services: { get: () => of(custom), save },
-      });
-      const options = [...root.querySelectorAll<HTMLElement>('.service-icons__item')];
-      expect(options[0]?.dataset['icon']).toBe('pi-unknown-icon');
-      expect(options[0]?.classList.contains('is-selected')).toBe(true);
-
-      editor.updatePublished(true);
-      await vi.waitFor(() => expect(save).toHaveBeenCalled());
-      expect(save.mock.calls[0]?.[0].icon).toBe('pi-unknown-icon');
-    });
-
-    it('selects an icon from the picker and persists it so the card can use it', async () => {
-      const { fixture, editor, root, navigate } = await render('edit', 'web-development');
-      root.querySelector<HTMLButtonElement>('button[data-icon="pi-database"]')?.click();
-      fixture.detectChanges();
-      expect(editor.draft().icon).toBe('pi-database');
-      expect(
-        root.querySelector('.service-icons__item.is-selected')?.getAttribute('data-icon'),
-      ).toBe('pi-database');
-      expect(editor.draft().whyImage.imageUrl).not.toContain('pi-database');
-
-      editor.finish();
-      await vi.waitFor(() => expect(navigate).toHaveBeenCalledWith(['/services']));
-      const stored = await firstValueFrom(TestBed.inject(ServicesService).get('web-development'));
-      expect(stored?.icon).toBe('pi-database');
-    });
-
     it('treats an unknown id as not found and renders no form', async () => {
       const { editor, root, toast } = await render('edit', 'does-not-exist');
       expect(editor.status()).toBe('missing');
@@ -1198,14 +1154,12 @@ describe('ServiceEditor', () => {
       const panel = () => root.querySelector('.editor-card');
       expect(panel()?.getAttribute('dir')).toBe('rtl');
       expect(root.textContent).toContain('بيانات الخدمة');
-      expect(root.textContent).toContain('أيقونة الخدمة');
 
       switchLocale(root, 'English');
       fixture.detectChanges();
       expect(editor.locale()).toBe('en');
       expect(panel()?.getAttribute('dir')).toBe('ltr');
       expect(root.textContent).toContain('Service details');
-      expect(root.textContent).toContain('Service icon');
       expect(root.textContent).toContain('Why we need the service');
       expect(root.textContent).not.toContain('بيانات الخدمة');
     });
@@ -1436,7 +1390,6 @@ function fillEveryStep(editor: ServiceEditor): void {
   editor.useLocale('ar');
   editor.setField('name', inputEvent('خدمة جديدة'));
   editor.setField('description', inputEvent('وصف'));
-  editor.setIcon('pi-cloud');
   editor.setWhyImageTitle(inputEvent('عنوان'));
   editor.setWhyImage({ name: 'why.png', url: 'blob:why' });
   editor.setWhyTitle(0, inputEvent('سبب'));
