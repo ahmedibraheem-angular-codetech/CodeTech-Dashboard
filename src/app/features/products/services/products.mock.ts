@@ -1,10 +1,13 @@
 import {
+  emptyProductImage,
   localeText,
   productMedia,
   productPoint,
+  productSector,
   productStat,
   productUnit,
   type Product,
+  type ProductSector,
 } from '../models/product.model';
 
 const FLAT = '/images/product-cover-flat.jpg';
@@ -22,9 +25,18 @@ function marked(ar: string, en: string, icon: string, body = story) {
   return { ...productPoint(localeText(ar, en), body), imageUrl: `icon:${icon}` };
 }
 
+function seedSector(imageUrl: string, imageName: string): ProductSector {
+  const image = { ...emptyProductImage(), imageName, imageUrl };
+  return {
+    ...productSector(),
+    image: { ar: { ...image }, en: { ...image } },
+  };
+}
+
 function featured(): Product {
   return {
     id: 'info-system',
+    code: 'info-system',
     published: true,
     name: localeText('نظام إدارة خدمات تقنية المعلومات', 'IT services management system'),
     summary: localeText(
@@ -34,10 +46,12 @@ function featured(): Product {
     category: localeText('أنظمة تشغيلية', 'Operations systems'),
     coverName: 'cover.jpg',
     coverUrl: DESK,
+    coverUuid: null,
     coverTitle: localeText(),
     coverAlt: localeText(),
     thumbName: 'thumb.jpg',
     thumbUrl: DESK,
+    thumbUuid: null,
     thumbTitle: localeText(),
     thumbAlt: localeText(),
     features: [
@@ -73,7 +87,7 @@ function featured(): Product {
     stats: [
       {
         ...productStat(),
-        value: '+10',
+        value: localeText('+10', '+10'),
         label: localeText('شركات تستخدم النظام', 'Companies using the system'),
         body: localeText('جهات تستخدم النظام يومياً.', 'Organizations using the system daily.'),
         imageName: 'stat.jpg',
@@ -81,7 +95,7 @@ function featured(): Product {
       },
       {
         ...productStat(),
-        value: '+24',
+        value: localeText('+24', '+24'),
         label: localeText('طلب يومي', 'Daily requests'),
         body: localeText('طلبات تُغلق في نفس اليوم.', 'Requests closed the same day.'),
         imageName: 'stat-2.jpg',
@@ -89,7 +103,7 @@ function featured(): Product {
       },
       {
         ...productStat(),
-        value: '+8',
+        value: localeText('+8', '+8'),
         label: localeText('فرق عمل', 'Teams'),
         body: localeText('فرق تتابع الأصول والطلبات.', 'Teams following assets and requests.'),
         imageName: 'stat-3.jpg',
@@ -97,7 +111,7 @@ function featured(): Product {
       },
       {
         ...productStat(),
-        value: '+3',
+        value: localeText('+3', '+3'),
         label: localeText('لوحات متابعة', 'Dashboards'),
         body: localeText('لوحات تعرض حالة العمل.', 'Boards that show the work status.'),
         imageName: 'stat-4.jpg',
@@ -105,20 +119,15 @@ function featured(): Product {
       },
     ],
     sectors: [
-      ['حكومي', 'Government', PROJECT],
-      ['شركات', 'Companies', DESK],
-      ['الصحة', 'Health', WOOD],
-      ['تعليم', 'Education', FLAT],
-      ['القطاع الخاص', 'Private sector', DESK],
-      ['المؤسسات', 'Institutions', PROJECT],
-      ['الأفراد', 'Individuals', POSTER],
-      ['سياحة', 'Tourism', WOOD],
-    ].map(([ar, en, imageUrl]) => ({
-      ...productMedia(),
-      title: localeText(ar, en),
-      imageName: `${en}.jpg`,
-      imageUrl,
-    })),
+      ['Government', PROJECT],
+      ['Companies', DESK],
+      ['Health', WOOD],
+      ['Education', FLAT],
+      ['Private sector', DESK],
+      ['Institutions', PROJECT],
+      ['Individuals', POSTER],
+      ['Tourism', WOOD],
+    ].map(([en, imageUrl]) => seedSector(imageUrl, `${en}.jpg`)),
     challenges: [
       ['تعدد الأنظمة', 'Many systems', 'pi-server'],
       ['العمليات تتم يدويًا', 'Work is still manual', 'pi-cog'],
@@ -341,8 +350,11 @@ function featured(): Product {
 function card(id: string, cover: string): Product {
   const product = structuredClone(featured());
   product.id = id;
+  product.code = id;
   product.coverUrl = cover;
+  product.coverUuid = null;
   product.thumbUrl = cover;
+  product.thumbUuid = null;
   product.seo.slug = localeText(id, id);
   return product;
 }

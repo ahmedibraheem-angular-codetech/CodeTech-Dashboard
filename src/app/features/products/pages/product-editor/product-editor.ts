@@ -37,6 +37,7 @@ import {
   productFaq,
   productMedia,
   productPoint,
+  productSector,
   productStat,
   productUnit,
   type LocaleText,
@@ -46,7 +47,7 @@ import { ObjectUrls } from '../../../../shared/components/product-upload/object-
 import { ProductsService } from '../../services/products.service';
 
 type PointList = 'features' | 'challenges' | 'offer' | 'results' | 'steps' | 'highlights';
-type MediaList = 'sectors' | 'tools' | 'integrations' | 'identity';
+type MediaList = 'tools' | 'integrations' | 'identity';
 
 @Component({
   selector: 'app-product-editor',
@@ -324,6 +325,51 @@ export class ProductEditor {
     }));
   }
 
+  addSector(): void {
+    this.draft.update((current) => ({
+      ...current,
+      sectors: [...current.sectors, productSector()],
+    }));
+  }
+
+  removeSector(index: number): void {
+    this.draft.update((current) => ({
+      ...current,
+      sectors:
+        current.sectors.length > 1
+          ? current.sectors.filter((_, item) => item !== index)
+          : current.sectors,
+    }));
+  }
+
+  setSectorImage(index: number, file: { name: string; url: string }): void {
+    const language = this.locale();
+    this.draft.update((current) => ({
+      ...current,
+      sectors: this.mapAt(current.sectors, index, (item) => ({
+        ...item,
+        image: {
+          ...item.image,
+          [language]: this.withImage(item.image[language], file),
+        },
+      })),
+    }));
+  }
+
+  clearSectorImage(index: number): void {
+    const language = this.locale();
+    this.draft.update((current) => ({
+      ...current,
+      sectors: this.mapAt(current.sectors, index, (item) => ({
+        ...item,
+        image: {
+          ...item.image,
+          [language]: this.withoutImage(item.image[language]),
+        },
+      })),
+    }));
+  }
+
   setSingle(key: 'solution', field: 'title' | 'body', event: Event): void {
     const value = this.read(event);
     if (value === undefined) {
@@ -345,8 +391,8 @@ export class ProductEditor {
   setCover(kind: 'cover' | 'thumb', file: { name: string; url: string }): void {
     this.draft.update((current) =>
       kind === 'cover'
-        ? { ...current, coverName: file.name, coverUrl: file.url }
-        : { ...current, thumbName: file.name, thumbUrl: file.url },
+        ? { ...current, coverName: file.name, coverUrl: file.url, coverUuid: null }
+        : { ...current, thumbName: file.name, thumbUrl: file.url, thumbUuid: null },
     );
   }
 
@@ -373,7 +419,7 @@ export class ProductEditor {
           return item;
         }
         if (field === 'value') {
-          return { ...item, value };
+          return { ...item, value: this.writeLocale(item.value, value) };
         }
         return { ...item, [field]: this.writeLocale(item[field], value) };
       }),
@@ -532,7 +578,8 @@ export class ProductEditor {
     if (this.saving() || this.status() !== 'ready') {
       return;
     }
-    const current = { ...this.draft(), published };
+    const previous = this.draft();
+    const current = { ...previous, published };
     if (published && !this.namesValid()) {
       this.nameError.set(true);
       this.step.set(0);
@@ -547,6 +594,7 @@ export class ProductEditor {
       )
       .subscribe({
         next: (saved) => {
+          this.objectUrls.sync(previous, saved);
           this.draft.set(saved);
           this.nameError.set(false);
           this.messages.add({ severity: 'success', summary: this.lang.t(message) });
@@ -593,10 +641,16 @@ export class ProductEditor {
     }));
   }
 
-  private withImage<T extends { imageName: string; imageUrl: string }>(
+  private withImage<T extends { imageName: string; imageUrl: string; imageUuid?: string | null }>(
     item: T,
     file: { name: string; url: string },
   ): T {
-    return { ...item, imageName: file.name, imageUrl: file.url };
+    return { ...item, imageName: file.name, imageUrl: file.url, imageUuid: null };
+  }
+
+  private withoutImage<T extends { imageName: string; imageUrl: string; imageUuid?: string | null }>(
+    item: T,
+  ): T {
+    return { ...item, imageName: '', imageUrl: '', imageUuid: null };
   }
 }

@@ -8,6 +8,7 @@ import {
   viewChild,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { forkJoin } from 'rxjs';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { MessageService } from 'primeng/api';
@@ -165,11 +166,13 @@ export class ProductsPage {
   private load(): void {
     const seq = ++this.loadSeq;
     this.status.set('loading');
-    this.api
-      .list()
+    forkJoin({
+      items: this.api.listAll(),
+      visible: this.api.loadCatalogVisibility(),
+    })
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
-        next: (items) => {
+        next: ({ items }) => {
           if (seq !== this.loadSeq) {
             return;
           }

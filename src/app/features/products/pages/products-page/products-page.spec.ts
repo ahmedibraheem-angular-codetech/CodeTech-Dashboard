@@ -7,6 +7,8 @@ import { API_LATENCY_MS } from '../../../../core/config/latency';
 import { ConfirmDialog } from '../../../../shared/components/confirm-dialog/confirm-dialog';
 import { localeText } from '../../models/product.model';
 import type { ProductsPageFeature, ProductsPageSector } from '../../models/products-page.model';
+import { ProductsPageMemoryService } from '../../services/products-page.memory';
+import { ProductsPageService } from '../../services/products-page.service';
 import { ProductsPageManage } from './products-page';
 
 const PRODUCT_GRANTS = [
@@ -45,7 +47,11 @@ describe('ProductsPageManage', () => {
   async function render() {
     TestBed.configureTestingModule({
       imports: [ProductsPageManage],
-      providers: [MessageService, { provide: API_LATENCY_MS, useValue: 0 }],
+      providers: [
+        MessageService,
+        { provide: API_LATENCY_MS, useValue: 0 },
+        { provide: ProductsPageService, useClass: ProductsPageMemoryService },
+      ],
     });
     TestBed.inject(AuthService).session.set(
       authSession({
@@ -72,8 +78,9 @@ describe('ProductsPageManage', () => {
     if (component.editorKind() === 'feature') {
       return !component.text(component.draftFeature().title).trim();
     }
+    const sector = component.draftSector();
     return (
-      !component.text(component.draftSector().title).trim() || !component.draftSector().imageUrl
+      !component.text(sector.title).trim() || !sector.image[component.locale()].imageUrl
     );
   }
 
@@ -148,7 +155,10 @@ describe('ProductsPageManage', () => {
 
     component.draftSector.update((current) => ({
       ...current,
-      imageUrl: '/images/product-cover-desk.jpg',
+      image: {
+        ...current.image,
+        ar: { ...current.image.ar, imageUrl: '/images/product-cover-desk.jpg' },
+      },
     }));
     fixture.detectChanges();
     expect(saveDisabled(component)).toBe(false);
@@ -204,7 +214,10 @@ describe('ProductsPageManage', () => {
     component.draftSector.update((current) => ({
       ...current,
       title: localeText('قطاع اختبار', 'Test sector'),
-      imageUrl: '/images/product-cover-wood.jpg',
+      image: {
+        ...current.image,
+        ar: { ...current.image.ar, imageUrl: '/images/product-cover-wood.jpg' },
+      },
     }));
     component.saveEditor();
     await new Promise((resolve) => setTimeout(resolve, 20));

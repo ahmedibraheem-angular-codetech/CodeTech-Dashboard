@@ -65,7 +65,19 @@ export class ProductsPageEditorForm {
   }
 
   protected setSectorImage(file: { name: string; url: string }): void {
-    this.sector.update((current) => ({ ...current, imageUrl: file.url }));
+    const language = this.locale();
+    this.sector.update((current) => ({
+      ...current,
+      image: {
+        ...current.image,
+        [language]: {
+          ...current.image[language],
+          imageName: file.name,
+          imageUrl: file.url,
+          imageUuid: null,
+        },
+      },
+    }));
   }
 
   private read(event: Event): string | undefined {

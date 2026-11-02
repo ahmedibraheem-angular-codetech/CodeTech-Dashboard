@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { MessageService } from 'primeng/api';
-import { Subject, firstValueFrom, throwError } from 'rxjs';
+import { Subject, firstValueFrom, of, throwError } from 'rxjs';
 
 import { authSession } from '../../../../core/auth/auth-session.fixture';
 import { AuthService } from '../../../../core/auth/auth.service';
@@ -9,6 +9,7 @@ import { API_LATENCY_MS } from '../../../../core/config/latency';
 import { LanguageService } from '../../../../core/services/language.service';
 import { blankProduct, localeText, type Product } from '../../models/product.model';
 import { PRODUCTS_SEED } from '../../services/products.mock';
+import { ProductsMemoryService } from '../../services/products.memory';
 import { ProductsService } from '../../services/products.service';
 import { ProductsPage } from './products-list';
 
@@ -29,7 +30,12 @@ describe('ProductsPage', () => {
   async function render(prepare?: (api: ProductsService) => Promise<void>) {
     TestBed.configureTestingModule({
       imports: [ProductsPage],
-      providers: [MessageService, { provide: API_LATENCY_MS, useValue: 0 }, provideRouter([])],
+      providers: [
+        MessageService,
+        { provide: API_LATENCY_MS, useValue: 0 },
+        { provide: ProductsService, useClass: ProductsMemoryService },
+        provideRouter([]),
+      ],
     });
     localStorage.setItem('codetech.language', 'ar');
     TestBed.inject(LanguageService).set('ar');
@@ -82,12 +88,18 @@ describe('ProductsPage', () => {
   it('shows an error instead of the empty state when loading fails', async () => {
     TestBed.configureTestingModule({
       imports: [ProductsPage],
-      providers: [MessageService, { provide: API_LATENCY_MS, useValue: 0 }, provideRouter([])],
+      providers: [
+        MessageService,
+        { provide: API_LATENCY_MS, useValue: 0 },
+        { provide: ProductsService, useClass: ProductsMemoryService },
+        provideRouter([]),
+      ],
     });
     localStorage.setItem('codetech.language', 'ar');
     TestBed.inject(LanguageService).set('ar');
     const api = TestBed.inject(ProductsService);
-    vi.spyOn(api, 'list').mockReturnValue(throwError(() => new Error('offline')));
+    vi.spyOn(api, 'listAll').mockReturnValue(throwError(() => new Error('offline')));
+    vi.spyOn(api, 'loadCatalogVisibility').mockReturnValue(throwError(() => new Error('offline')));
     const fixture = TestBed.createComponent(ProductsPage);
     fixture.detectChanges();
     await settle(fixture);
@@ -104,12 +116,22 @@ describe('ProductsPage', () => {
   it('retries after a load failure and shows the catalog on success', async () => {
     TestBed.configureTestingModule({
       imports: [ProductsPage],
-      providers: [MessageService, { provide: API_LATENCY_MS, useValue: 0 }, provideRouter([])],
+      providers: [
+        MessageService,
+        { provide: API_LATENCY_MS, useValue: 0 },
+        { provide: ProductsService, useClass: ProductsMemoryService },
+        provideRouter([]),
+      ],
     });
     localStorage.setItem('codetech.language', 'ar');
     TestBed.inject(LanguageService).set('ar');
     const api = TestBed.inject(ProductsService);
-    const list = vi.spyOn(api, 'list').mockReturnValueOnce(throwError(() => new Error('offline')));
+    const list = vi
+      .spyOn(api, 'listAll')
+      .mockReturnValueOnce(throwError(() => new Error('offline')));
+    vi.spyOn(api, 'loadCatalogVisibility')
+      .mockReturnValueOnce(throwError(() => new Error('offline')))
+      .mockReturnValue(of(true));
     const fixture = TestBed.createComponent(ProductsPage);
     fixture.detectChanges();
     await settle(fixture);
@@ -130,12 +152,18 @@ describe('ProductsPage', () => {
   it('keeps the error state when retry fails again', async () => {
     TestBed.configureTestingModule({
       imports: [ProductsPage],
-      providers: [MessageService, { provide: API_LATENCY_MS, useValue: 0 }, provideRouter([])],
+      providers: [
+        MessageService,
+        { provide: API_LATENCY_MS, useValue: 0 },
+        { provide: ProductsService, useClass: ProductsMemoryService },
+        provideRouter([]),
+      ],
     });
     localStorage.setItem('codetech.language', 'ar');
     TestBed.inject(LanguageService).set('ar');
     const api = TestBed.inject(ProductsService);
-    vi.spyOn(api, 'list').mockReturnValue(throwError(() => new Error('offline')));
+    vi.spyOn(api, 'listAll').mockReturnValue(throwError(() => new Error('offline')));
+    vi.spyOn(api, 'loadCatalogVisibility').mockReturnValue(throwError(() => new Error('offline')));
     const fixture = TestBed.createComponent(ProductsPage);
     fixture.detectChanges();
     await settle(fixture);
@@ -152,7 +180,12 @@ describe('ProductsPage', () => {
   it('ignores a stale list response after a newer load has started', async () => {
     TestBed.configureTestingModule({
       imports: [ProductsPage],
-      providers: [MessageService, { provide: API_LATENCY_MS, useValue: 0 }, provideRouter([])],
+      providers: [
+        MessageService,
+        { provide: API_LATENCY_MS, useValue: 0 },
+        { provide: ProductsService, useClass: ProductsMemoryService },
+        provideRouter([]),
+      ],
     });
     localStorage.setItem('codetech.language', 'ar');
     TestBed.inject(LanguageService).set('ar');
@@ -160,7 +193,8 @@ describe('ProductsPage', () => {
     const first = new Subject<Product[]>();
     const second = new Subject<Product[]>();
     let calls = 0;
-    vi.spyOn(api, 'list').mockImplementation(() => {
+    vi.spyOn(api, 'loadCatalogVisibility').mockReturnValue(of(true));
+    vi.spyOn(api, 'listAll').mockImplementation(() => {
       calls += 1;
       return calls === 1 ? first.asObservable() : second.asObservable();
     });

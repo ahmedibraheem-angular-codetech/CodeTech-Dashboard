@@ -12,20 +12,22 @@
           class="feature-card__remove"
           [disabled]="editor.draft().sectors.length === 1 || editor.saving()"
           [attr.aria-label]="editor.copy('product.deleteTitle')"
-          (click)="editor.removeMedia('sectors', index)"
+          (click)="editor.removeSector(index)"
         >
           <i class="pi pi-times" aria-hidden="true"></i>
         </button>
         <app-product-upload
           [locale]="editor.locale()"
-          [name]="sector.imageName"
-          [url]="sector.imageUrl"
-          (picked)="editor.setMediaImage('sectors', index, $event)"
+          [clearable]="true"
+          [name]="sector.image[editor.locale()].imageName"
+          [url]="sector.image[editor.locale()].imageUrl"
+          (picked)="editor.setSectorImage(index, $event)"
+          (cleared)="editor.clearSectorImage(index)"
         />
       </div>
     }
   </div>
-  <button type="button" class="add-row" (click)="editor.addMedia('sectors')">
+  <button type="button" class="add-row" (click)="editor.addSector()">
     <span class="add-row__mark" aria-hidden="true"><i class="pi pi-plus"></i></span>
     {{ editor.copy('product.addSector') }}
   </button>

@@ -186,6 +186,24 @@ describe('ProductUpload', () => {
       expect(preview(fixture)).toBe('blob:test/2');
     });
 
+    it('does not revoke a previous slot blob when the bound url rebinds before a new pick', () => {
+      const fixture = create((host) => (host.follow = true));
+      pick(fixture, 'ar.png');
+      expect(fixture.componentInstance.url).toBe('blob:test/1');
+
+      // Simulate locale / list reuse: same control instance, different media slot.
+      fixture.componentInstance.url = '';
+      fixture.componentInstance.name = '';
+      refresh(fixture);
+      expect(revoke).not.toHaveBeenCalled();
+
+      pick(fixture, 'en.png');
+
+      expect(revoke).not.toHaveBeenCalled();
+      expect(fixture.componentInstance.url).toBe('blob:test/2');
+      expect(preview(fixture)).toBe('blob:test/2');
+    });
+
     it('revokes the previous URL when replacing after the upload was mounted again', () => {
       const fixture = create((host) => (host.follow = true));
       pick(fixture, 'first.png');

@@ -6,6 +6,7 @@ import { firstValueFrom, map, NEVER, of, Subject, throwError, timer } from 'rxjs
 
 import { API_LATENCY_MS } from '../../../../core/config/latency';
 import { blankProduct, localeText, type Product } from '../../models/product.model';
+import { ProductsMemoryService } from '../../services/products.memory';
 import { ProductsService } from '../../services/products.service';
 import { ProductEditor } from './product-editor';
 
@@ -36,6 +37,7 @@ describe('ProductEditor', () => {
       providers: [
         MessageService,
         { provide: API_LATENCY_MS, useValue: 0 },
+        { provide: ProductsService, useClass: ProductsMemoryService },
         provideRouter([{ path: 'products/:id', component: ProductRouteStub }]),
         {
           provide: ActivatedRoute,

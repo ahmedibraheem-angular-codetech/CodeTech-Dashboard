@@ -24,7 +24,7 @@
   <div class="app-sector-grid">
     @for (sector of sectors(); track sector.id) {
       <app-sector-card
-        [imageUrl]="sector.imageUrl"
+        [imageUrl]="sector.image[displayLocale()].imageUrl"
         [title]="text(sector.title)"
         [editLabel]="lang.t('product.editAction')"
         [deleteLabel]="lang.t('about.delete')"

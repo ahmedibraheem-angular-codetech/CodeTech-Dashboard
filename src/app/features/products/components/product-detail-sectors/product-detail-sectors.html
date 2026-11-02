@@ -7,8 +7,8 @@
     <div class="app-sector-grid">
       @for (sector of product().sectors; track sector.id; let index = $index) {
         <app-sector-card
-          [imageUrl]="sector.imageUrl"
-          [title]="text(sector.title)"
+          [imageUrl]="sector.image[locale()].imageUrl"
+          [title]="''"
           [editLabel]="lang.t('product.editAction')"
           [deleteLabel]="lang.t('about.delete')"
           [deleteDisabled]="product().sectors.length < 2"

@@ -36,7 +36,7 @@
     [saveDisabled]="
       editorKind() === 'feature'
         ? !text(draftFeature().title).trim()
-        : !text(draftSector().title).trim() || !draftSector().imageUrl
+        : !text(draftSector().title).trim() || !draftSector().image[locale()].imageUrl
     "
     [saveLabel]="saveLabel()"
     saveIcon=""

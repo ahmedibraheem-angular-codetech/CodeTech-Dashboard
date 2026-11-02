@@ -165,14 +165,34 @@ export class ProductsPageManage {
   }
 
   protected toggleFeatures(enabled: boolean): void {
-    this.api.toggleFeatures(enabled);
+    this.api
+      .toggleFeatures(enabled)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (page) => this.content.set(page),
+        error: () => {
+          this.content.update((current) =>
+            current ? { ...current, featuresEnabled: !enabled } : current,
+          );
+        },
+      });
     this.content.update((current) =>
       current ? { ...current, featuresEnabled: enabled } : current,
     );
   }
 
   protected toggleSectors(enabled: boolean): void {
-    this.api.toggleSectors(enabled);
+    this.api
+      .toggleSectors(enabled)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (page) => this.content.set(page),
+        error: () => {
+          this.content.update((current) =>
+            current ? { ...current, sectorsEnabled: !enabled } : current,
+          );
+        },
+      });
     this.content.update((current) => (current ? { ...current, sectorsEnabled: enabled } : current));
   }
 
@@ -212,7 +232,9 @@ export class ProductsPageManage {
 
   private saveSector(): void {
     const draft = this.draftSector();
-    if (!readLocale(draft.title, this.locale()).trim() || !draft.imageUrl) {
+    const language = this.locale();
+    const image = draft.image[language];
+    if (!readLocale(draft.title, language).trim() || !image.imageUrl) {
       return;
     }
     this.saving.set(true);

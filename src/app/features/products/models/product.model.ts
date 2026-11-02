@@ -9,37 +9,43 @@ export function readLocale(value: LocaleText, language: AppLanguage): string {
   return value[language];
 }
 
-export interface ProductPoint {
+export interface ProductImage {
+  imageName: string;
+  imageUrl: string;
+  /** Media coat-check UUID when known from the API or a fresh upload. */
+  imageUuid?: string | null;
+}
+
+export interface ProductPoint extends ProductImage {
   id: string;
   title: LocaleText;
   body: LocaleText;
-  imageName: string;
-  imageUrl: string;
 }
 
-export interface ProductStat {
+export interface ProductStat extends ProductImage {
   id: string;
-  value: string;
+  /** Bilingual figure text (API `value.{ar,en}`). */
+  value: LocaleText;
   label: LocaleText;
   body: LocaleText;
-  imageName: string;
-  imageUrl: string;
 }
 
-export interface ProductMedia {
+export interface ProductMedia extends ProductImage {
   id: string;
   title: LocaleText;
   body: LocaleText;
-  imageName: string;
-  imageUrl: string;
 }
 
-export interface ProductUnit {
+/** Product-owned sector tiles: bilingual images only (API `sectors.*.image`). */
+export interface ProductSector {
+  id: string;
+  image: Record<AppLanguage, ProductImage>;
+}
+
+export interface ProductUnit extends ProductImage {
   id: string;
   title: LocaleText;
   body: LocaleText;
-  imageName: string;
-  imageUrl: string;
   points: ProductPoint[];
 }
 
@@ -50,6 +56,7 @@ export interface ProductFaq {
 }
 
 export interface ProductSeo {
+  /** Latin URL slug shared by both languages (API `slug`). Stored in `en`; `ar` kept for UI tabs. */
   slug: LocaleText;
   title: LocaleText;
   keywords: LocaleText;
@@ -58,21 +65,28 @@ export interface ProductSeo {
 
 export interface Product {
   id: string;
+  code: string;
   published: boolean;
   name: LocaleText;
   summary: LocaleText;
+  /**
+   * UI-only category chip. Not present on admin product write/read DTOs —
+   * kept so the editor field is not deleted; value is not persisted by the API.
+   */
   category: LocaleText;
   coverName: string;
   coverUrl: string;
+  coverUuid: string | null;
   coverTitle: LocaleText;
   coverAlt: LocaleText;
   thumbName: string;
   thumbUrl: string;
+  thumbUuid: string | null;
   thumbTitle: LocaleText;
   thumbAlt: LocaleText;
   features: ProductPoint[];
   stats: ProductStat[];
-  sectors: ProductMedia[];
+  sectors: ProductSector[];
   challenges: ProductPoint[];
   solution: ProductMedia;
   offer: ProductPoint[];
@@ -111,18 +125,21 @@ export function productId(prefix: string): string {
   return `${prefix}-${sequence}`;
 }
 
+export function emptyProductImage(): ProductImage {
+  return { imageName: '', imageUrl: '', imageUuid: null };
+}
+
 export function productPoint(title = localeText(), body = localeText()): ProductPoint {
-  return { id: productId('point'), title, body, imageName: '', imageUrl: '' };
+  return { id: productId('point'), title, body, ...emptyProductImage() };
 }
 
 export function productStat(): ProductStat {
   return {
     id: productId('stat'),
-    value: '',
+    value: localeText(),
     label: localeText(),
     body: localeText(),
-    imageName: '',
-    imageUrl: '',
+    ...emptyProductImage(),
   };
 }
 
@@ -131,8 +148,14 @@ export function productMedia(): ProductMedia {
     id: productId('media'),
     title: localeText(),
     body: localeText(),
-    imageName: '',
-    imageUrl: '',
+    ...emptyProductImage(),
+  };
+}
+
+export function productSector(): ProductSector {
+  return {
+    id: productId('sector'),
+    image: { ar: emptyProductImage(), en: emptyProductImage() },
   };
 }
 
@@ -141,8 +164,7 @@ export function productUnit(): ProductUnit {
     id: productId('unit'),
     title: localeText(),
     body: localeText(),
-    imageName: '',
-    imageUrl: '',
+    ...emptyProductImage(),
     points: [productPoint(), productPoint(), productPoint(), productPoint()],
   };
 }
@@ -154,21 +176,24 @@ export function productFaq(): ProductFaq {
 export function blankProduct(): Product {
   return {
     id: '',
+    code: '',
     published: true,
     name: localeText(),
     summary: localeText(),
     category: localeText(),
     coverName: '',
     coverUrl: '',
+    coverUuid: null,
     coverTitle: localeText(),
     coverAlt: localeText(),
     thumbName: '',
     thumbUrl: '',
+    thumbUuid: null,
     thumbTitle: localeText(),
     thumbAlt: localeText(),
     features: [productPoint()],
     stats: [productStat()],
-    sectors: [productMedia()],
+    sectors: [productSector()],
     challenges: [productPoint()],
     solution: productMedia(),
     offer: [productPoint()],

@@ -52,8 +52,8 @@
       <span class="field__label">{{ lang.t('product.sectorImage') }}</span>
       <app-product-upload
         [locale]="locale()"
-        [name]="sector().imageUrl ? 'sector.jpg' : ''"
-        [url]="sector().imageUrl"
+        [name]="sector().image[locale()].imageName"
+        [url]="sector().image[locale()].imageUrl"
         (picked)="setSectorImage($event)"
       />
     </div>
