@@ -80,10 +80,13 @@ function build(seed: ServiceSeed): Service {
     stages: seed.stages.map((item, index) => imagePoint(item, index + 1)),
     features: seed.features.map((item, index) => imagePoint(item, index + 2)),
     projectIds: [...seed.projectIds],
-    sectors: Array.from({ length: seed.sectorCount }, (_, index) => ({
-      ...serviceSector(),
-      ...picture(index + 1),
-    })),
+    sectors: Array.from({ length: seed.sectorCount }, (_, index) => {
+      const media = picture(index + 1);
+      return {
+        ...serviceSector(),
+        image: { ar: { ...media }, en: { ...media } },
+      };
+    }),
     faqs: seed.faqs.map((item) => ({
       ...serviceFaq(),
       question: text(item.question),

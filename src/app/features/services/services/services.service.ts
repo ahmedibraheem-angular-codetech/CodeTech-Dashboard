@@ -22,7 +22,7 @@ import type {
   ServiceListName,
   ServiceStatusWriteDto,
 } from '../models/service.api';
-import type { Service, ServiceImage } from '../models/service.model';
+import type { Service, ServiceImage, ServiceSector } from '../models/service.model';
 import {
   isUploadUrl,
   mapServiceDetail,
@@ -139,7 +139,7 @@ export class ServicesService {
       solutions: this.uploadSlots(next.solutions),
       stages: this.uploadSlots(next.stages),
       features: this.uploadSlots(next.features),
-      sectors: this.uploadSlots(next.sectors),
+      sectors: this.uploadSectors(next.sectors),
     }).pipe(
       map((uploaded) => ({
         ...next,
@@ -153,7 +153,7 @@ export class ServicesService {
         })),
         stages: next.stages.map((item, index) => ({ ...item, ...uploaded.stages[index] })),
         features: next.features.map((item, index) => ({ ...item, ...uploaded.features[index] })),
-        sectors: next.sectors.map((item, index) => ({ ...item, ...uploaded.sectors[index] })),
+        sectors: uploaded.sectors,
       })),
     );
   }
@@ -163,6 +163,20 @@ export class ServicesService {
       return of([]);
     }
     return forkJoin(items.map((item) => this.uploadSlot(item)));
+  }
+
+  private uploadSectors(items: readonly ServiceSector[]): Observable<ServiceSector[]> {
+    if (items.length === 0) {
+      return of([]);
+    }
+    return forkJoin(
+      items.map((sector) =>
+        forkJoin({
+          ar: this.uploadSlot(sector.image.ar),
+          en: this.uploadSlot(sector.image.en),
+        }).pipe(map((image) => ({ ...sector, image }))),
+      ),
+    );
   }
 
   private uploadSlot(image: ServiceImage, allowEmpty = false): Observable<ServiceImage> {

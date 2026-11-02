@@ -407,16 +407,30 @@ export class ServiceEditor {
   }
 
   setSectorImage(index: number, file: ServiceImageFile): void {
+    const language = this.locale();
     this.draft.update((current) => ({
       ...current,
-      sectors: this.mapAt(current.sectors, index, (item) => this.withImage(item, file)),
+      sectors: this.mapAt(current.sectors, index, (item) => ({
+        ...item,
+        image: {
+          ...item.image,
+          [language]: this.withImage(item.image[language], file),
+        },
+      })),
     }));
   }
 
   clearSectorImage(index: number): void {
+    const language = this.locale();
     this.draft.update((current) => ({
       ...current,
-      sectors: this.mapAt(current.sectors, index, (item) => this.withoutImage(item)),
+      sectors: this.mapAt(current.sectors, index, (item) => ({
+        ...item,
+        image: {
+          ...item.image,
+          [language]: this.withoutImage(item.image[language]),
+        },
+      })),
     }));
   }
 

@@ -76,11 +76,17 @@ function mapPoint(
 }
 
 function mapSector(dto: ServiceDetailDto['sectors'][number]): ServiceSector {
-  const media = mapServiceMedia(dto.image?.ar ?? dto.image?.en ?? null);
   return {
     id: String(dto.id),
-    ...media,
+    image: {
+      ar: mapServiceMedia(dto.image?.ar ?? null),
+      en: mapServiceMedia(dto.image?.en ?? null),
+    },
   };
+}
+
+function sectorHasMedia(item: ServiceSector): boolean {
+  return !!(item.image.ar.imageUrl || item.image.en.imageUrl);
 }
 
 function mapFaq(dto: ServiceDetailDto['faqs'][number]): ServiceFaq {
@@ -257,13 +263,17 @@ export function toServiceWrite(service: Service): ServiceWriteDto {
     });
 
   body.sectors = service.sectors
-    .filter((item) => !!(item.imageUuid && item.imageUrl))
-    .map(
-      (item): ServiceSectorWriteDto =>
-        withOptionalId(item.id, {
-          image: { ar: item.imageUuid as string, en: null },
-        }),
-    );
+    .filter(sectorHasMedia)
+    .map((item): ServiceSectorWriteDto => {
+      const ar = ticket(item.image.ar, true);
+      const en = ticket(item.image.en, true);
+      return withOptionalId(item.id, {
+        image: {
+          ar: ar === undefined ? null : ar,
+          en: en === undefined ? null : en,
+        },
+      });
+    });
 
   body.faqs = service.faqs
     .filter((item) => filled(item.question) || filled(item.answer))

@@ -32,10 +32,24 @@ app-service-editor .locale-switch__option.is-active {
   box-shadow: none;
 }
 
+app-service-editor .service-projects-hint,
+app-service-editor .service-projects-grid,
+app-service-editor .editor-section__body > app-state-view {
+  align-self: stretch;
+  width: 100%;
+  min-width: 0;
+}
+
 app-service-editor .service-projects-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 16px;
+}
+
+app-service-editor .service-projects-grid app-service-project-card,
+app-service-editor .service-projects-grid .service-project {
+  width: 100%;
+  min-width: 0;
 }
 
 app-service-editor .service-projects-hint {

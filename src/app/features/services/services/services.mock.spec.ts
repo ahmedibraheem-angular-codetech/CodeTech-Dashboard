@@ -108,7 +108,7 @@ describe('SERVICES_SEED', () => {
       ...item.solutions,
       ...item.stages,
       ...item.features,
-      ...item.sectors,
+      ...item.sectors.flatMap((sector) => [sector.image.ar, sector.image.en]),
     ]);
     for (const image of images) {
       expect(image.imageUrl.startsWith('icon:') || image.imageUrl.startsWith('/images/')).toBe(

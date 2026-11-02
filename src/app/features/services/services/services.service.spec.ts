@@ -165,7 +165,14 @@ describe('ServicesService', () => {
       solutions: [expect.objectContaining({ body: { ar: 'سطر', en: 'Line' } })],
       stages: [expect.objectContaining({ imageUuid: 'stage-1' })],
       features: [expect.objectContaining({ id: '41', imageUrl: '' })],
-      sectors: [expect.objectContaining({ imageUuid: 'sector-1' })],
+      sectors: [
+        expect.objectContaining({
+          image: expect.objectContaining({
+            ar: expect.objectContaining({ imageUuid: 'sector-1' }),
+            en: expect.objectContaining({ imageUuid: null }),
+          }),
+        }),
+      ],
       faqs: [expect.objectContaining({ id: '61' })],
       projectIds: ['3'],
       linkedProjects: [expect.objectContaining({ id: '3', visible: true })],
@@ -254,9 +261,14 @@ describe('ServicesService', () => {
       sectors: [
         {
           id: '51',
-          imageName: 's.png',
-          imageUrl: 'https://cdn.test/s.png',
-          imageUuid: 'sector-1',
+          image: {
+            ar: {
+              imageName: 's.png',
+              imageUrl: 'https://cdn.test/s.png',
+              imageUuid: 'sector-1',
+            },
+            en: { imageName: '', imageUrl: '', imageUuid: null },
+          },
         },
       ],
       faqs: [],

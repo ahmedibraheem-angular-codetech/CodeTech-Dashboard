@@ -265,7 +265,11 @@ describe('ServiceEditor', () => {
         title: { ar: 'ميزة', en: 'Feature' },
         imageUrl: 'blob:feature',
       });
-      expect(saved?.sectors[0]).toMatchObject({ imageName: 'sector.png', imageUrl: 'blob:sector' });
+      expect(saved?.sectors[0]?.image.ar).toMatchObject({
+        imageName: 'sector.png',
+        imageUrl: 'blob:sector',
+      });
+      expect(saved?.sectors[0]?.image.en).toMatchObject({ imageName: '', imageUrl: '' });
       expect(saved?.faqs[0]).toMatchObject({
         question: { ar: 'سؤال', en: 'Question' },
         answer: { ar: 'جواب', en: 'Answer' },
@@ -553,10 +557,33 @@ describe('ServiceEditor', () => {
       expect(editor.draft().features[0]?.title).toEqual(before.features[0]?.title);
 
       editor.setSectorImage(1, { name: 's.png', url: 'blob:s' });
-      expect(editor.draft().sectors[1]).toMatchObject({ imageName: 's.png', imageUrl: 'blob:s' });
+      expect(editor.draft().sectors[1]?.image.ar).toMatchObject({
+        imageName: 's.png',
+        imageUrl: 'blob:s',
+      });
+      expect(editor.draft().sectors[1]?.image.en).toEqual(before.sectors[1]?.image.en);
       expect(editor.draft().sectors[0]).toEqual(before.sectors[0]);
       editor.clearSectorImage(1);
-      expect(editor.draft().sectors[1]).toMatchObject({ imageName: '', imageUrl: '' });
+      expect(editor.draft().sectors[1]?.image.ar).toMatchObject({ imageName: '', imageUrl: '' });
+
+      editor.useLocale('ar');
+      editor.setSectorImage(0, { name: 'ar.png', url: 'blob:ar' });
+      editor.useLocale('en');
+      editor.setSectorImage(0, { name: 'en.png', url: 'blob:en' });
+      expect(editor.draft().sectors[0]?.image.ar).toMatchObject({
+        imageName: 'ar.png',
+        imageUrl: 'blob:ar',
+      });
+      expect(editor.draft().sectors[0]?.image.en).toMatchObject({
+        imageName: 'en.png',
+        imageUrl: 'blob:en',
+      });
+      editor.clearSectorImage(0);
+      expect(editor.draft().sectors[0]?.image.en).toMatchObject({ imageName: '', imageUrl: '' });
+      expect(editor.draft().sectors[0]?.image.ar).toMatchObject({
+        imageName: 'ar.png',
+        imageUrl: 'blob:ar',
+      });
 
       editor.clearWhyIcon(0);
       expect(editor.draft().whyItems[0]).toMatchObject({ imageName: '', imageUrl: '' });

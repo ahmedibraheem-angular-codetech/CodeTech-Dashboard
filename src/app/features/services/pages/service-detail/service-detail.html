@@ -270,7 +270,7 @@
               <div class="app-sector-grid service-detail__sectors">
                 @for (sector of sectors(); track sector.id; let index = $index) {
                   <app-sector-card
-                    [imageUrl]="visual(sector).image"
+                    [imageUrl]="visual(sectorMedia(sector)).image"
                     [title]="sectorLabel(index)"
                     [editLabel]="lang.t('service.editAction')"
                     [deleteLabel]="lang.t('service.deleteAction')"

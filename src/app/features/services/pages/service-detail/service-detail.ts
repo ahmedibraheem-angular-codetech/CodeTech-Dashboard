@@ -36,6 +36,7 @@ import {
   type LocaleText,
   type Service,
   type ServiceImage,
+  type ServiceSector,
 } from '../../models/service.model';
 import { ServicesService } from '../../services/services.service';
 
@@ -128,7 +129,7 @@ export class ServiceDetailPage {
   );
 
   protected readonly sectors = computed(() =>
-    (this.item()?.sectors ?? []).filter((entry) => this.visual(entry).image),
+    (this.item()?.sectors ?? []).filter((entry) => this.visual(this.sectorMedia(entry)).image),
   );
   protected readonly faqs = computed(() =>
     (this.item()?.faqs ?? []).filter(
@@ -304,6 +305,11 @@ export class ServiceDetailPage {
 
   protected iconClass(icon: string): string {
     return `pi ${ICON_CLASS.test(icon) ? icon : FALLBACK_ICON}`;
+  }
+
+  protected sectorMedia(sector: ServiceSector): ServiceImage {
+    const language = this.lang.language();
+    return sector.image[language] ?? sector.image.ar;
   }
 
   protected visual(image: ServiceImage): ServiceVisual {

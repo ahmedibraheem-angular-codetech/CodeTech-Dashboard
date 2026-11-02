@@ -77,7 +77,12 @@ describe('service.model', () => {
     expect(service.whyItems[0]).toMatchObject({ title: { ar: '', en: '' }, imageUrl: '' });
     expect(service.whyItems[0]).not.toHaveProperty('body');
     expect(service.solutions[0]).toMatchObject({ body: { ar: '', en: '' }, imageUrl: '' });
-    expect(service.sectors[0]).toMatchObject({ imageName: '', imageUrl: '' });
+    expect(service.sectors[0]).toMatchObject({
+      image: {
+        ar: { imageName: '', imageUrl: '', imageUuid: null },
+        en: { imageName: '', imageUrl: '', imageUuid: null },
+      },
+    });
     expect(service.faqs[0]).toMatchObject({ question: { ar: '', en: '' } });
   });
 

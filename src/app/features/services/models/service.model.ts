@@ -35,8 +35,10 @@ export interface ServicePoint extends ServiceImage {
   body: LocaleText;
 }
 
-export interface ServiceSector extends ServiceImage {
+/** Sector media is bilingual on the API (`image.ar` / `image.en`). */
+export interface ServiceSector {
   id: string;
+  image: Record<AppLanguage, ServiceImage>;
 }
 
 export interface ServiceFaq {
@@ -121,8 +123,15 @@ export function servicePoint(title = localeText(), body = localeText()): Service
   };
 }
 
+export function emptyServiceImage(): ServiceImage {
+  return { imageName: '', imageUrl: '', imageUuid: null };
+}
+
 export function serviceSector(): ServiceSector {
-  return { id: serviceItemId('sector'), imageName: '', imageUrl: '', imageUuid: null };
+  return {
+    id: serviceItemId('sector'),
+    image: { ar: emptyServiceImage(), en: emptyServiceImage() },
+  };
 }
 
 export function serviceFaq(): ServiceFaq {

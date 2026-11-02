@@ -143,9 +143,14 @@ describe('service.mapper', () => {
       sectors: [
         {
           id: '51',
-          imageName: 'sec.png',
-          imageUrl: 'https://cdn.test/sec.png',
-          imageUuid: 'sector-1',
+          image: {
+            ar: {
+              imageName: 'sec.png',
+              imageUrl: 'https://cdn.test/sec.png',
+              imageUuid: 'sector-1',
+            },
+            en: { imageName: '', imageUrl: '', imageUuid: null },
+          },
         },
       ],
       faqs: [
@@ -176,6 +181,63 @@ describe('service.mapper', () => {
       expect.objectContaining({ id: 61, question: { ar: 'س؟', en: 'Q?' } }),
     ]);
     expect(body.projects).toEqual([{ id: 3, is_visible: true }]);
+  });
+
+  it('maps and writes bilingual sector images independently', () => {
+    const mapped = mapServiceDetail({
+      id: 9,
+      code: 'SRV-00009',
+      name: { ar: 'خدمة', en: 'Service' },
+      description: { ar: 'وصف', en: 'Desc' },
+      icon: null,
+      status: 'published',
+      slug: 'service',
+      sort_order: 1,
+      created_at: '2026-11-01T00:00:00.000000Z',
+      updated_at: '2026-11-01T00:00:00.000000Z',
+      why_image: null,
+      why_image_text: { ar: '', en: '' },
+      needs: [],
+      solutions: [],
+      stages: [],
+      features: [],
+      sectors: [
+        {
+          id: 51,
+          image: {
+            ar: {
+              uuid: 'sector-ar',
+              name: 'ar',
+              file_name: 'ar.png',
+              mime_type: 'image/png',
+              size: 1,
+              url: 'https://cdn.test/ar.png',
+              download_url: 'https://cdn.test/d',
+              created_at: '2026-11-01T00:00:00.000000Z',
+            },
+            en: {
+              uuid: 'sector-en',
+              name: 'en',
+              file_name: 'en.png',
+              mime_type: 'image/png',
+              size: 1,
+              url: 'https://cdn.test/en.png',
+              download_url: 'https://cdn.test/d',
+              created_at: '2026-11-01T00:00:00.000000Z',
+            },
+          },
+          sort_order: 1,
+        },
+      ],
+      faqs: [],
+      projects: [],
+    });
+
+    expect(mapped.sectors[0]?.image.ar.imageUuid).toBe('sector-ar');
+    expect(mapped.sectors[0]?.image.en.imageUuid).toBe('sector-en');
+    expect(toServiceWrite(mapped).sectors).toEqual([
+      { id: 51, image: { ar: 'sector-ar', en: 'sector-en' } },
+    ]);
   });
 
   it('omits PrimeIcon pseudo-URLs from media tickets', () => {

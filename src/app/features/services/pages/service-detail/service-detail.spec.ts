@@ -397,7 +397,9 @@ describe('ServiceDetailPage', () => {
       const cards = [...root.querySelectorAll('app-sector-card')];
       expect(cards).toHaveLength(service.sectors.length);
       service.sectors.forEach((sector, index) => {
-        expect(cards[index]?.querySelector('img')?.getAttribute('src')).toBe(sector.imageUrl);
+        expect(cards[index]?.querySelector('img')?.getAttribute('src')).toBe(
+          sector.image.ar.imageUrl,
+        );
         expect(cards[index]?.textContent).toContain(`قطاع ${index + 1}`);
       });
       const tools = [...root.querySelectorAll<HTMLButtonElement>('app-sector-card button')];
@@ -415,8 +417,20 @@ describe('ServiceDetailPage', () => {
 
     it('leaves out a sector that has no drawable picture instead of an unreadable tile', async () => {
       const sectors = [
-        { ...serviceSector(), imageName: 'a.png', imageUrl: '/images/a.png' },
-        { ...serviceSector(), imageName: 'pi-star', imageUrl: 'icon:pi-star' },
+        {
+          ...serviceSector(),
+          image: {
+            ar: { imageName: 'a.png', imageUrl: '/images/a.png', imageUuid: null },
+            en: { imageName: 'a.png', imageUrl: '/images/a.png', imageUuid: null },
+          },
+        },
+        {
+          ...serviceSector(),
+          image: {
+            ar: { imageName: 'pi-star', imageUrl: 'icon:pi-star', imageUuid: null },
+            en: { imageName: 'pi-star', imageUrl: 'icon:pi-star', imageUuid: null },
+          },
+        },
         serviceSector(),
       ];
       const service: Service = { ...seed('web-development'), sectors };
