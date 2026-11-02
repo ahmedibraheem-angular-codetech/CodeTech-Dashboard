@@ -12,7 +12,6 @@ import { MessageService } from 'primeng/api';
 
 import { failureMessageKey, isAuthError } from '../../../../core/auth/auth.error';
 import { AuthService } from '../../../../core/auth/auth.service';
-import { DEMO_CREDENTIALS } from '../../../../core/config/demo-credentials';
 import { LanguageService } from '../../../../core/services/language.service';
 import { AuthShell } from '../../../../layout/auth-layout/auth-shell';
 import { AuthOtpForm } from '../../components/auth-otp-form/auth-otp-form';
@@ -46,7 +45,6 @@ export class Login {
   private readonly router = inject(Router);
   private readonly messages = inject(MessageService);
   private readonly destroyRef = inject(DestroyRef);
-  private readonly demo = inject(DEMO_CREDENTIALS);
   readonly lang = inject(LanguageService);
 
   readonly view = signal<LoginView>('login');
@@ -60,6 +58,8 @@ export class Login {
   readonly otpInvalid = signal(false);
   readonly otpRemaining = signal(0);
   readonly successOpen = signal(false);
+
+  private resetToken: string | null = null;
 
   readonly remember = signal(false);
 
@@ -106,6 +106,7 @@ export class Login {
 
   backToLogin(): void {
     this.clearOtpTimer();
+    this.resetToken = null;
     this.otpInvalid.set(false);
     this.otpForm.reset({ code: '' });
     this.newPasswordForm.reset({ password: '', confirmPassword: '' });
@@ -115,6 +116,7 @@ export class Login {
 
   backToForgot(): void {
     this.clearOtpTimer();
+    this.resetToken = null;
     this.otpInvalid.set(false);
     this.otpForm.reset({ code: '' });
     this.view.set('forgot');
@@ -149,6 +151,7 @@ export class Login {
       this.resetForm.markAllAsTouched();
       return;
     }
+    this.resetToken = null;
     this.resetSubmitting.set(true);
     this.auth
       .requestPasswordReset(this.resetForm.controls.email.value)
@@ -175,18 +178,25 @@ export class Login {
       return;
     }
     this.otpSubmitting.set(true);
-    const code = this.otpForm.controls.code.value;
-    const expected = this.demo?.otp;
-
-    queueMicrotask(() => {
-      this.otpSubmitting.set(false);
-      if (!expected || code !== expected) {
-        this.otpInvalid.set(true);
-        return;
-      }
-      this.newPasswordForm.reset({ password: '', confirmPassword: '' });
-      this.view.set('forgot-reset');
-    });
+    this.auth
+      .verifyResetCode(this.resetForm.controls.email.value, this.otpForm.controls.code.value)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (token) => {
+          this.otpSubmitting.set(false);
+          this.resetToken = token;
+          this.newPasswordForm.reset({ password: '', confirmPassword: '' });
+          this.view.set('forgot-reset');
+        },
+        error: (error: unknown) => {
+          this.otpSubmitting.set(false);
+          if (isAuthError(error, 'invalid-otp')) {
+            this.otpInvalid.set(true);
+            return;
+          }
+          this.messages.add({ severity: 'error', summary: this.lang.t(failureMessageKey(error)) });
+        },
+      });
   }
 
   resendOtp(): void {
@@ -212,12 +222,27 @@ export class Login {
       this.newPasswordForm.markAllAsTouched();
       return;
     }
+    const token = this.resetToken;
+    if (!token) {
+      this.messages.add({ severity: 'error', summary: this.lang.t('auth.unavailable') });
+      return;
+    }
     this.resetSubmitting.set(true);
-
-    queueMicrotask(() => {
-      this.resetSubmitting.set(false);
-      this.successOpen.set(true);
-    });
+    const { password, confirmPassword } = this.newPasswordForm.getRawValue();
+    this.auth
+      .resetPassword(this.resetForm.controls.email.value, token, password, confirmPassword)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => {
+          this.resetSubmitting.set(false);
+          this.resetToken = null;
+          this.successOpen.set(true);
+        },
+        error: (error: unknown) => {
+          this.resetSubmitting.set(false);
+          this.messages.add({ severity: 'error', summary: this.lang.t(failureMessageKey(error)) });
+        },
+      });
   }
 
   finishResetSuccess(): void {

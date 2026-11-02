@@ -36,7 +36,7 @@ There is no ESLint target yet; formatting is Prettier (`.prettierrc`, `.editorco
 
 ## Demo access
 
-Login talks to `POST /admin/auth/login` on `environment.apiUrl`. After a successful password check the app still shows the existing OTP screen. That screen is a **frontend-only gate**: it accepts the static code `1111` (`TEMPORARY_DEMO_OTP`) and does not call a backend OTP endpoint. It is not two-factor authentication.
+Login talks to `POST /admin/auth/login` on `environment.apiUrl`. After a successful password check the app posts the email to `POST /admin/auth/forgot-password` to request the OTP, then shows `/verify`. That screen posts `{ email, code }` to `POST /admin/auth/verify-code`. The login token is stored only after that call succeeds and `GET /admin/profile` succeeds. Resend uses `forgot-password` again.
 
 `authInterceptor` attaches the bearer token only to requests under `environment.apiUrl` and signs the user out on a `401` response.
 

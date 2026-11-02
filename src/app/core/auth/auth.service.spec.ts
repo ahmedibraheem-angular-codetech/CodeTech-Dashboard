@@ -4,9 +4,9 @@ import { TestBed } from '@angular/core/testing';
 import { firstValueFrom } from 'rxjs';
 
 import { environment } from '../../../environments/environment';
-import { TEMPORARY_DEMO_OTP } from '../config/demo-credentials';
 import { API_LATENCY_MS } from '../config/latency';
 import { apiUrl } from '../config/api';
+import { isApiError } from '../http/api-error';
 import type { LoginPayload, ProfileUserDto } from './auth.model';
 import { AuthError } from './auth.error';
 import { AuthService } from './auth.service';
@@ -14,6 +14,10 @@ import { AuthService } from './auth.service';
 const BASE = environment.apiUrl;
 const LOGIN = apiUrl(BASE, 'admin/auth/login');
 const LOGOUT = apiUrl(BASE, 'admin/auth/logout');
+const FORGOT = apiUrl(BASE, 'admin/auth/forgot-password');
+const VERIFY_CODE = apiUrl(BASE, 'admin/auth/verify-code');
+const RESET_PASSWORD = apiUrl(BASE, 'admin/auth/reset-password');
+const RESET_TOKEN = 'a'.repeat(64);
 const PROFILE = apiUrl(BASE, 'admin/profile');
 
 const LOGIN_BODY: { data: LoginPayload } = {
@@ -94,23 +98,136 @@ describe('AuthService', () => {
       remember,
     });
     request.flush(body);
+    const forgot = http.expectOne(FORGOT);
+    expect(forgot.request.method).toBe('POST');
+    expect(forgot.request.body).toEqual({ email: body.data.user.email });
+    forgot.flush({ message: 'ok' });
     await result;
   }
 
-  async function verifyOk(body = PROFILE_BODY): Promise<void> {
-    const result = firstValueFrom(service.verify(TEMPORARY_DEMO_OTP));
+  async function verifyOk(body = PROFILE_BODY, code = '0427'): Promise<void> {
+    const result = firstValueFrom(service.verify(code));
+    const request = http.expectOne(VERIFY_CODE);
+    expect(request.request.method).toBe('POST');
+    expect(request.request.body).toEqual({ email: 'admin@codetech-sa.com', code });
+    request.flush({ message: 'ok' });
     http.expectOne(PROFILE).flush(body);
     await result;
   }
+
+  it('posts the trimmed email to forgot-password', async () => {
+    const result = firstValueFrom(service.requestPasswordReset('  anas.elsadany20@gmail.com  '));
+    const request = http.expectOne(FORGOT);
+    expect(request.request.method).toBe('POST');
+    expect(request.request.body).toEqual({ email: 'anas.elsadany20@gmail.com' });
+    request.flush({ message: 'ok' });
+    await result;
+    expect(service.isAuthenticated()).toBe(false);
+  });
+
+  it('surfaces a forgot-password validation error', async () => {
+    const failure = firstValueFrom(service.requestPasswordReset('missing@example.com')).catch(
+      (error: unknown) => error,
+    );
+    http
+      .expectOne(FORGOT)
+      .flush(
+        { message: 'البريد غير مسجل', errors: { email: ['invalid'] } },
+        { status: 422, statusText: 'Unprocessable Entity' },
+      );
+    const error = await failure;
+    expect(isApiError(error)).toBe(true);
+    if (isApiError(error)) {
+      expect(error.serverMessage).toBe('البريد غير مسجل');
+    }
+  });
+
+  it('posts email and code to verify-code and returns the reset token', async () => {
+    const result = firstValueFrom(service.verifyResetCode(' admin@codetech.test ', ' 0427 '));
+    const request = http.expectOne(VERIFY_CODE);
+    expect(request.request.method).toBe('POST');
+    expect(request.request.body).toEqual({ email: 'admin@codetech.test', code: '0427' });
+    request.flush({ data: { reset_token: ` ${RESET_TOKEN} ` } });
+    expect(await result).toBe(RESET_TOKEN);
+    expect(service.isAuthenticated()).toBe(false);
+  });
+
+  it('accepts a top-level reset token from verify-code', async () => {
+    const result = firstValueFrom(service.verifyResetCode('admin@codetech.test', '0427'));
+    http.expectOne(VERIFY_CODE).flush({ reset_token: RESET_TOKEN });
+    expect(await result).toBe(RESET_TOKEN);
+  });
+
+  it('rejects a verify-code response that has no reset token', async () => {
+    const failure = firstValueFrom(service.verifyResetCode('admin@codetech.test', '0427')).catch(
+      (error: unknown) => error,
+    );
+    http.expectOne(VERIFY_CODE).flush({ message: 'ok' });
+    const error = await failure;
+    expect(error).toBeInstanceOf(AuthError);
+    expect((error as AuthError).code).toBe('unavailable');
+  });
+
+  it('posts email, reset token, and the new password', async () => {
+    const result = firstValueFrom(
+      service.resetPassword(' admin@codetech.test ', RESET_TOKEN, 'NewPassw0rd', 'NewPassw0rd'),
+    );
+    const request = http.expectOne(RESET_PASSWORD);
+    expect(request.request.method).toBe('POST');
+    expect(request.request.body).toEqual({
+      email: 'admin@codetech.test',
+      reset_token: RESET_TOKEN,
+      password: 'NewPassw0rd',
+      password_confirmation: 'NewPassw0rd',
+    });
+    request.flush({ message: 'ok' });
+    await result;
+    expect(service.isAuthenticated()).toBe(false);
+  });
+
+  it('surfaces a reset-password validation error', async () => {
+    const failure = firstValueFrom(
+      service.resetPassword('admin@codetech.test', RESET_TOKEN, 'bad', 'bad'),
+    ).catch((error: unknown) => error);
+    http.expectOne(RESET_PASSWORD).flush(
+      {
+        message: 'كلمة المرور غير صحيحة، حاول مرة اخرى',
+        errors: { password: ['كلمة المرور غير صحيحة، حاول مرة اخرى'] },
+      },
+      { status: 422, statusText: 'Unprocessable Entity' },
+    );
+    const error = await failure;
+    expect(isApiError(error)).toBe(true);
+    if (isApiError(error)) {
+      expect(error.serverMessage).toBe('كلمة المرور غير صحيحة، حاول مرة اخرى');
+    }
+  });
+
+  it('treats a rejected verification code as an invalid OTP', async () => {
+    const failure = firstValueFrom(service.verifyResetCode('admin@codetech.test', '0000')).catch(
+      (error: unknown) => error,
+    );
+    http
+      .expectOne(VERIFY_CODE)
+      .flush(
+        { message: 'رمز التحقق خاطئ', errors: { code: ['invalid'] } },
+        { status: 422, statusText: 'Unprocessable Entity' },
+      );
+    const error = await failure;
+    expect(error).toBeInstanceOf(AuthError);
+    expect((error as AuthError).code).toBe('invalid-otp');
+  });
 
   it('rejects an incorrect password with a typed error', async () => {
     const failure = firstValueFrom(service.login('admin@codetech-sa.com', 'wrong')).catch(
       (error: unknown) => error,
     );
-    http.expectOne(LOGIN).flush(
-      { message: 'كلمة المرور غير صحيحة، حاول مرة اخرى', errors: { password: ['invalid'] } },
-      { status: 422, statusText: 'Unprocessable Entity' },
-    );
+    http
+      .expectOne(LOGIN)
+      .flush(
+        { message: 'كلمة المرور غير صحيحة، حاول مرة اخرى', errors: { password: ['invalid'] } },
+        { status: 422, statusText: 'Unprocessable Entity' },
+      );
     const error = await failure;
     expect(error).toBeInstanceOf(AuthError);
     expect((error as AuthError).code).toBe('invalid-password');
@@ -118,7 +235,39 @@ describe('AuthService', () => {
     expect(service.hasPendingLogin()).toBe(false);
   });
 
-  it('keeps the API token pending until the static OTP succeeds', async () => {
+  it('requests an OTP with forgot-password after a successful login', async () => {
+    const result = firstValueFrom(service.login('admin@codetech-sa.com', 'Password@123', false));
+    http.expectOne(LOGIN).flush(LOGIN_BODY);
+    const forgot = http.expectOne(FORGOT);
+    expect(forgot.request.body).toEqual({ email: 'admin@codetech-sa.com' });
+    forgot.flush({ message: 'ok' });
+    await result;
+    expect(service.hasPendingLogin()).toBe(true);
+    expect(service.isAuthenticated()).toBe(false);
+  });
+
+  it('clears pending auth when forgot-password fails after login', async () => {
+    const failure = firstValueFrom(
+      service.login('admin@codetech-sa.com', 'Password@123', false),
+    ).catch((error: unknown) => error);
+    http.expectOne(LOGIN).flush(LOGIN_BODY);
+    http
+      .expectOne(FORGOT)
+      .flush({ message: 'تعذر إرسال الرمز' }, { status: 500, statusText: 'Server Error' });
+    expect(isApiError(await failure)).toBe(true);
+    expect(service.hasPendingLogin()).toBe(false);
+  });
+
+  it('resends the login OTP through forgot-password', async () => {
+    await login(false);
+    const result = firstValueFrom(service.resend());
+    const request = http.expectOne(FORGOT);
+    expect(request.request.body).toEqual({ email: 'admin@codetech-sa.com' });
+    request.flush({ message: 'ok' });
+    await result;
+  });
+
+  it('keeps the API token pending until the OTP succeeds', async () => {
     await login(false);
     expect(service.hasPendingLogin()).toBe(true);
     expect(service.isAuthenticated()).toBe(false);
@@ -217,16 +366,16 @@ describe('AuthService', () => {
     expect(stored).not.toHaveProperty('lastLoginAt');
   });
 
-  it('accepts the temporary fixed OTP 1111', async () => {
-    expect(TEMPORARY_DEMO_OTP).toBe('1111');
-    await login(false);
-    await verifyOk();
-    expect(service.isAuthenticated()).toBe(true);
-  });
-
   it('rejects a wrong verification code and does not persist the token', async () => {
     await login(false);
-    await expect(firstValueFrom(service.verify('9999'))).rejects.toThrow('invalid-otp');
+    const failure = firstValueFrom(service.verify('9999'));
+    http
+      .expectOne(VERIFY_CODE)
+      .flush(
+        { message: 'رمز التحقق خاطئ', errors: { code: ['invalid'] } },
+        { status: 422, statusText: 'Unprocessable Entity' },
+      );
+    await expect(failure).rejects.toThrow('invalid-otp');
     expect(service.isAuthenticated()).toBe(false);
     expect(service.hasPendingLogin()).toBe(true);
     expect(sessionStorage.getItem('codetech.session')).toBeNull();
@@ -324,7 +473,8 @@ describe('AuthService', () => {
 
   it('does not persist a session when GET /profile fails after OTP', async () => {
     await login(false);
-    const failure = firstValueFrom(service.verify('1111')).catch((error: unknown) => error);
+    const failure = firstValueFrom(service.verify('0427')).catch((error: unknown) => error);
+    http.expectOne(VERIFY_CODE).flush({ message: 'ok' });
     http.expectOne(PROFILE).flush('gone', { status: 401, statusText: 'Unauthorized' });
     expect(await failure).toBeTruthy();
     expect(service.isAuthenticated()).toBe(false);

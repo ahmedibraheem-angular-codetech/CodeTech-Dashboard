@@ -32,6 +32,7 @@ export class Verify {
   private timer: ReturnType<typeof setInterval> | undefined;
 
   constructor() {
+    this.startTimer(60);
     this.destroyRef.onDestroy(() => this.clearTimer());
   }
 

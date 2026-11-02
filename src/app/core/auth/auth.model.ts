@@ -25,6 +25,22 @@ export interface LoginRequest {
   remember: boolean;
 }
 
+export interface ForgotPasswordRequest {
+  email: string;
+}
+
+export interface VerifyCodeRequest {
+  email: string;
+  code: string;
+}
+
+export interface ResetPasswordRequest {
+  email: string;
+  reset_token: string;
+  password: string;
+  password_confirmation: string;
+}
+
 export interface AuthRoleDto {
   id: number;
   name: string;
