@@ -192,6 +192,20 @@ export class AuthService {
     this.clearPending();
   }
 
+  /**
+   * Refresh the hydrated session from a full profile payload without changing the token.
+   * Lean storage stays limited to token/email/name/roleKey/remember.
+   */
+  syncFromProfileEnvelope(envelope: ApiEnvelope<ProfileUserDto>): void {
+    const session = this.session();
+    if (!session) {
+      throw new AuthError('unavailable');
+    }
+    this.activate(
+      this.sessionFromProfile(session.token, session.remember, this.requireProfile(envelope)),
+    );
+  }
+
   ensureSession(): Observable<boolean> {
     if (this.session()?.profileLoaded) {
       this.profileReady = true;

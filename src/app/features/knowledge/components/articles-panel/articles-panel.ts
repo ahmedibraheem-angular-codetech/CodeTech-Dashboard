@@ -29,6 +29,7 @@ import {
   ARTICLE_STATUSES,
   type Article,
   type ArticleCategory,
+  type ArticleStats,
   type ArticleStatus,
 } from '../../models/knowledge.model';
 import {
@@ -132,6 +133,7 @@ export class ArticlesPanel {
 
   readonly articles = input.required<readonly Article[]>();
   readonly categories = input.required<readonly ArticleCategory[]>();
+  readonly stats = input<ArticleStats | null>(null);
   readonly showEdit = input(true);
   readonly showDelete = input(true);
 
@@ -140,7 +142,7 @@ export class ArticlesPanel {
   readonly remove = output<Article>();
   readonly toggleFeatured = output<Article>();
   readonly statusChange = output<ArticleStatusChange>();
-  readonly exported = output<number>();
+  readonly exported = output<void>();
 
   readonly query = signal('');
   readonly selectedFilters = signal<readonly string[]>([]);
@@ -151,11 +153,28 @@ export class ArticlesPanel {
   readonly cards = computed<StatisticsCard[]>(() => {
     this.lang.language();
     const all = this.articles();
+    const remote = this.stats();
     const caption = this.lang.t('knowledge.compared');
     const byStatus = countArticlesByStatus(all);
-    return ARTICLE_STAT_DEFS.map((def) =>
-      this.toStatCard(def, def.metric === 'total' ? all.length : byStatus[def.metric], caption),
-    );
+    return ARTICLE_STAT_DEFS.map((def) => {
+      const value =
+        def.metric === 'total'
+          ? (remote?.total ?? all.length)
+          : def.metric === 'published'
+            ? (remote?.published ?? byStatus.published)
+            : def.metric === 'unpublished'
+              ? (remote?.unpublished ?? byStatus.unpublished)
+              : byStatus.draft;
+      const trend =
+        def.metric === 'total'
+          ? (remote?.totalChangePct ?? 12.5)
+          : def.metric === 'published'
+            ? (remote?.publishedChangePct ?? 12.5)
+            : def.metric === 'unpublished'
+              ? (remote?.unpublishedChangePct ?? 12.5)
+              : 12.5;
+      return this.toStatCard(def, value, caption, trend);
+    });
   });
 
   readonly filters = computed<DataTableFilterOption[]>(() => {
@@ -208,7 +227,8 @@ export class ArticlesPanel {
         const category = categories.find((entry) => entry.id === item.categoryId);
         const haystack = [
           item.id,
-          articleDisplayId(item.id),
+          item.code,
+          articleDisplayId(item),
           item.titleAr,
           item.titleEn,
           item.excerptAr,
@@ -230,7 +250,7 @@ export class ArticlesPanel {
       .slice(this.first(), this.first() + this.pageSize())
       .map((item) => ({
         id: item.id,
-        displayId: articleDisplayId(item.id),
+        displayId: articleDisplayId(item),
         article: {
           title: articleTitle(item, locale),
           excerpt: articleExcerpt(item, locale),
@@ -321,7 +341,12 @@ export class ArticlesPanel {
     return status === 'draft' ? 'knowledge.moveToDraft' : 'knowledge.unpublish';
   }
 
-  private toStatCard(def: ArticleStatDef, value: number, caption: string): StatisticsCard {
+  private toStatCard(
+    def: ArticleStatDef,
+    value: number,
+    caption: string,
+    trend: number | null = 12.5,
+  ): StatisticsCard {
     return {
       id: def.id,
       title: this.lang.t(def.titleKey),
@@ -329,7 +354,7 @@ export class ArticlesPanel {
       icon: def.icon,
       iconColor: def.iconColor,
       iconBackground: def.iconBackground,
-      trend: 12.5,
+      trend: trend ?? 12.5,
       caption,
     };
   }

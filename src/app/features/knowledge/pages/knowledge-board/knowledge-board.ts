@@ -12,7 +12,7 @@ import { FormBuilder, FormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { MessageService } from 'primeng/api';
 import { DatePickerModule } from 'primeng/datepicker';
-import { forkJoin } from 'rxjs';
+import { catchError, forkJoin, of } from 'rxjs';
 
 import { AuthService } from '../../../../core/auth/auth.service';
 import { LanguageService } from '../../../../core/services/language.service';
@@ -29,9 +29,14 @@ import {
   type ArticleStatusChange,
 } from '../../components/articles-panel/articles-panel';
 import { CategoriesPanel } from '../../components/categories-panel/categories-panel';
-import type { Article, ArticleCategory } from '../../models/knowledge.model';
-import { CategoryInUseError, KnowledgeService } from '../../services/knowledge.service';
+import {
+  CategoryInUseError,
+  type Article,
+  type ArticleCategory,
+  type ArticleStats,
+} from '../../models/knowledge.model';
 import { KnowledgeActions } from '../../services/knowledge-actions.service';
+import { KnowledgeService } from '../../services/knowledge.service';
 
 type LoadState = 'loading' | 'ready' | 'error';
 type BoardTab = 'articles' | 'categories';
@@ -71,6 +76,7 @@ export class KnowledgeBoard {
   readonly saving = signal(false);
   readonly tab = signal<BoardTab>('articles');
   readonly articles = signal<Article[]>([]);
+  readonly stats = signal<ArticleStats | null>(null);
 
   readonly dateFilter = signal<string | null>(null);
   private readonly rawCategories = signal<ArticleCategory[]>([]);
@@ -194,11 +200,25 @@ export class KnowledgeBoard {
     void this.router.navigate(['/knowledge', article.id, 'edit']);
   }
 
-  protected exported(count: number): void {
-    this.messages.add({
-      severity: 'success',
-      summary: this.lang.t('knowledge.exported').replace('{count}', `${count}`),
-    });
+  protected exported(): void {
+    this.api
+      .exportCsv()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (blob) => {
+          const href = URL.createObjectURL(blob);
+          const link = document.createElement('a');
+          link.href = href;
+          link.download = `articles-${new Date().toISOString().slice(0, 10)}.csv`;
+          link.click();
+          URL.revokeObjectURL(href);
+          this.messages.add({
+            severity: 'success',
+            summary: this.lang.t('knowledge.exported').replace('{count}', `${this.articles().length}`),
+          });
+        },
+        error: () => this.fail(),
+      });
   }
 
   protected async removeArticle(article: Article): Promise<void> {
@@ -330,12 +350,17 @@ export class KnowledgeBoard {
 
   private load(): void {
     this.state.set('loading');
-    forkJoin([this.api.list(), this.api.listCategories()])
+    forkJoin({
+      articles: this.api.list(),
+      categories: this.api.listCategories(),
+      stats: this.api.stats().pipe(catchError(() => of(null))),
+    })
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
-        next: ([articles, categories]) => {
+        next: ({ articles, categories, stats }) => {
           this.articles.set(articles);
           this.rawCategories.set(categories);
+          this.stats.set(stats);
           this.state.set('ready');
         },
         error: () => this.state.set('error'),

@@ -11,6 +11,7 @@ import { MessageService } from 'primeng/api';
 import { IconField } from 'primeng/iconfield';
 import { InputText } from 'primeng/inputtext';
 
+import { isApiError } from '../../../../core/http/api-error';
 import { ProfileService } from '../../../../core/profile/profile.service';
 import { LanguageService } from '../../../../core/services/language.service';
 import { AppButton } from '../../../../shared/components/app-button/app-button';
@@ -132,9 +133,9 @@ export class PasswordChange {
       return;
     }
     this.saving.set(true);
-    const { current, next } = this.form.getRawValue();
+    const { current, next, confirm } = this.form.getRawValue();
     this.api
-      .changePassword(current, next)
+      .changePassword(current, next, confirm)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: () => {
@@ -146,9 +147,15 @@ export class PasswordChange {
             summary: this.lang.t('profile.passwordChanged'),
           });
         },
-        error: () => {
+        error: (error: unknown) => {
           this.saving.set(false);
-          this.messages.add({ severity: 'error', summary: this.lang.t('common.error') });
+          this.messages.add({
+            severity: 'error',
+            summary:
+              isApiError(error) && error.serverMessage
+                ? error.serverMessage
+                : this.lang.t('common.error'),
+          });
         },
       });
   }

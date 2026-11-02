@@ -23,8 +23,10 @@ import { InputText } from 'primeng/inputtext';
 import { Select } from 'primeng/select';
 import { Textarea } from 'primeng/textarea';
 import type { EditorInitEvent } from 'primeng/types/editor';
+import { firstValueFrom } from 'rxjs';
 
 import type { AppLanguage } from '../../../../core/i18n/language';
+import { MediaService } from '../../../../core/media/media.service';
 import { LanguageService } from '../../../../core/services/language.service';
 import { AppButton } from '../../../../shared/components/app-button/app-button';
 import { ConfirmDialog } from '../../../../shared/components/confirm-dialog/confirm-dialog';
@@ -33,9 +35,6 @@ import { LocaleSwitch } from '../../../../shared/components/locale-switch/locale
 import { PageHeader } from '../../../../shared/components/page-header/page-header';
 import { StateView } from '../../../../shared/components/state-view/state-view';
 import { HasPermissionDirective } from '../../../../shared/directives/has-permission.directive';
-import { formatIsoDate } from '../../../../shared/utils/date';
-import { formatFileSize } from '../../../../shared/utils/file-size';
-import { IMAGE_UPLOAD_ACCEPT, parseUploadedImage } from '../../../../shared/utils/image-upload';
 import {
   QUILL_FONT_REGISTRAR,
   applyQuillDirection,
@@ -43,12 +42,17 @@ import {
   wireQuillToolbarHandlers,
   type AppQuill,
 } from '../../../../shared/editor/quill';
+import { formatIsoDate } from '../../../../shared/utils/date';
+import { formatFileSize } from '../../../../shared/utils/file-size';
+import { IMAGE_UPLOAD_ACCEPT, parseUploadedImage } from '../../../../shared/utils/image-upload';
 import {
   blankArticle,
   type Article,
   type ArticleCategory,
   type ArticleDraft,
+  type ArticleMediaDraft,
   type ArticleStatus,
+  type KnowledgeMediaIntent,
 } from '../../models/knowledge.model';
 import { KnowledgeActions } from '../../services/knowledge-actions.service';
 import { KnowledgeService } from '../../services/knowledge.service';
@@ -62,8 +66,9 @@ interface SlotImage {
   url: string;
   name: string;
   size: number;
-
   date: string;
+  file?: File;
+  cleared?: boolean;
 }
 
 type FormKey = Exclude<
@@ -103,6 +108,7 @@ const EMPTY_IMAGES: Record<ImageSlot, SlotImage | null> = {
 })
 export class ArticleEditor {
   private readonly api = inject(KnowledgeService);
+  private readonly media = inject(MediaService);
   private readonly actions = inject(KnowledgeActions);
   private readonly messages = inject(MessageService);
   private readonly router = inject(Router);
@@ -283,7 +289,16 @@ export class ArticleEditor {
 
   protected onEditorInit(event: EditorInitEvent): void {
     const quill = event.editor as AppQuill;
-    wireQuillToolbarHandlers(quill);
+    wireQuillToolbarHandlers(quill, {
+      uploadImage: (file) =>
+        firstValueFrom(this.media.uploadEditorImage(file)).then((uploaded) => uploaded.url),
+      onImageUploadError: () => {
+        this.messages.add({
+          severity: 'error',
+          summary: this.lang.t('common.error'),
+        });
+      },
+    });
     applyQuillDirection(quill, this.locale());
   }
 
@@ -357,12 +372,14 @@ export class ArticleEditor {
   }
 
   protected removeImage(slot: ImageSlot): void {
-    this.setImage(slot, null);
+    const hadExisting = !!this.existingUrl(slot);
+    this.setImage(slot, hadExisting ? { url: '', name: '', size: 0, date: '', cleared: true } : null);
     this.imageErrors.update((errors) => ({ ...errors, [slot]: '' }));
   }
 
   protected imageOf(slot: ImageSlot): SlotImage | null {
-    return this.images()[slot];
+    const image = this.images()[slot];
+    return image && !image.cleared && image.url ? image : null;
   }
 
   protected errorOf(slot: ImageSlot): string {
@@ -392,6 +409,7 @@ export class ArticleEditor {
       name: parsed.image.name,
       size: parsed.image.size,
       date: parsed.image.uploadedAt,
+      file,
     });
   }
 
@@ -428,7 +446,7 @@ export class ArticleEditor {
       excerptEn: article.excerptEn,
       categoryId: article.categoryId,
       readingMinutes: article.readingMinutes,
-      publishedDate: article.publishedAt.slice(0, 10),
+      publishedDate: (article.publishedAt || '').slice(0, 10),
       authorNameAr: article.authorNameAr,
       authorNameEn: article.authorNameEn,
       slug: article.slug,
@@ -450,16 +468,49 @@ export class ArticleEditor {
       contentEn: article.contentEn,
     });
     this.images.set({
-      avatar: this.slotFrom(article.authorAvatarUrl, article.createdAt),
-      thumbnail: this.slotFrom(article.thumbnailUrl, article.createdAt),
-      cover: this.slotFrom(article.coverUrl, article.createdAt),
+      avatar: this.slotFrom(article.authorAvatarUrl, article.createdAt, article.authorPhoto?.size),
+      thumbnail: this.slotFrom(article.thumbnailUrl, article.createdAt, article.thumbnail?.size),
+      cover: this.slotFrom(article.coverUrl, article.createdAt, article.cover?.size),
     });
     this.keywordDraft.set('');
     this.keywordRevision.update((n) => n + 1);
   }
 
-  private slotFrom(url: string, date: string): SlotImage | null {
-    return url ? { url, name: url.split('/').pop() ?? url, size: 0, date } : null;
+  private slotFrom(url: string, date: string, size = 0): SlotImage | null {
+    return url ? { url, name: url.split('/').pop() ?? url, size, date } : null;
+  }
+
+  private existingUrl(slot: ImageSlot): string {
+    const article = this.article();
+    if (!article) {
+      return '';
+    }
+    if (slot === 'avatar') {
+      return article.authorAvatarUrl;
+    }
+    if (slot === 'thumbnail') {
+      return article.thumbnailUrl;
+    }
+    return article.coverUrl;
+  }
+
+  private mediaIntent(slot: ImageSlot): KnowledgeMediaIntent {
+    const image = this.images()[slot];
+    if (image?.file) {
+      return { kind: 'replace', file: image.file };
+    }
+    if (image?.cleared) {
+      return { kind: 'clear' };
+    }
+    return { kind: 'omit' };
+  }
+
+  private mediaDraft(): ArticleMediaDraft {
+    return {
+      cover: this.mediaIntent('cover'),
+      thumbnail: this.mediaIntent('thumbnail'),
+      authorPhoto: this.mediaIntent('avatar'),
+    };
   }
 
   private validate(strictness: Strictness): boolean {
@@ -500,12 +551,13 @@ export class ArticleEditor {
       return;
     }
     const fields = this.fieldsFromForm(status);
+    const media = this.mediaDraft();
     const current = this.article();
     this.saving.set(true);
     const request =
       this.mode === 'edit' && current
-        ? this.api.update({ ...current, ...fields })
-        : this.api.create({ ...blankArticle(), ...fields });
+        ? this.api.update(current.id, fields, media)
+        : this.api.create(fields, media);
     request.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (saved) => {
         this.saving.set(false);
@@ -531,22 +583,43 @@ export class ArticleEditor {
 
   private fieldsFromForm(status: ArticleStatus): ArticleDraft {
     const raw = this.form.getRawValue();
-    const images = this.images();
     const now = nowStamp();
-    const time = this.article()?.publishedAt.slice(11, 16) || now.slice(11, 16);
+    const previous = this.article()?.publishedAt ?? '';
+    const time = previous.slice(11, 16) || now.slice(11, 16);
     const { publishedDate, ...text } = raw;
     return {
       ...blankArticle(),
-      ...this.article(),
-      ...text,
       titleAr: text.titleAr.trim(),
       titleEn: text.titleEn.trim(),
+      excerptAr: text.excerptAr.trim(),
+      excerptEn: text.excerptEn.trim(),
+      categoryId: text.categoryId,
       readingMinutes: Math.max(1, Math.round(Number(text.readingMinutes) || 1)),
       status,
+      featured: this.article()?.featured ?? false,
       publishedAt: `${publishedDate || now.slice(0, 10)}T${time}`,
-      authorAvatarUrl: images.avatar?.url ?? '',
-      thumbnailUrl: images.thumbnail?.url ?? '',
-      coverUrl: images.cover?.url ?? '',
+      authorNameAr: text.authorNameAr.trim(),
+      authorNameEn: text.authorNameEn.trim(),
+      authorAvatarUrl: '',
+      thumbnailUrl: '',
+      thumbnailTitleAr: text.thumbnailTitleAr.trim(),
+      thumbnailTitleEn: text.thumbnailTitleEn.trim(),
+      thumbnailAltAr: text.thumbnailAltAr.trim(),
+      thumbnailAltEn: text.thumbnailAltEn.trim(),
+      coverUrl: '',
+      coverTitleAr: text.coverTitleAr.trim(),
+      coverTitleEn: text.coverTitleEn.trim(),
+      coverAltAr: text.coverAltAr.trim(),
+      coverAltEn: text.coverAltEn.trim(),
+      contentAr: text.contentAr,
+      contentEn: text.contentEn,
+      slug: text.slug.trim(),
+      seoTitleAr: text.seoTitleAr.trim(),
+      seoTitleEn: text.seoTitleEn.trim(),
+      seoDescriptionAr: text.seoDescriptionAr.trim(),
+      seoDescriptionEn: text.seoDescriptionEn.trim(),
+      seoKeywordsAr: text.seoKeywordsAr,
+      seoKeywordsEn: text.seoKeywordsEn,
     };
   }
 

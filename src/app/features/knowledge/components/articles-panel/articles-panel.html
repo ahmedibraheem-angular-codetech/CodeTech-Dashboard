@@ -15,7 +15,7 @@
   [selectedFilters]="selectedFilters()"
   (queryChange)="setQuery($event)"
   (selectedFiltersChange)="setFilters($event)"
-  (export)="exported.emit(total())"
+  (export)="exported.emit()"
   (rowClick)="openRow($event)"
 >
   <ng-template appDataCell="article" let-row>

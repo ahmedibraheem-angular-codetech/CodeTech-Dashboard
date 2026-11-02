@@ -49,7 +49,7 @@ The checkbox is sent as `remember` on login. The backend token lasts 1 day when 
 - The pending login (`codetech.pending`) always stays in `sessionStorage` and is not a live session. The token is written to the session store only after OTP succeeds and `GET /admin/profile` succeeds.
 - The password is never stored (covered by a test in `auth.service.spec.ts`).
 - Only a lean session subset is persisted (`token`, `email`, `name`, `roleKey`, `remember`). Avatar URL, permissions, phone, username, and `last_login_at` stay in memory and are refreshed from `GET /admin/profile`.
-- Profile page edits (personal data, password, avatar upload) are still mock-backed; they must not fight the hydrated auth identity once profile has loaded.
+- Profile writes use `PUT /admin/profile`, `PUT /admin/profile/password`, and `POST /admin/media` for avatar tickets. Successful profile responses refresh the in-memory session; lean storage still only keeps `token`, `email`, `name`, `roleKey`, and `remember`.
 
 ## UI conventions (PrimeNG first)
 

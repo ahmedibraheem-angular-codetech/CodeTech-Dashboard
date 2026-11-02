@@ -7,7 +7,19 @@ import { ArticlesPanel } from './articles-panel';
 
 describe('ArticlesPanel statistics cards', () => {
   function article(id: string, status: ArticleStatus): Article {
-    return { ...blankArticle(), id, status, createdAt: '2026-01-01' };
+    return {
+      ...blankArticle(),
+      id,
+      code: `ART-${id.padStart(4, '0')}`,
+      categoryNameAr: '',
+      categoryNameEn: '',
+      authorPhoto: null,
+      thumbnail: null,
+      cover: null,
+      status,
+      createdAt: '2026-01-01',
+      updatedAt: '2026-01-01',
+    };
   }
 
   function setup(articles: readonly Article[] = []): ComponentFixture<ArticlesPanel> {

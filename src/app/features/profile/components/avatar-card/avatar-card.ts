@@ -3,6 +3,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MessageService } from 'primeng/api';
 import { Tooltip } from 'primeng/tooltip';
 
+import { isApiError } from '../../../../core/http/api-error';
 import { ProfileService } from '../../../../core/profile/profile.service';
 import { LanguageService } from '../../../../core/services/language.service';
 import { AppButton } from '../../../../shared/components/app-button/app-button';
@@ -47,9 +48,11 @@ export class AvatarCard {
     this.api
       .setAvatar(file)
       .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(() =>
-        this.messages.add({ severity: 'success', summary: this.lang.t('profile.photoUpdated') }),
-      );
+      .subscribe({
+        next: () =>
+          this.messages.add({ severity: 'success', summary: this.lang.t('profile.photoUpdated') }),
+        error: (error: unknown) => this.notifyFailure(error),
+      });
   }
 
   async remove(): Promise<void> {
@@ -66,8 +69,20 @@ export class AvatarCard {
     this.api
       .removeAvatar()
       .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(() =>
-        this.messages.add({ severity: 'success', summary: this.lang.t('profile.photoRemoved') }),
-      );
+      .subscribe({
+        next: () =>
+          this.messages.add({ severity: 'success', summary: this.lang.t('profile.photoRemoved') }),
+        error: (error: unknown) => this.notifyFailure(error),
+      });
+  }
+
+  private notifyFailure(error: unknown): void {
+    this.messages.add({
+      severity: 'error',
+      summary:
+        isApiError(error) && error.serverMessage
+          ? error.serverMessage
+          : this.lang.t('common.error'),
+    });
   }
 }

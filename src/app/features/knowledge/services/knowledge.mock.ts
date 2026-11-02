@@ -284,23 +284,29 @@ function article(seed: Seed, index: number): Article {
   ].join('');
   return {
     id: seed.id,
+    code: `ART-${seed.id.slice(-4)}`,
     titleAr: seed.ar,
     titleEn: seed.en,
     excerptAr: seed.excerptAr,
     excerptEn: seed.excerptEn,
     categoryId: seed.category,
+    categoryNameAr: '',
+    categoryNameEn: '',
     readingMinutes: seed.minutes,
     status: seed.status,
     featured: seed.featured ?? false,
     publishedAt: seed.stamp,
     authorNameAr: 'محمد عز الدين',
     authorNameEn: 'Mohamed Ezz El-Din',
+    authorPhoto: null,
     authorAvatarUrl: 'images/avatar-placeholder.svg',
+    thumbnail: null,
     thumbnailUrl: image,
     thumbnailTitleAr: seed.ar,
     thumbnailTitleEn: seed.en,
     thumbnailAltAr: `صورة مصغرة: ${seed.ar}`,
     thumbnailAltEn: `Thumbnail: ${seed.en}`,
+    cover: null,
     coverUrl: image,
     coverTitleAr: seed.ar,
     coverTitleEn: seed.en,
@@ -316,6 +322,7 @@ function article(seed: Seed, index: number): Article {
     seoKeywordsAr: 'تقنية، معرفة، كود تك',
     seoKeywordsEn: 'technology, knowledge, codetech',
     createdAt: seed.stamp.slice(0, 10),
+    updatedAt: seed.stamp,
   };
 }
 

@@ -22,6 +22,7 @@ import { InputIcon } from 'primeng/inputicon';
 import { InputText } from 'primeng/inputtext';
 import { distinctUntilChanged, finalize, map } from 'rxjs';
 
+import { isApiError } from '../../../../core/http/api-error';
 import { type ProfileDraft } from '../../../../core/profile/profile.model';
 import { ProfileService } from '../../../../core/profile/profile.service';
 import { LanguageService } from '../../../../core/services/language.service';
@@ -31,7 +32,6 @@ import { FieldError } from '../../../../shared/components/field-error/field-erro
 type FieldName = keyof ProfileDraft;
 
 interface FieldDef {
-
   name: FieldName;
 
   labelKey: string;
@@ -166,7 +166,6 @@ export class PersonalData {
   private readonly draft = computed(() => this.current(), { equal: sameDraft });
 
   constructor() {
-
     effect(() => {
       const draft = this.draft();
       untracked(() => {
@@ -208,7 +207,14 @@ export class PersonalData {
           this.form.markAsPristine();
           this.messages.add({ severity: 'success', summary: this.lang.t('profile.saved') });
         },
-        error: () => this.messages.add({ severity: 'error', summary: this.lang.t('common.error') }),
+        error: (error: unknown) =>
+          this.messages.add({
+            severity: 'error',
+            summary:
+              isApiError(error) && error.serverMessage
+                ? error.serverMessage
+                : this.lang.t('common.error'),
+          }),
       });
   }
 

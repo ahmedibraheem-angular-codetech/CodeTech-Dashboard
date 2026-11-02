@@ -11,10 +11,17 @@ export function articleTitle(article: Article, locale: AppLanguage): string {
   return pick(article.titleAr, article.titleEn, locale);
 }
 
-export function articleDisplayId(id: string): string {
-  const digits = id.replace(/\D/g, '');
-  const suffix = (digits || '0').slice(-4).padStart(4, '0');
-  return `ART-${suffix}`;
+export function articleDisplayId(articleOrId: Pick<Article, 'id' | 'code'> | string): string {
+  if (typeof articleOrId === 'string') {
+    const digits = articleOrId.replace(/\D/g, '');
+    const suffix = (digits || '0').slice(-4).padStart(4, '0');
+    return `ART-${suffix}`;
+  }
+  const code = articleOrId.code?.trim();
+  if (code) {
+    return code.startsWith('ART-') ? code : `ART-${code.replace(/\D/g, '').slice(-4).padStart(4, '0')}`;
+  }
+  return articleDisplayId(articleOrId.id);
 }
 
 export function splitKeywords(value: string | null | undefined): string[] {

@@ -81,7 +81,10 @@ export class ArticleDetail {
   readonly author = computed(() => this.text('authorNameAr', 'authorNameEn'));
   readonly categoryLabel = computed(() => categoryName(this.category(), this.locale()) || '—');
   readonly dir = computed(() => (this.locale() === 'ar' ? 'rtl' : 'ltr'));
-  readonly displayId = computed(() => articleDisplayId(this.article()?.id ?? this.id()));
+  readonly displayId = computed(() => {
+    const article = this.article();
+    return article ? articleDisplayId(article) : articleDisplayId(this.id());
+  });
 
   readonly content = computed(() => {
     const article = this.article();

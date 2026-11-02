@@ -39,6 +39,7 @@
       <app-knowledge-articles-panel
         [articles]="filteredArticles()"
         [categories]="categories()"
+        [stats]="stats()"
         [showEdit]="canUpdate()"
         [showDelete]="canDelete()"
         (view)="view($event)"
@@ -46,7 +47,7 @@
         (remove)="removeArticle($event)"
         (toggleFeatured)="toggleFeatured($event)"
         (statusChange)="changeStatus($event)"
-        (exported)="exported($event)"
+        (exported)="exported()"
       />
     </div>
     <div [hidden]="tab() !== 'categories'">
