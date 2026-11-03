@@ -155,6 +155,11 @@ describe('NAV_ITEMS permission mapping', () => {
   it('assigns the agreed view grants and leaves parent groups ungated', () => {
     expect(byId('home')?.permission).toBe('home.view');
     expect(byId('about')?.permission).toBe('about.view');
+    expect(byId('contact')?.permission).toBeUndefined();
+    expect(byId('contact')?.children?.map((child) => child.id)).toEqual([
+      'inquiries',
+      'start-projects',
+    ]);
     expect(byId('inquiries')?.permission).toBe('inquiries.view');
     expect(byId('start-projects')?.permission).toBe('project_requests.view');
     expect(byId('products')?.permission).toBeUndefined();

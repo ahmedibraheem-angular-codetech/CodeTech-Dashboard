@@ -3,8 +3,8 @@ import type { ProductLocaleDto } from './product.api';
 
 /** Products marketing page (GET /admin/pages/products). */
 export interface ProductsPageSectionsDto {
-  features_enabled: boolean;
-  sectors_enabled: boolean;
+  why_visible: boolean;
+  sectors_visible: boolean;
   products_visible: boolean;
 }
 
@@ -29,8 +29,8 @@ export interface ProductsPageDto {
 }
 
 export interface ProductsPageSectionsWriteDto {
-  features_enabled?: boolean;
-  sectors_enabled?: boolean;
+  why_visible?: boolean;
+  sectors_visible?: boolean;
   products_visible?: boolean;
 }
 

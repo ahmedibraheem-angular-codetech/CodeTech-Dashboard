@@ -45,11 +45,11 @@ export class ProductsPageService {
   }
 
   toggleFeatures(enabled: boolean): Observable<ProductsPageContent> {
-    return this.patchSections({ features_enabled: enabled });
+    return this.patchSections({ why_visible: enabled });
   }
 
   toggleSectors(enabled: boolean): Observable<ProductsPageContent> {
-    return this.patchSections({ sectors_enabled: enabled });
+    return this.patchSections({ sectors_visible: enabled });
   }
 
   toggleProductsVisible(visible: boolean): Observable<ProductsPageContent> {
@@ -73,7 +73,7 @@ export class ProductsPageService {
       }),
       map((envelope) => {
         const mapped = mapProductsPage({
-          sections: { features_enabled: true, sectors_enabled: true, products_visible: true },
+          sections: { why_visible: true, sectors_visible: true, products_visible: true },
           features: [this.requireFeature(envelope)],
           sectors: [],
         });
@@ -105,7 +105,7 @@ export class ProductsPageService {
       }),
       map((envelope) => {
         const mapped = mapProductsPage({
-          sections: { features_enabled: true, sectors_enabled: true, products_visible: true },
+          sections: { why_visible: true, sectors_visible: true, products_visible: true },
           features: [],
           sectors: [this.requireSector(envelope)],
         });

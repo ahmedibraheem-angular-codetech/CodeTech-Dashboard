@@ -220,8 +220,8 @@ describe('ProductsService (HTTP)', () => {
     req.flush({
       data: {
         sections: {
-          features_enabled: true,
-          sectors_enabled: true,
+          why_visible: true,
+          sectors_visible: true,
           products_visible: true,
         },
         features: [],

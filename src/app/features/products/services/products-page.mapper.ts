@@ -22,8 +22,8 @@ function locale(value: { ar: string | null; en: string | null } | null | undefin
 
 export function mapProductsPage(dto: ProductsPageDto): ProductsPageContent {
   return {
-    featuresEnabled: !!dto.sections?.features_enabled,
-    sectorsEnabled: !!dto.sections?.sectors_enabled,
+    featuresEnabled: !!dto.sections?.why_visible,
+    sectorsEnabled: !!dto.sections?.sectors_visible,
     productsVisible: !!dto.sections?.products_visible,
     features: (dto.features ?? []).map(mapFeature),
     sectors: (dto.sectors ?? []).map(mapSector),
