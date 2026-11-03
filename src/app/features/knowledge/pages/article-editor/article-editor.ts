@@ -27,7 +27,9 @@ import { firstValueFrom } from 'rxjs';
 
 import type { AppLanguage } from '../../../../core/i18n/language';
 import { MediaService } from '../../../../core/media/media.service';
+import { loadFailureStatus } from '../../../../core/http/api-error';
 import { LanguageService } from '../../../../core/services/language.service';
+import { NetworkStatusService } from '../../../../core/services/network-status.service';
 import { AppButton } from '../../../../shared/components/app-button/app-button';
 import { ConfirmDialog } from '../../../../shared/components/confirm-dialog/confirm-dialog';
 import { FieldError } from '../../../../shared/components/field-error/field-error';
@@ -58,7 +60,7 @@ import { KnowledgeActions } from '../../services/knowledge-actions.service';
 import { KnowledgeService } from '../../services/knowledge.service';
 import { categoryName, joinKeywords, nowStamp, splitKeywords } from '../../utils/knowledge-format';
 
-type LoadStatus = 'loading' | 'ready' | 'missing' | 'error';
+type LoadStatus = 'loading' | 'ready' | 'missing' | 'error' | 'offline';
 type ImageSlot = 'avatar' | 'thumbnail' | 'cover';
 type Strictness = 'strict' | 'lenient';
 
@@ -114,6 +116,7 @@ export class ArticleEditor {
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly network = inject(NetworkStatusService);
   private readonly fb = inject(FormBuilder);
   private readonly registerQuillFont = inject(QUILL_FONT_REGISTRAR);
   private readonly confirm = viewChild.required(ConfirmDialog);
@@ -431,7 +434,7 @@ export class ArticleEditor {
           this.apply(article);
           this.status.set('ready');
         },
-        error: () => this.status.set('error'),
+        error: (error: unknown) => this.status.set(loadFailureStatus(error, this.network.online())),
       });
   }
 

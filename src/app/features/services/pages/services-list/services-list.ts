@@ -14,7 +14,9 @@ import { MessageService } from 'primeng/api';
 import { type PaginatorState } from 'primeng/paginator';
 
 import { AuthService } from '../../../../core/auth/auth.service';
+import { loadFailureStatus } from '../../../../core/http/api-error';
 import { LanguageService } from '../../../../core/services/language.service';
+import { NetworkStatusService } from '../../../../core/services/network-status.service';
 import { AppButton } from '../../../../shared/components/app-button/app-button';
 import { AppPaginator } from '../../../../shared/components/app-paginator/app-paginator';
 import { ConfirmDialog } from '../../../../shared/components/confirm-dialog/confirm-dialog';
@@ -50,6 +52,7 @@ export class ServicesPage {
   private readonly router = inject(Router);
   private readonly messages = inject(MessageService);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly network = inject(NetworkStatusService);
   private readonly auth = inject(AuthService);
   private readonly confirm = viewChild.required(ConfirmDialog);
   readonly lang = inject(LanguageService);
@@ -161,11 +164,14 @@ export class ServicesPage {
           this.items.set(items);
           this.status.set('ready');
         },
-        error: () => {
+        error: (error: unknown) => {
           if (seq !== this.loadSeq) {
             return;
           }
-          this.status.set('error');
+          if (this.items().length > 0) {
+            return;
+          }
+          this.status.set(loadFailureStatus(error, this.network.online()));
         },
       });
   }

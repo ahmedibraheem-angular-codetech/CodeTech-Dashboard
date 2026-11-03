@@ -17,7 +17,9 @@ import { ToggleSwitch } from 'primeng/toggleswitch';
 import { forkJoin } from 'rxjs';
 
 import { AuthService } from '../../../../core/auth/auth.service';
+import { loadFailureStatus } from '../../../../core/http/api-error';
 import { LanguageService } from '../../../../core/services/language.service';
+import { NetworkStatusService } from '../../../../core/services/network-status.service';
 import { AppPaginator } from '../../../../shared/components/app-paginator/app-paginator';
 import { ConfirmDialog } from '../../../../shared/components/confirm-dialog/confirm-dialog';
 import { PageHeader } from '../../../../shared/components/page-header/page-header';
@@ -26,7 +28,7 @@ import { HasPermissionDirective } from '../../../../shared/directives/has-permis
 import { readLocale, readMedia, type Project } from '../../models/project.model';
 import { ProjectsService } from '../../services/projects.service';
 
-type LoadState = 'loading' | 'ready' | 'error';
+type LoadState = 'loading' | 'ready' | 'error' | 'offline';
 
 @Component({
   selector: 'app-projects-list',
@@ -48,6 +50,7 @@ export class ProjectsList {
   private readonly messages = inject(MessageService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly auth = inject(AuthService);
+  private readonly network = inject(NetworkStatusService);
   private readonly confirm = viewChild.required(ConfirmDialog);
   readonly lang = inject(LanguageService);
   readonly api = inject(ProjectsService);
@@ -170,11 +173,14 @@ export class ProjectsList {
           this.items.set(items);
           this.status.set('ready');
         },
-        error: () => {
+        error: (error: unknown) => {
           if (seq !== this.loadSeq) {
             return;
           }
-          this.status.set('error');
+          if (this.items().length > 0) {
+            return;
+          }
+          this.status.set(loadFailureStatus(error, this.network.online()));
         },
       });
   }

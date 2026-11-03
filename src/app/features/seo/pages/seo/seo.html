@@ -25,8 +25,8 @@
 
   @if (loading()) {
     <app-state-view mode="loading" />
-  } @else if (loadFailed()) {
-    <app-state-view mode="error" [message]="lang.t('common.error')" (retry)="reload()" />
+  } @else if (loadState() === 'error' || loadState() === 'offline') {
+    <app-state-view [mode]="loadState() === 'offline' ? 'offline' : 'error'" [message]="lang.t('common.error')" (retry)="reload()" />
   } @else {
     <app-page-tabs [tabs]="pages" [value]="active()" (valueChange)="select($event)" />
 

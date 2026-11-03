@@ -29,7 +29,7 @@ export interface EditorShellLabels {
 export class EditorShell {
   readonly title = input.required<string>();
   readonly mode = input.required<'create' | 'edit'>();
-  readonly status = input.required<'loading' | 'ready' | 'missing' | 'error'>();
+  readonly status = input.required<'loading' | 'ready' | 'missing' | 'error' | 'offline'>();
   readonly saving = input(false);
   readonly published = input(false);
   readonly steps = input.required<readonly WizardStepItem[]>();

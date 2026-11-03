@@ -9,6 +9,7 @@ import { environment } from '../../../../../environments/environment';
 import { authSession } from '../../../../core/auth/auth-session.fixture';
 import { AuthService } from '../../../../core/auth/auth.service';
 import { apiUrl } from '../../../../core/config/api';
+import { ApiError } from '../../../../core/http/api-error';
 import { LanguageService } from '../../../../core/services/language.service';
 import type { Project } from '../../models/project.model';
 import { mapProjectListItem } from '../../services/project.mapper';
@@ -189,6 +190,34 @@ describe('ProjectsList (HTTP)', () => {
     expect(fixture.componentInstance.status()).toBe('error');
     expect(root.querySelector('app-state-view .pi-exclamation-circle')).not.toBeNull();
     expect(tiles(root)).toHaveLength(0);
+  });
+
+  it('shows SectionEmpty offline state for a network ApiError on first load', async () => {
+    TestBed.configureTestingModule({
+      imports: [ProjectsList],
+      providers: [
+        MessageService,
+        provideHttpClient(withInterceptors([])),
+        provideHttpClientTesting(),
+        provideRouter([]),
+      ],
+    });
+    localStorage.setItem('codetech.language', 'ar');
+    TestBed.inject(LanguageService).set('ar');
+    const api = TestBed.inject(ProjectsService);
+    vi.spyOn(api, 'listAll').mockReturnValue(throwError(() => new ApiError(0, null)));
+    vi.spyOn(api, 'loadCatalogVisibility').mockReturnValue(throwError(() => new ApiError(0, null)));
+    http = TestBed.inject(HttpTestingController);
+    const fixture = TestBed.createComponent(ProjectsList);
+    fixture.detectChanges();
+    await settle(fixture);
+    const root: HTMLElement = fixture.nativeElement;
+
+    expect(fixture.componentInstance.status()).toBe('offline');
+    expect(root.querySelector('app-section-empty')).not.toBeNull();
+    expect(root.querySelector('app-state-view .pi-exclamation-circle')).toBeNull();
+    expect(root.querySelector('app-state-view .pi-inbox')).toBeNull();
+    expect(root.textContent).toContain('لا يوجد اتصال بالإنترنت');
   });
 
   it('retries after a load failure and shows the catalog on success', async () => {

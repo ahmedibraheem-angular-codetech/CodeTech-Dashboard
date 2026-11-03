@@ -17,6 +17,8 @@ import { MessageService } from 'primeng/api';
 import { catchError, debounceTime, EMPTY, switchMap } from 'rxjs';
 
 import { AuthService } from '../../../../core/auth/auth.service';
+import { loadFailureStatus } from '../../../../core/http/api-error';
+import { NetworkStatusService } from '../../../../core/services/network-status.service';
 import type { AppLanguage } from '../../../../core/i18n/language';
 import { LanguageService } from '../../../../core/services/language.service';
 import { AppButton } from '../../../../shared/components/app-button/app-button';
@@ -46,7 +48,7 @@ import {
   userStatusLabelKey,
 } from '../../services/user.mapper';
 
-type LoadState = 'loading' | 'ready' | 'error';
+type LoadState = 'loading' | 'ready' | 'error' | 'offline';
 
 const PHONE_PATTERN = /^$|^\+?[0-9][0-9 -]{6,19}$/;
 
@@ -72,6 +74,7 @@ export class UsersPage {
   private readonly messages = inject(MessageService);
   private readonly router = inject(Router);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly network = inject(NetworkStatusService);
   private readonly fb = inject(FormBuilder);
   private readonly auth = inject(AuthService);
   private readonly confirm = viewChild.required(ConfirmDialog);
@@ -255,8 +258,8 @@ export class UsersPage {
         debounceTime(200),
         switchMap((query) =>
           this.usersApi.list(query).pipe(
-            catchError(() => {
-              this.failLoad();
+            catchError((error: unknown) => {
+              this.failLoad(error);
               return EMPTY;
             }),
           ),
@@ -456,9 +459,9 @@ export class UsersPage {
       });
   }
 
-  private failLoad(): void {
+  private failLoad(error?: unknown): void {
     if (this.state() === 'loading') {
-      this.state.set('error');
+      this.state.set(loadFailureStatus(error, this.network.online()));
       return;
     }
     this.notifyFailure();

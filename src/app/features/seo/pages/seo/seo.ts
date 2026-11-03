@@ -10,6 +10,8 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MessageService } from 'primeng/api';
 
 import { AuthService } from '../../../../core/auth/auth.service';
+import { loadFailureStatus } from '../../../../core/http/api-error';
+import { NetworkStatusService } from '../../../../core/services/network-status.service';
 import { LanguageService } from '../../../../core/services/language.service';
 import { AppButton } from '../../../../shared/components/app-button/app-button';
 import { PageHeader } from '../../../../shared/components/page-header/page-header';
@@ -21,7 +23,7 @@ import { ThumbnailCard } from '../../components/thumbnail-card/thumbnail-card';
 import { SEO_PAGES, type SeoTabId } from '../../models/seo.model';
 import { SeoService } from '../../services/seo.service';
 
-type LoadState = 'loading' | 'ready' | 'error';
+type LoadState = 'loading' | 'ready' | 'error' | 'offline';
 
 @Component({
   selector: 'app-seo-page',
@@ -44,13 +46,14 @@ export class SeoPage {
   private readonly auth = inject(AuthService);
   private readonly messages = inject(MessageService);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly network = inject(NetworkStatusService);
 
   readonly active = signal<SeoTabId>(SEO_PAGES[0].id);
   readonly loadState = signal<LoadState>('loading');
   readonly saving = signal(false);
 
   readonly loading = computed(() => this.loadState() === 'loading');
-  readonly loadFailed = computed(() => this.loadState() === 'error');
+  readonly loadFailed = computed(() => this.loadState() === 'error' || this.loadState() === 'offline');
 
   readonly title = computed(() => {
     const page = this.pages.find((item) => item.id === this.active());
@@ -84,9 +87,11 @@ export class SeoPage {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: () => this.loadState.set('ready'),
-        error: () => {
-          this.loadState.set('error');
-          this.messages.add({ severity: 'error', summary: this.lang.t('common.error') });
+        error: (error: unknown) => {
+          this.loadState.set(loadFailureStatus(error, this.network.online()));
+          if (this.loadState() === 'error') {
+            this.messages.add({ severity: 'error', summary: this.lang.t('common.error') });
+          }
         },
       });
   }

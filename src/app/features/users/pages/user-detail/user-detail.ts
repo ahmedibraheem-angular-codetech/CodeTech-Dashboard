@@ -16,6 +16,8 @@ import { Router } from '@angular/router';
 import { MessageService } from 'primeng/api';
 
 import { AuthService } from '../../../../core/auth/auth.service';
+import { loadFailureStatus } from '../../../../core/http/api-error';
+import { NetworkStatusService } from '../../../../core/services/network-status.service';
 import type { AppLanguage } from '../../../../core/i18n/language';
 import { BreadcrumbService } from '../../../../core/services/breadcrumb.service';
 import { LanguageService } from '../../../../core/services/language.service';
@@ -40,7 +42,7 @@ import {
   userStatusLabelKey,
 } from '../../services/user.mapper';
 
-type LoadState = 'loading' | 'ready' | 'error' | 'missing';
+type LoadState = 'loading' | 'ready' | 'error' | 'offline' | 'missing';
 
 const PHONE_PATTERN = /^$|^\+?[0-9][0-9 -]{6,19}$/;
 
@@ -65,6 +67,7 @@ export class UserDetailPage {
   private readonly router = inject(Router);
   private readonly breadcrumbs = inject(BreadcrumbService);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly network = inject(NetworkStatusService);
   private readonly fb = inject(FormBuilder);
   private readonly auth = inject(AuthService);
   private readonly confirm = viewChild.required(ConfirmDialog);
@@ -335,7 +338,7 @@ export class UserDetailPage {
           this.user.set(user);
           this.status.set(user ? 'ready' : 'missing');
         },
-        error: () => this.status.set('error'),
+        error: (error: unknown) => this.status.set(loadFailureStatus(error, this.network.online())),
       });
   }
 

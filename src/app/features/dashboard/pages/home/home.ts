@@ -1,7 +1,9 @@
 import { ChangeDetectionStrategy, Component, DestroyRef, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
+import { loadFailureStatus } from '../../../../core/http/api-error';
 import { LanguageService } from '../../../../core/services/language.service';
+import { NetworkStatusService } from '../../../../core/services/network-status.service';
 import { PageHeader } from '../../../../shared/components/page-header/page-header';
 import { StateView } from '../../../../shared/components/state-view/state-view';
 import { ContentBlockCard } from '../../components/content-block-card/content-block-card';
@@ -10,7 +12,7 @@ import { VideoSection } from '../../components/video-section/video-section';
 import { type ContentBlock, type Partner } from '../../models/homepage.model';
 import { HomepageService } from '../../services/homepage.service';
 
-type Status = 'loading' | 'ready' | 'error';
+type Status = 'loading' | 'ready' | 'error' | 'offline';
 
 @Component({
   selector: 'app-home',
@@ -21,6 +23,7 @@ type Status = 'loading' | 'ready' | 'error';
 export class Home {
   private readonly api = inject(HomepageService);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly network = inject(NetworkStatusService);
   readonly lang = inject(LanguageService);
 
   readonly status = signal<Status>('loading');
@@ -52,7 +55,12 @@ export class Home {
           this.vision.set(content.vision);
           this.status.set('ready');
         },
-        error: () => this.status.set('error'),
+        error: (error: unknown) => {
+          if (silent && this.status() === 'ready') {
+            return;
+          }
+          this.status.set(loadFailureStatus(error, this.network.online()));
+        },
       });
   }
 }

@@ -16,6 +16,9 @@
           (retry)="editor.loadProjects()"
         />
       }
+      @case ('offline') {
+        <app-state-view mode="offline" (retry)="editor.loadProjects()" />
+      }
       @default {
         @if (editor.projects().length === 0) {
           <app-state-view mode="empty" [message]="editor.copy('service.projectsEmpty')" />

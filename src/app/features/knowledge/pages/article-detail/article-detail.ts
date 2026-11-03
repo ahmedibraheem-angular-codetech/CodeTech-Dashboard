@@ -17,7 +17,9 @@ import { Popover } from 'primeng/popover';
 import { forkJoin } from 'rxjs';
 
 import { BreadcrumbService } from '../../../../core/services/breadcrumb.service';
+import { loadFailureStatus } from '../../../../core/http/api-error';
 import { LanguageService } from '../../../../core/services/language.service';
+import { NetworkStatusService } from '../../../../core/services/network-status.service';
 import { AppButton } from '../../../../shared/components/app-button/app-button';
 import { ConfirmDialog } from '../../../../shared/components/confirm-dialog/confirm-dialog';
 import { InfoField } from '../../../../shared/components/info-field/info-field';
@@ -42,7 +44,7 @@ import {
 } from '../../utils/knowledge-format';
 import { hasVisibleHtml } from '../../../../shared/editor/quill';
 
-type LoadStatus = 'loading' | 'ready' | 'missing' | 'error';
+type LoadStatus = 'loading' | 'ready' | 'missing' | 'error' | 'offline';
 
 @Component({
   selector: 'app-article-detail',
@@ -65,6 +67,7 @@ export class ArticleDetail {
   private readonly router = inject(Router);
   private readonly breadcrumbs = inject(BreadcrumbService);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly network = inject(NetworkStatusService);
   private readonly confirm = viewChild.required(ConfirmDialog);
   private readonly statusMenu = viewChild.required(Popover);
   readonly lang = inject(LanguageService);
@@ -290,7 +293,7 @@ export class ArticleDetail {
           this.category.set(categories.find((item) => item.id === article.categoryId) ?? null);
           this.status.set('ready');
         },
-        error: () => this.status.set('error'),
+        error: (error: unknown) => this.status.set(loadFailureStatus(error, this.network.online())),
       });
   }
 }

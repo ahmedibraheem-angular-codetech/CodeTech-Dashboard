@@ -14,6 +14,8 @@ import { Checkbox } from 'primeng/checkbox';
 import { Popover } from 'primeng/popover';
 
 import { AuthService } from '../../../../core/auth/auth.service';
+import { loadFailureStatus } from '../../../../core/http/api-error';
+import { NetworkStatusService } from '../../../../core/services/network-status.service';
 import { LanguageService } from '../../../../core/services/language.service';
 import { AppButton } from '../../../../shared/components/app-button/app-button';
 import { ConfirmDialog } from '../../../../shared/components/confirm-dialog/confirm-dialog';
@@ -42,7 +44,7 @@ interface FilterOption {
 }
 
 type EditorMode = ReviewEditorMode | null;
-type LoadState = 'loading' | 'ready' | 'error';
+type LoadState = 'loading' | 'ready' | 'error' | 'offline';
 
 @Component({
   selector: 'app-reviews-board',
@@ -67,6 +69,7 @@ export class ReviewsBoard {
   private readonly api = inject(ReviewsService);
   private readonly messages = inject(MessageService);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly network = inject(NetworkStatusService);
   private readonly fb = inject(FormBuilder);
   private readonly auth = inject(AuthService);
   private readonly confirm = viewChild.required(ConfirmDialog);
@@ -102,7 +105,7 @@ export class ReviewsBoard {
   }
 
   readonly loading = computed(() => this.loadState() === 'loading');
-  readonly loadFailed = computed(() => this.loadState() === 'error');
+  readonly loadFailed = computed(() => this.loadState() === 'error' || this.loadState() === 'offline');
 
   readonly filterOptions = computed<FilterOption[]>(() => [
     { value: 'all', label: this.lang.t('review.filterAll') },
@@ -219,9 +222,14 @@ export class ReviewsBoard {
           this.source.set(rows);
           this.loadState.set('ready');
         },
-        error: () => {
-          this.loadState.set('error');
-          this.messages.add({ severity: 'error', summary: this.lang.t('common.error') });
+        error: (error: unknown) => {
+          if (this.source().length > 0) {
+            return;
+          }
+          this.loadState.set(loadFailureStatus(error, this.network.online()));
+          if (this.loadState() === 'error') {
+            this.messages.add({ severity: 'error', summary: this.lang.t('common.error') });
+          }
         },
       });
   }

@@ -15,8 +15,8 @@
 
   @if (state() === 'loading') {
     <app-state-view mode="loading" />
-  } @else if (state() === 'error') {
-    <app-state-view mode="error" [message]="lang.t('common.error')" (retry)="load()" />
+  } @else if (state() === 'error' || state() === 'offline') {
+    <app-state-view [mode]="state() === 'offline' ? 'offline' : 'error'" [message]="lang.t('common.error')" (retry)="load()" />
   } @else if (selected(); as role) {
     <app-permissions-matrix
       [modules]="catalog().modules"

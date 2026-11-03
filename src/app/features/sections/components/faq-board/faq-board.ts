@@ -13,6 +13,8 @@ import { MessageService } from 'primeng/api';
 import { forkJoin } from 'rxjs';
 
 import { AuthService } from '../../../../core/auth/auth.service';
+import { loadFailureStatus } from '../../../../core/http/api-error';
+import { NetworkStatusService } from '../../../../core/services/network-status.service';
 import { LanguageService } from '../../../../core/services/language.service';
 import { AppButton } from '../../../../shared/components/app-button/app-button';
 import { ConfirmDialog } from '../../../../shared/components/confirm-dialog/confirm-dialog';
@@ -29,7 +31,7 @@ import { FaqCategoriesPanel } from './components/faq-categories-panel/faq-catego
 import { FaqEditorForm } from './components/faq-editor-form/faq-editor-form';
 import { FaqQuestionsPanel } from './components/faq-questions-panel/faq-questions-panel';
 
-type LoadState = 'loading' | 'ready' | 'error';
+type LoadState = 'loading' | 'ready' | 'error' | 'offline';
 type BoardTab = 'questions' | 'categories';
 type EditorMode = 'create' | 'edit' | 'create-category' | 'edit-category' | null;
 
@@ -56,6 +58,7 @@ export class FaqBoard {
   private readonly api = inject(FaqService);
   private readonly messages = inject(MessageService);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly network = inject(NetworkStatusService);
   private readonly fb = inject(FormBuilder);
   private readonly auth = inject(AuthService);
   private readonly confirm = viewChild.required(ConfirmDialog);
@@ -437,7 +440,7 @@ export class FaqBoard {
           this.items.set(items);
           this.state.set('ready');
         },
-        error: () => this.state.set('error'),
+        error: (error: unknown) => this.state.set(loadFailureStatus(error, this.network.online())),
       });
   }
 

@@ -19,7 +19,9 @@ import { Subject, catchError, firstValueFrom, map, merge, of, switchMap } from '
 
 import type { AppLanguage } from '../../../../core/i18n/language';
 import { MediaService } from '../../../../core/media/media.service';
+import { loadFailureStatus } from '../../../../core/http/api-error';
 import { LanguageService } from '../../../../core/services/language.service';
+import { NetworkStatusService } from '../../../../core/services/network-status.service';
 import { AppButton } from '../../../../shared/components/app-button/app-button';
 import { LocaleSwitch } from '../../../../shared/components/locale-switch/locale-switch';
 import { PageHeader } from '../../../../shared/components/page-header/page-header';
@@ -37,7 +39,7 @@ import { sanitizeRichTextHtml } from '../../../../shared/editor/sanitize-html';
 import type { LegalDocument, LegalDocumentKind } from '../../models/legal-document.model';
 import { LegalDocumentService } from '../../services/legal-document.service';
 
-type LoadState = 'loading' | 'ready' | 'error';
+type LoadState = 'loading' | 'ready' | 'error' | 'offline';
 type Mode = 'view' | 'edit';
 
 @Component({
@@ -61,6 +63,7 @@ export class LegalDocumentBoard {
   private readonly messages = inject(MessageService);
   private readonly sanitizer = inject(DomSanitizer);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly network = inject(NetworkStatusService);
   private readonly injector = inject(Injector);
   private readonly registerQuillFont = inject(QUILL_FONT_REGISTRAR);
   readonly lang = inject(LanguageService);
@@ -167,8 +170,8 @@ export class LegalDocumentBoard {
             switchMap(() => {
               this.state.set('loading');
               return this.api.get(kind).pipe(
-                map((doc) => ({ ok: true as const, doc })),
-                catchError(() => of({ ok: false as const, doc: null })),
+                map((doc) => ({ ok: true as const, doc, error: null as unknown })),
+                catchError((error: unknown) => of({ ok: false as const, doc: null, error })),
               );
             }),
           ),
@@ -177,7 +180,7 @@ export class LegalDocumentBoard {
       )
       .subscribe((result) => {
         if (!result.ok) {
-          this.state.set('error');
+          this.state.set(loadFailureStatus(result.error, this.network.online()));
           return;
         }
         this.document.set(result.doc);

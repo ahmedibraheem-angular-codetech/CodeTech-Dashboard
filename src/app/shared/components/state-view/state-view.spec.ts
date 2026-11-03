@@ -35,4 +35,18 @@ describe('StateView', () => {
     expect(root.querySelector('.state')?.getAttribute('role')).toBe('alert');
     expect(retry).toHaveBeenCalledTimes(1);
   });
+
+  it('renders SectionEmpty for offline and emits retry', () => {
+    const { fixture, root } = render('offline');
+    const retry = vi.fn();
+    fixture.componentInstance.retry.subscribe(retry);
+
+    expect(root.querySelector('app-section-empty')).not.toBeNull();
+    expect(root.querySelector('.pi-exclamation-circle')).toBeNull();
+    expect(root.querySelector('.pi-inbox')).toBeNull();
+    expect(root.textContent).toContain('لا يوجد اتصال بالإنترنت');
+
+    root.querySelector<HTMLButtonElement>('p-button button')?.click();
+    expect(retry).toHaveBeenCalledTimes(1);
+  });
 });

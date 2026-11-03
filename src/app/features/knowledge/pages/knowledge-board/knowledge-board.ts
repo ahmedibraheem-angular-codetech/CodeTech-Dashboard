@@ -15,6 +15,8 @@ import { DatePickerModule } from 'primeng/datepicker';
 import { catchError, forkJoin, of } from 'rxjs';
 
 import { AuthService } from '../../../../core/auth/auth.service';
+import { loadFailureStatus } from '../../../../core/http/api-error';
+import { NetworkStatusService } from '../../../../core/services/network-status.service';
 import { LanguageService } from '../../../../core/services/language.service';
 import { AppButton } from '../../../../shared/components/app-button/app-button';
 import { ConfirmDialog } from '../../../../shared/components/confirm-dialog/confirm-dialog';
@@ -38,7 +40,7 @@ import {
 import { KnowledgeActions } from '../../services/knowledge-actions.service';
 import { KnowledgeService } from '../../services/knowledge.service';
 
-type LoadState = 'loading' | 'ready' | 'error';
+type LoadState = 'loading' | 'ready' | 'error' | 'offline';
 type BoardTab = 'articles' | 'categories';
 type CategoryEditor = 'create' | 'edit' | null;
 
@@ -67,6 +69,7 @@ export class KnowledgeBoard {
   private readonly messages = inject(MessageService);
   private readonly router = inject(Router);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly network = inject(NetworkStatusService);
   private readonly fb = inject(FormBuilder);
   private readonly auth = inject(AuthService);
   private readonly confirm = viewChild.required(ConfirmDialog);
@@ -363,7 +366,7 @@ export class KnowledgeBoard {
           this.stats.set(stats);
           this.state.set('ready');
         },
-        error: () => this.state.set('error'),
+        error: (error: unknown) => this.state.set(loadFailureStatus(error, this.network.online())),
       });
   }
 

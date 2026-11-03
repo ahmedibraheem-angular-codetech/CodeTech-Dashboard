@@ -14,8 +14,8 @@
 
   @if (state() === 'loading') {
     <app-state-view mode="loading" />
-  } @else if (state() === 'error') {
-    <app-state-view mode="error" [message]="lang.t('faq.loadError')" (retry)="reload()" />
+  } @else if (state() === 'error' || state() === 'offline') {
+    <app-state-view [mode]="state() === 'offline' ? 'offline' : 'error'" [message]="lang.t('faq.loadError')" (retry)="reload()" />
   } @else {
     <div [hidden]="tab() !== 'questions'">
       <app-faq-questions-panel

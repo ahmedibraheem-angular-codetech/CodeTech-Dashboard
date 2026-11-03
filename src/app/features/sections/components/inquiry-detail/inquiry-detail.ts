@@ -17,7 +17,9 @@ import { Router } from '@angular/router';
 import { MessageService } from 'primeng/api';
 
 import type { PermissionName } from '../../../../core/auth/auth.model';
+import { loadFailureStatus } from '../../../../core/http/api-error';
 import { LanguageService } from '../../../../core/services/language.service';
+import { NetworkStatusService } from '../../../../core/services/network-status.service';
 import { ConfirmDialog } from '../../../../shared/components/confirm-dialog/confirm-dialog';
 import { Modal } from '../../../../shared/components/modal/modal';
 import { StateView } from '../../../../shared/components/state-view/state-view';
@@ -35,7 +37,7 @@ import { InquiryDetailDetails } from './components/inquiry-detail-details/inquir
 import { InquiryDetailHeader } from './components/inquiry-detail-header/inquiry-detail-header';
 import { InquiryDetailTimeline } from './components/inquiry-detail-timeline/inquiry-detail-timeline';
 
-type Status = 'loading' | 'ready' | 'error' | 'missing';
+type Status = 'loading' | 'ready' | 'error' | 'offline' | 'missing';
 type Composer = 'note' | 'reply';
 
 export type InquiryPermissionModule = 'inquiries' | 'project_requests';
@@ -62,6 +64,7 @@ export class InquiryDetailPage {
   private readonly messages = inject(MessageService);
   private readonly router = inject(Router);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly network = inject(NetworkStatusService);
   private readonly confirm = viewChild.required(ConfirmDialog);
   readonly lang = inject(LanguageService);
 
@@ -214,7 +217,7 @@ export class InquiryDetailPage {
           this.item.set(item);
           this.status.set(item ? 'ready' : 'missing');
         },
-        error: () => this.status.set('error'),
+        error: (error: unknown) => this.status.set(loadFailureStatus(error, this.network.online())),
       });
   }
 

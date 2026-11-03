@@ -1,6 +1,13 @@
 import { HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 
-import { ApiError, isApiError, statusOf, toApiError } from './api-error';
+import {
+  ApiError,
+  isApiError,
+  isOfflineFailure,
+  loadFailureStatus,
+  statusOf,
+  toApiError,
+} from './api-error';
 
 describe('toApiError', () => {
   it('reads the localized message, dotted-path errors and Retry-After', () => {
@@ -40,5 +47,20 @@ describe('toApiError', () => {
     expect(error.kind).toBe('network');
     expect(isApiError(error)).toBe(true);
     expect(statusOf(error)).toBe(0);
+  });
+});
+
+describe('isOfflineFailure / loadFailureStatus', () => {
+  it('treats browser offline and status-0 ApiError as offline', () => {
+    expect(isOfflineFailure(new Error('x'), false)).toBe(true);
+    expect(isOfflineFailure(new ApiError(0, null), true)).toBe(true);
+    expect(loadFailureStatus(new ApiError(0, null), true)).toBe('offline');
+  });
+
+  it('does not treat HTTP server or auth failures as offline', () => {
+    expect(isOfflineFailure(new ApiError(500, null), true)).toBe(false);
+    expect(isOfflineFailure(new ApiError(401, null), true)).toBe(false);
+    expect(isOfflineFailure(new ApiError(422, null, { name: ['required'] }), true)).toBe(false);
+    expect(loadFailureStatus(new ApiError(500, null), true)).toBe('error');
   });
 });

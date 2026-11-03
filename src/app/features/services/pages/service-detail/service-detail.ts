@@ -18,7 +18,9 @@ import { catchError, map, of, switchMap } from 'rxjs';
 
 import { AuthService } from '../../../../core/auth/auth.service';
 import { BreadcrumbService } from '../../../../core/services/breadcrumb.service';
+import { loadFailureStatus } from '../../../../core/http/api-error';
 import { LanguageService } from '../../../../core/services/language.service';
+import { NetworkStatusService } from '../../../../core/services/network-status.service';
 import { AppButton } from '../../../../shared/components/app-button/app-button';
 import { ConfirmDialog } from '../../../../shared/components/confirm-dialog/confirm-dialog';
 import { InfoField } from '../../../../shared/components/info-field/info-field';
@@ -81,6 +83,7 @@ export class ServiceDetailPage {
   private readonly breadcrumbs = inject(BreadcrumbService);
   private readonly auth = inject(AuthService);
   private readonly confirm = viewChild.required(ConfirmDialog);
+  private readonly network = inject(NetworkStatusService);
   readonly lang = inject(LanguageService);
 
   readonly id = input('');
@@ -191,15 +194,21 @@ export class ServiceDetailPage {
             return of({ failed: false as const, service: null });
           }
           return this.api.get(id).pipe(
-            map((service) => ({ failed: false as const, service })),
-            catchError(() => of({ failed: true as const, service: null })),
+            map((service) => ({ failed: false as const, service, error: null as unknown })),
+            catchError((error: unknown) => of({ failed: true as const, service: null, error })),
           );
         }),
         takeUntilDestroyed(),
       )
       .subscribe((result) => {
         this.item.set(result.service);
-        this.status.set(result.failed ? 'error' : result.service ? 'ready' : 'missing');
+        this.status.set(
+          result.failed
+            ? loadFailureStatus(result.error, this.network.online())
+            : result.service
+              ? 'ready'
+              : 'missing',
+        );
       });
     this.loadProjects();
 
@@ -232,7 +241,12 @@ export class ServiceDetailPage {
           this.projects.set(projects);
           this.projectsStatus.set('ready');
         },
-        error: () => this.projectsStatus.set('error'),
+        error: (error: unknown) => {
+          if (this.projects().length > 0) {
+            return;
+          }
+          this.projectsStatus.set(loadFailureStatus(error, this.network.online()));
+        },
       });
   }
 

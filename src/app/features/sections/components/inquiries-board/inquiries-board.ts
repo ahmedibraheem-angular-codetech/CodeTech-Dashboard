@@ -17,8 +17,11 @@ import { DatePickerModule } from 'primeng/datepicker';
 import { Tooltip } from 'primeng/tooltip';
 import { forkJoin } from 'rxjs';
 
+import { loadFailureStatus } from '../../../../core/http/api-error';
 import { LanguageService } from '../../../../core/services/language.service';
+import { NetworkStatusService } from '../../../../core/services/network-status.service';
 import { DataTable } from '../../../../shared/components/data-table/data-table';
+import { StateView } from '../../../../shared/components/state-view/state-view';
 import {
   type DataTableBadgeValue,
   type DataTableColumn,
@@ -58,6 +61,7 @@ interface InquiryRow {
     FormsModule,
     PageHeader,
     SectionEmpty,
+    StateView,
     StatisticsCards,
     DataTable,
     Tooltip,
@@ -71,6 +75,7 @@ export class InquiriesBoard {
   private readonly messages = inject(MessageService);
   private readonly router = inject(Router);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly network = inject(NetworkStatusService);
   readonly lang = inject(LanguageService);
 
   readonly pageTitle = input('', {
@@ -108,8 +113,9 @@ export class InquiriesBoard {
   private readonly stats = signal<InquiryStats | null>(null);
   readonly exporting = signal(false);
 
-  readonly isEmpty = computed(() => this.loaded() && this.source().length === 0);
-  readonly loaded = signal(false);
+  readonly loadState = signal<'loading' | 'ready' | 'error' | 'offline'>('loading');
+  readonly isEmpty = computed(() => this.loadState() === 'ready' && this.source().length === 0);
+  readonly loaded = computed(() => this.loadState() === 'ready');
 
   constructor() {
     effect(() => {
@@ -285,8 +291,11 @@ export class InquiriesBoard {
     void this.router.navigate([this.detailPath(), row.id]);
   }
 
-  private reload(): void {
-    this.loaded.set(false);
+  protected reload(): void {
+    const keepData = this.source().length > 0;
+    if (!keepData) {
+      this.loadState.set('loading');
+    }
     forkJoin({
       rows: this.api().list(),
       stats: this.api().stats(),
@@ -296,13 +305,18 @@ export class InquiriesBoard {
         next: ({ rows, stats }) => {
           this.source.set(rows);
           this.stats.set(stats);
-          this.loaded.set(true);
+          this.loadState.set('ready');
         },
-        error: () => {
+        error: (error: unknown) => {
+          if (keepData) {
+            return;
+          }
           this.source.set([]);
           this.stats.set(null);
-          this.loaded.set(true);
-          this.messages.add({ severity: 'error', summary: this.lang.t('common.error') });
+          this.loadState.set(loadFailureStatus(error, this.network.online()));
+          if (this.loadState() === 'error') {
+            this.messages.add({ severity: 'error', summary: this.lang.t('common.error') });
+          }
         },
       });
   }

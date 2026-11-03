@@ -15,6 +15,15 @@
   height: 28px;
 }
 
+.state.state--offline {
+  min-height: 240px;
+  padding: 8px;
+}
+
+.state.state--offline .section-empty {
+  width: 100%;
+}
+
 .section-empty {
   display: flex;
   flex-direction: column;

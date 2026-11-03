@@ -3,12 +3,13 @@ import { ProgressSpinner } from 'primeng/progressspinner';
 
 import { LanguageService } from '../../../core/services/language.service';
 import { AppButton } from '../app-button/app-button';
+import { SectionEmpty } from '../section-empty/section-empty';
 
-export type ViewState = 'loading' | 'empty' | 'error';
+export type ViewState = 'loading' | 'empty' | 'error' | 'offline';
 
 @Component({
   selector: 'app-state-view',
-  imports: [AppButton, ProgressSpinner],
+  imports: [AppButton, ProgressSpinner, SectionEmpty],
   templateUrl: './state-view.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

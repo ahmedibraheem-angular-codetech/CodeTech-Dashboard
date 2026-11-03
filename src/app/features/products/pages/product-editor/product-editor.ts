@@ -16,6 +16,7 @@ import { catchError, finalize, map, of, switchMap } from 'rxjs';
 
 import type { AppLanguage } from '../../../../core/i18n/translations';
 import { LanguageService } from '../../../../core/services/language.service';
+import { NetworkStatusService } from '../../../../core/services/network-status.service';
 import {
   EditorShell,
   type EditorShellLabels,
@@ -116,7 +117,7 @@ import {
   isWorkflowStepArabicValid,
   productRepeatersValid,
 } from '../../utils/product-repeater-validation';
-import { isApiError, type FieldErrors } from '../../../../core/http/api-error';
+import { isApiError, loadFailureStatus, type FieldErrors } from '../../../../core/http/api-error';
 import { ObjectUrls } from '../../../../shared/components/product-upload/object-urls';
 import { ProductsService } from '../../services/products.service';
 
@@ -143,6 +144,7 @@ export class ProductEditor {
   private readonly route = inject(ActivatedRoute);
   private readonly messages = inject(MessageService);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly network = inject(NetworkStatusService);
   readonly lang = inject(LanguageService);
 
   readonly id = input('');
@@ -152,7 +154,7 @@ export class ProductEditor {
 
   readonly passed = signal(-1);
   readonly draft = signal<Product>(blankProduct());
-  readonly status = signal<'loading' | 'ready' | 'missing' | 'error'>(
+  readonly status = signal<'loading' | 'ready' | 'missing' | 'error' | 'offline'>(
     this.route.snapshot.data['mode'] === 'edit' ? 'loading' : 'ready',
   );
   readonly saving = signal(false);
@@ -231,7 +233,7 @@ export class ProductEditor {
           this.status.set('loading');
           return this.api.get(request.id).pipe(
             map((product) => ({ failed: false as const, product })),
-            catchError(() => of({ failed: true as const, product: null })),
+            catchError((error: unknown) => of({ failed: true as const, product: null, error })),
           );
         }),
         takeUntilDestroyed(),
@@ -241,7 +243,7 @@ export class ProductEditor {
           return;
         }
         if (result.failed) {
-          this.status.set('error');
+          this.status.set(loadFailureStatus(result.error, this.network.online()));
           return;
         }
         if (!result.product) {

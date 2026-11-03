@@ -26,26 +26,37 @@
       [iconAriaLabel]="lang.t('inquiry.filterByDate')"
     />
   </app-page-header>
-  <app-statistics-cards [cards]="cards()" />
-  @if (isEmpty()) {
-    <article class="section-card">
-      <app-section-empty [title]="lang.t('inquiry.empty')" [hint]="lang.t('inquiry.emptyHint')" />
-    </article>
-  } @else {
-    <app-data-table
-      [title]="heading()"
-      [rows]="rows()"
-      [columns]="columns()"
-      [filters]="filters()"
-      [filterLabel]="lang.language() === 'ar' ? 'كل الحالات' : 'All statuses'"
-      [exportLabel]="lang.language() === 'ar' ? 'تصدير' : 'Export'"
-      [searchLabel]="lang.language() === 'ar' ? 'بحث' : 'Search'"
-      [emptyMessage]="lang.t('common.empty')"
-      [rowClickable]="true"
-      [(query)]="query"
-      [(selectedFilters)]="selectedFilters"
-      (export)="exported()"
-      (rowClick)="open($event)"
+
+  @if (loadState() === 'loading') {
+    <app-state-view mode="loading" />
+  } @else if (loadState() === 'error' || loadState() === 'offline') {
+    <app-state-view
+      [mode]="loadState() === 'offline' ? 'offline' : 'error'"
+      [message]="lang.t('common.error')"
+      (retry)="reload()"
     />
+  } @else {
+    <app-statistics-cards [cards]="cards()" />
+    @if (isEmpty()) {
+      <article class="section-card">
+        <app-section-empty [title]="lang.t('inquiry.empty')" [hint]="lang.t('inquiry.emptyHint')" />
+      </article>
+    } @else {
+      <app-data-table
+        [title]="heading()"
+        [rows]="rows()"
+        [columns]="columns()"
+        [filters]="filters()"
+        [filterLabel]="lang.language() === 'ar' ? 'كل الحالات' : 'All statuses'"
+        [exportLabel]="lang.language() === 'ar' ? 'تصدير' : 'Export'"
+        [searchLabel]="lang.language() === 'ar' ? 'بحث' : 'Search'"
+        [emptyMessage]="lang.t('common.empty')"
+        [rowClickable]="true"
+        [(query)]="query"
+        [(selectedFilters)]="selectedFilters"
+        (export)="exported()"
+        (rowClick)="open($event)"
+      />
+    }
   }
 </section>

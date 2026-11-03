@@ -44,8 +44,12 @@
     <app-state-view mode="loading" [message]="labels().loading" />
   } @else if (status() === 'missing') {
     <app-state-view mode="empty" [message]="labels().missing" />
-  } @else if (status() === 'error') {
-    <app-state-view mode="error" [message]="labels().error" (retry)="retry.emit()" />
+  } @else if (status() === 'error' || status() === 'offline') {
+    <app-state-view
+      [mode]="status() === 'offline' ? 'offline' : 'error'"
+      [message]="labels().error"
+      (retry)="retry.emit()"
+    />
   } @else {
     @if (mode() === 'edit') {
       <app-page-tabs

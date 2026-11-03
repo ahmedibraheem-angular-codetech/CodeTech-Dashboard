@@ -34,8 +34,8 @@
 
   @if (state() === 'loading') {
     <app-state-view mode="loading" />
-  } @else if (state() === 'error') {
-    <app-state-view mode="error" [message]="lang.t('legal.loadError')" (retry)="reload()" />
+  } @else if (state() === 'error' || state() === 'offline') {
+    <app-state-view [mode]="state() === 'offline' ? 'offline' : 'error'" [message]="lang.t('legal.loadError')" (retry)="reload()" />
   } @else {
     <article class="legal-doc__panel">
       <header class="legal-doc__panel-head">

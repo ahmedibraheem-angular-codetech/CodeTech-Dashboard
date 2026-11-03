@@ -1,7 +1,8 @@
 @if (status() === 'loading') {
   <app-state-view mode="loading" />
-} @else if (status() === 'error') {
-  <app-state-view mode="error" [message]="lang.t('common.error')" (retry)="reload()" />
+} @else if (status() === 'error' || status() === 'offline') {
+  <app-state-view
+    [mode]="status() === 'offline' ? 'offline' : 'error'" [message]="lang.t('common.error')" (retry)="reload()" />
 } @else if (status() === 'missing' || !item()) {
   <app-state-view mode="empty" [message]="lang.t('inquiry.notFound')" />
 } @else if (item(); as inquiry) {

@@ -9,8 +9,8 @@ export const SERVICE_UPLOAD_PREFIX = 'service';
 
 export const SERVICE_LIST_PAGE_SIZE = 10;
 
-export type ServiceLoadState = 'loading' | 'ready' | 'error';
+export type ServiceLoadState = 'loading' | 'ready' | 'error' | 'offline';
 
-export type ServicePageStatus = 'loading' | 'ready' | 'missing' | 'error';
+export type ServicePageStatus = 'loading' | 'ready' | 'missing' | 'error' | 'offline';
 
-export type ServiceProjectsStatus = 'loading' | 'ready' | 'error';
+export type ServiceProjectsStatus = 'loading' | 'ready' | 'error' | 'offline';

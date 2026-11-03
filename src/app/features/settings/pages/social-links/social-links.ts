@@ -19,6 +19,8 @@ import { Textarea } from 'primeng/textarea';
 import { startWith } from 'rxjs';
 
 import { AuthService } from '../../../../core/auth/auth.service';
+import { loadFailureStatus } from '../../../../core/http/api-error';
+import { NetworkStatusService } from '../../../../core/services/network-status.service';
 import type { AppLanguage } from '../../../../core/i18n/language';
 import { LanguageService } from '../../../../core/services/language.service';
 import { AppButton } from '../../../../shared/components/app-button/app-button';
@@ -40,7 +42,7 @@ import type {
 import { emptyLocaleText, readLocale } from '../../models/social-links.model';
 import { SocialLinksService } from '../../services/social-links.service';
 
-type LoadState = 'loading' | 'ready' | 'error';
+type LoadState = 'loading' | 'ready' | 'error' | 'offline';
 
 @Component({
   selector: 'app-social-links-page',
@@ -66,6 +68,7 @@ export class SocialLinksPage {
   private readonly api = inject(SocialLinksService);
   private readonly messages = inject(MessageService);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly network = inject(NetworkStatusService);
   private readonly fb = inject(FormBuilder);
   private readonly sanitizer = inject(DomSanitizer);
   private readonly auth = inject(AuthService);
@@ -156,7 +159,7 @@ export class SocialLinksPage {
           this.applyDocument(doc);
           this.state.set('ready');
         },
-        error: () => this.state.set('error'),
+        error: (error: unknown) => this.state.set(loadFailureStatus(error, this.network.online())),
       });
   }
 

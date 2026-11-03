@@ -7,8 +7,9 @@
       <i class="pi" [class]="backIcon()" aria-hidden="true"></i>
       {{ lang.t('service.back') }}
     </a>
-  } @else if (status() === 'error') {
-    <app-state-view mode="error" [message]="lang.t('common.error')" (retry)="retry()" />
+  } @else if (status() === 'error' || status() === 'offline') {
+    <app-state-view
+    [mode]="status() === 'offline' ? 'offline' : 'error'" [message]="lang.t('common.error')" (retry)="retry()" />
     <a class="detail-edit service-detail__back" routerLink="/services">
       <i class="pi" [class]="backIcon()" aria-hidden="true"></i>
       {{ lang.t('service.back') }}
@@ -226,9 +227,9 @@
           </header>
           @if (projectsStatus() === 'loading') {
             <app-state-view mode="loading" [message]="lang.t('common.loading')" />
-          } @else if (projectsStatus() === 'error') {
+          } @else if (projectsStatus() === 'error' || projectsStatus() === 'offline') {
             <app-state-view
-              mode="error"
+              [mode]="projectsStatus() === 'offline' ? 'offline' : 'error'"
               [message]="lang.t('service.detail.projectsError')"
               (retry)="loadProjects()"
             />

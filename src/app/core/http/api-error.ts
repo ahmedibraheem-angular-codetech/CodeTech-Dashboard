@@ -59,6 +59,27 @@ export function statusOf(error: unknown): number | null {
   return null;
 }
 
+/**
+ * True only for genuine connectivity loss — never for 4xx/5xx HTTP responses.
+ * Pass the live `NetworkStatusService.online()` value when available.
+ */
+export function isOfflineFailure(error: unknown, online = true): boolean {
+  if (!online) {
+    return true;
+  }
+  if (isApiError(error)) {
+    return error.kind === 'network';
+  }
+  return error instanceof HttpErrorResponse && error.status === 0;
+}
+
+export type LoadFailureStatus = 'offline' | 'error';
+
+/** Maps a failed load to the UI branch: offline SectionEmpty vs generic error. */
+export function loadFailureStatus(error: unknown, online = true): LoadFailureStatus {
+  return isOfflineFailure(error, online) ? 'offline' : 'error';
+}
+
 function fallbackMessage(status: number): string {
   return status === 0 ? 'Network error' : `Request failed with status ${status}`;
 }

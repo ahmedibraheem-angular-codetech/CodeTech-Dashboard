@@ -16,7 +16,9 @@ import { MessageService } from 'primeng/api';
 import { catchError, finalize, map, of, switchMap } from 'rxjs';
 
 import type { AppLanguage } from '../../../../core/i18n/translations';
+import { loadFailureStatus } from '../../../../core/http/api-error';
 import { LanguageService } from '../../../../core/services/language.service';
+import { NetworkStatusService } from '../../../../core/services/network-status.service';
 import {
   EditorShell,
   type EditorShellLabels,
@@ -89,6 +91,7 @@ export class ServiceEditor {
   private readonly route = inject(ActivatedRoute);
   private readonly messages = inject(MessageService);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly network = inject(NetworkStatusService);
   readonly lang = inject(LanguageService);
 
   readonly id = input('');
@@ -162,8 +165,8 @@ export class ServiceEditor {
           }
           this.status.set('loading');
           return this.api.get(request.id).pipe(
-            map((service) => ({ failed: false as const, service })),
-            catchError(() => of({ failed: true as const, service: null })),
+            map((service) => ({ failed: false as const, service, error: null as unknown })),
+            catchError((error: unknown) => of({ failed: true as const, service: null, error })),
           );
         }),
         takeUntilDestroyed(),
@@ -173,7 +176,7 @@ export class ServiceEditor {
           return;
         }
         if (result.failed) {
-          this.status.set('error');
+          this.status.set(loadFailureStatus(result.error, this.network.online()));
           return;
         }
         if (!result.service) {
@@ -218,7 +221,12 @@ export class ServiceEditor {
           this.projects.set(projects);
           this.projectsStatus.set('ready');
         },
-        error: () => this.projectsStatus.set('error'),
+        error: (error: unknown) => {
+          if (this.projects().length > 0) {
+            return;
+          }
+          this.projectsStatus.set(loadFailureStatus(error, this.network.online()));
+        },
       });
   }
 
