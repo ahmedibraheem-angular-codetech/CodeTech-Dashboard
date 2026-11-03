@@ -23,6 +23,8 @@ export const ar: { [K in keyof typeof en]: string } = {
   'about.ceoEmptyHint': 'ابدأ بإضافة اسم الرئيس التنفيذي',
   'about.ceoAdd': 'إضافة "الرئيس التنفيذي"',
   'about.team': 'فريق العمل',
+  'about.teamPrev': 'الأعضاء السابقون',
+  'about.teamNext': 'الأعضاء التاليون',
   'about.teamEmpty': 'لا يوجد فريق عمل بعد',
   'about.teamEmptyHint': 'ابدأ بإضافة أول عضو وراجع الأسماء',
   'about.teamAdd': 'إضافة عضو جديد',

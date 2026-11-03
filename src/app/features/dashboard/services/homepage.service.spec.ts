@@ -1,7 +1,8 @@
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
-import { firstValueFrom } from 'rxjs';
+import { HttpEventType } from '@angular/common/http';
+import { firstValueFrom, toArray } from 'rxjs';
 
 import { environment } from '../../../../environments/environment';
 import { apiUrl } from '../../../core/config/api';
@@ -105,11 +106,13 @@ describe('HomepageService', () => {
     await expect(result).resolves.toMatchObject({ videoEnabled: false });
   });
 
-  it('uploads a video then PUTs intro-video', async () => {
+  it('uploads a video with progress then PUTs intro-video', async () => {
     const file = new File(['video'], 'clip.mp4', { type: 'video/mp4' });
-    const result = firstValueFrom(service.setVideo(file));
+    const events = firstValueFrom(service.setVideo(file).pipe(toArray()));
     const media = http.expectOne(MEDIA);
+    expect(media.request.reportProgress).toBe(true);
     expect((media.request.body as FormData).get('type')).toBe('video');
+    media.event({ type: HttpEventType.UploadProgress, loaded: 2, total: 4 });
     media.flush({
       data: {
         uuid: 'vid-9',
@@ -142,9 +145,17 @@ describe('HomepageService', () => {
         },
       },
     });
-    await expect(result).resolves.toMatchObject({
-      videoName: 'clip.mp4',
-      videoUrl: 'https://example.test/clip.mp4',
+    const stream = await events;
+    expect(stream.some((item) => item.phase === 'upload')).toBe(true);
+    expect(stream.some((item) => item.phase === 'saving')).toBe(true);
+    const done = stream.at(-1);
+    expect(done).toMatchObject({
+      phase: 'done',
+      progress: 100,
+      content: {
+        videoName: 'clip.mp4',
+        videoUrl: 'https://example.test/clip.mp4',
+      },
     });
   });
 

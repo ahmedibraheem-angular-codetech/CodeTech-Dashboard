@@ -21,6 +21,8 @@ export const en = {
   'home.videoEmptyTitle': 'No intro video yet',
   'home.videoEmptyHint': 'Add the first intro video so it shows up here',
   'home.videoUpload': 'Upload intro video',
+  'home.videoUploading': 'Uploading video…',
+  'home.videoSaving': 'Saving video…',
   'home.videoSize': 'The video is larger than 20 MB.',
   'home.aboutEmpty': 'No CodeTech summary yet',
   'home.aboutEmptyHint': 'Add a CodeTech summary and upload the images',

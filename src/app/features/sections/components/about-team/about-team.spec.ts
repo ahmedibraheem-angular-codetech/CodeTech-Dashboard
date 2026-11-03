@@ -68,6 +68,8 @@ describe('AboutTeamSection', () => {
     expect(root.textContent).toContain('سارة محمد');
     expect(root.textContent).toContain('مصممة واجهات');
     expect(seed[0]?.texts.en).toEqual({ name: 'Sara Mohamed', role: 'UI designer' });
+    expect(root.querySelector('swiper-container.about-team')).not.toBeNull();
+    expect(root.querySelectorAll('swiper-slide .about-member')).toHaveLength(2);
     http.verify();
   });
 

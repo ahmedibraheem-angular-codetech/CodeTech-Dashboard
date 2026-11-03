@@ -133,14 +133,65 @@
   line-height: 1;
 }
 
-.about-team {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+.about-team-toolbar {
+  display: inline-flex;
+  align-items: center;
   gap: 12px;
+}
+
+.about-team-nav {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.about-team-nav__btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: 1px solid #e5eaf0;
+  border-radius: 12px;
+  background: #fff;
+  color: #334155;
+  font-size: 0.85rem;
+  box-shadow: 0 1px 2px rgb(15 23 42 / 4%);
+  cursor: pointer;
+  transition:
+    color 0.15s ease,
+    border-color 0.15s ease,
+    background 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.about-team-nav__btn:hover:not(:disabled) {
+  border-color: #c9d5e5;
+  color: #1c81d3;
+  background: #f8fbff;
+  box-shadow: 0 4px 12px rgb(28 129 211 / 10%);
+}
+
+.about-team-nav__btn:focus-visible {
+  outline: 2px solid #2f6fed;
+  outline-offset: 2px;
+}
+
+.about-team-nav__btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.about-team {
+  display: block;
+  width: 100%;
 }
 
 .about-member {
   display: flex;
+  height: 100%;
   flex-direction: column;
   gap: 4px;
   padding: 8px;
@@ -148,6 +199,7 @@
   border-radius: 16px;
   background: #fff;
   text-align: center;
+  box-sizing: border-box;
 }
 
 .about-member__photo {
@@ -180,12 +232,6 @@
   font-size: var(--app-font-sm);
 }
 
-@media (max-width: 1100px) {
-  .about-team {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
-
 @media (max-width: 900px) {
   .about-story,
   .about-split {
@@ -203,11 +249,5 @@
   .about-ceo__photo {
     width: 100%;
     max-width: 445px;
-  }
-}
-
-@media (max-width: 640px) {
-  .about-team {
-    grid-template-columns: 1fr;
   }
 }

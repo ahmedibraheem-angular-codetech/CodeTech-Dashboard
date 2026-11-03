@@ -21,6 +21,8 @@ export const en = {
   'about.ceoEmptyHint': "Start by adding the chief executive's name",
   'about.ceoAdd': 'Add the chief executive',
   'about.team': 'The team',
+  'about.teamPrev': 'Previous team members',
+  'about.teamNext': 'Next team members',
   'about.teamEmpty': 'There are no team members yet',
   'about.teamEmptyHint': 'Add the first member and review the names',
   'about.teamAdd': 'Add a new member',

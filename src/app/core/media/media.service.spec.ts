@@ -1,7 +1,7 @@
-import { provideHttpClient, withInterceptors } from '@angular/common/http';
+import { HttpEventType, provideHttpClient, withInterceptors } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
-import { firstValueFrom } from 'rxjs';
+import { firstValueFrom, toArray } from 'rxjs';
 
 import { environment } from '../../../environments/environment';
 import { apiUrl } from '../config/api';
@@ -46,6 +46,35 @@ describe('MediaService', () => {
       },
     });
     await expect(result).resolves.toMatchObject({ uuid: 'u-1', file_name: 'logo.png' });
+  });
+
+  it('emits upload progress then the file object', async () => {
+    const file = new File(['video'], 'clip.mp4', { type: 'video/mp4' });
+    const result = firstValueFrom(service.uploadWithProgress('video', file).pipe(toArray()));
+    const request = http.expectOne(MEDIA);
+    expect(request.request.reportProgress).toBe(true);
+    request.event({ type: HttpEventType.UploadProgress, loaded: 1, total: 4 });
+    request.event({ type: HttpEventType.UploadProgress, loaded: 4, total: 4 });
+    request.flush({
+      data: {
+        uuid: 'u-vid',
+        name: 'clip',
+        file_name: 'clip.mp4',
+        mime_type: 'video/mp4',
+        size: 4,
+        url: 'https://example.test/clip.mp4',
+        download_url: 'https://example.test/download',
+        created_at: '2026-10-29T10:00:00.000000Z',
+      },
+    });
+    await expect(result).resolves.toEqual([
+      { type: 'progress', progress: 25 },
+      { type: 'progress', progress: 100 },
+      {
+        type: 'response',
+        file: expect.objectContaining({ uuid: 'u-vid', file_name: 'clip.mp4' }),
+      },
+    ]);
   });
 
   it('uploads a rich-text image to POST /admin/editor-images', async () => {

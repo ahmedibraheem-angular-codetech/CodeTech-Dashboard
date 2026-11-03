@@ -246,6 +246,38 @@ background:#fff;
   --p-button-secondary-active-color: #e11d48;
 }
 
+.video-upload {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-block-end: 16px;
+  padding: 14px 16px;
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--p-primary-color, #2f6fed) 8%, transparent);
+}
+
+.video-upload__meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--p-text-color, #1f2937);
+}
+
+.video-upload__percent {
+  font-variant-numeric: tabular-nums;
+  color: var(--p-primary-color, #2f6fed);
+}
+
+.video-upload__bar.p-progressbar,
+.video-upload .p-progressbar {
+  height: 8px;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
 // Poster for the intro video. The image is the temporary clip's thumbnail.
 .video-frame {
   position: relative;
@@ -262,6 +294,11 @@ background:#fff;
   background:
     linear-gradient(0deg, rgb(0 0 0 / 40%) 0%, rgb(0 0 0 / 40%) 100%),
     url('/images/video-poster.jpg') lightgray 50% / cover no-repeat;
+}
+
+.video-frame.is-uploading {
+  opacity: 0.55;
+  pointer-events: none;
 }
 
 .video-frame__player {

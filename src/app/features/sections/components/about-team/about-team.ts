@@ -1,7 +1,10 @@
 import {
+  CUSTOM_ELEMENTS_SCHEMA,
   ChangeDetectionStrategy,
   Component,
   DestroyRef,
+  ElementRef,
+  afterRenderEffect,
   computed,
   inject,
   input,
@@ -14,6 +17,26 @@ import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { MessageService } from 'primeng/api';
 import { InputText } from 'primeng/inputtext';
 import { Tooltip } from 'primeng/tooltip';
+import { register as registerSwiperElements } from 'swiper/element/bundle';
+import type { SwiperOptions } from 'swiper/types';
+
+registerSwiperElements();
+
+type TeamSwiperInstance = {
+  isBeginning: boolean;
+  isEnd: boolean;
+  update: () => void;
+  slidePrev: () => void;
+  slideNext: () => void;
+  changeLanguageDirection: (direction: 'rtl' | 'ltr') => void;
+  on: (event: string, handler: () => void) => void;
+  off: (event: string, handler: () => void) => void;
+};
+
+type TeamSwiperHost = HTMLElement & {
+  initialize: () => void;
+  swiper?: TeamSwiperInstance;
+};
 
 import { isApiError } from '../../../../core/http/api-error';
 import type { AppLanguage } from '../../../../core/i18n/language';
@@ -70,6 +93,7 @@ function hasCopy(text: AboutMemberText): boolean {
   ],
   templateUrl: './about-team.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class AboutTeamSection {
   private readonly api = inject(AboutService);
@@ -77,9 +101,26 @@ export class AboutTeamSection {
   private readonly destroyRef = inject(DestroyRef);
   readonly lang = inject(LanguageService);
   private readonly confirm = viewChild.required(ConfirmDialog);
+  private readonly swiperHost = viewChild<ElementRef<TeamSwiperHost>>('teamSwiper');
 
   readonly team = input.required<AboutMember[]>();
   readonly changed = output<AboutMember[]>();
+
+  /** Matches the previous 4 / 2 / 1 column layout. */
+  private readonly teamSwiper: SwiperOptions = {
+    slidesPerView: 1,
+    spaceBetween: 12,
+    navigation: false,
+    watchOverflow: true,
+    observer: true,
+    observeSlideChildren: true,
+    breakpoints: {
+      641: { slidesPerView: 2 },
+      1101: { slidesPerView: 4 },
+    },
+  };
+
+  private readonly onSwiperNav = (): void => this.syncNav();
 
   readonly locales = LOCALES;
   readonly editorOpen = signal(false);
@@ -88,6 +129,9 @@ export class AboutTeamSection {
   readonly locale = signal<AppLanguage>('ar');
   readonly image = signal<AboutImage | null>(null);
   readonly imageError = signal('');
+  readonly navAtStart = signal(true);
+  readonly navAtEnd = signal(true);
+  readonly navLocked = signal(true);
 
   readonly imageSize = computed(() => formatFileSize(this.image()?.size ?? 0));
   readonly imageDate = computed(() =>
@@ -95,6 +139,36 @@ export class AboutTeamSection {
   );
 
   readonly form = new FormGroup({ ar: textGroup(true), en: textGroup(false) });
+
+  constructor() {
+    afterRenderEffect(() => {
+      const host = this.swiperHost()?.nativeElement;
+      const direction = this.lang.language() === 'ar' ? 'rtl' : 'ltr';
+      if (!host || this.team().length === 0) {
+        this.syncNav();
+        return;
+      }
+      host.setAttribute('dir', direction);
+      if (!host.swiper) {
+        Object.assign(host, this.teamSwiper);
+        host.initialize?.();
+        this.bindSwiper(host.swiper);
+        this.syncNav();
+        return;
+      }
+      host.swiper.changeLanguageDirection(direction);
+      host.swiper.update();
+      this.syncNav();
+    });
+  }
+
+  slidePrev(): void {
+    this.swiperHost()?.nativeElement.swiper?.slidePrev();
+  }
+
+  slideNext(): void {
+    this.swiperHost()?.nativeElement.swiper?.slideNext();
+  }
 
   viewOf(member: AboutMember): AboutMemberText {
     const current = this.lang.language();
@@ -263,5 +337,28 @@ export class AboutTeamSection {
     }
     this.imageError.set('');
     this.image.set({ ...result.image, file, url: undefined, uuid: undefined });
+  }
+
+  private bindSwiper(swiper: TeamSwiperInstance | undefined): void {
+    if (!swiper) {
+      return;
+    }
+    for (const event of ['slideChange', 'reachBeginning', 'reachEnd', 'fromEdge', 'resize', 'update', 'lock', 'unlock'] as const) {
+      swiper.off(event, this.onSwiperNav);
+      swiper.on(event, this.onSwiperNav);
+    }
+  }
+
+  private syncNav(): void {
+    const swiper = this.swiperHost()?.nativeElement.swiper;
+    if (!swiper) {
+      this.navAtStart.set(true);
+      this.navAtEnd.set(true);
+      this.navLocked.set(true);
+      return;
+    }
+    this.navAtStart.set(swiper.isBeginning);
+    this.navAtEnd.set(swiper.isEnd);
+    this.navLocked.set(swiper.isBeginning && swiper.isEnd);
   }
 }

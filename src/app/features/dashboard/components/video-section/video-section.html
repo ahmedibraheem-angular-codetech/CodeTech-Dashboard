@@ -7,6 +7,7 @@
           <p-toggleswitch
             [ngModel]="enabled()"
             (ngModelChange)="toggle($event)"
+            [disabled]="saving()"
             [attr.aria-label]="lang.t('home.video')"
           />
         </ng-container>
@@ -18,6 +19,7 @@
           *appHasPermission="'home.delete'"
           styleClass="home-delete"
           icon="pi pi-trash"
+          [disabled]="saving()"
           [ariaLabel]="lang.t('home.deleteVideo')"
           [pTooltip]="lang.t('home.deleteVideo')"
           tooltipPosition="top"
@@ -41,8 +43,30 @@
       </div>
     }
   </div>
+  @if (saving()) {
+    <div class="video-upload" role="status" aria-live="polite">
+      <div class="video-upload__meta">
+        <span class="video-upload__label">
+          {{
+            uploadPhase() === 'saving'
+              ? lang.t('home.videoSaving')
+              : lang.t('home.videoUploading')
+          }}
+        </span>
+        @if (uploadPhase() === 'upload') {
+          <span class="video-upload__percent">{{ uploadProgress() }}%</span>
+        }
+      </div>
+      <p-progressbar
+        [value]="uploadProgress()"
+        [mode]="uploadPhase() === 'saving' ? 'indeterminate' : 'determinate'"
+        [showValue]="false"
+        styleClass="video-upload__bar"
+      />
+    </div>
+  }
   @if (name(); as videoName) {
-    <div class="video-frame" [class.is-off]="!enabled()">
+    <div class="video-frame" [class.is-off]="!enabled()" [class.is-uploading]="saving()">
       @if (playing() && url(); as src) {
         <video
           class="video-frame__player"
@@ -56,7 +80,7 @@
         <button
           type="button"
           class="video-play"
-          [disabled]="!enabled() || !url()"
+          [disabled]="!enabled() || !url() || saving()"
           [attr.aria-label]="videoName"
           (click)="play()"
         >
@@ -64,7 +88,7 @@
         </button>
       }
     </div>
-  } @else {
+  } @else if (!saving()) {
     <app-section-empty
       [title]="lang.t('home.videoEmptyTitle')"
       [hint]="lang.t('home.videoEmptyHint')"

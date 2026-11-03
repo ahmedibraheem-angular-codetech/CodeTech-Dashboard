@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
-import { type Observable, map, of, switchMap, throwError } from 'rxjs';
+import { type Observable, concat, map, of, switchMap, throwError } from 'rxjs';
 
 import { API_BASE_URL, apiUrl } from '../../../core/config/api';
 import type { ApiEnvelope } from '../../../core/http/api.model';
@@ -10,7 +10,13 @@ import type {
   HomePartnerDto,
   PartnerCreateDto,
 } from '../models/homepage.api';
-import type { BlockImage, ContentBlock, HomepageContent, Partner } from '../models/homepage.model';
+import type {
+  BlockImage,
+  ContentBlock,
+  HomepageContent,
+  Partner,
+  VideoUploadEvent,
+} from '../models/homepage.model';
 import { mapHomePage, mapPartner, toBlockWrite } from './homepage.mapper';
 
 const HOME_PATH = 'admin/pages/home';
@@ -59,15 +65,30 @@ export class HomepageService {
       .pipe(map((envelope) => mapHomePage(this.requireHome(envelope))));
   }
 
-  setVideo(file: File): Observable<HomepageContent> {
-    return this.media.upload('video', file).pipe(
-      switchMap((uploaded) =>
-        this.http.put<ApiEnvelope<HomePageDto>>(
-          apiUrl(this.base, `${HOME_PATH}/intro-video`),
-          { video: uploaded.uuid },
-        ),
-      ),
-      map((envelope) => mapHomePage(this.requireHome(envelope))),
+  setVideo(file: File): Observable<VideoUploadEvent> {
+    return this.media.uploadWithProgress('video', file).pipe(
+      switchMap((event) => {
+        if (event.type === 'progress') {
+          return of({
+            phase: 'upload' as const,
+            progress: Math.min(90, Math.round(event.progress * 0.9)),
+          });
+        }
+        return concat(
+          of({ phase: 'saving' as const, progress: 92 }),
+          this.http
+            .put<ApiEnvelope<HomePageDto>>(apiUrl(this.base, `${HOME_PATH}/intro-video`), {
+              video: event.file.uuid,
+            })
+            .pipe(
+              map((envelope) => ({
+                phase: 'done' as const,
+                progress: 100,
+                content: mapHomePage(this.requireHome(envelope)),
+              })),
+            ),
+        );
+      }),
     );
   }
 
