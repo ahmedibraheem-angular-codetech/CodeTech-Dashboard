@@ -13,9 +13,10 @@ const REPLY = `مرحبًا، نشكركم على تواصلكم مع كود ا�
 شكرًا لاختياركم كود التقنية.`;
 
 function row(index: number, status: Inquiry['status'], extra: Partial<Inquiry> = {}): Inquiry {
-  const id = `REQ-${String(index).padStart(5, '0')}`;
+  const reference = `REQ-${String(index).padStart(5, '0')}`;
   return {
-    id,
+    id: String(index + 1),
+    reference,
     customer: 'يوسف احمد',
     org: 'كود التقنية',
     phone: '+2040798140',
@@ -26,12 +27,15 @@ function row(index: number, status: Inquiry['status'], extra: Partial<Inquiry> =
     time: '12:00 ظهراً',
     body: MESSAGE,
     notes: [],
+    replies: [],
     reply: null,
+    timeline: [],
     ...extra,
   };
 }
 
-export const INQUIRIES_SEED: Inquiry[] = [
+/** Mock seed for the project-requests inbox only (not used by inquiries HTTP). */
+export const PROJECT_REQUESTS_SEED: Inquiry[] = [
   row(0, 'new', {
     customer: 'محمد عبدالمجيد حسن',
     org: 'شركة كود التقنية',
@@ -47,6 +51,15 @@ export const INQUIRIES_SEED: Inquiry[] = [
       {
         id: 'n1',
         body: NOTE,
+        author: 'زياد محمد عبدالسميع',
+        date: '2026-03-18',
+        time: '10:00 صباحًا',
+      },
+    ],
+    replies: [
+      {
+        id: 'r1',
+        body: REPLY,
         author: 'زياد محمد عبدالسميع',
         date: '2026-03-18',
         time: '10:00 صباحًا',

@@ -21,15 +21,19 @@ import { LanguageService } from '../../../../core/services/language.service';
 import { ConfirmDialog } from '../../../../shared/components/confirm-dialog/confirm-dialog';
 import { Modal } from '../../../../shared/components/modal/modal';
 import { StateView } from '../../../../shared/components/state-view/state-view';
-import { type Inquiry, type InquiryStatus } from '../../models/inquiry.model';
+import {
+  type Inquiry,
+  type InquiryInbox,
+  type InquiryStatus,
+  type InquiryTimelineStep,
+} from '../../models/inquiry.model';
+import type { ContactInboxApi } from '../../services/contact-inbox.api';
 import { InquiriesService } from '../../services/inquiries.service';
+import { ProjectRequestsService } from '../../services/project-requests.service';
 import { InquiryDetailComposer } from './components/inquiry-detail-composer/inquiry-detail-composer';
 import { InquiryDetailDetails } from './components/inquiry-detail-details/inquiry-detail-details';
 import { InquiryDetailHeader } from './components/inquiry-detail-header/inquiry-detail-header';
-import {
-  InquiryDetailTimeline,
-  type InquiryTimelineStep,
-} from './components/inquiry-detail-timeline/inquiry-detail-timeline';
+import { InquiryDetailTimeline } from './components/inquiry-detail-timeline/inquiry-detail-timeline';
 
 type Status = 'loading' | 'ready' | 'error' | 'missing';
 type Composer = 'note' | 'reply';
@@ -53,7 +57,8 @@ export type InquiryPermissionModule = 'inquiries' | 'project_requests';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class InquiryDetailPage {
-  private readonly api = inject(InquiriesService);
+  private readonly inquiriesApi = inject(InquiriesService);
+  private readonly projectRequestsApi = inject(ProjectRequestsService);
   private readonly messages = inject(MessageService);
   private readonly router = inject(Router);
   private readonly destroyRef = inject(DestroyRef);
@@ -63,6 +68,7 @@ export class InquiryDetailPage {
   readonly id = input.required<string>();
 
   readonly permissionModule = input<InquiryPermissionModule>('inquiries');
+  readonly inbox = input<InquiryInbox>('inquiries');
 
   readonly status = signal<Status>('loading');
   readonly item = signal<Inquiry | null>(null);
@@ -122,7 +128,9 @@ export class InquiryDetailPage {
     const body = this.draft.value.trim();
     this.saving.set(true);
     const request =
-      kind === 'note' ? this.api.addNote(current.id, body) : this.api.addReply(current.id, body);
+      kind === 'note'
+        ? this.api().addNote(current.id, body)
+        : this.api().addReply(current.id, body);
     request.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (item) => {
         this.item.set(item);
@@ -143,7 +151,7 @@ export class InquiryDetailPage {
       return;
     }
     this.saving.set(true);
-    this.api
+    this.api()
       .close(current.id)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
@@ -171,7 +179,7 @@ export class InquiryDetailPage {
     if (!accepted) {
       return;
     }
-    this.api
+    this.api()
       .remove(current.id)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
@@ -187,6 +195,10 @@ export class InquiryDetailPage {
     this.load(this.id());
   }
 
+  private api(): ContactInboxApi {
+    return this.inbox() === 'project_requests' ? this.projectRequestsApi : this.inquiriesApi;
+  }
+
   private listPath(): string {
     const path = this.router.url.split('?')[0];
     return path.startsWith('/contact/start') ? '/contact/start' : '/contact/inquiries';
@@ -194,7 +206,7 @@ export class InquiryDetailPage {
 
   private load(id: string): void {
     this.status.set('loading');
-    this.api
+    this.api()
       .get(id)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
@@ -219,6 +231,9 @@ export class InquiryDetailPage {
   private buildSteps(item: Inquiry | null): InquiryTimelineStep[] {
     if (!item) {
       return [];
+    }
+    if (item.timeline.length > 0) {
+      return item.timeline;
     }
     const note = item.notes.at(-1);
     const reply = item.reply;

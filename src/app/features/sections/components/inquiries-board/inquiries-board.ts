@@ -3,9 +3,11 @@ import {
   Component,
   DestroyRef,
   computed,
+  effect,
   inject,
   input,
   signal,
+  untracked,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
@@ -13,6 +15,7 @@ import { Router } from '@angular/router';
 import { MessageService } from 'primeng/api';
 import { DatePickerModule } from 'primeng/datepicker';
 import { Tooltip } from 'primeng/tooltip';
+import { forkJoin } from 'rxjs';
 
 import { LanguageService } from '../../../../core/services/language.service';
 import { DataTable } from '../../../../shared/components/data-table/data-table';
@@ -27,11 +30,19 @@ import { PageHeader } from '../../../../shared/components/page-header/page-heade
 import { SectionEmpty } from '../../../../shared/components/section-empty/section-empty';
 import { StatisticsCards } from '../../../../shared/components/statistics-cards/statistics-cards';
 import { type StatisticsCard } from '../../../../shared/components/statistics-cards/statistics-card.model';
-import { type Inquiry, type InquiryStatus } from '../../models/inquiry.model';
+import {
+  type Inquiry,
+  type InquiryInbox,
+  type InquiryStats,
+  type InquiryStatus,
+} from '../../models/inquiry.model';
+import type { ContactInboxApi } from '../../services/contact-inbox.api';
 import { InquiriesService } from '../../services/inquiries.service';
+import { ProjectRequestsService } from '../../services/project-requests.service';
 
 interface InquiryRow {
   id: string;
+  reference: string;
   name: DataTableIconValue;
   org: DataTableIconValue;
   phone: string;
@@ -55,7 +66,8 @@ interface InquiryRow {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class InquiriesBoard {
-  private readonly api = inject(InquiriesService);
+  private readonly inquiriesApi = inject(InquiriesService);
+  private readonly projectRequestsApi = inject(ProjectRequestsService);
   private readonly messages = inject(MessageService);
   private readonly router = inject(Router);
   private readonly destroyRef = inject(DestroyRef);
@@ -73,6 +85,9 @@ export class InquiriesBoard {
     transform: (value: string | undefined) => value ?? '/contact/inquiries',
   });
 
+  /** `inquiries` hits the real API; `project_requests` stays mock in this phase. */
+  readonly inbox = input<InquiryInbox>('inquiries');
+
   readonly heading = computed(() => {
     this.lang.language();
     const custom = this.pageTitle().trim();
@@ -88,26 +103,25 @@ export class InquiriesBoard {
 
   readonly query = signal('');
   readonly selectedFilters = signal<string[]>([]);
-
   readonly dateFilter = signal<string | null>(null);
   private readonly source = signal<Inquiry[]>([]);
+  private readonly stats = signal<InquiryStats | null>(null);
+  readonly exporting = signal(false);
 
   readonly isEmpty = computed(() => this.loaded() && this.source().length === 0);
   readonly loaded = signal(false);
 
   constructor() {
-    this.api
-      .list()
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe((rows) => {
-        this.source.set(rows);
-        this.loaded.set(true);
-      });
+    effect(() => {
+      this.inbox();
+      untracked(() => this.reload());
+    });
   }
 
   readonly cards = computed<StatisticsCard[]>(() => {
     const ar = this.lang.language() === 'ar';
     const caption = ar ? 'مقارنة بالأمس' : 'Compared with yesterday';
+    const stats = this.stats();
     return [
       this.card(
         'total',
@@ -116,6 +130,7 @@ export class InquiriesBoard {
         '#16a34a',
         '#dcfce7',
         caption,
+        stats?.total,
       ),
       this.card(
         'fresh',
@@ -124,6 +139,7 @@ export class InquiriesBoard {
         '#3b82f6',
         '#dbeafe',
         caption,
+        stats?.new,
       ),
       this.card(
         'progress',
@@ -132,6 +148,7 @@ export class InquiriesBoard {
         '#f59e0b',
         '#ffedd5',
         caption,
+        stats?.progress,
       ),
       this.card(
         'closed',
@@ -140,6 +157,7 @@ export class InquiriesBoard {
         '#e11d48',
         '#ffe4e6',
         caption,
+        stats?.closed,
       ),
     ];
   });
@@ -156,8 +174,16 @@ export class InquiriesBoard {
 
   readonly columns = computed<DataTableColumn<InquiryRow>[]>(() => {
     const ar = this.lang.language() === 'ar';
+    const related =
+      this.inbox() === 'project_requests'
+        ? ar
+          ? 'الخدمة المطلوبة'
+          : 'Service'
+        : ar
+          ? 'المنتج'
+          : 'Product';
     return [
-      { key: 'id', header: 'ID', field: 'id', width: '140px' },
+      { key: 'reference', header: 'ID', field: 'reference', width: '140px' },
       { key: 'name', header: ar ? 'الاسم' : 'Name', field: 'name', kind: 'icon-text' },
       {
         key: 'org',
@@ -174,7 +200,7 @@ export class InquiriesBoard {
       },
       {
         key: 'product',
-        header: ar ? 'المنتج' : 'Product',
+        header: related,
         field: 'product',
         sortable: true,
         width: '110px',
@@ -204,7 +230,7 @@ export class InquiriesBoard {
       .filter((row) => {
         const statusOk = selected.length === 0 || selected.includes(row.status);
         const dateOk = !day || row.date.slice(0, 10) === day;
-        const haystack = `${row.id} ${row.customer} ${row.org} ${row.phone} ${row.product}`;
+        const haystack = `${row.reference} ${row.customer} ${row.org} ${row.phone} ${row.product} ${row.email}`;
         return statusOk && dateOk && (!query || haystack.includes(query));
       })
       .map((row) => this.toRow(row));
@@ -225,20 +251,70 @@ export class InquiriesBoard {
     this.dateFilter.set(value.slice(0, 10) || null);
   }
 
-  protected exported(rows: readonly InquiryRow[]): void {
-    this.messages.add({
-      severity: 'success',
-      summary: this.lang.language() === 'ar' ? `تصدير ${rows.length}` : `Export ${rows.length}`,
-    });
+  protected exported(): void {
+    if (this.exporting()) {
+      return;
+    }
+    this.exporting.set(true);
+    this.api()
+      .exportCsv()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (blob) => {
+          this.exporting.set(false);
+          const href = URL.createObjectURL(blob);
+          const link = document.createElement('a');
+          link.href = href;
+          const prefix = this.inbox() === 'project_requests' ? 'project-requests' : 'inquiries';
+          link.download = `${prefix}-${new Date().toISOString().slice(0, 10)}.csv`;
+          link.click();
+          URL.revokeObjectURL(href);
+          this.messages.add({
+            severity: 'success',
+            summary: this.lang.language() === 'ar' ? 'تم التصدير' : 'Export ready',
+          });
+        },
+        error: () => {
+          this.exporting.set(false);
+          this.messages.add({ severity: 'error', summary: this.lang.t('common.error') });
+        },
+      });
   }
 
   protected open(row: InquiryRow): void {
     void this.router.navigate([this.detailPath(), row.id]);
   }
 
+  private reload(): void {
+    this.loaded.set(false);
+    forkJoin({
+      rows: this.api().list(),
+      stats: this.api().stats(),
+    })
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: ({ rows, stats }) => {
+          this.source.set(rows);
+          this.stats.set(stats);
+          this.loaded.set(true);
+        },
+        error: () => {
+          this.source.set([]);
+          this.stats.set(null);
+          this.loaded.set(true);
+          this.messages.add({ severity: 'error', summary: this.lang.t('common.error') });
+        },
+      });
+  }
+
+  private api(): ContactInboxApi {
+    return this.inbox() === 'project_requests' ? this.projectRequestsApi : this.inquiriesApi;
+  }
+
   private toRow(row: Inquiry): InquiryRow {
     return {
       id: row.id,
+      reference: row.reference,
       name: { icon: 'pi pi-user', label: row.customer },
       org: { icon: 'pi pi-building', label: row.org },
       phone: row.phone,
@@ -268,7 +344,24 @@ export class InquiriesBoard {
     iconColor: string,
     iconBackground: string,
     caption: string,
+    metric?: InquiryStats[keyof InquiryStats],
   ): StatisticsCard {
-    return { id, title, value: '1,284', icon, iconColor, iconBackground, trend: 12.5, caption };
+    const value = metric?.value ?? 0;
+    const trend = metric?.changePct;
+    return {
+      id,
+      title,
+      value: value.toLocaleString(this.lang.language() === 'ar' ? 'ar' : 'en'),
+      icon,
+      iconColor,
+      iconBackground,
+      caption,
+      ...(trend == null
+        ? {}
+        : {
+            trend,
+            trendDirection: trend > 0 ? 'up' : trend < 0 ? 'down' : 'neutral',
+          }),
+    };
   }
 }

@@ -140,7 +140,11 @@ export const routes: Routes = [
               import('./features/sections/components/inquiries-board/inquiries-board').then(
                 (m) => m.InquiriesBoard,
               ),
-            data: { titleKey: 'nav.inquiries', detailPath: '/contact/inquiries' },
+            data: {
+              titleKey: 'nav.inquiries',
+              detailPath: '/contact/inquiries',
+              inbox: 'inquiries',
+            },
           },
           {
             path: ':id',
@@ -152,6 +156,7 @@ export const routes: Routes = [
               breadcrumb: ':id',
               titleKey: 'nav.inquiries',
               permissionModule: 'inquiries',
+              inbox: 'inquiries',
             },
           },
         ],
@@ -171,6 +176,7 @@ export const routes: Routes = [
               titleKey: 'nav.startProjects',
               pageTitleKey: 'nav.startProjects',
               detailPath: '/contact/start',
+              inbox: 'project_requests',
             },
           },
           {
@@ -183,6 +189,7 @@ export const routes: Routes = [
               breadcrumb: ':id',
               titleKey: 'nav.startProjects',
               permissionModule: 'project_requests',
+              inbox: 'project_requests',
             },
           },
         ],

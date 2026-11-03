@@ -1,17 +1,9 @@
 import { ChangeDetectionStrategy, Component, inject, input } from '@angular/core';
 
 import { LanguageService } from '../../../../../../core/services/language.service';
+import type { InquiryTimelineStep } from '../../../../models/inquiry.model';
 
-export type InquiryTimelineStepState = 'done' | 'current' | 'todo';
-
-export interface InquiryTimelineStep {
-  id: string;
-  title: string;
-  hint: string;
-  state: InquiryTimelineStepState;
-  date: string;
-  time: string;
-}
+export type { InquiryTimelineStep, InquiryTimelineStepState } from '../../../../models/inquiry.model';
 
 @Component({
   selector: 'app-inquiry-detail-timeline',

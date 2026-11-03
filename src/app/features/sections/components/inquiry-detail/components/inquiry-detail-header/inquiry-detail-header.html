@@ -1,7 +1,7 @@
 <header class="page-header inquiry__head">
   <div class="inquiry__title">
     <div class="inquiry__heading">
-      <h1>{{ lang.t('inquiry.request') }} #{{ inquiry().id }}</h1>
+      <h1>{{ lang.t('inquiry.request') }} #{{ inquiry().reference }}</h1>
       @if (badge(); as badge) {
         <span [class]="'inquiry-badge inquiry-badge--' + badge.tone">{{ badge.label }}</span>
       }

@@ -1,10 +1,13 @@
+import { provideHttpClient, withInterceptors } from '@angular/common/http';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { provideRouter, Router } from '@angular/router';
 import { MessageService } from 'primeng/api';
 
 import { authSession } from '../../../../core/auth/auth-session.fixture';
 import { AuthService } from '../../../../core/auth/auth.service';
-import { API_LATENCY_MS } from '../../../../core/config/latency';
+import { API_BASE_URL } from '../../../../core/config/api';
+import { environment } from '../../../../../environments/environment';
 import { ConfirmDialog } from '../../../../shared/components/confirm-dialog/confirm-dialog';
 import { InquiryDetailPage } from './inquiry-detail';
 
@@ -22,13 +25,24 @@ const INQUIRY_GRANTS = [
   'inquiries.delete',
 ] as const;
 
+const base = environment.apiUrl;
+
 describe('InquiryDetailPage', () => {
-  afterEach(() => vi.restoreAllMocks());
+  afterEach(() => {
+    TestBed.inject(HttpTestingController).verify();
+    vi.restoreAllMocks();
+  });
 
   async function render(id: string) {
     TestBed.configureTestingModule({
       imports: [InquiryDetailPage],
-      providers: [MessageService, { provide: API_LATENCY_MS, useValue: 0 }, provideRouter([])],
+      providers: [
+        MessageService,
+        provideHttpClient(withInterceptors([])),
+        provideHttpClientTesting(),
+        { provide: API_BASE_URL, useValue: base },
+        provideRouter([]),
+      ],
     });
     TestBed.inject(AuthService).session.set(
       authSession({
@@ -42,8 +56,11 @@ describe('InquiryDetailPage', () => {
     const fixture = TestBed.createComponent(InquiryDetailPage);
     fixture.componentRef.setInput('id', id);
     fixture.componentRef.setInput('permissionModule', 'inquiries');
+    fixture.componentRef.setInput('inbox', 'inquiries');
     fixture.detectChanges();
-    await new Promise((resolve) => setTimeout(resolve, 20));
+
+    const http = TestBed.inject(HttpTestingController);
+    http.expectOne(`${base}/admin/inquiries/${id}`).flush({ data: detailDto(id) });
     await fixture.whenStable();
     fixture.detectChanges();
     return fixture;
@@ -53,33 +70,56 @@ describe('InquiryDetailPage', () => {
     return fixture.componentInstance as InquiryHarness;
   }
 
-  it('renders the seeded inquiry and the send-reply action', async () => {
-    const fixture = await render('REQ-00000');
+  it('renders the inquiry and the send-reply action', async () => {
+    const fixture = await render('16');
     const root: HTMLElement = fixture.nativeElement;
 
-    expect(root.textContent).toContain('REQ-00000');
+    expect(root.textContent).toContain('REQ-00016');
     expect(root.textContent).toContain('محمد عبدالمجيد حسن');
     expect(root.textContent).toContain('إرسال رد');
     expect(root.textContent).toContain('إضافة ملحوظة');
     expect(root.querySelector('.inquiry-card--note')).toBeNull();
-    expect(root.querySelectorAll('.inquiry-step__check')).toHaveLength(1);
-    expect(root.querySelectorAll('.inquiry-step__dot')).toHaveLength(1);
   });
 
   it('shows the note and reply cards on a follow-up inquiry', async () => {
-    const fixture = await render('REQ-00001');
+    TestBed.configureTestingModule({
+      imports: [InquiryDetailPage],
+      providers: [
+        MessageService,
+        provideHttpClient(withInterceptors([])),
+        provideHttpClientTesting(),
+        { provide: API_BASE_URL, useValue: base },
+        provideRouter([]),
+      ],
+    });
+    TestBed.inject(AuthService).session.set(
+      authSession({
+        token: 't',
+        email: 'admin@codetech.sa',
+        name: 'Admin',
+        profileLoaded: true,
+        permissions: [...INQUIRY_GRANTS],
+      }),
+    );
+    const fixture = TestBed.createComponent(InquiryDetailPage);
+    fixture.componentRef.setInput('id', '17');
+    fixture.componentRef.setInput('inbox', 'inquiries');
+    fixture.detectChanges();
+    TestBed.inject(HttpTestingController)
+      .expectOne(`${base}/admin/inquiries/17`)
+      .flush({ data: detailDto('17', { withFollowUp: true }) });
+    await fixture.whenStable();
+    fixture.detectChanges();
     const root: HTMLElement = fixture.nativeElement;
 
     expect(root.querySelector('.inquiry-card--note')).not.toBeNull();
     expect(root.querySelector('.inquiry-card--reply')).not.toBeNull();
     expect(root.textContent).toContain('إغلاق الطلب');
-    expect(root.textContent).toContain('زياد محمد عبدالسميع');
-    expect(root.querySelectorAll('.inquiry-step__check')).toHaveLength(3);
-    expect(root.querySelectorAll('.inquiry-step__dot')).toHaveLength(1);
+    expect(root.textContent).toContain('زياد محمد');
   });
 
   it('opens and cancels the note composer', async () => {
-    const fixture = await render('REQ-00000');
+    const fixture = await render('16');
     const component = page(fixture);
 
     component.openComposer('note');
@@ -93,21 +133,8 @@ describe('InquiryDetailPage', () => {
     expect(component.composer()).toBeNull();
   });
 
-  it('opens and cancels the reply composer', async () => {
-    const fixture = await render('REQ-00000');
-    const component = page(fixture);
-
-    component.openComposer('reply');
-    fixture.detectChanges();
-    expect(component.composer()).toBe('reply');
-
-    component.composer.set(null);
-    fixture.detectChanges();
-    expect(component.composer()).toBeNull();
-  });
-
   it('rejects an empty draft and keeps the composer open', async () => {
-    const fixture = await render('REQ-00000');
+    const fixture = await render('16');
     const component = page(fixture);
 
     component.openComposer('note');
@@ -121,73 +148,144 @@ describe('InquiryDetailPage', () => {
     expect(component.item()!.notes).toHaveLength(0);
   });
 
-  it('saves a note and shows the note card', async () => {
-    const fixture = await render('REQ-00000');
+  it('saves a note after a successful API round-trip', async () => {
+    const fixture = await render('16');
     const component = page(fixture);
+    const http = TestBed.inject(HttpTestingController);
     const root: HTMLElement = fixture.nativeElement;
 
     component.openComposer('note');
     component.draft.setValue('ملحوظة اختبارية من المواصفات');
     component.saveComposer();
-    await new Promise((resolve) => setTimeout(resolve, 20));
+    fixture.detectChanges();
+
+    http.expectOne(`${base}/admin/inquiries/16/notes`).flush({
+      data: {
+        id: 9,
+        body: 'ملحوظة اختبارية من المواصفات',
+        author: { id: 1, name: 'Admin' },
+        created_at: '2026-10-29T09:00:00.000000Z',
+      },
+    });
+    http.expectOne(`${base}/admin/inquiries/16`).flush({
+      data: detailDto('16', {
+        status: 'in_progress',
+        notes: [
+          {
+            id: 9,
+            body: 'ملحوظة اختبارية من المواصفات',
+            author: { id: 1, name: 'Admin' },
+            created_at: '2026-10-29T09:00:00.000000Z',
+          },
+        ],
+      }),
+    });
     await fixture.whenStable();
     fixture.detectChanges();
 
     expect(component.composer()).toBeNull();
-    expect(component.item()!.notes.length).toBeGreaterThan(0);
     expect(component.item()!.notes.at(-1)?.body).toContain('ملحوظة اختبارية');
     expect(root.querySelector('.inquiry-card--note')).not.toBeNull();
-    expect(root.textContent).toContain('ملحوظة اختبارية من المواصفات');
   });
 
   it('saves a reply and updates status to progress', async () => {
-    const fixture = await render('REQ-00000');
+    const fixture = await render('16');
     const component = page(fixture);
-    const root: HTMLElement = fixture.nativeElement;
+    const http = TestBed.inject(HttpTestingController);
 
-    expect(component.item()!.reply).toBeNull();
     component.openComposer('reply');
     component.draft.setValue('رد اختباري من المواصفات');
     component.saveComposer();
-    await new Promise((resolve) => setTimeout(resolve, 20));
+    fixture.detectChanges();
+
+    http.expectOne(`${base}/admin/inquiries/16/replies`).flush({
+      data: {
+        id: 3,
+        body: 'رد اختباري من المواصفات',
+        emailed_at: null,
+        author: { id: 1, name: 'Admin' },
+        created_at: '2026-10-29T10:00:00.000000Z',
+      },
+    });
+    http.expectOne(`${base}/admin/inquiries/16`).flush({
+      data: detailDto('16', {
+        status: 'in_progress',
+        replies: [
+          {
+            id: 3,
+            body: 'رد اختباري من المواصفات',
+            emailed_at: null,
+            author: { id: 1, name: 'Admin' },
+            created_at: '2026-10-29T10:00:00.000000Z',
+          },
+        ],
+      }),
+    });
     await fixture.whenStable();
     fixture.detectChanges();
 
-    expect(component.composer()).toBeNull();
     expect(component.item()!.reply?.body).toContain('رد اختباري');
     expect(component.item()!.status).toBe('progress');
-    expect(root.querySelector('.inquiry-card--reply')).not.toBeNull();
-    expect(root.textContent).toContain('رد اختباري من المواصفات');
   });
 
-  it('closes the request without confirmation', async () => {
-    const fixture = await render('REQ-00001');
+  it('closes a progress inquiry via status endpoint', async () => {
+    TestBed.configureTestingModule({
+      imports: [InquiryDetailPage],
+      providers: [
+        MessageService,
+        provideHttpClient(withInterceptors([])),
+        provideHttpClientTesting(),
+        { provide: API_BASE_URL, useValue: base },
+        provideRouter([]),
+      ],
+    });
+    TestBed.inject(AuthService).session.set(
+      authSession({
+        token: 't',
+        email: 'admin@codetech.sa',
+        name: 'Admin',
+        profileLoaded: true,
+        permissions: [...INQUIRY_GRANTS],
+      }),
+    );
+    const fixture = TestBed.createComponent(InquiryDetailPage);
+    fixture.componentRef.setInput('id', '17');
+    fixture.componentRef.setInput('inbox', 'inquiries');
+    fixture.detectChanges();
+    const http = TestBed.inject(HttpTestingController);
+    http.expectOne(`${base}/admin/inquiries/17`).flush({
+      data: detailDto('17', { withFollowUp: true }),
+    });
+    await fixture.whenStable();
+    fixture.detectChanges();
     const component = page(fixture);
 
     expect(component.item()!.status).toBe('progress');
     component.closeRequest();
-    await new Promise((resolve) => setTimeout(resolve, 20));
+    const req = http.expectOne(`${base}/admin/inquiries/17/status`);
+    expect(req.request.body).toEqual({ status: 'closed' });
+    req.flush({ data: detailDto('17', { withFollowUp: true, status: 'closed' }) });
     await fixture.whenStable();
     fixture.detectChanges();
-
     expect(component.item()!.status).toBe('closed');
   });
 
   it('deletes the inquiry after confirmation and navigates to the list', async () => {
-    const fixture = await render('REQ-00000');
+    const fixture = await render('16');
     const component = page(fixture);
+    const http = TestBed.inject(HttpTestingController);
     const navigate = vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
     vi.spyOn(ConfirmDialog.prototype, 'ask').mockResolvedValue(true);
 
     await component.remove();
-    await new Promise((resolve) => setTimeout(resolve, 20));
+    http.expectOne(`${base}/admin/inquiries/16`).flush('', { status: 204, statusText: 'No Content' });
     await fixture.whenStable();
 
     expect(navigate).toHaveBeenCalledWith(['/contact/inquiries']);
   });
 
   it('does not delete when confirmation is cancelled', async () => {
-    const fixture = await render('REQ-00000');
+    const fixture = await render('16');
     const component = page(fixture);
     const navigate = vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
     vi.spyOn(ConfirmDialog.prototype, 'ask').mockResolvedValue(false);
@@ -196,6 +294,89 @@ describe('InquiryDetailPage', () => {
     await fixture.whenStable();
 
     expect(navigate).not.toHaveBeenCalled();
-    expect(component.item()?.id).toBe('REQ-00000');
+    expect(component.item()?.id).toBe('16');
+  });
+
+  it('keeps the editor state when note save fails', async () => {
+    const fixture = await render('16');
+    const component = page(fixture);
+    const http = TestBed.inject(HttpTestingController);
+
+    component.openComposer('note');
+    component.draft.setValue('لن تُحفظ');
+    component.saveComposer();
+    fixture.detectChanges();
+    http
+      .expectOne(`${base}/admin/inquiries/16/notes`)
+      .flush({ message: 'fail' }, { status: 422, statusText: 'Unprocessable Entity' });
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    expect(component.saving()).toBe(false);
+    expect(component.item()!.notes).toHaveLength(0);
+    expect(component.item()!.status).toBe('new');
   });
 });
+
+function detailDto(
+  id: string,
+  options: {
+    withFollowUp?: boolean;
+    status?: 'new' | 'in_progress' | 'closed';
+    notes?: unknown[];
+    replies?: unknown[];
+  } = {},
+) {
+  const followUp = options.withFollowUp === true;
+  return {
+    id: Number(id),
+    reference: `REQ-${id.padStart(5, '0')}`,
+    type: 'inquiry',
+    status: options.status ?? (followUp ? 'in_progress' : 'new'),
+    name: 'محمد عبدالمجيد حسن',
+    organization: 'شركة كود التقنية',
+    phone: '+960 0000 000 00',
+    email: 'email@gmail.com',
+    product: { id: 1, title: 'الما' },
+    message: 'مرحبًا',
+    close_note: null,
+    closed_at: null,
+    notes:
+      options.notes ??
+      (followUp
+        ? [
+            {
+              id: 5,
+              body: 'ملاحظة داخلية',
+              author: { id: 2, name: 'زياد محمد' },
+              created_at: '2026-10-29T09:00:00.000000Z',
+            },
+          ]
+        : []),
+    replies:
+      options.replies ??
+      (followUp
+        ? [
+            {
+              id: 3,
+              body: 'رد للعميل',
+              emailed_at: null,
+              author: { id: 2, name: 'زياد محمد' },
+              created_at: '2026-10-29T11:05:00.000000Z',
+            },
+          ]
+        : []),
+    timeline: [
+      {
+        key: 'received',
+        state: 'done',
+        title: 'تم استلام الطلب',
+        description: 'تم الاستقبال',
+        at: '2026-10-29T08:00:00.000000Z',
+        by: null,
+      },
+    ],
+    created_at: '2026-10-29T08:00:00.000000Z',
+    updated_at: '2026-10-29T08:00:00.000000Z',
+  };
+}

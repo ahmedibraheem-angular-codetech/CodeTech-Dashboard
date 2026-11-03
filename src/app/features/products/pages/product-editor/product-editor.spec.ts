@@ -39,7 +39,10 @@ describe('ProductEditor', () => {
         MessageService,
         { provide: API_LATENCY_MS, useValue: 0 },
         { provide: ProductsService, useClass: ProductsMemoryService },
-        provideRouter([{ path: 'products/:id', component: ProductRouteStub }]),
+        provideRouter([
+          { path: 'products', component: ProductRouteStub },
+          { path: 'products/:id', component: ProductRouteStub },
+        ]),
         {
           provide: ActivatedRoute,
           useValue: { data: of({ mode }), snapshot: { data: { mode } } },
@@ -177,13 +180,14 @@ describe('ProductEditor', () => {
     clickButton(root, 'حفظ');
     await settle(fixture);
     expect((await firstValueFrom(api.get('info-system')))?.published).toBe(true);
-    expect(router.url).toBe('/products/info-system');
+    expect(router.url).toBe('/products');
   });
 
   it('creates one published product when finish is clicked twice', async () => {
     const fixture = await render('create');
     const root: HTMLElement = fixture.nativeElement;
     const api = TestBed.inject(ProductsService);
+    const router = TestBed.inject(Router);
     const before = (await firstValueFrom(api.list())).length;
 
     enterName(root, 'منتج جديد');
@@ -212,6 +216,7 @@ describe('ProductEditor', () => {
     expect(created).toHaveLength(1);
     expect(created[0]?.published).toBe(true);
     expect(created[0]?.name.en).toBe('New product');
+    expect(router.url).toBe('/products');
   });
 
   it('ignores a stale product load when the id changes', async () => {
@@ -664,8 +669,11 @@ describe('ProductEditor', () => {
     const root: HTMLElement = fixture.nativeElement;
     const editor = fixture.componentInstance;
     const api = TestBed.inject(ProductsService);
+    const router = TestBed.inject(Router);
+    const navigate = vi.spyOn(router, 'navigate');
     const messages = TestBed.inject(MessageService);
     const add = vi.spyOn(messages, 'add');
+    const nameBefore = editor.draft().name.ar;
     vi.spyOn(api, 'save').mockReturnValue(
       throwError(
         () =>
@@ -680,6 +688,8 @@ describe('ProductEditor', () => {
     clickButton(root, 'حفظ كمسودة');
     await settle(fixture);
 
+    expect(navigate).not.toHaveBeenCalled();
+    expect(editor.draft().name.ar).toBe(nameBefore);
     expect(editor.step()).toBe(7);
     expect(editor.slugErrorText()).toBe('The slug format is invalid.');
     expect(editor.keywordsErrorText()).toBe('May not be greater than 50 characters.');
