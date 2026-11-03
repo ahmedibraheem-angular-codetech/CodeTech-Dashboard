@@ -43,8 +43,36 @@ import {
   type LocaleText,
   type Product,
 } from '../../models/product.model';
+import { isValidProductSlug } from '../../models/product-slug';
+import {
+  PRODUCT_SHORT_DESCRIPTION_MAX,
+  isValidShortDescription,
+} from '../../models/product-short-description';
+import { isSectorArabicImageValid } from '../../models/product-sector-media';
+import {
+  isWorkflowStepArabicValid,
+  workflowStepBodyArMissing,
+  workflowStepTitleArMissing,
+} from '../../models/product-workflow-step';
+import {
+  PRODUCT_META_KEYWORD_MAX,
+  isValidMetaKeywords,
+  longestProductKeywordLength,
+} from '../../models/product-meta-keywords';
+import {
+  clearServerErrorPaths,
+  clearServerErrorPrefix,
+  localeFromServerPath,
+  productStepIndexForServerPath,
+  serverErrorMessage,
+  serverErrorPrefixMessage,
+} from '../../models/product-server-errors';
+import { isApiError, type FieldErrors } from '../../../../core/http/api-error';
 import { ObjectUrls } from '../../../../shared/components/product-upload/object-urls';
 import { ProductsService } from '../../services/products.service';
+
+const IDENTITY_STEP_INDEX = PRODUCT_STEPS.findIndex((item) => item.id === 'identity');
+const SEO_STEP_INDEX = PRODUCT_STEPS.findIndex((item) => item.id === 'seo');
 
 type PointList = 'features' | 'challenges' | 'offer' | 'results' | 'steps' | 'highlights';
 type MediaList = 'tools' | 'integrations' | 'identity';
@@ -86,6 +114,21 @@ export class ProductEditor {
   );
   readonly saving = signal(false);
   readonly nameError = signal(false);
+  readonly slugInvalid = computed(
+    () => !isValidProductSlug(readLocale(this.draft().seo.slug, this.locale())),
+  );
+  readonly summaryMax = PRODUCT_SHORT_DESCRIPTION_MAX;
+  readonly summaryInvalid = computed(
+    () => !isValidShortDescription(readLocale(this.draft().summary, this.locale())),
+  );
+  readonly keywordsMax = PRODUCT_META_KEYWORD_MAX;
+  readonly keywordsLongest = computed(() =>
+    longestProductKeywordLength(readLocale(this.draft().seo.keywords, this.locale())),
+  );
+  readonly keywordsInvalid = computed(
+    () => !isValidMetaKeywords(readLocale(this.draft().seo.keywords, this.locale())),
+  );
+  readonly serverErrors = signal<FieldErrors>({});
   private readonly reload = signal(0);
 
   readonly mode = toSignal(
@@ -204,6 +247,9 @@ export class ProductEditor {
     if (this.saving() || index === undefined || (this.mode() === 'create' && index > this.step())) {
       return;
     }
+    if (!this.canLeaveEditorStep(index)) {
+      return;
+    }
     this.step.set(index);
   }
 
@@ -213,6 +259,9 @@ export class ProductEditor {
     }
     if (this.mode() === 'create' && this.step() === 0 && !this.namesValid()) {
       this.nameError.set(true);
+      return;
+    }
+    if (!this.canLeaveEditorStep(this.step() + 1)) {
       return;
     }
     const leaving = this.step();
@@ -226,6 +275,9 @@ export class ProductEditor {
     }
     if (this.step() === 0) {
       void this.router.navigate(['/products']);
+      return;
+    }
+    if (!this.canLeaveEditorStep(this.step() - 1)) {
       return;
     }
     this.step.update((current) => current - 1);
@@ -252,12 +304,17 @@ export class ProductEditor {
     if (value === undefined) {
       return;
     }
+    const language = this.locale();
     this.draft.update((current) => ({
       ...current,
       [key]: this.writeLocale(current[key], value),
     }));
     if (key === 'name') {
       this.nameError.set(false);
+      this.dropServerErrors(`title.${language}`);
+    }
+    if (key === 'summary') {
+      this.dropServerErrors(`short_description.${language}`, `description.${language}`);
     }
   }
 
@@ -266,10 +323,17 @@ export class ProductEditor {
     if (value === undefined) {
       return;
     }
+    const language = this.locale();
     this.draft.update((current) => ({
       ...current,
       [list]: this.patchLocaleField(current[list], index, field, value),
     }));
+    const apiField = field === 'body' ? 'short_description' : 'title';
+    if (list === 'steps') {
+      this.dropServerErrors(`workflow_steps.${index}.${apiField}.${language}`);
+    } else if (list === 'challenges' || list === 'features') {
+      this.dropServerErrors(`${list}.${index}.${apiField}.${language}`);
+    }
   }
 
   addPoint(list: PointList): void {
@@ -350,8 +414,11 @@ export class ProductEditor {
     }));
   }
 
-  setSectorImage(index: number, file: { name: string; url: string }): void {
-    const language = this.locale();
+  setSectorImage(
+    index: number,
+    file: { name: string; url: string },
+    language: AppLanguage = this.locale(),
+  ): void {
     this.draft.update((current) => ({
       ...current,
       sectors: this.mapAt(current.sectors, index, (item) => ({
@@ -362,10 +429,10 @@ export class ProductEditor {
         },
       })),
     }));
+    this.dropServerErrors(`sectors.${index}.image.${language}`);
   }
 
-  clearSectorImage(index: number): void {
-    const language = this.locale();
+  clearSectorImage(index: number, language: AppLanguage = this.locale()): void {
     this.draft.update((current) => ({
       ...current,
       sectors: this.mapAt(current.sectors, index, (item) => ({
@@ -376,6 +443,109 @@ export class ProductEditor {
         },
       })),
     }));
+    this.dropServerErrors(`sectors.${index}.image.${language}`);
+  }
+
+  sectorArabicImageInvalid(index: number): boolean {
+    const sector = this.draft().sectors[index];
+    return sector ? !isSectorArabicImageValid(sector) : false;
+  }
+
+  sectorImageError(index: number): string {
+    if (this.sectorArabicImageInvalid(index)) {
+      return this.copy('product.sectorImageArRequired');
+    }
+    return this.serverField(`sectors.${index}.image.ar`);
+  }
+
+  workflowStepTitleError(index: number): string {
+    const step = this.draft().steps[index];
+    if (step && workflowStepTitleArMissing(step)) {
+      return this.copy('product.stepTitleArRequired');
+    }
+    return (
+      this.serverField(`workflow_steps.${index}.title.ar`) ||
+      this.serverField(`workflow_steps.${index}.title.${this.locale()}`)
+    );
+  }
+
+  workflowStepBodyError(index: number): string {
+    const step = this.draft().steps[index];
+    if (step && workflowStepBodyArMissing(step)) {
+      return this.copy('product.stepBodyArRequired');
+    }
+    return (
+      this.serverField(`workflow_steps.${index}.short_description.ar`) ||
+      this.serverField(`workflow_steps.${index}.short_description.${this.locale()}`)
+    );
+  }
+
+  challengeTitleError(index: number): string {
+    return (
+      this.serverField(`challenges.${index}.title.ar`) ||
+      this.serverField(`challenges.${index}.title.${this.locale()}`)
+    );
+  }
+
+  challengeBodyError(index: number): string {
+    return (
+      this.serverField(`challenges.${index}.short_description.ar`) ||
+      this.serverField(`challenges.${index}.short_description.${this.locale()}`)
+    );
+  }
+
+  statTitleError(index: number): string {
+    return (
+      this.serverField(`stats.${index}.title.ar`) ||
+      this.serverField(`stats.${index}.title.${this.locale()}`)
+    );
+  }
+
+  statValueError(index: number): string {
+    return (
+      this.serverField(`stats.${index}.value.ar`) ||
+      this.serverField(`stats.${index}.value.${this.locale()}`)
+    );
+  }
+
+  slugErrorText(): string {
+    if (this.slugInvalid()) {
+      return this.copy('product.seoSlugError');
+    }
+    return this.serverField('slug');
+  }
+
+  summaryErrorText(): string {
+    if (this.summaryInvalid()) {
+      return this.copy('product.summaryMaxError');
+    }
+    const language = this.locale();
+    return (
+      this.serverField(`short_description.${language}`) ||
+      this.serverField(`description.${language}`)
+    );
+  }
+
+  keywordsErrorText(): string {
+    if (this.keywordsInvalid()) {
+      return this.copy('product.seoKeywordsMaxError');
+    }
+    return this.serverFieldPrefix(`meta_keywords.${this.locale()}`);
+  }
+
+  nameErrorText(): string {
+    if (this.nameError()) {
+      return this.copy('product.required');
+    }
+    return this.serverField(`title.${this.locale()}`);
+  }
+
+  serverField(path: string): string {
+    return serverErrorMessage(this.serverErrors(), path);
+  }
+
+  serverFieldPrefix(prefix: string): string {
+    return serverErrorPrefixMessage(this.serverErrors(), prefix);
   }
 
   setSingle(key: 'solution', field: 'title' | 'body', event: Event): void {
@@ -430,6 +600,12 @@ export class ProductEditor {
     const value = this.read(event);
     if (value === undefined) {
       return;
+    }
+    const language = this.locale();
+    if (field === 'value') {
+      this.dropServerErrors(`stats.${index}.value.${language}`);
+    } else if (field === 'label') {
+      this.dropServerErrors(`stats.${index}.title.${language}`);
     }
     this.draft.update((current) => ({
       ...current,
@@ -597,10 +773,20 @@ export class ProductEditor {
     if (value === undefined) {
       return;
     }
+    const language = this.locale();
     this.draft.update((current) => ({
       ...current,
       seo: { ...current.seo, [field]: this.writeLocale(current.seo[field], value) },
     }));
+    if (field === 'slug') {
+      this.dropServerErrors('slug');
+    } else if (field === 'keywords') {
+      this.dropServerErrorPrefix(`meta_keywords.${language}`);
+    } else if (field === 'title') {
+      this.dropServerErrors(`meta_title.${language}`);
+    } else if (field === 'description') {
+      this.dropServerErrors(`meta_description.${language}`);
+    }
   }
 
   private persist(
@@ -619,6 +805,25 @@ export class ProductEditor {
       this.step.set(0);
       return;
     }
+    if (!this.summaryLocalesValid()) {
+      this.focusInvalidSummaryLocale();
+      this.step.set(0);
+      return;
+    }
+    if (!this.sectorsArabicImagesValid()) {
+      this.useLocale('ar');
+      this.step.set(1);
+      return;
+    }
+    if (!this.workflowStepsValid()) {
+      this.focusWorkflowSteps();
+      return;
+    }
+    if (!this.seoStepValid()) {
+      this.focusInvalidSeoLocale();
+      this.step.set(SEO_STEP_INDEX);
+      return;
+    }
     this.saving.set(true);
     this.api
       .save(current)
@@ -631,20 +836,155 @@ export class ProductEditor {
           this.objectUrls.sync(previous, saved);
           this.draft.set(saved);
           this.nameError.set(false);
+          this.serverErrors.set({});
           this.messages.add({ severity: 'success', summary: this.lang.t(message) });
           if (leave) {
-            void this.router.navigate(['/products', saved.id]);
+            void this.router.navigate(['/products']);
           }
         },
-        error: () => {
-          this.messages.add({ severity: 'error', summary: this.lang.t('common.error') });
+        error: (error: unknown) => {
+          if (isApiError(error) && error.kind === 'validation') {
+            this.applyServerErrors(error.fieldErrors);
+            if (Object.keys(error.fieldErrors).length === 0) {
+              this.messages.add({
+                severity: 'error',
+                summary: error.serverMessage ?? this.lang.t('common.error'),
+              });
+            }
+            return;
+          }
+          this.messages.add({
+            severity: 'error',
+            summary:
+              isApiError(error) && error.serverMessage
+                ? error.serverMessage
+                : this.lang.t('common.error'),
+          });
         },
       });
+  }
+
+  private applyServerErrors(fieldErrors: FieldErrors): void {
+    this.serverErrors.set(fieldErrors);
+    const firstPath = Object.keys(fieldErrors)[0];
+    if (!firstPath) {
+      return;
+    }
+    const language = localeFromServerPath(firstPath);
+    if (language) {
+      this.useLocale(language);
+    }
+    const stepIndex = productStepIndexForServerPath(firstPath);
+    if (stepIndex >= 0) {
+      this.step.set(stepIndex);
+    }
+  }
+
+  private dropServerErrors(...paths: string[]): void {
+    if (paths.length === 0 || Object.keys(this.serverErrors()).length === 0) {
+      return;
+    }
+    this.serverErrors.update((current) => clearServerErrorPaths(current, paths));
+  }
+
+  private dropServerErrorPrefix(prefix: string): void {
+    if (Object.keys(this.serverErrors()).length === 0) {
+      return;
+    }
+    this.serverErrors.update((current) => clearServerErrorPrefix(current, prefix));
   }
 
   private namesValid(): boolean {
     const { name } = this.draft();
     return name.ar.trim().length > 0 && name.en.trim().length > 0;
+  }
+
+  private summaryLocalesValid(): boolean {
+    const { summary } = this.draft();
+    return isValidShortDescription(summary.ar) && isValidShortDescription(summary.en);
+  }
+
+  private focusInvalidSummaryLocale(): void {
+    const { summary } = this.draft();
+    if (!isValidShortDescription(summary.ar)) {
+      this.useLocale('ar');
+      return;
+    }
+    if (!isValidShortDescription(summary.en)) {
+      this.useLocale('en');
+    }
+  }
+
+  private sectorsArabicImagesValid(): boolean {
+    return this.draft().sectors.every((sector) => isSectorArabicImageValid(sector));
+  }
+
+  private workflowStepsValid(): boolean {
+    return this.draft().steps.every((step) => isWorkflowStepArabicValid(step));
+  }
+
+  private focusWorkflowSteps(): void {
+    this.useLocale('ar');
+    this.step.set(IDENTITY_STEP_INDEX);
+  }
+
+  private canLeaveEditorStep(target: number): boolean {
+    return this.canLeaveWorkflowSteps(target) && this.canLeaveSeoStep(target);
+  }
+
+  private canLeaveWorkflowSteps(target: number): boolean {
+    if (this.step() !== IDENTITY_STEP_INDEX || target === IDENTITY_STEP_INDEX) {
+      return true;
+    }
+    if (this.workflowStepsValid()) {
+      return true;
+    }
+    this.useLocale('ar');
+    return false;
+  }
+
+  private canLeaveSeoStep(target: number): boolean {
+    if (this.step() !== SEO_STEP_INDEX || target === SEO_STEP_INDEX) {
+      return true;
+    }
+    if (this.seoStepValid()) {
+      return true;
+    }
+    this.focusInvalidSeoLocale();
+    return false;
+  }
+
+  private seoStepValid(): boolean {
+    return this.slugLocalesValid() && this.metaKeywordsLocalesValid();
+  }
+
+  private slugLocalesValid(): boolean {
+    const { slug } = this.draft().seo;
+    return isValidProductSlug(slug.ar) && isValidProductSlug(slug.en);
+  }
+
+  private metaKeywordsLocalesValid(): boolean {
+    const { keywords } = this.draft().seo;
+    return isValidMetaKeywords(keywords.ar) && isValidMetaKeywords(keywords.en);
+  }
+
+  private focusInvalidSeoLocale(): void {
+    const { slug, keywords } = this.draft().seo;
+    if (!isValidProductSlug(slug.ar)) {
+      this.useLocale('ar');
+      return;
+    }
+    if (!isValidProductSlug(slug.en)) {
+      this.useLocale('en');
+      return;
+    }
+    if (!isValidMetaKeywords(keywords.ar)) {
+      this.useLocale('ar');
+      return;
+    }
+    if (!isValidMetaKeywords(keywords.en)) {
+      this.useLocale('en');
+    }
   }
 
   private read(event: Event): string | undefined {

@@ -656,15 +656,19 @@ app-product-editor .locale-switch__option.is-active {
   padding-inline-end: 42px;
 }
 
-.seo-description {
+.seo-description,
+.field--counted {
   position: relative;
+  display: block;
 }
 
-.seo-description .p-textarea {
+.seo-description .p-textarea,
+.field--counted .p-textarea {
   padding-bottom: 28px;
 }
 
-.seo-description .counter {
+.seo-description .counter,
+.field--counted .counter {
   position: absolute;
   inset-inline-end: 14px;
   bottom: 10px;

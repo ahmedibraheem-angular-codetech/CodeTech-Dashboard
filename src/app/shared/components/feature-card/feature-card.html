@@ -24,6 +24,9 @@
       @if (titleIcon()) {
         <i class="field__mark" [class]="'pi ' + titleIcon()" aria-hidden="true"></i>
       }
+      @if (titleError()) {
+        <app-field-error>{{ titleError() }}</app-field-error>
+      }
     </label>
     <label class="field">
       <span class="field__label">{{ bodyLabel() }}</span>
@@ -35,6 +38,9 @@
         [placeholder]="bodyPlaceholder()"
         (input)="bodyChange.emit($event)"
       ></textarea>
+      @if (bodyError()) {
+        <app-field-error>{{ bodyError() }}</app-field-error>
+      }
     </label>
     @if (showIcon()) {
       <div class="field">

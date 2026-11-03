@@ -18,20 +18,28 @@
             />
             <p-inputicon class="pi pi-file-edit" />
           </p-iconfield>
-          @if (editor.nameError()) {
-            <app-field-error>{{ editor.copy('product.required') }}</app-field-error>
+          @if (editor.nameErrorText()) {
+            <app-field-error>{{ editor.nameErrorText() }}</app-field-error>
           }
         </label>
         <label class="field">
           <span class="field__label">{{ editor.copy('product.summary') }}</span>
-          <textarea
-            pTextarea
-            [fluid]="true"
-            rows="6"
-            [value]="editor.text(editor.draft().summary)"
-            [placeholder]="editor.copy('product.summaryPh')"
-            (input)="editor.setField('summary', $event)"
-          ></textarea>
+          <span class="field--counted">
+            <textarea
+              pTextarea
+              [fluid]="true"
+              rows="6"
+              [value]="editor.text(editor.draft().summary)"
+              [placeholder]="editor.copy('product.summaryPh')"
+              (input)="editor.setField('summary', $event)"
+            ></textarea>
+            <small class="counter"
+              >{{ editor.text(editor.draft().summary).length }}/{{ editor.summaryMax }}</small
+            >
+          </span>
+          @if (editor.summaryErrorText()) {
+            <app-field-error>{{ editor.summaryErrorText() }}</app-field-error>
+          }
         </label>
       </div>
     </section>
@@ -159,9 +167,11 @@
           [title]="editor.text(stat.label)"
           [titleLabel]="editor.copy('product.statTitle')"
           [titlePlaceholder]="editor.copy('product.statTitlePh')"
-          [body]="editor.text(stat.body)"
+          [titleError]="editor.statTitleError(index)"
+          [body]="editor.text(stat.value)"
           [bodyLabel]="editor.copy('product.statAnswer')"
           [bodyPlaceholder]="editor.copy('product.featureBody')"
+          [bodyError]="editor.statValueError(index)"
           [iconLabel]="editor.copy('product.statBg')"
           [imageName]="stat.image[editor.locale()].imageName"
           [imageUrl]="stat.image[editor.locale()].imageUrl"
@@ -172,7 +182,7 @@
           [removeLabel]="editor.copy('product.deleteTitle')"
           (selected)="selectStat(index)"
           (titleChange)="editor.setStat(index, 'label', $event)"
-          (bodyChange)="editor.setStat(index, 'body', $event)"
+          (bodyChange)="editor.setStat(index, 'value', $event)"
           (imageChange)="editor.setStatImage(index, $event)"
           (removed)="removeStat(index)"
         />

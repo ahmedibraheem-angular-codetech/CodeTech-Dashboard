@@ -17,13 +17,26 @@
           <i class="pi pi-times" aria-hidden="true"></i>
         </button>
         <app-product-upload
-          [locale]="editor.locale()"
+          locale="ar"
           [clearable]="true"
-          [name]="sector.image[editor.locale()].imageName"
-          [url]="sector.image[editor.locale()].imageUrl"
-          (picked)="editor.setSectorImage(index, $event)"
-          (cleared)="editor.clearSectorImage(index)"
+          [name]="sector.image.ar.imageName"
+          [url]="sector.image.ar.imageUrl"
+          (picked)="editor.setSectorImage(index, $event, 'ar')"
+          (cleared)="editor.clearSectorImage(index, 'ar')"
         />
+        @if (editor.sectorImageError(index)) {
+          <app-field-error>{{ editor.sectorImageError(index) }}</app-field-error>
+        }
+        @if (editor.locale() === 'en') {
+          <app-product-upload
+            locale="en"
+            [clearable]="true"
+            [name]="sector.image.en.imageName"
+            [url]="sector.image.en.imageUrl"
+            (picked)="editor.setSectorImage(index, $event, 'en')"
+            (cleared)="editor.clearSectorImage(index, 'en')"
+          />
+        }
       </div>
     }
   </div>
@@ -45,9 +58,11 @@
           [title]="editor.text(item.title)"
           [titleLabel]="editor.copy('product.challengeTitle')"
           [titlePlaceholder]="editor.copy('product.challengeTitlePh')"
+          [titleError]="editor.challengeTitleError(index)"
           [body]="editor.text(item.body)"
           [bodyLabel]="editor.copy('product.challengeBody')"
           [bodyPlaceholder]="editor.copy('product.challengeBodyPh')"
+          [bodyError]="editor.challengeBodyError(index)"
           [iconLabel]="editor.copy('product.icon')"
           [imageName]="item.image[editor.locale()].imageName"
           [imageUrl]="item.image[editor.locale()].imageUrl"

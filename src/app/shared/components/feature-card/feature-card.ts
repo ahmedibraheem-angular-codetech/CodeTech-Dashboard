@@ -3,11 +3,12 @@ import { InputText } from 'primeng/inputtext';
 import { Textarea } from 'primeng/textarea';
 
 import type { AppLanguage } from '../../../core/i18n/language';
+import { FieldError } from '../field-error/field-error';
 import { ProductUpload } from '../product-upload/product-upload';
 
 @Component({
   selector: 'app-feature-card',
-  imports: [InputText, Textarea, ProductUpload],
+  imports: [InputText, Textarea, ProductUpload, FieldError],
   templateUrl: './feature-card.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { style: 'display: contents' },
@@ -18,9 +19,11 @@ export class FeatureCard {
   readonly titleLabel = input.required<string>();
   readonly titlePlaceholder = input('');
   readonly titleIcon = input('');
+  readonly titleError = input('');
   readonly body = input('');
   readonly bodyLabel = input.required<string>();
   readonly bodyPlaceholder = input('');
+  readonly bodyError = input('');
 
   readonly bodyRows = input(3);
   readonly iconLabel = input.required<string>();

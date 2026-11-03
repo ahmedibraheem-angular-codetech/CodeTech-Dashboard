@@ -124,6 +124,34 @@ describe('product.mapper', () => {
     expect(detail.category).toEqual({ ar: '', en: '' });
   });
 
+  it('writes stats label as title and figure as value, ignoring body', () => {
+    const body = toProductWrite({
+      ...blankProduct(),
+      id: '7',
+      name: localeText('منتج', 'Product'),
+      summary: localeText('وصف', 'Desc'),
+      stats: [
+        {
+          id: 'stat-1',
+          label: localeText('شركات تستخدم النظام', 'Companies using the system'),
+          value: localeText('+10', '10+'),
+          body: localeText('should-not-be-sent', 'should-not-be-sent'),
+          image: {
+            ar: { imageName: '', imageUrl: '', imageUuid: null },
+            en: { imageName: '', imageUrl: '', imageUuid: null },
+          },
+        },
+      ],
+    });
+
+    expect(body.stats?.[0]).toEqual({
+      title: { ar: 'شركات تستخدم النظام', en: 'Companies using the system' },
+      value: { ar: '+10', en: '10+' },
+      background: null,
+    });
+    expect(JSON.stringify(body.stats)).not.toContain('should-not-be-sent');
+  });
+
   it('writes OpenAPI field names and bilingual sector tickets', () => {
     const body = toProductWrite({
       ...blankProduct(),
@@ -241,5 +269,81 @@ describe('product.mapper', () => {
       en: ['service', 'ITSM'],
     });
     expect(body).not.toHaveProperty('category');
+  });
+
+  it('excludes empty sectors from the write payload and keeps English-only sectors included', () => {
+    const body = toProductWrite({
+      ...blankProduct(),
+      sectors: [
+        {
+          id: 'sector-empty',
+          image: {
+            ar: { imageName: '', imageUrl: '', imageUuid: null },
+            en: { imageName: '', imageUrl: '', imageUuid: null },
+          },
+        },
+        {
+          id: 'sector-en',
+          image: {
+            ar: { imageName: '', imageUrl: '', imageUuid: null },
+            en: {
+              imageName: 'en.png',
+              imageUrl: 'https://cdn.test/en.png',
+              imageUuid: 'sec-en',
+            },
+          },
+        },
+        {
+          id: '42',
+          image: {
+            ar: {
+              imageName: 'ar.png',
+              imageUrl: 'https://cdn.test/ar.png',
+              imageUuid: 'sec-ar',
+            },
+            en: { imageName: '', imageUrl: '', imageUuid: null },
+          },
+        },
+      ],
+    });
+
+    expect(body.sectors).toEqual([
+      { image: { ar: null, en: 'sec-en' } },
+      { id: 42, image: { ar: 'sec-ar', en: null } },
+    ]);
+  });
+
+  it('excludes empty workflow steps and keeps partial rows in the payload', () => {
+    const body = toProductWrite({
+      ...blankProduct(),
+      steps: [
+        {
+          id: 'step-empty',
+          title: localeText(),
+          body: localeText(),
+          image: {
+            ar: { imageName: '', imageUrl: '', imageUuid: null },
+            en: { imageName: '', imageUrl: '', imageUuid: null },
+          },
+        },
+        {
+          id: 'step-en',
+          title: localeText('', 'Only English'),
+          body: localeText('', 'English body'),
+          image: {
+            ar: { imageName: '', imageUrl: '', imageUuid: null },
+            en: { imageName: '', imageUrl: '', imageUuid: null },
+          },
+        },
+      ],
+    });
+
+    expect(body.workflow_steps).toEqual([
+      {
+        title: { ar: '', en: 'Only English' },
+        short_description: { ar: '', en: 'English body' },
+        icon: null,
+      },
+    ]);
   });
 });

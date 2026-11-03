@@ -16,6 +16,10 @@
           (input)="editor.setSeo('slug', $event)"
         />
       </span>
+      <small class="field__hint">{{ editor.copy('product.seoSlugHint') }}</small>
+      @if (editor.slugErrorText()) {
+        <app-field-error>{{ editor.slugErrorText() }}</app-field-error>
+      }
     </label>
     <label class="field">
       <span class="field__label">{{ editor.copy('product.seoTitle') }}</span>
@@ -42,6 +46,10 @@
           (input)="editor.setSeo('keywords', $event)"
         />
       </span>
+      <small class="counter">{{ editor.keywordsLongest() }}/{{ editor.keywordsMax }}</small>
+      @if (editor.keywordsErrorText()) {
+        <app-field-error>{{ editor.keywordsErrorText() }}</app-field-error>
+      }
     </label>
     <label class="field seo-description">
       <span class="field__label">{{ editor.copy('product.seoDescription') }}</span>

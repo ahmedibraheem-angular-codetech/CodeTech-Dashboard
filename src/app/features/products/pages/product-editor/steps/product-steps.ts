@@ -62,7 +62,7 @@ export class InfoStep extends EditorStep {
 
 @Component({
   selector: 'app-sectors-step',
-  imports: [ProductUpload, FeatureCard],
+  imports: [ProductUpload, FeatureCard, FieldError],
   templateUrl: './sectors-step.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: stepHost,
@@ -116,7 +116,7 @@ export class FaqStep extends EditorStep {}
 
 @Component({
   selector: 'app-seo-step',
-  imports: [InputText, Textarea],
+  imports: [InputText, Textarea, FieldError],
   templateUrl: './seo-step.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: stepHost,

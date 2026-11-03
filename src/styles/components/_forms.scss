@@ -19,6 +19,12 @@
   transform: translateY(-50%);
 }
 
+.field__hint {
+  margin: 0;
+  color: var(--app-muted);
+  font-size: 12px;
+}
+
 .field__error {
   display: inline-flex;
   align-items: center;

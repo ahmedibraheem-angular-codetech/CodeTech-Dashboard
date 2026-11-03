@@ -5,6 +5,7 @@ import { MessageService } from 'primeng/api';
 import { firstValueFrom, map, NEVER, of, Subject, throwError, timer } from 'rxjs';
 
 import { API_LATENCY_MS } from '../../../../core/config/latency';
+import { ApiError } from '../../../../core/http/api-error';
 import { blankProduct, localeText, type Product } from '../../models/product.model';
 import { ProductsMemoryService } from '../../services/products.memory';
 import { ProductsService } from '../../services/products.service';
@@ -264,6 +265,33 @@ describe('ProductEditor', () => {
     expect(root.querySelector<HTMLInputElement>('input:not([type="file"])')?.value).toBe(
       'بعد إعادة المحاولة',
     );
+  });
+
+  it('stores the stats answer field on value for both locales', async () => {
+    const fixture = await render('create');
+    const editor = fixture.componentInstance;
+    const root: HTMLElement = fixture.nativeElement;
+
+    editor.useLocale('ar');
+    editor.setStat(0, 'label', inputEvent('شركات تستخدم النظام'));
+    editor.setStat(0, 'value', inputEvent('+10'));
+    fixture.detectChanges();
+
+    expect(editor.draft().stats[0]?.label.ar).toBe('شركات تستخدم النظام');
+    expect(editor.draft().stats[0]?.value.ar).toBe('+10');
+    expect(editor.draft().stats[0]?.body.ar).toBe('');
+
+    const answer = root.querySelector<HTMLTextAreaElement>(
+      '.editor-section--stats textarea',
+    );
+    expect(answer?.value).toBe('+10');
+
+    editor.useLocale('en');
+    editor.setStat(0, 'value', inputEvent('10+'));
+    fixture.detectChanges();
+
+    expect(editor.draft().stats[0]?.value).toEqual({ ar: '+10', en: '10+' });
+    expect(editor.draft().stats[0]?.body).toEqual({ ar: '', en: '' });
   });
 
   it('keeps cover and feature images independent per locale tab', async () => {
@@ -550,7 +578,359 @@ describe('ProductEditor', () => {
       expect((await firstValueFrom(api.get('info-system')))?.cover.ar.imageUrl).toBe('blob:product/2');
     });
   });
+
+  it('shows a permanent slug hint and an inline error for invalid non-empty slugs without transforming input', async () => {
+    const fixture = await render('edit', 'info-system');
+    const root: HTMLElement = fixture.nativeElement;
+    const editor = fixture.componentInstance;
+
+    editor.select(7);
+    fixture.detectChanges();
+
+    const hint =
+      'استخدم أحرفًا إنجليزية صغيرة وأرقامًا وشرطات فقط (مثال: my-product).';
+    const error = 'الرابط المختصر يقبل الأحرف الإنجليزية الصغيرة والأرقام والشرطات فقط.';
+    expect(root.textContent).toContain(hint);
+    expect(editor.slugInvalid()).toBe(false);
+    expect(root.textContent).not.toContain(error);
+
+    editor.setSeo('slug', inputEvent('ITSM'));
+    fixture.detectChanges();
+    expect(editor.draft().seo.slug.ar).toBe('ITSM');
+    expect(editor.slugInvalid()).toBe(true);
+    expect(root.textContent).toContain(hint);
+    expect(root.textContent).toContain(error);
+
+    editor.setSeo('slug', inputEvent('my-product'));
+    fixture.detectChanges();
+    expect(editor.draft().seo.slug.ar).toBe('my-product');
+    expect(editor.slugInvalid()).toBe(false);
+    expect(root.textContent).toContain(hint);
+    expect(root.textContent).not.toContain(error);
+
+    editor.setSeo('slug', inputEvent(''));
+    fixture.detectChanges();
+    expect(editor.slugInvalid()).toBe(false);
+    expect(root.textContent).not.toContain(error);
+  });
+
+  it('counts the active-locale summary and shows an inline error over 300 characters without truncating', async () => {
+    const fixture = await render('edit', 'info-system');
+    const root: HTMLElement = fixture.nativeElement;
+    const editor = fixture.componentInstance;
+    const summaryError = 'الحد الأقصى للوصف المختصر 300 حرف.';
+
+    editor.setField('summary', inputEvent('a'.repeat(300)));
+    fixture.detectChanges();
+    expect(editor.draft().summary.ar).toHaveLength(300);
+    expect(editor.summaryInvalid()).toBe(false);
+    expect(root.textContent).toContain('300/300');
+    expect(root.textContent).not.toContain(summaryError);
+
+    editor.setField('summary', inputEvent('a'.repeat(301)));
+    fixture.detectChanges();
+    expect(editor.draft().summary.ar).toHaveLength(301);
+    expect(editor.summaryInvalid()).toBe(true);
+    expect(root.textContent).toContain('301/300');
+    expect(root.textContent).toContain(summaryError);
+  });
+
+  it('blocks save when the inactive summary locale exceeds 300 characters', async () => {
+    const fixture = await render('edit', 'info-system');
+    const root: HTMLElement = fixture.nativeElement;
+    const editor = fixture.componentInstance;
+    const api = TestBed.inject(ProductsService);
+    const save = vi.spyOn(api, 'save');
+
+    editor.draft.update((current) => ({
+      ...current,
+      summary: localeText('قصير', 'e'.repeat(301)),
+    }));
+    fixture.detectChanges();
+    expect(editor.summaryInvalid()).toBe(false);
+
+    clickButton(root, 'حفظ كمسودة');
+    await settle(fixture);
+
+    expect(save).not.toHaveBeenCalled();
+    expect(editor.locale()).toBe('en');
+    expect(editor.step()).toBe(0);
+    expect(editor.summaryInvalid()).toBe(true);
+    expect(root.textContent).toContain('Short description must not exceed 300 characters.');
+  });
+
+  it('maps 422 field errors to nested UI fields, navigates to the step, and clears them on edit', async () => {
+    const fixture = await render('edit', 'info-system');
+    const root: HTMLElement = fixture.nativeElement;
+    const editor = fixture.componentInstance;
+    const api = TestBed.inject(ProductsService);
+    const messages = TestBed.inject(MessageService);
+    const add = vi.spyOn(messages, 'add');
+    vi.spyOn(api, 'save').mockReturnValue(
+      throwError(
+        () =>
+          new ApiError(422, 'The given data was invalid.', {
+            slug: ['The slug format is invalid.'],
+            'meta_keywords.ar.0': ['May not be greater than 50 characters.'],
+            'sectors.0.image.ar': ['The sectors.0.image.ar field is required.'],
+          }),
+      ),
+    );
+
+    clickButton(root, 'حفظ كمسودة');
+    await settle(fixture);
+
+    expect(editor.step()).toBe(7);
+    expect(editor.slugErrorText()).toBe('The slug format is invalid.');
+    expect(editor.keywordsErrorText()).toBe('May not be greater than 50 characters.');
+    expect(add).not.toHaveBeenCalled();
+
+    editor.setSeo('slug', inputEvent('itsm'));
+    fixture.detectChanges();
+    expect(editor.slugErrorText()).toBe('');
+    expect(editor.serverErrors()['slug']).toBeUndefined();
+
+    editor.setSeo('keywords', inputEvent('قصير'));
+    fixture.detectChanges();
+    expect(editor.keywordsErrorText()).toBe('');
+
+    editor.serverErrors.set({
+      'sectors.0.image.ar': ['The sectors.0.image.ar field is required.'],
+    });
+    editor.select(1);
+    fixture.detectChanges();
+    expect(editor.step()).toBe(1);
+    expect(editor.sectorImageError(0)).toBe('The sectors.0.image.ar field is required.');
+    editor.setSectorImage(0, { name: 'b.png', url: 'blob:sector/1' }, 'ar');
+    fixture.detectChanges();
+    expect(editor.serverErrors()['sectors.0.image.ar']).toBeUndefined();
+  });
+
+  it('blocks leaving the SEO step and publishing when slug or keywords are invalid', async () => {
+    const fixture = await render('edit', 'info-system');
+    const root: HTMLElement = fixture.nativeElement;
+    const editor = fixture.componentInstance;
+    const api = TestBed.inject(ProductsService);
+    const save = vi.spyOn(api, 'save');
+
+    editor.select(7);
+    fixture.detectChanges();
+    editor.setSeo('slug', inputEvent('ITSM'));
+    fixture.detectChanges();
+    expect(editor.slugInvalid()).toBe(true);
+
+    editor.select(0);
+    fixture.detectChanges();
+    expect(editor.step()).toBe(7);
+    expect(editor.locale()).toBe('ar');
+
+    clickButton(root, 'حفظ كمسودة');
+    await settle(fixture);
+    expect(save).not.toHaveBeenCalled();
+    expect(editor.step()).toBe(7);
+
+    editor.setSeo('slug', inputEvent('itsm'));
+    editor.draft.update((current) => ({
+      ...current,
+      seo: {
+        ...current.seo,
+        keywords: localeText('قصير', 'e'.repeat(51)),
+      },
+    }));
+    fixture.detectChanges();
+    expect(editor.slugInvalid()).toBe(false);
+
+    editor.select(6);
+    fixture.detectChanges();
+    expect(editor.step()).toBe(7);
+    expect(editor.locale()).toBe('en');
+    expect(editor.keywordsInvalid()).toBe(true);
+
+    editor.setSeo('keywords', inputEvent('ok, short'));
+    fixture.detectChanges();
+    editor.select(6);
+    fixture.detectChanges();
+    expect(editor.step()).toBe(6);
+  });
+
+  it('counts the longest active-locale keyword and blocks save when any keyword exceeds 50 characters', async () => {
+    const fixture = await render('edit', 'info-system');
+    const root: HTMLElement = fixture.nativeElement;
+    const editor = fixture.componentInstance;
+    const api = TestBed.inject(ProductsService);
+    const save = vi.spyOn(api, 'save');
+    const tooLong = 'ك'.repeat(51);
+    const error = 'كل كلمة مفتاحية يجب ألا تتجاوز 50 حرفًا.';
+
+    editor.select(7);
+    fixture.detectChanges();
+
+    editor.setSeo('keywords', inputEvent(`قصير, ${'a'.repeat(50)}`));
+    fixture.detectChanges();
+    expect(editor.keywordsLongest()).toBe(50);
+    expect(editor.keywordsInvalid()).toBe(false);
+    expect(root.textContent).toContain('50/50');
+    expect(root.textContent).not.toContain(error);
+
+    editor.setSeo('keywords', inputEvent(`قصير, ${tooLong}`));
+    fixture.detectChanges();
+    expect(editor.draft().seo.keywords.ar).toContain(tooLong);
+    expect(editor.keywordsLongest()).toBe(51);
+    expect(editor.keywordsInvalid()).toBe(true);
+    expect(root.textContent).toContain('51/50');
+    expect(root.textContent).toContain(error);
+
+    editor.draft.update((current) => ({
+      ...current,
+      seo: {
+        ...current.seo,
+        keywords: localeText('قصير', 'e'.repeat(51)),
+      },
+    }));
+    fixture.detectChanges();
+    expect(editor.keywordsInvalid()).toBe(false);
+
+    clickButton(root, 'حفظ كمسودة');
+    await settle(fixture);
+    expect(save).not.toHaveBeenCalled();
+    expect(editor.step()).toBe(7);
+    expect(editor.locale()).toBe('en');
+    expect(editor.keywordsInvalid()).toBe(true);
+    expect(root.textContent).toContain('Each keyword must not exceed 50 characters.');
+  });
+
+  it('blocks navigation and save for incomplete workflow steps without discarding partial input', async () => {
+    const fixture = await render('edit', 'info-system');
+    const root: HTMLElement = fixture.nativeElement;
+    const editor = fixture.componentInstance;
+    const api = TestBed.inject(ProductsService);
+    const save = vi.spyOn(api, 'save');
+
+    editor.select(5);
+    fixture.detectChanges();
+    editor.draft.update((current) => ({
+      ...current,
+      steps: [
+        {
+          id: 'step-1',
+          title: localeText('', 'English only'),
+          body: localeText('', 'English body'),
+          image: {
+            ar: { imageName: '', imageUrl: '', imageUuid: null },
+            en: { imageName: '', imageUrl: '', imageUuid: null },
+          },
+        },
+      ],
+    }));
+    fixture.detectChanges();
+
+    expect(editor.workflowStepTitleError(0)).toContain('عنوان الخطوة بالعربية مطلوب');
+    expect(editor.workflowStepBodyError(0)).toContain('وصف الخطوة بالعربية مطلوب');
+    expect(root.textContent).toContain('عنوان الخطوة بالعربية مطلوب');
+
+    editor.select(6);
+    fixture.detectChanges();
+    expect(editor.step()).toBe(5);
+    expect(editor.locale()).toBe('ar');
+    expect(editor.draft().steps[0]?.title.en).toBe('English only');
+    expect(editor.draft().steps[0]?.body.en).toBe('English body');
+
+    clickButton(root, 'حفظ كمسودة');
+    await settle(fixture);
+    expect(save).not.toHaveBeenCalled();
+    expect(editor.step()).toBe(5);
+
+    editor.draft.update((current) => ({
+      ...current,
+      steps: [
+        {
+          ...current.steps[0]!,
+          title: localeText('عنوان عربي', 'English only'),
+          body: localeText('وصف عربي', 'English body'),
+        },
+      ],
+    }));
+    fixture.detectChanges();
+    expect(editor.workflowStepTitleError(0)).toBe('');
+    expect(editor.workflowStepBodyError(0)).toBe('');
+
+    editor.select(6);
+    fixture.detectChanges();
+    expect(editor.step()).toBe(6);
+  });
+
+  it('blocks save for English-only sector images and accepts Arabic images without re-upload', async () => {
+    const fixture = await render('edit', 'info-system');
+    const root: HTMLElement = fixture.nativeElement;
+    const editor = fixture.componentInstance;
+    const api = TestBed.inject(ProductsService);
+    const save = vi.spyOn(api, 'save');
+    const sectorError = 'صورة القطاع بالعربية مطلوبة.';
+
+    editor.select(1);
+    fixture.detectChanges();
+
+    editor.draft.update((current) => ({
+      ...current,
+      sectors: [
+        {
+          id: '31',
+          image: {
+            ar: { imageName: '', imageUrl: '', imageUuid: null },
+            en: {
+              imageName: 'en.png',
+              imageUrl: 'https://cdn.test/en.png',
+              imageUuid: 'sec-en',
+            },
+          },
+        },
+      ],
+    }));
+    fixture.detectChanges();
+    expect(editor.sectorArabicImageInvalid(0)).toBe(true);
+    expect(root.textContent).toContain(sectorError);
+
+    clickButton(root, 'حفظ كمسودة');
+    await settle(fixture);
+    expect(save).not.toHaveBeenCalled();
+    expect(editor.step()).toBe(1);
+    expect(editor.locale()).toBe('ar');
+
+    editor.draft.update((current) => ({
+      ...current,
+      sectors: [
+        {
+          id: '31',
+          image: {
+            ar: {
+              imageName: 'ar.png',
+              imageUrl: 'https://cdn.test/ar.png',
+              imageUuid: 'sec-ar',
+            },
+            en: {
+              imageName: 'en.png',
+              imageUrl: 'https://cdn.test/en.png',
+              imageUuid: 'sec-en',
+            },
+          },
+        },
+      ],
+    }));
+    fixture.detectChanges();
+    expect(editor.sectorArabicImageInvalid(0)).toBe(false);
+    expect(root.textContent).not.toContain(sectorError);
+
+    clickButton(root, 'حفظ كمسودة');
+    await settle(fixture);
+    expect(save).toHaveBeenCalled();
+  });
 });
+
+function inputEvent(value: string): Event {
+  const input = document.createElement('input');
+  input.value = value;
+  return { target: input } as unknown as Event;
+}
 
 function enterName(root: HTMLElement, value: string): void {
   const name = root.querySelector<HTMLInputElement>('input:not([type="file"])');
