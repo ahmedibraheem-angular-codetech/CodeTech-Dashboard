@@ -17,7 +17,6 @@ import { MessageService } from 'primeng/api';
 
 import { AuthService } from '../../../../core/auth/auth.service';
 import type { AppLanguage } from '../../../../core/i18n/language';
-import { DEFAULT_AVATAR_URL } from '../../../../core/profile/profile.model';
 import { BreadcrumbService } from '../../../../core/services/breadcrumb.service';
 import { LanguageService } from '../../../../core/services/language.service';
 import { ConfirmDialog } from '../../../../shared/components/confirm-dialog/confirm-dialog';
@@ -27,10 +26,23 @@ import { UserDetailBan } from '../../components/user-detail-ban/user-detail-ban'
 import { UserDetailFields } from '../../components/user-detail-fields/user-detail-fields';
 import { UserDetailProfile } from '../../components/user-detail-profile/user-detail-profile';
 import { UserEditorForm } from '../../components/user-editor-form/user-editor-form';
-import { type User, type UserDraft, type UserRole, type UserStatus } from '../../models/user.model';
+import {
+  type AssignableRole,
+  type User,
+  type UserDraft,
+  type UserStatus,
+} from '../../models/user.model';
 import { UsersService } from '../../services/users.service';
+import {
+  formatUserStamp,
+  isAssignableRoleId,
+  isUserStatus,
+  userStatusLabelKey,
+} from '../../services/user.mapper';
 
 type LoadState = 'loading' | 'ready' | 'error' | 'missing';
+
+const PHONE_PATTERN = /^$|^\+?[0-9][0-9 -]{6,19}$/;
 
 @Component({
   selector: 'app-user-detail',
@@ -63,26 +75,30 @@ export class UserDetailPage {
 
   readonly status = signal<LoadState>('loading');
   readonly user = signal<User | null>(null);
+  readonly roles = signal<AssignableRole[]>([]);
   readonly saving = signal(false);
   readonly editing = signal(false);
 
   readonly editorLocale = signal<AppLanguage>('ar');
-  readonly avatarUrl = DEFAULT_AVATAR_URL;
 
   readonly form = this.fb.nonNullable.group({
     name: ['', Validators.required],
     email: ['', [Validators.required, Validators.email]],
-    phone: ['', [Validators.required, Validators.pattern(/^[0-9+\-\s]{8,15}$/)]],
-    role: this.fb.nonNullable.control<UserRole>('editor', Validators.required),
-    status: this.fb.nonNullable.control<UserStatus>('active', Validators.required),
-    joinedAt: ['', Validators.required],
+    phone: ['', Validators.pattern(PHONE_PATTERN)],
+    roleId: this.fb.control<number | null>(null, Validators.required),
+    status: this.fb.control<UserStatus | null>('active', Validators.required),
   });
+
+  readonly editorRoles = computed(() =>
+    this.roles().map((role) => ({ label: role.name, value: role.id })),
+  );
 
   readonly statusChoices = computed(() => {
     this.lang.language();
     return [
       { label: this.lang.t('status.active'), value: 'active' as const },
-      { label: this.lang.t('status.suspended'), value: 'suspended' as const },
+      { label: this.lang.t('users.statusInactive'), value: 'inactive' as const },
+      { label: this.lang.t('users.statusBlocked'), value: 'blocked' as const },
     ];
   });
 
@@ -105,45 +121,50 @@ export class UserDetailPage {
     return !!session?.profileLoaded && this.auth.hasPermission('users.delete');
   });
 
-  readonly displayCode = computed(() => {
-    const id = this.user()?.id ?? '';
-    const digits = id.replace(/\D/g, '') || '0';
-    return `USE-${digits.padStart(5, '0')}`;
-  });
+  readonly displayCode = computed(() => this.user()?.code ?? '');
 
   readonly roleLabel = computed(() => {
-    const role = this.user()?.role;
-    if (!role) {
-      return '';
-    }
     this.lang.language();
-    if (role === 'super-admin') {
-      return this.lang.t('roles.superAdmin');
-    }
-    return this.lang.t(role === 'editor' ? 'roles.editor' : 'roles.viewer');
+    return this.user()?.role?.name || this.lang.t('users.noRole');
   });
 
   readonly statusLabel = computed(() => {
-    const current = this.user()?.status;
+    const current = this.user();
     if (!current) {
       return '';
     }
     this.lang.language();
-    return current === 'active' ? this.lang.t('status.active') : this.lang.t('users.statusBlocked');
+    const key = userStatusLabelKey(current.status);
+    return key ? this.lang.t(key) : current.statusRaw;
   });
 
-  readonly timeLabel = computed(() => {
+  readonly activityLabel = computed(() => {
     this.lang.language();
-    return `10:00 ${this.lang.t('users.timeAm')}`;
+    return this.joinStamp(this.user()?.lastActivityAt ?? null);
   });
 
-  readonly stamp = computed(() => {
-    const joined = this.user()?.joinedAt ?? '';
-    const time = this.timeLabel();
-    return joined ? `${time} - ${joined}` : '';
+  readonly joinedLabel = computed(() => {
+    this.lang.language();
+    return this.joinStamp(this.user()?.createdAt ?? null);
   });
 
-  readonly isBlocked = computed(() => this.user()?.status === 'suspended');
+  readonly banLabel = computed(() => {
+    this.lang.language();
+    return this.joinStamp(this.user()?.blockedAt ?? null);
+  });
+
+  readonly headerTime = computed(() => {
+    this.lang.language();
+    return formatUserStamp(this.user()?.lastActivityAt ?? this.user()?.createdAt ?? null, this.lang.language())
+      .time;
+  });
+
+  readonly headerDate = computed(() => {
+    this.lang.language();
+    return formatUserStamp(this.user()?.createdAt ?? null, this.lang.language()).date;
+  });
+
+  readonly isBlocked = computed(() => this.user()?.status === 'blocked');
 
   constructor() {
     effect(() => {
@@ -160,6 +181,13 @@ export class UserDetailPage {
     this.destroyRef.onDestroy(() => {
       this.breadcrumbs.clearLabel(`/users/${this.id()}`);
     });
+    this.usersApi
+      .roles()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (roles) => this.roles.set(roles),
+        error: () => this.roles.set([]),
+      });
   }
 
   protected reload(): void {
@@ -175,9 +203,19 @@ export class UserDetailPage {
     if (!current) {
       return;
     }
-    this.editorForm().clearPhoto();
     this.editorLocale.set(this.lang.language());
-    this.form.reset(current);
+    const roleId =
+      current.role && isAssignableRoleId(current.role.id, this.roles()) ? current.role.id : null;
+    this.form.reset({
+      name: current.name,
+      email: current.email,
+      phone: current.phone,
+      roleId,
+      status: current.status,
+    });
+    this.editorForm().prepare(
+      current.avatarUrl ? { url: current.avatarUrl, name: current.name } : null,
+    );
     this.editing.set(true);
   }
 
@@ -189,7 +227,7 @@ export class UserDetailPage {
 
   protected closeEditor(): void {
     this.editing.set(false);
-    this.editorForm().clearPhoto();
+    this.editorForm().prepare(null);
   }
 
   protected setStatus(next: UserStatus): void {
@@ -197,8 +235,18 @@ export class UserDetailPage {
     if (!current || current.status === next || this.saving()) {
       return;
     }
-    const draft: UserDraft = { ...current, status: next };
-    this.persist(draft);
+    this.saving.set(true);
+    this.usersApi
+      .setStatus(current.id, next)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (user) => {
+          this.user.set(user);
+          this.saving.set(false);
+          this.messages.add({ severity: 'success', summary: this.lang.t('users.updated') });
+        },
+        error: () => this.fail(),
+      });
   }
 
   protected save(): void {
@@ -209,8 +257,43 @@ export class UserDetailPage {
     if (this.saving()) {
       return;
     }
-    const draft = this.form.getRawValue() satisfies UserDraft;
-    this.persist(draft, () => this.closeEditor());
+    const raw = this.form.getRawValue();
+    const roleId = raw.roleId;
+    if (roleId == null || !isAssignableRoleId(roleId, this.roles())) {
+      this.form.controls.roleId.setErrors({ role: true });
+      this.form.controls.roleId.markAsTouched();
+      return;
+    }
+    if (!raw.status || !isUserStatus(raw.status)) {
+      this.form.controls.status.setErrors({ status: true });
+      this.form.controls.status.markAsTouched();
+      return;
+    }
+    const current = this.user();
+    if (!current) {
+      return;
+    }
+    const draft: UserDraft = {
+      name: raw.name.trim(),
+      email: raw.email.trim(),
+      phone: raw.phone.trim(),
+      roleId,
+      status: raw.status,
+      avatar: this.editorForm().avatarPayload(),
+    };
+    this.saving.set(true);
+    this.usersApi
+      .update(current.id, draft, this.roles())
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (user) => {
+          this.user.set(user);
+          this.saving.set(false);
+          this.closeEditor();
+          this.messages.add({ severity: 'success', summary: this.lang.t('users.updated') });
+        },
+        error: () => this.fail(),
+      });
   }
 
   protected async remove(): Promise<void> {
@@ -242,26 +325,6 @@ export class UserDetailPage {
       });
   }
 
-  private persist(draft: UserDraft, onSuccess?: () => void): void {
-    const current = this.user();
-    if (!current) {
-      return;
-    }
-    this.saving.set(true);
-    this.usersApi
-      .update(current.id, draft)
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe({
-        next: (user) => {
-          this.user.set(user);
-          this.saving.set(false);
-          onSuccess?.();
-          this.messages.add({ severity: 'success', summary: this.lang.t('users.updated') });
-        },
-        error: () => this.fail(),
-      });
-  }
-
   private load(id: string): void {
     this.status.set('loading');
     this.usersApi
@@ -274,6 +337,11 @@ export class UserDetailPage {
         },
         error: () => this.status.set('error'),
       });
+  }
+
+  private joinStamp(iso: string | null): string {
+    const stamp = formatUserStamp(iso, this.lang.language());
+    return [stamp.time, stamp.date].filter(Boolean).join(' · ');
   }
 
   private fail(): void {

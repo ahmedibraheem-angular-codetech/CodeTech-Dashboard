@@ -17,6 +17,7 @@ export class UserDetailFields {
   readonly displayCode = input.required<string>();
   readonly roleLabel = input.required<string>();
   readonly statusLabel = input.required<string>();
-  readonly stamp = input.required<string>();
+  readonly activityStamp = input.required<string>();
+  readonly joinedStamp = input.required<string>();
   readonly isBlocked = input(false);
 }

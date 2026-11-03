@@ -446,7 +446,13 @@
   color: #e11d48;
 }
 
+.user-detail__badge--inactive {
+  background: #ffedd5;
+  color: #ea580c;
+}
+
 .user-detail__badge--blocked::after,
+.user-detail__badge--inactive::after,
 .user-detail__badge--active::after {
   content: '';
   width: 6px;
@@ -576,6 +582,15 @@
 
 .user-detail__value--success i {
   color: #16a34a;
+  font-size: 8px;
+}
+
+.user-detail__value--warning {
+  color: #ea580c;
+}
+
+.user-detail__value--warning i {
+  color: #ea580c;
   font-size: 8px;
 }
 

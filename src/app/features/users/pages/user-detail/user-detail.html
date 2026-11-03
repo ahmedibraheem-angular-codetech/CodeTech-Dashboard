@@ -8,10 +8,11 @@
   <section class="page user-detail">
     <app-user-detail-profile
       [user]="current"
-      [avatarUrl]="avatarUrl"
+      [avatarUrl]="current.avatarUrl ?? ''"
       [roleLabel]="roleLabel()"
       [statusLabel]="statusLabel()"
-      [timeLabel]="timeLabel()"
+      [timeLabel]="headerTime()"
+      [joinedDate]="headerDate()"
       [isBlocked]="isBlocked()"
       [saving]="saving()"
       [statusChoices]="statusChoices()"
@@ -28,12 +29,13 @@
       [displayCode]="displayCode()"
       [roleLabel]="roleLabel()"
       [statusLabel]="statusLabel()"
-      [stamp]="stamp()"
+      [activityStamp]="activityLabel()"
+      [joinedStamp]="joinedLabel()"
       [isBlocked]="isBlocked()"
     />
 
     @if (isBlocked()) {
-      <app-user-detail-ban [stamp]="stamp()" />
+      <app-user-detail-ban [reason]="current.blockedReason ?? ''" [stamp]="banLabel()" />
     }
   </section>
 }
@@ -51,7 +53,12 @@
   (save)="save()"
   (cancel)="closeEditor()"
 >
-  <app-user-editor-form [form]="form" [(locale)]="editorLocale" (submitted)="save()" />
+  <app-user-editor-form
+    [form]="form"
+    [roles]="editorRoles()"
+    [(locale)]="editorLocale"
+    (submitted)="save()"
+  />
 </app-modal>
 
 <app-confirm-dialog />

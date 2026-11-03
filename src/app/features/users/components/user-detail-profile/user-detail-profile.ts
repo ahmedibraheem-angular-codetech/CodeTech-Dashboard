@@ -33,6 +33,7 @@ export class UserDetailProfile {
   readonly roleLabel = input.required<string>();
   readonly statusLabel = input.required<string>();
   readonly timeLabel = input.required<string>();
+  readonly joinedDate = input.required<string>();
   readonly isBlocked = input(false);
   readonly saving = input(false);
   readonly statusChoices = input.required<UserDetailStatusChoice[]>();

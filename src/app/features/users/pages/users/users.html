@@ -21,7 +21,7 @@
       [title]="tableTitle()"
       [rows]="tableRows()"
       [columns]="columns()"
-      [totalRecords]="filtered().length"
+      [totalRecords]="total()"
       [roleOptions]="roleOptions()"
       [statusOptions]="statusOptions()"
       [showEdit]="canUpdate()"
@@ -32,7 +32,7 @@
       [(first)]="first"
       [(pageSize)]="pageSize"
       (rowClick)="openDetail($event)"
-      (exportRows)="exported($event)"
+      (exportRows)="exported()"
       (view)="openView($event)"
       (edit)="openEdit($event)"
       (remove)="remove($event)"
@@ -53,7 +53,12 @@
   (save)="save()"
   (cancel)="closeEditor()"
 >
-  <app-user-editor-form [form]="form" [(locale)]="editorLocale" (submitted)="save()" />
+  <app-user-editor-form
+    [form]="form"
+    [roles]="editorRoles()"
+    [(locale)]="editorLocale"
+    (submitted)="save()"
+  />
 </app-modal>
 
 <app-confirm-dialog />

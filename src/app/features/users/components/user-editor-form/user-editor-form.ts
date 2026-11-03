@@ -20,15 +20,19 @@ import { LanguageService } from '../../../../core/services/language.service';
 import { AppButton } from '../../../../shared/components/app-button/app-button';
 import { FieldError } from '../../../../shared/components/field-error/field-error';
 import { LocaleSwitch } from '../../../../shared/components/locale-switch/locale-switch';
-import type { UserRole, UserStatus } from '../../models/user.model';
+import type { UserStatus } from '../../models/user.model';
+
+export interface UserEditorRoleOption {
+  label: string;
+  value: number;
+}
 
 export type UserEditorFormGroup = FormGroup<{
   name: FormControl<string>;
   email: FormControl<string>;
   phone: FormControl<string>;
-  role: FormControl<UserRole>;
-  status: FormControl<UserStatus>;
-  joinedAt: FormControl<string>;
+  roleId: FormControl<number | null>;
+  status: FormControl<UserStatus | null>;
 }>;
 
 interface PhotoPreview {
@@ -59,26 +63,21 @@ export class UserEditorForm {
   private photoObjectUrl = '';
 
   readonly form = input.required<UserEditorFormGroup>();
+  readonly roles = input.required<UserEditorRoleOption[]>();
 
   readonly locale = model.required<AppLanguage>();
   readonly submitted = output<void>();
 
   readonly photo = signal<PhotoPreview | null>(null);
-
-  readonly formRoles = computed(() => {
-    this.locale();
-    return [
-      { label: this.t('roles.superAdmin'), value: 'super-admin' as const },
-      { label: this.t('roles.editor'), value: 'editor' as const },
-      { label: this.t('roles.viewer'), value: 'viewer' as const },
-    ];
-  });
+  private readonly pendingFile = signal<File | null>(null);
+  private readonly avatarRemoved = signal(false);
 
   readonly formStatuses = computed(() => {
     this.locale();
     return [
       { label: this.t('status.active'), value: 'active' as const },
-      { label: this.t('status.suspended'), value: 'suspended' as const },
+      { label: this.t('users.statusInactive'), value: 'inactive' as const },
+      { label: this.t('users.statusBlocked'), value: 'blocked' as const },
     ];
   });
 
@@ -90,12 +89,39 @@ export class UserEditorForm {
     return this.lang.lookup(key, this.locale()) ?? key;
   }
 
+  /** Show the current photo, or nothing. Does not mark the avatar for removal. */
+  prepare(existing: { url: string; name: string } | null): void {
+    this.revokeBlob();
+    this.pendingFile.set(null);
+    this.avatarRemoved.set(false);
+    this.photo.set(
+      existing
+        ? { name: existing.name, url: existing.url, sizeLabel: '', dateLabel: '' }
+        : null,
+    );
+  }
+
+  /** `undefined` keeps the photo, `null` removes it, a file replaces it. */
+  avatarPayload(): File | null | undefined {
+    const file = this.pendingFile();
+    if (file) {
+      return file;
+    }
+    return this.avatarRemoved() ? null : undefined;
+  }
+
   clearPhoto(): void {
+    this.revokeBlob();
+    this.pendingFile.set(null);
+    this.avatarRemoved.set(true);
+    this.photo.set(null);
+  }
+
+  private revokeBlob(): void {
     if (this.photoObjectUrl.startsWith('blob:')) {
       URL.revokeObjectURL(this.photoObjectUrl);
     }
     this.photoObjectUrl = '';
-    this.photo.set(null);
   }
 
   protected onSubmit(): void {
@@ -120,7 +146,9 @@ export class UserEditorForm {
     if (!file?.type.startsWith('image/') || file.size > 5 * 1024 * 1024) {
       return;
     }
-    this.clearPhoto();
+    this.revokeBlob();
+    this.avatarRemoved.set(false);
+    this.pendingFile.set(file);
     this.photoObjectUrl = URL.createObjectURL(file);
     this.photo.set({
       name: file.name,

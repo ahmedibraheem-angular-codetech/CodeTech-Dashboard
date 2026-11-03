@@ -26,7 +26,7 @@ import type {
   DataTableDateValue,
   DataTableIconValue,
 } from '../../../../shared/components/data-table/data-table.model';
-import type { User, UserRole, UserStatus } from '../../models/user.model';
+import type { User, UserStatus } from '../../models/user.model';
 
 export interface UsersTableRow {
   id: string;
@@ -66,13 +66,13 @@ export class UsersTable {
   readonly rows = input.required<readonly UsersTableRow[]>();
   readonly columns = input.required<readonly DataTableColumn<UsersTableRow>[]>();
   readonly totalRecords = input.required<number>();
-  readonly roleOptions = input.required<UsersTableOption<UserRole | 'all'>[]>();
+  readonly roleOptions = input.required<UsersTableOption<string>[]>();
   readonly statusOptions = input.required<UsersTableOption<UserStatus | 'all'>[]>();
   readonly showEdit = input(true);
   readonly showDelete = input(true);
 
   readonly query = model.required<string>();
-  readonly role = model.required<UserRole | 'all'>();
+  readonly role = model.required<string>();
   readonly status = model.required<UserStatus | 'all'>();
   readonly first = model.required<number>();
   readonly pageSize = model.required<number>();

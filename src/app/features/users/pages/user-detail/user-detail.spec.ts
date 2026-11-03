@@ -16,13 +16,21 @@ const USER_GRANTS = ['users.view', 'users.create', 'users.update', 'users.delete
 
 describe('UserDetailPage', () => {
   const user: User = {
-    id: 'u4',
+    id: '4',
+    code: 'USE-00004',
     name: 'نورة القحطاني',
+    username: null,
     email: 'noura@codetech.sa',
     phone: '0551111004',
-    role: 'viewer',
-    status: 'suspended',
-    joinedAt: '2025-01-09',
+    role: null,
+    status: 'blocked',
+    statusRaw: 'blocked',
+    avatarUrl: null,
+    avatarUuid: null,
+    blockedReason: 'مخالفة سياسة الاستخدام',
+    blockedAt: '2026-10-29T10:00:00.000000Z',
+    lastActivityAt: '2026-10-29T10:12:00.000000Z',
+    createdAt: '2025-01-09T08:00:00.000000Z',
   };
 
   beforeEach(async () => {
@@ -38,6 +46,8 @@ describe('UserDetailPage', () => {
             get: () => of(user),
             update: () => of(user),
             remove: () => of(undefined),
+            roles: () => of([]),
+            setStatus: () => of(user),
           },
         },
         {
@@ -63,14 +73,18 @@ describe('UserDetailPage', () => {
     );
   });
 
-  it('renders the suspended user detail sections', () => {
+  it('renders a blocked user with the stored ban reason and a missing role', () => {
     const fixture = TestBed.createComponent(UserDetailPage);
-    fixture.componentRef.setInput('id', 'u4');
+    fixture.componentRef.setInput('id', '4');
     fixture.detectChanges();
 
     const root: HTMLElement = fixture.nativeElement;
     expect(root.querySelector('h1')?.textContent).toContain('نورة القحطاني');
     expect(root.textContent).toContain('users.banReason');
+    expect(root.textContent).toContain('مخالفة سياسة الاستخدام');
+    expect(root.textContent).toContain('users.noRole');
+    expect(root.textContent).toContain('users.statusBlocked');
+    expect(root.textContent).toContain('USE-00004');
     expect(root.textContent).toContain('users.details');
   });
 });

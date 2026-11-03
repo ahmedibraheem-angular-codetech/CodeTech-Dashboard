@@ -12,5 +12,6 @@ import { ContentPanel } from '../../../../shared/components/content-panel/conten
 export class UserDetailBan {
   readonly lang = inject(LanguageService);
 
+  readonly reason = input.required<string>();
   readonly stamp = input.required<string>();
 }
