@@ -191,21 +191,6 @@ export interface ProjectStatusWriteDto {
   status: string;
 }
 
-export interface ProjectFeatureWriteDto {
-  is_featured: boolean;
-}
-
-export type ProjectListName =
-  | 'tags'
-  | 'overview_cards'
-  | 'challenges'
-  | 'tools'
-  | 'solutions'
-  | 'gallery'
-  | 'features'
-  | 'results'
-  | 'identity_items';
-
 export interface ProjectListQuery {
   search?: string;
   status?: string;

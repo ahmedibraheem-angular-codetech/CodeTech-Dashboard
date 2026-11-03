@@ -292,7 +292,7 @@ export const routes: Routes = [
             canActivate: [permissionGuard()],
             loadComponent: () =>
               import('./features/projects/pages/projects-list/projects-list').then(
-                (m) => m.ProjectsPage,
+                (m) => m.ProjectsList,
               ),
             data: {
               permission: 'projects.view',

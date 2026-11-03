@@ -1,0 +1,18 @@
+<ul class="project-detail__list">
+  @for (item of items(); track item.id) {
+    @let art = visual(item);
+    <li>
+      @if (art.image) {
+        <img class="project-detail__thumb" [src]="art.image" alt="" />
+      } @else if (art.icon) {
+        <i class="pi project-detail__mark" [class]="art.icon" aria-hidden="true"></i>
+      }
+      @if (text(item.title)) {
+        <strong>{{ text(item.title) }}</strong>
+      }
+      @if (text(item.body)) {
+        <span>{{ text(item.body) }}</span>
+      }
+    </li>
+  }
+</ul>

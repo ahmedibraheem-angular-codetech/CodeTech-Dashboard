@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { PROJECTS_SEED } from '../../projects/testing/project.fixtures';
+import { PROJECTS_SEED } from '../../projects/projects.spec-helpers';
 import {
   blankService,
   serviceFaq,

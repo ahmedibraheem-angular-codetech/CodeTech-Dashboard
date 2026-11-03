@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest';
 
+import { IDENTITY_IMAGE_SLOTS } from '../constants/project-limits';
+import { PROJECT_STEPS } from '../constants/project-steps';
 import {
-  IDENTITY_IMAGE_SLOTS,
-  PROJECT_STEPS,
   blankProject,
   localeText,
   projectGalleryImage,

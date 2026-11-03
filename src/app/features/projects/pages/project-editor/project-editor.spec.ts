@@ -4,9 +4,10 @@ import { ActivatedRoute, provideRouter, Router } from '@angular/router';
 import { MessageService } from 'primeng/api';
 import { firstValueFrom, map, NEVER, of, throwError, timer } from 'rxjs';
 
-import { blankProject, localeText, PROJECT_STEPS, type Project } from '../../models/project.model';
+import { PROJECT_STEPS } from '../../constants/project-steps';
+import { blankProject, localeText, type Project } from '../../models/project.model';
+import { ProjectsMemoryService } from '../../projects.spec-helpers';
 import { ProjectsService } from '../../services/projects.service';
-import { ProjectsMemoryService } from '../../testing/projects.memory';
 import { ProjectEditor } from './project-editor';
 
 @Component({ template: '' })

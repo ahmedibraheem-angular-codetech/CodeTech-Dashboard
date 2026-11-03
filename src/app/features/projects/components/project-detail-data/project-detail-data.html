@@ -1,0 +1,66 @@
+<article class="project-tile project-detail__panel">
+  @if (summary()) {
+    <p>{{ summary() }}</p>
+  }
+
+  <h3>{{ lang.t('project.categories') }}</h3>
+  <ul class="project-tile__tags">
+    @for (category of project().categories; track category.id) {
+      <li>
+        <i class="pi" [class]="categoryIcon(category.imageUrl)" aria-hidden="true"></i>
+        {{ text(category.title) }}
+      </li>
+    }
+  </ul>
+
+  @if (aboutCards().length) {
+    <h3>{{ lang.t('project.aboutCards') }}</h3>
+    <app-project-detail-points [items]="aboutCards()" [locale]="locale()" />
+  }
+
+  @if (challenges().length) {
+    <h3>{{ lang.t('project.challenges') }}</h3>
+    <app-project-detail-points [items]="challenges()" [locale]="locale()" />
+  }
+
+  @if (tools().length) {
+    <h3>{{ lang.t('project.tools') }}</h3>
+    <div class="project-detail__gallery">
+      @for (tool of tools(); track tool.id) {
+        @let art = toolVisual(tool);
+        @if (art.image) {
+          <figure class="project-detail__tool">
+            <img [src]="art.image" [alt]="text(tool.title)" />
+            @if (text(tool.title)) {
+              <figcaption>{{ text(tool.title) }}</figcaption>
+            }
+          </figure>
+        }
+      }
+    </div>
+  }
+
+  @if (solutions().length || solutionsImage()) {
+    <h3>{{ lang.t('project.solutions') }}</h3>
+    @if (solutionsImage(); as image) {
+      <img
+        class="project-detail__solutions-image"
+        [src]="image.imageUrl"
+        [alt]="text(image.title) || lang.t('project.solutionsImage')"
+      />
+    }
+    @if (solutions().length) {
+      <app-project-detail-points [items]="solutions()" [locale]="locale()" />
+    }
+  }
+
+  @if (features().length) {
+    <h3>{{ lang.t('project.features') }}</h3>
+    <app-project-detail-points [items]="features()" [locale]="locale()" />
+  }
+
+  @if (results().length) {
+    <h3>{{ lang.t('project.results') }}</h3>
+    <app-project-detail-points [items]="results()" [locale]="locale()" />
+  }
+</article>

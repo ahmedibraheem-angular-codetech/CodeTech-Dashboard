@@ -18,20 +18,28 @@
             />
             <p-inputicon class="pi pi-file-edit" />
           </p-iconfield>
-          @if (editor.nameError()) {
-            <app-field-error>{{ editor.copy('project.required') }}</app-field-error>
+          @if (editor.nameErrorText()) {
+            <app-field-error>{{ editor.nameErrorText() }}</app-field-error>
           }
         </label>
         <label class="field">
           <span class="field__label">{{ editor.copy('project.summary') }}</span>
-          <textarea
-            pTextarea
-            [fluid]="true"
-            rows="6"
-            [value]="editor.text(editor.draft().summary)"
-            [placeholder]="editor.copy('project.summaryPh')"
-            (input)="editor.setField('summary', $event)"
-          ></textarea>
+          <span class="field--counted">
+            <textarea
+              pTextarea
+              [fluid]="true"
+              rows="6"
+              [value]="editor.text(editor.draft().summary)"
+              [placeholder]="editor.copy('project.summaryPh')"
+              (input)="editor.setField('summary', $event)"
+            ></textarea>
+            <small class="counter"
+              >{{ editor.text(editor.draft().summary).length }}/{{ editor.summaryMax }}</small
+            >
+          </span>
+          @if (editor.summaryErrorText()) {
+            <app-field-error>{{ editor.summaryErrorText() }}</app-field-error>
+          }
         </label>
       </div>
     </section>
@@ -48,9 +56,11 @@
             [title]="editor.text(item.title)"
             [titleLabel]="editor.copy('project.categoryTitle')"
             [titlePlaceholder]="editor.copy('project.categoryTitlePh')"
+            [titleError]="editor.categoryTitleError(index)"
             [body]="editor.text(item.body)"
             [bodyLabel]="editor.copy('project.categoryBody')"
             [bodyPlaceholder]="editor.copy('project.categoryBodyPh')"
+            [bodyError]="editor.categoryBodyError(index)"
             [iconLabel]="editor.copy('project.icon')"
             [imageName]="item.imageName"
             [imageUrl]="item.imageUrl"
@@ -173,9 +183,11 @@
         [title]="editor.text(card.title)"
         [titleLabel]="editor.copy('project.aboutTitle')"
         [titlePlaceholder]="editor.copy('project.aboutTitlePh')"
+        [titleError]="editor.aboutTitleError(index)"
         [body]="editor.text(card.body)"
         [bodyLabel]="editor.copy('project.aboutBody')"
         [bodyPlaceholder]="editor.copy('project.aboutBodyPh')"
+        [bodyError]="editor.aboutBodyError(index)"
         [iconLabel]="editor.copy('project.aboutBg')"
         [imageName]="card.imageName"
         [imageUrl]="card.imageUrl"

@@ -44,9 +44,7 @@ export class ProjectsPageService {
       return of([]);
     }
     return forkJoin(numbers.map((stat) => this.saveStat(stat))).pipe(
-      switchMap((saved) =>
-        this.reorderStats(saved.map((item) => item.id)).pipe(map(() => saved)),
-      ),
+      switchMap((saved) => this.reorderStats(saved.map((item) => item.id)).pipe(map(() => saved))),
     );
   }
 

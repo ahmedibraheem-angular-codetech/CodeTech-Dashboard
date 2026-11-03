@@ -10,6 +10,7 @@
         [title]="editor.text(button.title)"
         [titleLabel]="editor.copy('project.identityTitle')"
         [titlePlaceholder]="editor.copy('project.identityTitlePh')"
+        [titleError]="editor.identityTitleError(buttonIndex)"
         [body]="editor.text(button.body)"
         [bodyLabel]="editor.copy('project.identityBody')"
         [bodyPlaceholder]="editor.copy('project.identityBodyPh')"

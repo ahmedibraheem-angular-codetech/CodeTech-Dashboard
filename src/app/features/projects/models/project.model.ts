@@ -1,4 +1,5 @@
 import type { AppLanguage } from '../../../core/i18n/language';
+import { IDENTITY_IMAGE_SLOTS } from '../constants/project-limits';
 
 export interface LocaleText {
   ar: string;
@@ -44,8 +45,6 @@ export interface ProjectIdentityButton {
   body: LocaleText;
   images: ProjectGalleryImage[];
 }
-
-export const IDENTITY_IMAGE_SLOTS = 4;
 
 export interface ProjectSeo {
   slug: LocaleText;
@@ -93,18 +92,6 @@ export interface Project {
 
   seo: ProjectSeo;
 }
-
-export const PROJECT_STEPS = [
-  { id: 'about', labelKey: 'project.step.about' },
-  { id: 'challenges', labelKey: 'project.step.challenges' },
-  { id: 'solutions', labelKey: 'project.step.solutions' },
-  { id: 'features', labelKey: 'project.step.features' },
-  { id: 'results', labelKey: 'project.step.results' },
-  { id: 'identity', labelKey: 'project.step.identity' },
-  { id: 'seo', labelKey: 'project.step.seo' },
-] as const;
-
-export type ProjectStepId = (typeof PROJECT_STEPS)[number]['id'];
 
 let sequence = 0;
 

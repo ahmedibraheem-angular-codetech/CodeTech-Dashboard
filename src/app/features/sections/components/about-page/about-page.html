@@ -30,7 +30,6 @@
         (saved)="vision.set($event)"
       />
     }
-    <app-about-partners [partners]="partners()" (changed)="partners.set($event)" />
     @if (ceo(); as ceoBlock) {
       <app-about-ceo [content]="ceoBlock" (saved)="ceo.set($event)" />
     }

@@ -1,0 +1,20 @@
+<article class="project-tile project-detail__panel">
+  <dl class="project-detail__seo">
+    <div>
+      <dt>{{ lang.t('project.seoSlug') }}</dt>
+      <dd dir="ltr">{{ text(project().seo.slug) || '—' }}</dd>
+    </div>
+    <div>
+      <dt>{{ lang.t('project.seoTitle') }}</dt>
+      <dd>{{ text(project().seo.title) || '—' }}</dd>
+    </div>
+    <div>
+      <dt>{{ lang.t('project.seoKeywords') }}</dt>
+      <dd>{{ text(project().seo.keywords) || '—' }}</dd>
+    </div>
+    <div>
+      <dt>{{ lang.t('project.seoDescription') }}</dt>
+      <dd>{{ text(project().seo.description) || '—' }}</dd>
+    </div>
+  </dl>
+</article>

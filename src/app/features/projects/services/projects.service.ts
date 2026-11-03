@@ -1,15 +1,6 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, inject, signal } from '@angular/core';
-import {
-  type Observable,
-  catchError,
-  forkJoin,
-  from,
-  map,
-  of,
-  switchMap,
-  throwError,
-} from 'rxjs';
+import { type Observable, catchError, forkJoin, from, map, of, switchMap, throwError } from 'rxjs';
 
 import { API_BASE_URL, apiUrl } from '../../../core/config/api';
 import { statusOf } from '../../../core/http/api-error';
@@ -17,9 +8,7 @@ import type { ApiEnvelope, PaginatedEnvelope } from '../../../core/http/api.mode
 import { MediaService } from '../../../core/media/media.service';
 import type {
   ProjectDetailDto,
-  ProjectFeatureWriteDto,
   ProjectListDto,
-  ProjectListName,
   ProjectListQuery,
   ProjectStatusWriteDto,
   ProjectsPageDto,
@@ -108,50 +97,9 @@ export class ProjectsService {
       .pipe(map((envelope) => mapProjectDetail(this.requireDetail(envelope))));
   }
 
-  setFeatured(id: string, featured: boolean): Observable<Project> {
-    const body: ProjectFeatureWriteDto = { is_featured: featured };
-    return this.http
-      .patch<ApiEnvelope<ProjectDetailDto>>(apiUrl(this.base, `${PATH}/${id}/feature`), body)
-      .pipe(map((envelope) => mapProjectDetail(this.requireDetail(envelope))));
-  }
-
   remove(id: string): Observable<void> {
     return this.http
       .delete(apiUrl(this.base, `${PATH}/${id}`), { responseType: 'text' })
-      .pipe(map(() => undefined));
-  }
-
-  removeListItem(projectId: string, list: ProjectListName, itemId: string): Observable<void> {
-    return this.http
-      .delete(apiUrl(this.base, `${PATH}/${projectId}/${list}/${itemId}`), {
-        responseType: 'text',
-      })
-      .pipe(map(() => undefined));
-  }
-
-  removeIdentityImage(
-    projectId: string,
-    identityItemId: string,
-    imageId: string,
-  ): Observable<void> {
-    return this.http
-      .delete(
-        apiUrl(
-          this.base,
-          `${PATH}/${projectId}/identity_items/${identityItemId}/images/${imageId}`,
-        ),
-        { responseType: 'text' },
-      )
-      .pipe(map(() => undefined));
-  }
-
-  reorder(ids: readonly string[]): Observable<void> {
-    return this.http
-      .post(
-        apiUrl(this.base, `${PATH}/reorder`),
-        { ids: ids.map((id) => Number(id)).filter((id) => Number.isFinite(id)) },
-        { responseType: 'text' },
-      )
       .pipe(map(() => undefined));
   }
 

@@ -12,8 +12,8 @@ import type {
   ProjectToolWriteDto,
   ProjectWriteDto,
 } from '../models/project.api';
+import { IDENTITY_IMAGE_SLOTS } from '../constants/project-limits';
 import {
-  IDENTITY_IMAGE_SLOTS,
   blankProject,
   localeText,
   projectGalleryImage,
@@ -23,16 +23,13 @@ import {
   type ProjectIdentityButton,
   type ProjectPoint,
 } from '../models/project.model';
+import { localeFilled } from '../utils/project-field-rules';
 
 function locale(value: ProjectLocaleDto | null | undefined): LocaleText {
   return localeText(
     typeof value?.ar === 'string' ? value.ar : '',
     typeof value?.en === 'string' ? value.en : '',
   );
-}
-
-function filled(value: LocaleText): boolean {
-  return !!(value.ar.trim() || value.en.trim());
 }
 
 function serverId(id: string): number | undefined {
@@ -63,9 +60,7 @@ function mapPoint(
   mediaKey: 'icon' | 'image',
 ): ProjectPoint {
   const media = mapProjectMedia(
-    mediaKey === 'icon'
-      ? ('icon' in dto ? dto.icon : null)
-      : ('image' in dto ? dto.image : null),
+    mediaKey === 'icon' ? ('icon' in dto ? dto.icon : null) : 'image' in dto ? dto.image : null,
   );
   return {
     id: String(dto.id),
@@ -105,7 +100,7 @@ function mapAboutCard(dto: ProjectDetailDto['overview_cards'][number]): ProjectP
   const media = mapProjectMedia(dto.background);
   return {
     id: String(dto.id),
-    title: filled(title) ? title : subject,
+    title: localeFilled(title) ? title : subject,
     body: locale(dto.description),
     ...media,
   };
@@ -119,7 +114,10 @@ function splitKeywords(value: string): string[] {
 }
 
 function joinKeywords(value: readonly string[] | null | undefined): string {
-  return (value ?? []).map((part) => part.trim()).filter(Boolean).join(', ');
+  return (value ?? [])
+    .map((part) => part.trim())
+    .filter(Boolean)
+    .join(', ');
 }
 
 function mapCore(
@@ -300,10 +298,7 @@ function applyTicket(
   }
 }
 
-function pointWrite(
-  item: ProjectPoint,
-  mediaKey: 'icon' | 'image',
-): ProjectPointWriteDto {
+function pointWrite(item: ProjectPoint, mediaKey: 'icon' | 'image'): ProjectPointWriteDto {
   const row: ProjectPointWriteDto = withOptionalId(item.id, {
     title: { ar: item.title.ar.trim(), en: item.title.en.trim() },
     short_description: { ar: item.body.ar.trim(), en: item.body.en.trim() },
@@ -364,11 +359,11 @@ export function toProjectWrite(project: Project): ProjectWriteDto {
   );
 
   body.tags = project.categories
-    .filter((item) => filled(item.title) || filled(item.body) || hasMedia(item))
+    .filter((item) => localeFilled(item.title) || localeFilled(item.body) || hasMedia(item))
     .map((item): ProjectTagWriteDto => pointWrite(item, 'icon'));
 
   body.overview_cards = project.aboutCards
-    .filter((item) => filled(item.title) || filled(item.body) || hasMedia(item))
+    .filter((item) => localeFilled(item.title) || localeFilled(item.body) || hasMedia(item))
     .map((item): ProjectOverviewCardWriteDto => {
       const title = { ar: item.title.ar.trim(), en: item.title.en.trim() };
       const row: ProjectOverviewCardWriteDto = withOptionalId(item.id, {
@@ -381,7 +376,7 @@ export function toProjectWrite(project: Project): ProjectWriteDto {
     });
 
   body.challenges = project.challenges
-    .filter((item) => filled(item.title) || filled(item.body) || hasMedia(item))
+    .filter((item) => localeFilled(item.title) || localeFilled(item.body) || hasMedia(item))
     .map((item) => pointWrite(item, 'image'));
 
   body.tools = project.tools
@@ -393,7 +388,7 @@ export function toProjectWrite(project: Project): ProjectWriteDto {
     });
 
   body.solutions = project.solutions
-    .filter((item) => filled(item.title) || filled(item.body) || hasMedia(item))
+    .filter((item) => localeFilled(item.title) || localeFilled(item.body) || hasMedia(item))
     .map((item) => pointWrite(item, 'icon'));
 
   body.gallery = project.gallery
@@ -405,11 +400,11 @@ export function toProjectWrite(project: Project): ProjectWriteDto {
     });
 
   body.features = project.features
-    .filter((item) => filled(item.title) || filled(item.body) || hasMedia(item))
+    .filter((item) => localeFilled(item.title) || localeFilled(item.body) || hasMedia(item))
     .map((item) => pointWrite(item, 'image'));
 
   body.results = project.results
-    .filter((item) => filled(item.title) || filled(item.body) || hasMedia(item))
+    .filter((item) => localeFilled(item.title) || localeFilled(item.body) || hasMedia(item))
     .map((item): ProjectResultWriteDto => {
       const row: ProjectResultWriteDto = withOptionalId(item.id, {
         title: { ar: item.title.ar.trim(), en: item.title.en.trim() },
@@ -422,8 +417,8 @@ export function toProjectWrite(project: Project): ProjectWriteDto {
   body.identity_items = project.identityButtons
     .filter(
       (item) =>
-        filled(item.title) ||
-        filled(item.body) ||
+        localeFilled(item.title) ||
+        localeFilled(item.body) ||
         item.images.some((image) => hasMedia(image) || !!serverId(image.id)),
     )
     .map((item): ProjectIdentityItemWriteDto => {

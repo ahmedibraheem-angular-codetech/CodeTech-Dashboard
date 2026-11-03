@@ -10,8 +10,8 @@ import { AuthService } from '../../../../core/auth/auth.service';
 import { API_LATENCY_MS } from '../../../../core/config/latency';
 import { BreadcrumbService } from '../../../../core/services/breadcrumb.service';
 import { LanguageService } from '../../../../core/services/language.service';
-import { PROJECTS_SEED } from '../../../projects/testing/project.fixtures';
-import { ProjectsMemoryService } from '../../../projects/testing/projects.memory';
+import { PROJECTS_SEED } from '../../../projects/projects.spec-helpers';
+import { ProjectsMemoryService } from '../../../projects/projects.spec-helpers';
 import { ProjectsService } from '../../../projects/services/projects.service';
 import {
   blankService,

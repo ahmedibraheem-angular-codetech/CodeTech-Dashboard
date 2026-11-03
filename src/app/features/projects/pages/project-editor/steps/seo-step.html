@@ -16,6 +16,10 @@
           (input)="editor.setSeo('slug', $event)"
         />
       </span>
+      <small class="field__hint">{{ editor.copy('project.seoSlugHint') }}</small>
+      @if (editor.slugErrorText()) {
+        <app-field-error>{{ editor.slugErrorText() }}</app-field-error>
+      }
     </label>
     <label class="field">
       <span class="field__label">{{ editor.copy('project.seoTitle') }}</span>
@@ -42,6 +46,10 @@
           (input)="editor.setSeo('keywords', $event)"
         />
       </span>
+      <small class="counter">{{ editor.keywordsLongest() }}/{{ editor.keywordsMax }}</small>
+      @if (editor.keywordsErrorText()) {
+        <app-field-error>{{ editor.keywordsErrorText() }}</app-field-error>
+      }
     </label>
     <label class="field seo-description">
       <span class="field__label">{{ editor.copy('project.seoDescription') }}</span>
@@ -49,12 +57,14 @@
         pTextarea
         [fluid]="true"
         rows="4"
-        maxlength="160"
+        [attr.maxlength]="editor.descriptionMax"
         [value]="editor.text(editor.draft().seo.description)"
         [placeholder]="editor.copy('project.seoDescriptionPh')"
         (input)="editor.setSeo('description', $event)"
       ></textarea>
-      <small class="counter">{{ editor.text(editor.draft().seo.description).length }}/160</small>
+      <small class="counter"
+        >{{ editor.text(editor.draft().seo.description).length }}/{{ editor.descriptionMax }}</small
+      >
     </label>
   </div>
 </section>

@@ -1,0 +1,15 @@
+import { ChangeDetectionStrategy, Component } from '@angular/core';
+
+import { FeatureCard } from '../../../../../shared/components/feature-card/feature-card';
+import { EditorStep, PROJECT_EDITOR_STEP_HOST } from './editor-step';
+
+@Component({
+  selector: 'app-project-results-step',
+  imports: [FeatureCard],
+  templateUrl: './results-step.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  host: PROJECT_EDITOR_STEP_HOST,
+})
+export class ResultsStep extends EditorStep {
+  readonly uploadPrefix = 'project';
+}

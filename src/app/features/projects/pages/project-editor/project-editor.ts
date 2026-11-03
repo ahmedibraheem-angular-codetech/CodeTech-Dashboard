@@ -14,43 +14,95 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { MessageService } from 'primeng/api';
 import { catchError, finalize, map, of, switchMap } from 'rxjs';
 
+import { isApiError, type FieldErrors } from '../../../../core/http/api-error';
 import type { AppLanguage } from '../../../../core/i18n/translations';
 import { LanguageService } from '../../../../core/services/language.service';
 import {
   EditorShell,
   type EditorShellLabels,
 } from '../../../../shared/components/editor-shell/editor-shell';
+import { ObjectUrls } from '../../../../shared/components/product-upload/object-urls';
 import {
-  PROJECT_STEPS,
+  PROJECT_META_KEYWORD_MAX,
+  PROJECT_SEO_DESCRIPTION_MAX,
+  PROJECT_SUMMARY_MAX,
+} from '../../constants/project-limits';
+import { PROJECT_STEPS, SEO_STEP_INDEX } from '../../constants/project-steps';
+import {
   blankProject,
-  projectGalleryImage,
-  projectIdentityButton,
-  projectMedia,
-  projectPoint,
   readLocale,
   type LocaleText,
   type Project,
 } from '../../models/project.model';
-import { ObjectUrls } from '../../../../shared/components/product-upload/object-urls';
 import { ProjectsService } from '../../services/projects.service';
 import {
-  AboutStep,
+  draftAddGallery,
+  draftAddIdentityButton,
+  draftAddMedia,
+  draftAddPoint,
+  draftClearCover,
+  draftClearGalleryImage,
+  draftClearIdentityButtonImage,
+  draftClearMediaImage,
+  draftClearPointImage,
+  draftClearSolutionsImage,
+  draftRemoveGallery,
+  draftRemoveIdentityButton,
+  draftRemoveMedia,
+  draftRemovePoint,
+  draftSetCover,
+  draftSetCoverText,
+  draftSetGalleryImage,
+  draftSetIdentityButtonImage,
+  draftSetIdentityButtonText,
+  draftSetLocaleField,
+  draftSetMediaImage,
+  draftSetPointField,
+  draftSetPointImage,
+  draftSetSeo,
+  draftSetSolutionsImage,
+  draftSetSolutionsImageText,
+  type ProjectMediaList,
+  type ProjectPointList,
+} from '../../utils/project-draft';
+import {
+  clearServerErrorPaths,
+  clearServerErrorPrefix,
+  identityTitleErrorMessage,
+  keywordsErrorMessage,
+  localeFromServerPath,
+  nameErrorMessage,
+  pointTitleBodyErrorMessage,
+  projectStepIndexForServerPath,
+  slugErrorMessage,
+  summaryErrorMessage,
+} from '../../utils/project-errors';
+import {
+  isValidMetaKeywords,
+  isValidProjectSlug,
+  isValidProjectSummary,
+  longestProjectKeywordLength,
+  projectNamesValid,
+} from '../../utils/project-field-rules';
+import {
+  firstRepeaterValidationIssue,
+  projectRepeatersValid,
+} from '../../utils/project-repeater-validation';
+import {
   ChallengesStep,
   FeaturesStep,
   IdentityStep,
+  InfoStep,
   ResultsStep,
   SeoStep,
   SolutionsStep,
 } from './steps/project-steps';
 
-type PointList = 'categories' | 'aboutCards' | 'challenges' | 'solutions' | 'features' | 'results';
-type MediaList = 'tools';
-
 @Component({
   selector: 'app-project-editor',
   imports: [
     EditorShell,
-    AboutStep,
+    InfoStep,
     ChallengesStep,
     SolutionsStep,
     FeaturesStep,
@@ -81,6 +133,22 @@ export class ProjectEditor {
   );
   readonly saving = signal(false);
   readonly nameError = signal(false);
+  readonly summaryMax = PROJECT_SUMMARY_MAX;
+  readonly keywordsMax = PROJECT_META_KEYWORD_MAX;
+  readonly descriptionMax = PROJECT_SEO_DESCRIPTION_MAX;
+  readonly slugInvalid = computed(
+    () => !isValidProjectSlug(readLocale(this.draft().seo.slug, this.locale())),
+  );
+  readonly summaryInvalid = computed(
+    () => !isValidProjectSummary(readLocale(this.draft().summary, this.locale())),
+  );
+  readonly keywordsLongest = computed(() =>
+    longestProjectKeywordLength(readLocale(this.draft().seo.keywords, this.locale())),
+  );
+  readonly keywordsInvalid = computed(
+    () => !isValidMetaKeywords(readLocale(this.draft().seo.keywords, this.locale())),
+  );
+  readonly serverErrors = signal<FieldErrors>({});
   private readonly reload = signal(0);
 
   readonly mode = toSignal(
@@ -114,7 +182,6 @@ export class ProjectEditor {
   );
 
   constructor() {
-
     this.destroyRef.onDestroy(() => this.objectUrls.abandon(this.draft()));
 
     effect(() => {
@@ -128,6 +195,7 @@ export class ProjectEditor {
         this.step.set(0);
         this.passed.set(-1);
         this.nameError.set(false);
+        this.serverErrors.set({});
       });
     });
 
@@ -161,6 +229,7 @@ export class ProjectEditor {
         this.step.set(0);
         this.passed.set(-1);
         this.nameError.set(false);
+        this.serverErrors.set({});
         this.status.set('ready');
       });
   }
@@ -187,6 +256,9 @@ export class ProjectEditor {
     if (this.saving() || index === undefined || (this.mode() === 'create' && index > this.step())) {
       return;
     }
+    if (!this.canLeaveEditorStep(index)) {
+      return;
+    }
     this.step.set(index);
   }
 
@@ -194,8 +266,11 @@ export class ProjectEditor {
     if (this.saving() || this.lastStep()) {
       return;
     }
-    if (this.mode() === 'create' && this.step() === 0 && !this.namesValid()) {
+    if (this.mode() === 'create' && this.step() === 0 && !projectNamesValid(this.draft())) {
       this.nameError.set(true);
+      return;
+    }
+    if (!this.canLeaveEditorStep(this.step() + 1)) {
       return;
     }
     const leaving = this.step();
@@ -209,6 +284,9 @@ export class ProjectEditor {
     }
     if (this.step() === 0) {
       void this.router.navigate(['/projects']);
+      return;
+    }
+    if (!this.canLeaveEditorStep(this.step() - 1)) {
       return;
     }
     this.step.update((current) => current - 1);
@@ -230,135 +308,164 @@ export class ProjectEditor {
     this.persist(published, published ? 'project.saved' : 'project.draftSaved', false);
   }
 
+  nameErrorText(): string {
+    return nameErrorMessage(this.nameError(), this.locale(), this.serverErrors(), (key) =>
+      this.copy(key),
+    );
+  }
+
+  summaryErrorText(): string {
+    return summaryErrorMessage(this.summaryInvalid(), this.locale(), this.serverErrors(), (key) =>
+      this.copy(key),
+    );
+  }
+
+  slugErrorText(): string {
+    return slugErrorMessage(this.slugInvalid(), this.serverErrors(), (key) => this.copy(key));
+  }
+
+  keywordsErrorText(): string {
+    return keywordsErrorMessage(this.keywordsInvalid(), this.locale(), this.serverErrors(), (key) =>
+      this.copy(key),
+    );
+  }
+
+  categoryTitleError(index: number): string {
+    return this.pointError('categories', index, 'title');
+  }
+
+  categoryBodyError(index: number): string {
+    return this.pointError('categories', index, 'body');
+  }
+
+  aboutTitleError(index: number): string {
+    return this.pointError('aboutCards', index, 'title');
+  }
+
+  aboutBodyError(index: number): string {
+    return this.pointError('aboutCards', index, 'body');
+  }
+
+  challengeTitleError(index: number): string {
+    return this.pointError('challenges', index, 'title');
+  }
+
+  challengeBodyError(index: number): string {
+    return this.pointError('challenges', index, 'body');
+  }
+
+  solutionTitleError(index: number): string {
+    return this.pointError('solutions', index, 'title');
+  }
+
+  solutionBodyError(index: number): string {
+    return this.pointError('solutions', index, 'body');
+  }
+
+  featureTitleError(index: number): string {
+    return this.pointError('features', index, 'title');
+  }
+
+  featureBodyError(index: number): string {
+    return this.pointError('features', index, 'body');
+  }
+
+  resultTitleError(index: number): string {
+    return this.pointError('results', index, 'title');
+  }
+
+  resultBodyError(index: number): string {
+    return this.pointError('results', index, 'body');
+  }
+
+  identityTitleError(index: number): string {
+    return identityTitleErrorMessage(
+      this.draft(),
+      index,
+      this.locale(),
+      this.serverErrors(),
+      (key) => this.copy(key),
+    );
+  }
+
   setField(key: 'name' | 'summary', event: Event): void {
     const value = this.read(event);
     if (value === undefined) {
       return;
     }
-    this.draft.update((current) => ({
-      ...current,
-      [key]: this.writeLocale(current[key], value),
-    }));
+    const language = this.locale();
+    this.draft.update((current) => draftSetLocaleField(current, key, language, value));
     if (key === 'name') {
       this.nameError.set(false);
+      this.dropServerErrors(`title.${language}`);
+    }
+    if (key === 'summary') {
+      this.dropServerErrors(`description.${language}`);
     }
   }
 
-  setPoint(list: PointList, index: number, field: 'title' | 'body', event: Event): void {
+  setPoint(list: ProjectPointList, index: number, field: 'title' | 'body', event: Event): void {
     const value = this.read(event);
     if (value === undefined) {
       return;
     }
-    this.draft.update((current) => ({
-      ...current,
-      [list]: this.patchLocaleField(current[list], index, field, value),
-    }));
+    const language = this.locale();
+    this.draft.update((current) =>
+      draftSetPointField(current, list, index, field, language, value),
+    );
+    const apiList =
+      list === 'categories' ? 'tags' : list === 'aboutCards' ? 'overview_cards' : list;
+    const apiField =
+      field === 'title' ? 'title' : list === 'results' ? 'value' : 'short_description';
+    this.dropServerErrors(`${apiList}.${index}.${apiField}.${language}`);
   }
 
-  addPoint(list: PointList): void {
-    this.draft.update((current) => ({ ...current, [list]: [...current[list], projectPoint()] }));
+  addPoint(list: ProjectPointList): void {
+    this.draft.update((current) => draftAddPoint(current, list));
   }
 
-  removePoint(list: PointList, index: number): void {
-    this.draft.update((current) => ({
-      ...current,
-      [list]:
-        current[list].length > 1
-          ? current[list].filter((_, item) => item !== index)
-          : current[list],
-    }));
+  removePoint(list: ProjectPointList, index: number): void {
+    this.draft.update((current) => draftRemovePoint(current, list, index));
   }
 
-  setPointImage(list: PointList, index: number, file: { name: string; url: string }): void {
-    this.draft.update((current) => ({
-      ...current,
-      [list]: this.mapAt(current[list], index, (item) => this.withImage(item, file)),
-    }));
+  setPointImage(list: ProjectPointList, index: number, file: { name: string; url: string }): void {
+    this.draft.update((current) => draftSetPointImage(current, list, index, file));
   }
 
-  setMediaImage(list: MediaList, index: number, file: { name: string; url: string }): void {
-    this.draft.update((current) => ({
-      ...current,
-      [list]: this.mapAt(current[list], index, (item) => this.withImage(item, file)),
-    }));
+  setMediaImage(list: ProjectMediaList, index: number, file: { name: string; url: string }): void {
+    this.draft.update((current) => draftSetMediaImage(current, list, index, file));
   }
 
-  addMedia(list: MediaList): void {
-    this.draft.update((current) => ({ ...current, [list]: [...current[list], projectMedia()] }));
+  addMedia(list: ProjectMediaList): void {
+    this.draft.update((current) => draftAddMedia(current, list));
   }
 
-  removeMedia(list: MediaList, index: number): void {
-    this.draft.update((current) => ({
-      ...current,
-      [list]:
-        current[list].length > 1
-          ? current[list].filter((_, item) => item !== index)
-          : current[list],
-    }));
+  removeMedia(list: ProjectMediaList, index: number): void {
+    this.draft.update((current) => draftRemoveMedia(current, list, index));
   }
 
   setCover(kind: 'cover' | 'thumb', file: { name: string; url: string }): void {
-    this.draft.update((current) =>
-      kind === 'cover'
-        ? { ...current, coverName: file.name, coverUrl: file.url, coverUuid: null }
-        : { ...current, thumbName: file.name, thumbUrl: file.url, thumbUuid: null },
-    );
+    this.draft.update((current) => draftSetCover(current, kind, file));
   }
 
   clearCover(kind: 'cover' | 'thumb'): void {
-    this.draft.update((current) =>
-      kind === 'cover'
-        ? { ...current, coverName: '', coverUrl: '', coverUuid: null }
-        : { ...current, thumbName: '', thumbUrl: '', thumbUuid: null },
-    );
+    this.draft.update((current) => draftClearCover(current, kind));
   }
 
-  clearPointImage(list: PointList, index: number): void {
-    this.draft.update((current) => ({
-      ...current,
-      [list]: this.mapAt(current[list], index, (item) => ({
-        ...item,
-        imageName: '',
-        imageUrl: '',
-        imageUuid: null,
-      })),
-    }));
+  clearPointImage(list: ProjectPointList, index: number): void {
+    this.draft.update((current) => draftClearPointImage(current, list, index));
   }
 
-  clearMediaImage(list: MediaList, index: number): void {
-    this.draft.update((current) => ({
-      ...current,
-      [list]: this.mapAt(current[list], index, (item) => ({
-        ...item,
-        imageName: '',
-        imageUrl: '',
-        imageUuid: null,
-      })),
-    }));
+  clearMediaImage(list: ProjectMediaList, index: number): void {
+    this.draft.update((current) => draftClearMediaImage(current, list, index));
   }
 
   clearSolutionsImage(): void {
-    this.draft.update((current) => ({
-      ...current,
-      solutionsImage: {
-        ...current.solutionsImage,
-        imageName: '',
-        imageUrl: '',
-        imageUuid: null,
-      },
-    }));
+    this.draft.update((current) => draftClearSolutionsImage(current));
   }
 
   clearGalleryImage(index: number): void {
-    this.draft.update((current) => ({
-      ...current,
-      gallery: this.mapAt(current.gallery, index, (item) => ({
-        ...item,
-        imageName: '',
-        imageUrl: '',
-        imageUuid: null,
-      })),
-    }));
+    this.draft.update((current) => draftClearGalleryImage(current, index));
   }
 
   setCoverText(key: 'coverTitle' | 'coverAlt' | 'thumbTitle' | 'thumbAlt', event: Event): void {
@@ -366,17 +473,21 @@ export class ProjectEditor {
     if (value === undefined) {
       return;
     }
-    this.draft.update((current) => ({
-      ...current,
-      [key]: this.writeLocale(current[key], value),
-    }));
+    const language = this.locale();
+    this.draft.update((current) => draftSetCoverText(current, key, language, value));
+    const path =
+      key === 'coverTitle'
+        ? `cover_title.${language}`
+        : key === 'coverAlt'
+          ? `cover_alt.${language}`
+          : key === 'thumbTitle'
+            ? `thumbnail_title.${language}`
+            : `thumbnail_alt.${language}`;
+    this.dropServerErrors(path);
   }
 
   setSolutionsImage(file: { name: string; url: string }): void {
-    this.draft.update((current) => ({
-      ...current,
-      solutionsImage: this.withImage(current.solutionsImage, file),
-    }));
+    this.draft.update((current) => draftSetSolutionsImage(current, file));
   }
 
   setSolutionsImageText(field: 'title' | 'body', event: Event): void {
@@ -384,37 +495,23 @@ export class ProjectEditor {
     if (value === undefined) {
       return;
     }
-    this.draft.update((current) => ({
-      ...current,
-      solutionsImage: {
-        ...current.solutionsImage,
-        [field]: this.writeLocale(current.solutionsImage[field], value),
-      },
-    }));
+    const language = this.locale();
+    this.draft.update((current) => draftSetSolutionsImageText(current, field, language, value));
+    const path =
+      field === 'title' ? `solutions_image_title.${language}` : `solutions_image_alt.${language}`;
+    this.dropServerErrors(path);
   }
 
   setGalleryImage(index: number, file: { name: string; url: string }): void {
-    this.draft.update((current) => ({
-      ...current,
-      gallery: this.mapAt(current.gallery, index, (item) => this.withImage(item, file)),
-    }));
+    this.draft.update((current) => draftSetGalleryImage(current, index, file));
   }
 
   addGallery(): void {
-    this.draft.update((current) => ({
-      ...current,
-      gallery: [...current.gallery, projectGalleryImage()],
-    }));
+    this.draft.update((current) => draftAddGallery(current));
   }
 
   removeGallery(index: number): void {
-    this.draft.update((current) => ({
-      ...current,
-      gallery:
-        current.gallery.length > 1
-          ? current.gallery.filter((_, item) => item !== index)
-          : current.gallery,
-    }));
+    this.draft.update((current) => draftRemoveGallery(current, index));
   }
 
   identityButtonLabel(index: number): string {
@@ -430,27 +527,20 @@ export class ProjectEditor {
     if (value === undefined) {
       return;
     }
-    this.draft.update((current) => ({
-      ...current,
-      identityButtons: this.patchLocaleField(current.identityButtons, index, field, value),
-    }));
+    const language = this.locale();
+    this.draft.update((current) =>
+      draftSetIdentityButtonText(current, index, field, language, value),
+    );
+    const apiField = field === 'title' ? 'title' : 'short_description';
+    this.dropServerErrors(`identity_items.${index}.${apiField}.${language}`);
   }
 
   addIdentityButton(): void {
-    this.draft.update((current) => ({
-      ...current,
-      identityButtons: [...current.identityButtons, projectIdentityButton()],
-    }));
+    this.draft.update((current) => draftAddIdentityButton(current));
   }
 
   removeIdentityButton(index: number): void {
-    this.draft.update((current) => ({
-      ...current,
-      identityButtons:
-        current.identityButtons.length > 1
-          ? current.identityButtons.filter((_, item) => item !== index)
-          : current.identityButtons,
-    }));
+    this.draft.update((current) => draftRemoveIdentityButton(current, index));
   }
 
   setIdentityButtonImage(
@@ -458,28 +548,13 @@ export class ProjectEditor {
     imageIndex: number,
     file: { name: string; url: string },
   ): void {
-    this.draft.update((current) => ({
-      ...current,
-      identityButtons: this.mapAt(current.identityButtons, buttonIndex, (button) => ({
-        ...button,
-        images: this.mapAt(button.images, imageIndex, (image) => this.withImage(image, file)),
-      })),
-    }));
+    this.draft.update((current) =>
+      draftSetIdentityButtonImage(current, buttonIndex, imageIndex, file),
+    );
   }
 
   clearIdentityButtonImage(buttonIndex: number, imageIndex: number): void {
-    this.draft.update((current) => ({
-      ...current,
-      identityButtons: this.mapAt(current.identityButtons, buttonIndex, (button) => ({
-        ...button,
-        images: this.mapAt(button.images, imageIndex, (image) => ({
-          ...image,
-          imageName: '',
-          imageUrl: '',
-          imageUuid: null,
-        })),
-      })),
-    }));
+    this.draft.update((current) => draftClearIdentityButtonImage(current, buttonIndex, imageIndex));
   }
 
   setSeo(field: keyof Project['seo'], event: Event): void {
@@ -487,10 +562,33 @@ export class ProjectEditor {
     if (value === undefined) {
       return;
     }
-    this.draft.update((current) => ({
-      ...current,
-      seo: { ...current.seo, [field]: this.writeLocale(current.seo[field], value) },
-    }));
+    const language = this.locale();
+    this.draft.update((current) => draftSetSeo(current, field, language, value));
+    if (field === 'slug') {
+      this.dropServerErrors('slug');
+    } else if (field === 'keywords') {
+      this.dropServerErrorPrefix(`meta_keywords.${language}`);
+    } else if (field === 'title') {
+      this.dropServerErrors(`meta_title.${language}`);
+    } else if (field === 'description') {
+      this.dropServerErrors(`meta_description.${language}`);
+    }
+  }
+
+  private pointError(
+    list: 'categories' | 'aboutCards' | 'challenges' | 'solutions' | 'features' | 'results',
+    index: number,
+    field: 'title' | 'body',
+  ): string {
+    return pointTitleBodyErrorMessage(
+      this.draft(),
+      list,
+      index,
+      field,
+      this.locale(),
+      this.serverErrors(),
+      (key) => this.copy(key),
+    );
   }
 
   private persist(
@@ -498,17 +596,30 @@ export class ProjectEditor {
     message: 'project.saved' | 'project.draftSaved',
     leave: boolean,
   ): void {
-
     if (this.saving() || this.status() !== 'ready') {
       return;
     }
-    const current = { ...this.draft(), published };
-    if (published && !this.namesValid()) {
+    const previous = this.draft();
+    const current = { ...previous, published };
+    if (published && !projectNamesValid(current)) {
       this.nameError.set(true);
       this.step.set(0);
       return;
     }
-    const previous = this.draft();
+    if (!this.summaryLocalesValid()) {
+      this.focusInvalidSummaryLocale();
+      this.step.set(0);
+      return;
+    }
+    if (!projectRepeatersValid(current)) {
+      this.focusRepeaterValidation();
+      return;
+    }
+    if (!this.seoStepValid()) {
+      this.focusInvalidSeoLocale();
+      this.step.set(SEO_STEP_INDEX);
+      return;
+    }
     this.saving.set(true);
     this.api
       .save(current)
@@ -521,20 +632,137 @@ export class ProjectEditor {
           this.objectUrls.sync(previous, saved);
           this.draft.set(saved);
           this.nameError.set(false);
+          this.serverErrors.set({});
           this.messages.add({ severity: 'success', summary: this.lang.t(message) });
           if (leave) {
             void this.router.navigate(['/projects', saved.id]);
           }
         },
-        error: () => {
-          this.messages.add({ severity: 'error', summary: this.lang.t('common.error') });
+        error: (error: unknown) => {
+          if (isApiError(error) && error.kind === 'validation') {
+            this.applyServerErrors(error.fieldErrors);
+            if (Object.keys(error.fieldErrors).length === 0) {
+              this.messages.add({
+                severity: 'error',
+                summary: error.serverMessage ?? this.lang.t('common.error'),
+              });
+            }
+            return;
+          }
+          this.messages.add({
+            severity: 'error',
+            summary:
+              isApiError(error) && error.serverMessage
+                ? error.serverMessage
+                : this.lang.t('common.error'),
+          });
         },
       });
   }
 
-  private namesValid(): boolean {
-    const { name } = this.draft();
-    return name.ar.trim().length > 0 && name.en.trim().length > 0;
+  private applyServerErrors(fieldErrors: FieldErrors): void {
+    this.serverErrors.set(fieldErrors);
+    const firstPath = Object.keys(fieldErrors)[0];
+    if (!firstPath) {
+      return;
+    }
+    const language = localeFromServerPath(firstPath);
+    if (language) {
+      this.useLocale(language);
+    }
+    const stepIndex = projectStepIndexForServerPath(firstPath);
+    if (stepIndex >= 0) {
+      this.step.set(stepIndex);
+    }
+  }
+
+  private dropServerErrors(...paths: string[]): void {
+    if (paths.length === 0 || Object.keys(this.serverErrors()).length === 0) {
+      return;
+    }
+    this.serverErrors.update((current) => clearServerErrorPaths(current, paths));
+  }
+
+  private dropServerErrorPrefix(prefix: string): void {
+    if (Object.keys(this.serverErrors()).length === 0) {
+      return;
+    }
+    this.serverErrors.update((current) => clearServerErrorPrefix(current, prefix));
+  }
+
+  private summaryLocalesValid(): boolean {
+    const { summary } = this.draft();
+    return isValidProjectSummary(summary.ar) && isValidProjectSummary(summary.en);
+  }
+
+  private focusInvalidSummaryLocale(): void {
+    const { summary } = this.draft();
+    if (!isValidProjectSummary(summary.ar)) {
+      this.useLocale('ar');
+      return;
+    }
+    if (!isValidProjectSummary(summary.en)) {
+      this.useLocale('en');
+    }
+  }
+
+  private focusRepeaterValidation(): void {
+    const issue = firstRepeaterValidationIssue(this.draft());
+    if (!issue) {
+      return;
+    }
+    if (issue.preferAr) {
+      this.useLocale('ar');
+    }
+    this.step.set(issue.step);
+  }
+
+  private canLeaveEditorStep(target: number): boolean {
+    return this.canLeaveSeoStep(target);
+  }
+
+  private canLeaveSeoStep(target: number): boolean {
+    if (this.step() !== SEO_STEP_INDEX || target === SEO_STEP_INDEX) {
+      return true;
+    }
+    if (this.seoStepValid()) {
+      return true;
+    }
+    this.focusInvalidSeoLocale();
+    return false;
+  }
+
+  private seoStepValid(): boolean {
+    return this.slugLocalesValid() && this.metaKeywordsLocalesValid();
+  }
+
+  private slugLocalesValid(): boolean {
+    const { slug } = this.draft().seo;
+    return isValidProjectSlug(slug.ar) && isValidProjectSlug(slug.en);
+  }
+
+  private metaKeywordsLocalesValid(): boolean {
+    const { keywords } = this.draft().seo;
+    return isValidMetaKeywords(keywords.ar) && isValidMetaKeywords(keywords.en);
+  }
+
+  private focusInvalidSeoLocale(): void {
+    const { slug, keywords } = this.draft().seo;
+    if (!isValidProjectSlug(slug.ar)) {
+      this.useLocale('ar');
+      return;
+    }
+    if (!isValidProjectSlug(slug.en)) {
+      this.useLocale('en');
+      return;
+    }
+    if (!isValidMetaKeywords(keywords.ar)) {
+      this.useLocale('ar');
+      return;
+    }
+    if (!isValidMetaKeywords(keywords.en)) {
+      this.useLocale('en');
+    }
   }
 
   private read(event: Event): string | undefined {
@@ -543,32 +771,5 @@ export class ProjectEditor {
       return target.value;
     }
     return undefined;
-  }
-
-  private writeLocale(current: LocaleText, value: string): LocaleText {
-    return { ...current, [this.locale()]: value };
-  }
-
-  private mapAt<T>(items: readonly T[], index: number, update: (item: T) => T): T[] {
-    return items.map((item, itemIndex) => (itemIndex === index ? update(item) : item));
-  }
-
-  private patchLocaleField<T extends Record<K, LocaleText>, K extends keyof T>(
-    items: readonly T[],
-    index: number,
-    field: K,
-    value: string,
-  ): T[] {
-    return this.mapAt(items, index, (item) => ({
-      ...item,
-      [field]: this.writeLocale(item[field], value),
-    }));
-  }
-
-  private withImage<T extends { imageName: string; imageUrl: string; imageUuid?: string | null }>(
-    item: T,
-    file: { name: string; url: string },
-  ): T {
-    return { ...item, imageName: file.name, imageUrl: file.url, imageUuid: null };
   }
 }

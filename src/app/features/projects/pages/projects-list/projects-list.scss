@@ -133,27 +133,6 @@
   font-weight: 500;
 }
 
-.project-form {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  max-width: 640px;
-  padding: 20px;
-  border: 1px solid #edeeee;
-  border-radius: 20px;
-  background: #fff;
-}
-
-.project-form input,
-.project-form textarea {
-  width: 100%;
-  padding: 12px 14px;
-  border: 1px solid var(--app-border);
-  border-radius: 12px;
-  background: #f8fafc;
-  font: inherit;
-}
-
 @media (max-width: 800px) {
   .project-grid {
     grid-template-columns: 1fr;

@@ -1,0 +1,7 @@
+<div class="project-detail__gallery">
+  @for (image of project().gallery; track image.id) {
+    @if (show(image.imageUrl)) {
+      <img [src]="image.imageUrl" alt="" />
+    }
+  }
+</div>

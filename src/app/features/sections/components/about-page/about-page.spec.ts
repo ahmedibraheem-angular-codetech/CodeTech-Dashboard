@@ -53,14 +53,13 @@ describe('AboutPage', () => {
   it('renders the About sections from the API', async () => {
     const { root, http } = await render();
     expect(root.querySelectorAll('app-about-groups')).toHaveLength(2);
-    expect(root.querySelector('app-about-partners')).not.toBeNull();
+    expect(root.querySelector('app-about-partners')).toBeNull();
     expect(root.querySelector('app-about-ceo')).not.toBeNull();
     expect(root.querySelector('app-about-team')).not.toBeNull();
     expect(root.textContent).toContain('فلسفة الشركة');
     expect(root.textContent).toContain('م. رامي حسن');
-    expect(root.querySelectorAll('.partner-card')).toHaveLength(2);
+    expect(root.querySelectorAll('.partner-card')).toHaveLength(0);
     expect(root.querySelectorAll('.about-member')).toHaveLength(2);
-    expect(root.querySelector('.partner-card__logo')).not.toBeNull();
     expect(root.querySelector('app-section-empty')).toBeNull();
     http.verify();
   });

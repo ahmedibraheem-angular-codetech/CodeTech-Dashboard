@@ -5,7 +5,7 @@ import {
   projectIdentityButton,
   projectPoint,
 } from '../models/project.model';
-import { fileDto, projectDetailDto, projectListDto } from '../testing/project.http';
+import { fileDto, projectDetailDto, projectListDto } from '../projects.spec-helpers';
 import {
   isUploadUrl,
   mapProjectDetail,
@@ -127,7 +127,13 @@ describe('project.mapper', () => {
     const button = projectIdentityButton(localeText('هوية', 'Identity'), localeText('وصف', 'Body'));
     button.id = '91';
     button.images = [
-      { ...projectGalleryImage(), id: '911', imageUuid: 'id-1', imageUrl: 'https://cdn/x', imageName: 'x' },
+      {
+        ...projectGalleryImage(),
+        id: '911',
+        imageUuid: 'id-1',
+        imageUrl: 'https://cdn/x',
+        imageName: 'x',
+      },
       projectGalleryImage(),
       projectGalleryImage(),
       projectGalleryImage(),

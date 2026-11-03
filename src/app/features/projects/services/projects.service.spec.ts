@@ -12,7 +12,7 @@ import {
   projectDetailDto,
   projectListDto,
   projectsPageDto,
-} from '../testing/project.http';
+} from '../projects.spec-helpers';
 import { ProjectsService } from './projects.service';
 
 const LIST = apiUrl(environment.apiUrl, 'admin/projects');
@@ -103,10 +103,9 @@ describe('ProjectsService (HTTP)', () => {
     expect((await result)?.identityButtons[0]?.images).toHaveLength(4);
 
     const missing = firstValueFrom(service.get('404'));
-    http.expectOne(`${LIST}/404`).flush(
-      { message: 'Not found' },
-      { status: 404, statusText: 'Not Found' },
-    );
+    http
+      .expectOne(`${LIST}/404`)
+      .flush({ message: 'Not found' }, { status: 404, statusText: 'Not Found' });
     expect(await missing).toBeNull();
   });
 
@@ -179,21 +178,7 @@ describe('ProjectsService (HTTP)', () => {
     expect((await result).published).toBe(false);
   });
 
-  it('features a project through the feature endpoint', async () => {
-    const result = firstValueFrom(service.setFeatured('7', true));
-    const req = await expectRequest(`${LIST}/7/feature`);
-    expect(req.request.body).toEqual({ is_featured: true });
-    req.flush({ data: projectDetailDto(7) });
-    expect((await result).id).toBe('7');
-  });
-
-  it('reorders and removes projects', async () => {
-    const reorder = firstValueFrom(service.reorder(['3', '2', 'x']));
-    const reorderReq = await expectRequest(`${LIST}/reorder`);
-    expect(reorderReq.request.body).toEqual({ ids: [3, 2] });
-    reorderReq.flush('');
-    await reorder;
-
+  it('removes a project', async () => {
     const remove = firstValueFrom(service.remove('7'));
     http.expectOne(`${LIST}/7`).flush('');
     await remove;
@@ -202,7 +187,9 @@ describe('ProjectsService (HTTP)', () => {
   it('loads catalog visibility from the projects page', async () => {
     const result = firstValueFrom(service.loadCatalogVisibility());
     const req = await expectRequest(PAGE);
-    req.flush({ data: projectsPageDto({ sections: { stats_visible: true, projects_visible: true } }) });
+    req.flush({
+      data: projectsPageDto({ sections: { stats_visible: true, projects_visible: true } }),
+    });
     expect(await result).toBe(true);
     expect(service.catalogVisible()).toBe(true);
   });

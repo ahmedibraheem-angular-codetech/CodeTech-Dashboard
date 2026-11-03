@@ -7,7 +7,7 @@ import { NEVER, firstValueFrom, map, of, throwError, timer } from 'rxjs';
 import { API_LATENCY_MS } from '../../../../core/config/latency';
 import { LanguageService } from '../../../../core/services/language.service';
 import { blankProject } from '../../../projects/models/project.model';
-import { ProjectsMemoryService } from '../../../projects/testing/projects.memory';
+import { ProjectsMemoryService } from '../../../projects/projects.spec-helpers';
 import { ProjectsService } from '../../../projects/services/projects.service';
 import { SERVICE_STEPS, blankService, localeText, type Service } from '../../models/service.model';
 import { SERVICES_SEED } from '../../services/services.mock';

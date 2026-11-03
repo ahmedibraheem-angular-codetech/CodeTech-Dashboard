@@ -29,7 +29,7 @@ import { ProjectsService } from '../../services/projects.service';
 type LoadState = 'loading' | 'ready' | 'error';
 
 @Component({
-  selector: 'app-projects-page',
+  selector: 'app-projects-list',
   imports: [
     FormsModule,
     PageHeader,
@@ -44,7 +44,7 @@ type LoadState = 'loading' | 'ready' | 'error';
   styleUrl: './projects-list.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ProjectsPage {
+export class ProjectsList {
   private readonly messages = inject(MessageService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly auth = inject(AuthService);

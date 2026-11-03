@@ -1,0 +1,17 @@
+<div class="project-detail__identity">
+  @for (button of project().identityButtons; track button.id) {
+    <article class="project-tile project-detail__panel">
+      <h2>{{ text(button.title) || lang.t('project.identity') }}</h2>
+      @if (text(button.body)) {
+        <p>{{ text(button.body) }}</p>
+      }
+      <div class="project-detail__gallery">
+        @for (image of button.images; track image.id) {
+          @if (show(image.imageUrl)) {
+            <img [src]="image.imageUrl" [alt]="text(button.title)" />
+          }
+        }
+      </div>
+    </article>
+  }
+</div>

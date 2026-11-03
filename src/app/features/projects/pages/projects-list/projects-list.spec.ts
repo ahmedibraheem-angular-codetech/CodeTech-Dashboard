@@ -18,8 +18,8 @@ import {
   projectDetailDto,
   projectListDto,
   projectsPageDto,
-} from '../../testing/project.http';
-import { ProjectsPage } from './projects-list';
+} from '../../projects.spec-helpers';
+import { ProjectsList } from './projects-list';
 
 const LIST = apiUrl(environment.apiUrl, 'admin/projects');
 const PAGE = apiUrl(environment.apiUrl, 'admin/pages/projects');
@@ -31,7 +31,7 @@ const PROJECT_GRANTS = [
   'projects.delete',
 ] as const;
 
-describe('ProjectsPage (HTTP)', () => {
+describe('ProjectsList (HTTP)', () => {
   let http: HttpTestingController;
 
   async function settle<T>(fixture: { detectChanges(): void; whenStable(): Promise<void> } & T) {
@@ -41,7 +41,9 @@ describe('ProjectsPage (HTTP)', () => {
   }
 
   function flushBoard(items = [1, 2, 3, 4, 5, 6].map((id) => projectListDto(id)), visible = true) {
-    const listReq = http.expectOne((request) => request.url.startsWith(LIST) && request.method === 'GET');
+    const listReq = http.expectOne(
+      (request) => request.url.startsWith(LIST) && request.method === 'GET',
+    );
     listReq.flush(paginated(items, LIST));
     const pageReq = http.expectOne(PAGE);
     pageReq.flush({
@@ -53,7 +55,7 @@ describe('ProjectsPage (HTTP)', () => {
 
   async function render() {
     TestBed.configureTestingModule({
-      imports: [ProjectsPage],
+      imports: [ProjectsList],
       providers: [
         MessageService,
         provideHttpClient(withInterceptors([])),
@@ -73,13 +75,17 @@ describe('ProjectsPage (HTTP)', () => {
       }),
     );
     http = TestBed.inject(HttpTestingController);
-    const fixture = TestBed.createComponent(ProjectsPage);
+    const fixture = TestBed.createComponent(ProjectsList);
     fixture.detectChanges();
-    return { fixture, root: fixture.nativeElement as HTMLElement, api: TestBed.inject(ProjectsService) };
+    return {
+      fixture,
+      root: fixture.nativeElement as HTMLElement,
+      api: TestBed.inject(ProjectsService),
+    };
   }
 
   const tiles = (root: HTMLElement) => root.querySelectorAll('.project-tile');
-  const confirmOf = (fixture: { componentRef: { instance: ProjectsPage } }) =>
+  const confirmOf = (fixture: { componentRef: { instance: ProjectsList } }) =>
     fixture.componentRef.instance['confirm']();
 
   beforeEach(() => {
@@ -117,7 +123,11 @@ describe('ProjectsPage (HTTP)', () => {
 
   it('renders a usable cover URL as an image src', async () => {
     const { fixture, root } = await render();
-    flushBoard([projectListDto(1, { cover: { ...projectListDto(1).cover!, url: '/images/project-cover.jpg' } })]);
+    flushBoard([
+      projectListDto(1, {
+        cover: { ...projectListDto(1).cover!, url: '/images/project-cover.jpg' },
+      }),
+    ]);
     await settle(fixture);
     const cover = root.querySelector('.project-tile a.project-tile__media[href="/projects/1"] img');
     expect(cover?.getAttribute('src')).toBe('/images/project-cover.jpg');
@@ -157,7 +167,7 @@ describe('ProjectsPage (HTTP)', () => {
 
   it('shows an error instead of the empty state when loading fails', async () => {
     TestBed.configureTestingModule({
-      imports: [ProjectsPage],
+      imports: [ProjectsList],
       providers: [
         MessageService,
         provideHttpClient(withInterceptors([])),
@@ -171,7 +181,7 @@ describe('ProjectsPage (HTTP)', () => {
     vi.spyOn(api, 'listAll').mockReturnValue(throwError(() => new Error('offline')));
     vi.spyOn(api, 'loadCatalogVisibility').mockReturnValue(throwError(() => new Error('offline')));
     http = TestBed.inject(HttpTestingController);
-    const fixture = TestBed.createComponent(ProjectsPage);
+    const fixture = TestBed.createComponent(ProjectsList);
     fixture.detectChanges();
     await settle(fixture);
     const root: HTMLElement = fixture.nativeElement;
@@ -183,7 +193,7 @@ describe('ProjectsPage (HTTP)', () => {
 
   it('retries after a load failure and shows the catalog on success', async () => {
     TestBed.configureTestingModule({
-      imports: [ProjectsPage],
+      imports: [ProjectsList],
       providers: [
         MessageService,
         provideHttpClient(withInterceptors([])),
@@ -200,7 +210,7 @@ describe('ProjectsPage (HTTP)', () => {
       return of(true);
     });
     http = TestBed.inject(HttpTestingController);
-    const fixture = TestBed.createComponent(ProjectsPage);
+    const fixture = TestBed.createComponent(ProjectsList);
     fixture.detectChanges();
     await settle(fixture);
     expect(fixture.componentInstance.status()).toBe('error');
@@ -219,7 +229,7 @@ describe('ProjectsPage (HTTP)', () => {
 
   it('ignores a stale list response after a newer load has started', async () => {
     TestBed.configureTestingModule({
-      imports: [ProjectsPage],
+      imports: [ProjectsList],
       providers: [
         MessageService,
         provideHttpClient(withInterceptors([])),
@@ -242,7 +252,7 @@ describe('ProjectsPage (HTTP)', () => {
       return of(true);
     });
     http = TestBed.inject(HttpTestingController);
-    const fixture = TestBed.createComponent(ProjectsPage);
+    const fixture = TestBed.createComponent(ProjectsList);
     fixture.detectChanges();
 
     fixture.componentInstance['retry']();
