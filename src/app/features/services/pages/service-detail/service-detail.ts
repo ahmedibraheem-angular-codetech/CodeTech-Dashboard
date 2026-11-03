@@ -275,10 +275,19 @@ export class ServiceDetailPage {
         });
       return;
     }
-    this.projectsApi.setPublished(id, published);
-    this.projects.update((items) =>
-      items.map((item) => (item.id === id ? { ...item, published } : item)),
-    );
+    this.projectsApi
+      .setPublished(id, published)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (saved) => {
+          this.projects.update((items) =>
+            items.map((item) => (item.id === id ? { ...item, published: saved.published } : item)),
+          );
+        },
+        error: () => {
+          this.messages.add({ severity: 'error', summary: this.lang.t('common.error') });
+        },
+      });
   }
 
   protected async remove(service: Service): Promise<void> {

@@ -4,9 +4,9 @@ import { ActivatedRoute, provideRouter, Router } from '@angular/router';
 import { MessageService } from 'primeng/api';
 import { firstValueFrom, map, NEVER, of, throwError, timer } from 'rxjs';
 
-import { API_LATENCY_MS } from '../../../../core/config/latency';
 import { blankProject, localeText, PROJECT_STEPS, type Project } from '../../models/project.model';
 import { ProjectsService } from '../../services/projects.service';
+import { ProjectsMemoryService } from '../../testing/projects.memory';
 import { ProjectEditor } from './project-editor';
 
 @Component({ template: '' })
@@ -35,7 +35,7 @@ describe('ProjectEditor', () => {
       imports: [ProjectEditor],
       providers: [
         MessageService,
-        { provide: API_LATENCY_MS, useValue: 0 },
+        { provide: ProjectsService, useClass: ProjectsMemoryService },
         provideRouter([{ path: 'projects/:id', component: ProjectRouteStub }]),
         {
           provide: ActivatedRoute,

@@ -19,6 +19,7 @@ export interface ProjectPoint {
   body: LocaleText;
   imageName: string;
   imageUrl: string;
+  imageUuid?: string | null;
 }
 
 export interface ProjectMedia {
@@ -27,12 +28,14 @@ export interface ProjectMedia {
   body: LocaleText;
   imageName: string;
   imageUrl: string;
+  imageUuid?: string | null;
 }
 
 export interface ProjectGalleryImage {
   id: string;
   imageName: string;
   imageUrl: string;
+  imageUuid?: string | null;
 }
 
 export interface ProjectIdentityButton {
@@ -53,15 +56,18 @@ export interface ProjectSeo {
 
 export interface Project {
   id: string;
+  code: string;
   published: boolean;
   name: LocaleText;
   summary: LocaleText;
   coverName: string;
   coverUrl: string;
+  coverUuid?: string | null;
   coverTitle: LocaleText;
   coverAlt: LocaleText;
   thumbName: string;
   thumbUrl: string;
+  thumbUuid?: string | null;
   thumbTitle: LocaleText;
   thumbAlt: LocaleText;
 
@@ -108,7 +114,7 @@ export function projectId(prefix: string): string {
 }
 
 export function projectPoint(title = localeText(), body = localeText()): ProjectPoint {
-  return { id: projectId('point'), title, body, imageName: '', imageUrl: '' };
+  return { id: projectId('point'), title, body, imageName: '', imageUrl: '', imageUuid: null };
 }
 
 export function projectMedia(): ProjectMedia {
@@ -118,11 +124,12 @@ export function projectMedia(): ProjectMedia {
     body: localeText(),
     imageName: '',
     imageUrl: '',
+    imageUuid: null,
   };
 }
 
 export function projectGalleryImage(): ProjectGalleryImage {
-  return { id: projectId('gallery'), imageName: '', imageUrl: '' };
+  return { id: projectId('gallery'), imageName: '', imageUrl: '', imageUuid: null };
 }
 
 export function projectIdentityButton(
@@ -140,15 +147,18 @@ export function projectIdentityButton(
 export function blankProject(): Project {
   return {
     id: '',
+    code: '',
     published: true,
     name: localeText(),
     summary: localeText(),
     coverName: '',
     coverUrl: '',
+    coverUuid: null,
     coverTitle: localeText(),
     coverAlt: localeText(),
     thumbName: '',
     thumbUrl: '',
+    thumbUuid: null,
     thumbTitle: localeText(),
     thumbAlt: localeText(),
     categories: [projectPoint()],

@@ -1,11 +1,18 @@
+import { provideHttpClient, withInterceptors } from '@angular/common/http';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { MessageService } from 'primeng/api';
 
+import { environment } from '../../../../../environments/environment';
 import { authSession } from '../../../../core/auth/auth-session.fixture';
 import { AuthService } from '../../../../core/auth/auth.service';
-import { API_LATENCY_MS } from '../../../../core/config/latency';
+import { apiUrl } from '../../../../core/config/api';
 import { LanguageService } from '../../../../core/services/language.service';
+import { projectsPageDto } from '../../testing/project.http';
 import { ProjectsPageManage } from './projects-page';
+
+const PAGE = apiUrl(environment.apiUrl, 'admin/pages/projects');
+const STATS = apiUrl(environment.apiUrl, 'admin/projects-page/stats');
 
 const PROJECT_GRANTS = [
   'projects.view',
@@ -14,12 +21,14 @@ const PROJECT_GRANTS = [
   'projects.delete',
 ] as const;
 
-describe('ProjectsPageManage', () => {
+describe('ProjectsPageManage (HTTP)', () => {
+  let http: HttpTestingController;
 
   const dialogRoot = (): HTMLElement => document.body;
 
   afterEach(() => {
     document.querySelectorAll('.p-dialog-mask, .p-dialog').forEach((node) => node.remove());
+    http?.verify();
   });
 
   async function settle(fixture: { detectChanges(): void; whenStable(): Promise<unknown> }) {
@@ -31,7 +40,11 @@ describe('ProjectsPageManage', () => {
   async function render() {
     TestBed.configureTestingModule({
       imports: [ProjectsPageManage],
-      providers: [MessageService, { provide: API_LATENCY_MS, useValue: 0 }],
+      providers: [
+        MessageService,
+        provideHttpClient(withInterceptors([])),
+        provideHttpClientTesting(),
+      ],
     });
     localStorage.setItem('codetech.language', 'ar');
     TestBed.inject(LanguageService).set('ar');
@@ -44,13 +57,15 @@ describe('ProjectsPageManage', () => {
         permissions: [...PROJECT_GRANTS],
       }),
     );
+    http = TestBed.inject(HttpTestingController);
     const fixture = TestBed.createComponent(ProjectsPageManage);
     fixture.detectChanges();
+    http.expectOne(PAGE).flush({ data: projectsPageDto() });
     await settle(fixture);
     return { fixture, root: fixture.nativeElement as HTMLElement };
   }
 
-  it('renders the numbers panel with seeded stats', async () => {
+  it('renders the numbers panel with API stats', async () => {
     const { root } = await render();
     expect(root.textContent).toContain('إدارة صفحة المشاريع');
     expect(root.textContent).toContain('أرقام كود التقنية');
@@ -70,7 +85,7 @@ describe('ProjectsPageManage', () => {
     expect(root.querySelector('.projects-numbers__card')).not.toBeNull();
   });
 
-  it('opens the bulk numbers editor with a card per seeded stat', async () => {
+  it('opens the bulk numbers editor with a card per stat', async () => {
     const { fixture, root } = await render();
     const edit = root.querySelector('.projects-numbers__edit') as HTMLButtonElement | null;
     expect(edit).not.toBeNull();
@@ -105,5 +120,43 @@ describe('ProjectsPageManage', () => {
     expect(firstLabel()?.value).toBe('Customer satisfaction');
     expect(dialogRoot().textContent).toContain('Point 1');
     expect(dialogRoot().textContent).toContain('Answer');
+  });
+
+  it('toggles numbers via stats_visible sections patch', async () => {
+    const { fixture } = await render();
+    fixture.componentInstance['toggleNumbers'](true);
+    const req = http.expectOne(`${PAGE}/sections`);
+    expect(req.request.method).toBe('PATCH');
+    expect(req.request.body).toEqual({ stats_visible: true });
+    req.flush({
+      data: projectsPageDto({ sections: { stats_visible: true, projects_visible: true } }),
+    });
+    await settle(fixture);
+    expect(fixture.componentInstance.content()?.numbersEnabled).toBe(true);
+  });
+
+  it('saves numbers with create/update and reorder', async () => {
+    const { fixture, root } = await render();
+    (root.querySelector('.projects-numbers__edit') as HTMLButtonElement).click();
+    fixture.detectChanges();
+    await settle(fixture);
+
+    fixture.componentInstance['saveNumbers']();
+    for (const id of [1, 2, 3, 4]) {
+      const req = http.expectOne(`${STATS}/${id}`);
+      expect(req.request.method).toBe('PUT');
+      req.flush({
+        data: {
+          id,
+          title: { ar: `عنوان ${id}`, en: `Title ${id}` },
+          value: { ar: String(id), en: String(id) },
+        },
+      });
+    }
+    const reorder = http.expectOne(`${STATS}/reorder`);
+    expect(reorder.request.body).toEqual({ ids: [1, 2, 3, 4] });
+    reorder.flush('');
+    await settle(fixture);
+    expect(fixture.componentInstance.editorOpen()).toBe(false);
   });
 });

@@ -300,16 +300,16 @@ export class ProjectEditor {
   setCover(kind: 'cover' | 'thumb', file: { name: string; url: string }): void {
     this.draft.update((current) =>
       kind === 'cover'
-        ? { ...current, coverName: file.name, coverUrl: file.url }
-        : { ...current, thumbName: file.name, thumbUrl: file.url },
+        ? { ...current, coverName: file.name, coverUrl: file.url, coverUuid: null }
+        : { ...current, thumbName: file.name, thumbUrl: file.url, thumbUuid: null },
     );
   }
 
   clearCover(kind: 'cover' | 'thumb'): void {
     this.draft.update((current) =>
       kind === 'cover'
-        ? { ...current, coverName: '', coverUrl: '' }
-        : { ...current, thumbName: '', thumbUrl: '' },
+        ? { ...current, coverName: '', coverUrl: '', coverUuid: null }
+        : { ...current, thumbName: '', thumbUrl: '', thumbUuid: null },
     );
   }
 
@@ -320,6 +320,7 @@ export class ProjectEditor {
         ...item,
         imageName: '',
         imageUrl: '',
+        imageUuid: null,
       })),
     }));
   }
@@ -331,6 +332,7 @@ export class ProjectEditor {
         ...item,
         imageName: '',
         imageUrl: '',
+        imageUuid: null,
       })),
     }));
   }
@@ -338,7 +340,12 @@ export class ProjectEditor {
   clearSolutionsImage(): void {
     this.draft.update((current) => ({
       ...current,
-      solutionsImage: { ...current.solutionsImage, imageName: '', imageUrl: '' },
+      solutionsImage: {
+        ...current.solutionsImage,
+        imageName: '',
+        imageUrl: '',
+        imageUuid: null,
+      },
     }));
   }
 
@@ -349,6 +356,7 @@ export class ProjectEditor {
         ...item,
         imageName: '',
         imageUrl: '',
+        imageUuid: null,
       })),
     }));
   }
@@ -468,6 +476,7 @@ export class ProjectEditor {
           ...image,
           imageName: '',
           imageUrl: '',
+          imageUuid: null,
         })),
       })),
     }));
@@ -499,6 +508,7 @@ export class ProjectEditor {
       this.step.set(0);
       return;
     }
+    const previous = this.draft();
     this.saving.set(true);
     this.api
       .save(current)
@@ -508,6 +518,7 @@ export class ProjectEditor {
       )
       .subscribe({
         next: (saved) => {
+          this.objectUrls.sync(previous, saved);
           this.draft.set(saved);
           this.nameError.set(false);
           this.messages.add({ severity: 'success', summary: this.lang.t(message) });
@@ -554,10 +565,10 @@ export class ProjectEditor {
     }));
   }
 
-  private withImage<T extends { imageName: string; imageUrl: string }>(
+  private withImage<T extends { imageName: string; imageUrl: string; imageUuid?: string | null }>(
     item: T,
     file: { name: string; url: string },
   ): T {
-    return { ...item, imageName: file.name, imageUrl: file.url };
+    return { ...item, imageName: file.name, imageUrl: file.url, imageUuid: null };
   }
 }

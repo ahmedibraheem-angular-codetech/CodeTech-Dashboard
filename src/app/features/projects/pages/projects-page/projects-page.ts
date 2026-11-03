@@ -96,8 +96,19 @@ export class ProjectsPageManage {
   }
 
   protected toggleNumbers(enabled: boolean): void {
-    this.api.toggleNumbers(enabled);
     this.content.update((current) => (current ? { ...current, numbersEnabled: enabled } : current));
+    this.api
+      .toggleNumbers(enabled)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (content) => this.content.set(content),
+        error: () => {
+          this.content.update((current) =>
+            current ? { ...current, numbersEnabled: !enabled } : current,
+          );
+          this.messages.add({ severity: 'error', summary: this.lang.t('common.error') });
+        },
+      });
   }
 
   protected openNumbersEditor(): void {

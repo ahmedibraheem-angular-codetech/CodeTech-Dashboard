@@ -8,6 +8,8 @@ import {
   type Project,
 } from '../models/project.model';
 
+/** UI/test fixtures — not used by the HTTP ProjectsService. */
+
 const COVER = '/images/project-cover.jpg';
 const DESK = '/images/product-cover-desk.jpg';
 const FLAT = '/images/product-cover-flat.jpg';

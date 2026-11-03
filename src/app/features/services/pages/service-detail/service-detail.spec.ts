@@ -10,7 +10,8 @@ import { AuthService } from '../../../../core/auth/auth.service';
 import { API_LATENCY_MS } from '../../../../core/config/latency';
 import { BreadcrumbService } from '../../../../core/services/breadcrumb.service';
 import { LanguageService } from '../../../../core/services/language.service';
-import { PROJECTS_SEED } from '../../../projects/services/projects.mock';
+import { PROJECTS_SEED } from '../../../projects/testing/project.fixtures';
+import { ProjectsMemoryService } from '../../../projects/testing/projects.memory';
 import { ProjectsService } from '../../../projects/services/projects.service';
 import {
   blankService,
@@ -84,7 +85,9 @@ describe('ServiceDetailPage', () => {
     TestBed.configureTestingModule({
       providers: [
         MessageService,
-        { provide: API_LATENCY_MS, useValue: 0 }, { provide: ServicesService, useClass: ServicesMemoryService },
+        { provide: API_LATENCY_MS, useValue: 0 },
+        { provide: ServicesService, useClass: ServicesMemoryService },
+        { provide: ProjectsService, useClass: ProjectsMemoryService },
         provideRouter(
           [
             { path: 'services', component: RouteStub },

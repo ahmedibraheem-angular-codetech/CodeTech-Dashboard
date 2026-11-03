@@ -5,10 +5,10 @@ import { of } from 'rxjs';
 
 import { authSession } from '../../../../core/auth/auth-session.fixture';
 import { AuthService } from '../../../../core/auth/auth.service';
-import { API_LATENCY_MS } from '../../../../core/config/latency';
 import { LanguageService } from '../../../../core/services/language.service';
 import { blankProject, localeText, projectMedia, projectPoint } from '../../models/project.model';
 import { ProjectsService } from '../../services/projects.service';
+import { ProjectsMemoryService } from '../../testing/projects.memory';
 import { ProjectDetailPage } from './project-detail';
 
 const PROJECT_GRANTS = [
@@ -47,7 +47,11 @@ describe('ProjectDetailPage', () => {
   async function render(id: string, api?: Pick<ProjectsService, 'get'>) {
     TestBed.configureTestingModule({
       imports: [ProjectDetailPage],
-      providers: [MessageService, { provide: API_LATENCY_MS, useValue: 0 }, provideRouter([])],
+      providers: [
+        MessageService,
+        { provide: ProjectsService, useClass: ProjectsMemoryService },
+        provideRouter([]),
+      ],
     });
     if (api) {
       TestBed.overrideProvider(ProjectsService, { useValue: api });

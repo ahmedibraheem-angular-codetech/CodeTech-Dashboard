@@ -14,6 +14,8 @@ import { MessageService } from 'primeng/api';
 import { type PaginatorState } from 'primeng/paginator';
 import { ToggleSwitch } from 'primeng/toggleswitch';
 
+import { forkJoin } from 'rxjs';
+
 import { AuthService } from '../../../../core/auth/auth.service';
 import { LanguageService } from '../../../../core/services/language.service';
 import { AppPaginator } from '../../../../shared/components/app-paginator/app-paginator';
@@ -99,7 +101,22 @@ export class ProjectsPage {
   }
 
   protected publish(id: string, published: boolean): void {
-    this.api.setPublished(id, published);
+    this.api
+      .setPublished(id, published)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (saved) => {
+          this.items.update((items) =>
+            items.map((item) => (item.id === id ? { ...item, published: saved.published } : item)),
+          );
+        },
+        error: () => {
+          this.items.update((items) =>
+            items.map((item) => (item.id === id ? { ...item, published: !published } : item)),
+          );
+          this.messages.add({ severity: 'error', summary: this.lang.t('common.error') });
+        },
+      });
     this.items.update((items) =>
       items.map((item) => (item.id === id ? { ...item, published } : item)),
     );
@@ -138,11 +155,13 @@ export class ProjectsPage {
   private load(): void {
     const seq = ++this.loadSeq;
     this.status.set('loading');
-    this.api
-      .list()
+    forkJoin({
+      items: this.api.listAll(),
+      visible: this.api.loadCatalogVisibility(),
+    })
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
-        next: (items) => {
+        next: ({ items }) => {
           if (seq !== this.loadSeq) {
             return;
           }

@@ -1,79 +1,221 @@
+import { provideHttpClient, withInterceptors } from '@angular/common/http';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { firstValueFrom } from 'rxjs';
 
-import { API_LATENCY_MS } from '../../../core/config/latency';
+import { environment } from '../../../../environments/environment';
+import { apiUrl } from '../../../core/config/api';
 import { blankProject, localeText } from '../models/project.model';
-import { PROJECTS_SEED } from './projects.mock';
+import {
+  fileDto,
+  paginated,
+  projectDetailDto,
+  projectListDto,
+  projectsPageDto,
+} from '../testing/project.http';
 import { ProjectsService } from './projects.service';
 
-describe('ProjectsService', () => {
-  function setup() {
-    TestBed.configureTestingModule({
-      providers: [{ provide: API_LATENCY_MS, useValue: 0 }],
-    });
-    return TestBed.inject(ProjectsService);
+const LIST = apiUrl(environment.apiUrl, 'admin/projects');
+const PAGE = apiUrl(environment.apiUrl, 'admin/pages/projects');
+const MEDIA = apiUrl(environment.apiUrl, 'admin/media');
+const PRODUCTS = apiUrl(environment.apiUrl, 'admin/products');
+
+describe('ProjectsService (HTTP)', () => {
+  let service: ProjectsService;
+  let http: HttpTestingController;
+
+  async function expectRequest(url: string) {
+    for (let attempt = 0; attempt < 30; attempt += 1) {
+      const matches = http.match(url);
+      if (matches.length === 1) {
+        return matches[0];
+      }
+      if (matches.length > 1) {
+        return http.expectOne(url);
+      }
+      await Promise.resolve();
+    }
+    return http.expectOne(url);
   }
 
-  it('seeds six distinct projects with stable ids', async () => {
-    const api = setup();
-    const items = await firstValueFrom(api.list());
-    const ids = items.map((item) => item.id);
-    expect(items).toHaveLength(6);
-    expect(new Set(ids).size).toBe(6);
-    expect(ids).toEqual(PROJECTS_SEED.map((item) => item.id));
-    expect(new Set(items.map((item) => item.name.ar)).size).toBe(6);
+  beforeEach(() => {
+    TestBed.resetTestingModule();
+    TestBed.configureTestingModule({
+      providers: [provideHttpClient(withInterceptors([])), provideHttpClientTesting()],
+    });
+    service = TestBed.inject(ProjectsService);
+    http = TestBed.inject(HttpTestingController);
   });
 
-  it('loads a seeded project by id without mutating products state', async () => {
-    const api = setup();
-    const item = await firstValueFrom(api.get('wasly'));
-    expect(item?.name.ar).toContain('وصلني');
-    expect(item?.categories.length).toBeGreaterThan(0);
-    expect(item?.gallery.length).toBeGreaterThan(0);
-    expect(item?.identityButtons).toHaveLength(1);
-    expect(item?.identityButtons[0]?.images).toHaveLength(4);
-    expect(item?.identityButtons[0]?.title.ar).toBe('الهوية البصرية');
+  afterEach(() => {
+    http.verify();
   });
 
-  it('keeps identityButtons on every seeded project', async () => {
-    const api = setup();
-    const items = await firstValueFrom(api.list());
-    for (const item of items) {
-      expect(item.identityButtons.length).toBeGreaterThan(0);
-      expect(item.identityButtons.every((button) => button.images.length === 4)).toBe(true);
-    }
+  it('lists paginated projects on admin/projects only', async () => {
+    const result = firstValueFrom(service.list({ perPage: 10 }));
+    const req = await expectRequest(`${LIST}?per_page=10`);
+    expect(req.request.method).toBe('GET');
+    expect(req.request.url).toContain('admin/projects');
+    expect(req.request.url).not.toContain('admin/products');
+    req.flush(paginated([projectListDto(7)], LIST, 1, 10));
+    expect((await result)[0]?.id).toBe('7');
+    http.expectNone(PRODUCTS);
   });
 
-  it('returns null for a missing project id', async () => {
-    const api = setup();
-    expect(await firstValueFrom(api.get('missing-project'))).toBeNull();
+  it('listAll walks pages without hitting products', async () => {
+    const result = firstValueFrom(service.listAll({ perPage: 1 }));
+    const first = await expectRequest(`${LIST}?page=1&per_page=1`);
+    first.flush({
+      data: [projectListDto(1)],
+      links: { first: null, last: null, prev: null, next: null },
+      meta: {
+        current_page: 1,
+        from: 1,
+        last_page: 2,
+        path: LIST,
+        per_page: 1,
+        to: 1,
+        total: 2,
+      },
+    });
+    const second = await expectRequest(`${LIST}?page=2&per_page=1`);
+    second.flush({
+      data: [projectListDto(2)],
+      links: { first: null, last: null, prev: null, next: null },
+      meta: {
+        current_page: 2,
+        from: 2,
+        last_page: 2,
+        path: LIST,
+        per_page: 1,
+        to: 2,
+        total: 2,
+      },
+    });
+    const items = await result;
+    expect(items.map((item) => item.id)).toEqual(['1', '2']);
+    http.expectNone((request) => request.url.includes('admin/products'));
   });
 
-  it('saves a new project and updates publication', async () => {
-    const api = setup();
-    const created = await firstValueFrom(
-      api.save({
-        ...blankProject(),
-        name: localeText('مشروع جديد', 'New project'),
-        published: false,
-      }),
+  it('loads detail and returns null on 404', async () => {
+    const result = firstValueFrom(service.get('7'));
+    (await expectRequest(`${LIST}/7`)).flush({ data: projectDetailDto(7) });
+    expect((await result)?.identityButtons[0]?.images).toHaveLength(4);
+
+    const missing = firstValueFrom(service.get('404'));
+    http.expectOne(`${LIST}/404`).flush(
+      { message: 'Not found' },
+      { status: 404, statusText: 'Not Found' },
     );
-    expect(created.id).toMatch(/^prj-/);
-    api.setPublished(created.id, true);
-    expect((await firstValueFrom(api.get(created.id)))?.published).toBe(true);
+    expect(await missing).toBeNull();
   });
 
-  it('removes a project from the catalog', async () => {
-    const api = setup();
-    await firstValueFrom(api.remove('wasly'));
-    expect(await firstValueFrom(api.get('wasly'))).toBeNull();
-    expect((await firstValueFrom(api.list())).some((item) => item.id === 'wasly')).toBe(false);
+  it('creates a project with mapped write body', async () => {
+    const draft = {
+      ...blankProject(),
+      name: localeText('مشروع', 'Project'),
+      summary: localeText('وصف', 'Desc'),
+      categories: [],
+      aboutCards: [],
+      challenges: [],
+      tools: [],
+      solutions: [],
+      gallery: [],
+      features: [],
+      results: [],
+      identityButtons: [],
+    };
+    const result = firstValueFrom(service.save(draft));
+    const req = await expectRequest(LIST);
+    expect(req.request.method).toBe('POST');
+    expect(req.request.body.title).toEqual({ ar: 'مشروع', en: 'Project' });
+    expect(req.request.body).not.toHaveProperty('products');
+    expect(req.request.body).not.toHaveProperty('services');
+    req.flush({ data: projectDetailDto(9) }, { status: 201, statusText: 'Created' });
+    expect((await result).id).toBe('9');
   });
 
-  it('toggles catalog visibility independently of product records', () => {
-    const api = setup();
-    expect(api.catalogVisible()).toBe(true);
-    api.toggleCatalog();
-    expect(api.catalogVisible()).toBe(false);
+  it('uploads blob media then PUTs coat-check UUID', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async () => new Response(new Blob(['x'], { type: 'image/png' }), { status: 200 })),
+    );
+    const draft = {
+      ...blankProject(),
+      id: '7',
+      name: localeText('مشروع', 'Project'),
+      summary: localeText('وصف', 'Desc'),
+      coverUrl: 'blob:https://local/cover',
+      coverName: 'cover.png',
+      coverUuid: null,
+      categories: [],
+      aboutCards: [],
+      challenges: [],
+      tools: [],
+      solutions: [],
+      gallery: [],
+      features: [],
+      results: [],
+      identityButtons: [],
+    };
+    const result = firstValueFrom(service.save(draft));
+    const upload = await expectRequest(MEDIA);
+    expect(upload.request.method).toBe('POST');
+    upload.flush({ data: fileDto({ uuid: 'uploaded-cover' }) });
+    const put = await expectRequest(`${LIST}/7`);
+    expect(put.request.method).toBe('PUT');
+    expect(put.request.body.cover).toBe('uploaded-cover');
+    put.flush({ data: projectDetailDto(7) });
+    await result;
+    vi.unstubAllGlobals();
+  });
+
+  it('publishes through the status endpoint', async () => {
+    const result = firstValueFrom(service.setPublished('7', false));
+    const req = await expectRequest(`${LIST}/7/status`);
+    expect(req.request.method).toBe('PATCH');
+    expect(req.request.body).toEqual({ status: 'draft' });
+    req.flush({ data: projectDetailDto(7, { status: 'draft' }) });
+    expect((await result).published).toBe(false);
+  });
+
+  it('features a project through the feature endpoint', async () => {
+    const result = firstValueFrom(service.setFeatured('7', true));
+    const req = await expectRequest(`${LIST}/7/feature`);
+    expect(req.request.body).toEqual({ is_featured: true });
+    req.flush({ data: projectDetailDto(7) });
+    expect((await result).id).toBe('7');
+  });
+
+  it('reorders and removes projects', async () => {
+    const reorder = firstValueFrom(service.reorder(['3', '2', 'x']));
+    const reorderReq = await expectRequest(`${LIST}/reorder`);
+    expect(reorderReq.request.body).toEqual({ ids: [3, 2] });
+    reorderReq.flush('');
+    await reorder;
+
+    const remove = firstValueFrom(service.remove('7'));
+    http.expectOne(`${LIST}/7`).flush('');
+    await remove;
+  });
+
+  it('loads catalog visibility from the projects page', async () => {
+    const result = firstValueFrom(service.loadCatalogVisibility());
+    const req = await expectRequest(PAGE);
+    req.flush({ data: projectsPageDto({ sections: { stats_visible: true, projects_visible: true } }) });
+    expect(await result).toBe(true);
+    expect(service.catalogVisible()).toBe(true);
+  });
+
+  it('toggles catalog via projects_visible sections patch', () => {
+    service.catalogVisible.set(true);
+    service.toggleCatalog();
+    expect(service.catalogVisible()).toBe(false);
+    const req = http.expectOne(`${PAGE}/sections`);
+    expect(req.request.method).toBe('PATCH');
+    expect(req.request.body).toEqual({ projects_visible: false });
+    req.flush({
+      data: projectsPageDto({ sections: { stats_visible: false, projects_visible: false } }),
+    });
   });
 });
