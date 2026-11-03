@@ -1,8 +1,13 @@
-<div class="project-detail__gallery">
-  @for (image of project().gallery; track image.id) {
-    @let url = mediaUrl(image.image);
-    @if (show(url)) {
-      <img [src]="url" alt="" />
-    }
-  }
-</div>
+@if (images().length) {
+  <article class="detail-panel">
+    <header class="detail-panel__head">
+      <h2>{{ lang.t('project.detailGallery') }}</h2>
+      <span class="icon-badge"><i class="pi pi-images" aria-hidden="true"></i></span>
+    </header>
+    <div class="project-detail__gallery">
+      @for (image of images(); track image.id) {
+        <img [src]="mediaUrl(image.image)" alt="" />
+      }
+    </div>
+  </article>
+}

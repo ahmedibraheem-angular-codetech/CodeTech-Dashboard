@@ -1,66 +1,144 @@
-<article class="project-tile project-detail__panel">
-  @if (summary()) {
-    <p>{{ summary() }}</p>
-  }
-
-  <h3>{{ lang.t('project.categories') }}</h3>
-  <ul class="project-tile__tags">
-    @for (category of project().categories; track category.id) {
-      <li>
-        <i class="pi" [class]="categoryIcon(categoryMediaUrl(category))" aria-hidden="true"></i>
-        {{ text(category.title) }}
-      </li>
-    }
-  </ul>
-
-  @if (aboutCards().length) {
-    <h3>{{ lang.t('project.aboutCards') }}</h3>
-    <app-project-detail-points [items]="aboutCards()" [locale]="locale()" />
-  }
-
-  @if (challenges().length) {
-    <h3>{{ lang.t('project.challenges') }}</h3>
-    <app-project-detail-points [items]="challenges()" [locale]="locale()" />
-  }
-
-  @if (tools().length) {
-    <h3>{{ lang.t('project.tools') }}</h3>
-    <div class="project-detail__gallery">
-      @for (tool of tools(); track tool.id) {
-        @let art = toolVisual(tool);
-        @if (art.image) {
-          <figure class="project-detail__tool">
-            <img [src]="art.image" [alt]="text(tool.title)" />
-            @if (text(tool.title)) {
-              <figcaption>{{ text(tool.title) }}</figcaption>
+@switch (section()) {
+  @case ('about') {
+    <div class="detail-stack">
+      <div class="detail-overview">
+        <article class="detail-panel">
+          <header class="detail-panel__head">
+            <h2>{{ lang.t('project.info') }}</h2>
+            <span class="icon-badge"><i class="pi pi-briefcase" aria-hidden="true"></i></span>
+          </header>
+          <div class="detail-fields">
+            <div class="detail-field">
+              <span>{{ lang.t('project.name') }}</span>
+              <strong class="detail-field__lead">
+                <i class="pi pi-user" aria-hidden="true"></i>
+                {{ text(project().name) }}
+              </strong>
+            </div>
+            @if (summary()) {
+              <div class="detail-field">
+                <span>{{ lang.t('project.summary') }}</span>
+                <p class="detail-field__lead">
+                  <i class="pi pi-align-left" aria-hidden="true"></i>
+                  {{ summary() }}
+                </p>
+              </div>
             }
-          </figure>
-        }
+          </div>
+        </article>
+        <article class="detail-panel">
+          <header class="detail-panel__head">
+            <h2>{{ lang.t('project.detailCover') }}</h2>
+            <span class="icon-badge"><i class="pi pi-image" aria-hidden="true"></i></span>
+          </header>
+          @if (coverUrl(); as cover) {
+            <img class="detail-photo" [src]="cover" [alt]="text(project().name)" />
+          }
+        </article>
+      </div>
+
+      <article class="detail-panel">
+        <header class="detail-panel__head">
+          <h2>{{ lang.t('project.categories') }}</h2>
+          <span class="icon-badge"><i class="pi pi-tags" aria-hidden="true"></i></span>
+        </header>
+        <ul class="project-detail__tags">
+          @for (category of project().categories; track category.id) {
+            <li>
+              <i class="pi" [class]="categoryIcon(categoryMediaUrl(category))" aria-hidden="true"></i>
+              {{ text(category.title) }}
+            </li>
+          }
+        </ul>
+      </article>
+
+      @if (aboutCards().length) {
+        <article class="detail-panel">
+          <header class="detail-panel__head">
+            <h2>{{ lang.t('project.aboutCards') }}</h2>
+            <span class="icon-badge"><i class="pi pi-info-circle" aria-hidden="true"></i></span>
+          </header>
+          <app-project-detail-points [items]="aboutCards()" [locale]="locale()" />
+        </article>
       }
     </div>
   }
-
-  @if (solutions().length || solutionsImage()) {
-    <h3>{{ lang.t('project.solutions') }}</h3>
-    @if (solutionsImage(); as image) {
-      <img
-        class="project-detail__solutions-image"
-        [src]="image.media.imageUrl"
-        [alt]="text(image.title) || lang.t('project.solutionsImage')"
-      />
+  @case ('challenges') {
+    <div class="detail-stack">
+      @if (challenges().length) {
+        <article class="detail-panel">
+          <header class="detail-panel__head">
+            <h2>{{ lang.t('project.challenges') }}</h2>
+            <span class="icon-badge"><i class="pi pi-exclamation-triangle" aria-hidden="true"></i></span>
+          </header>
+          <app-project-detail-points [items]="challenges()" [locale]="locale()" />
+        </article>
+      }
+      @if (tools().length) {
+        <article class="detail-panel">
+          <header class="detail-panel__head">
+            <h2>{{ lang.t('project.tools') }}</h2>
+            <span class="icon-badge"><i class="pi pi-wrench" aria-hidden="true"></i></span>
+          </header>
+          <div class="project-detail__gallery">
+            @for (tool of tools(); track tool.id) {
+              @let art = toolVisual(tool);
+              @if (art.image) {
+                <figure class="project-detail__tool">
+                  <img [src]="art.image" [alt]="text(tool.title)" />
+                  @if (text(tool.title)) {
+                    <figcaption>{{ text(tool.title) }}</figcaption>
+                  }
+                </figure>
+              }
+            }
+          </div>
+        </article>
+      }
+    </div>
+  }
+  @case ('solutions') {
+    <div class="detail-stack">
+      @if (solutions().length || solutionsImage()) {
+        <article class="detail-panel">
+          <header class="detail-panel__head">
+            <h2>{{ lang.t('project.solutions') }}</h2>
+            <span class="icon-badge"><i class="pi pi-check-circle" aria-hidden="true"></i></span>
+          </header>
+          @if (solutionsImage(); as image) {
+            <img
+              class="detail-photo"
+              [src]="image.media.imageUrl"
+              [alt]="text(image.title) || lang.t('project.solutionsImage')"
+            />
+          }
+          @if (solutions().length) {
+            <app-project-detail-points [items]="solutions()" [locale]="locale()" />
+          }
+        </article>
+      }
+    </div>
+  }
+  @case ('features') {
+    @if (features().length) {
+      <article class="detail-panel">
+        <header class="detail-panel__head">
+          <h2>{{ lang.t('project.features') }}</h2>
+          <span class="icon-badge"><i class="pi pi-star" aria-hidden="true"></i></span>
+        </header>
+        <app-project-detail-points [items]="features()" [locale]="locale()" />
+      </article>
     }
-    @if (solutions().length) {
-      <app-project-detail-points [items]="solutions()" [locale]="locale()" />
+  }
+  @case ('results') {
+    @if (results().length) {
+      <article class="detail-panel">
+        <header class="detail-panel__head">
+          <h2>{{ lang.t('project.results') }}</h2>
+          <span class="icon-badge"><i class="pi pi-chart-line" aria-hidden="true"></i></span>
+        </header>
+        <app-project-detail-points [items]="results()" [locale]="locale()" />
+      </article>
     }
   }
-
-  @if (features().length) {
-    <h3>{{ lang.t('project.features') }}</h3>
-    <app-project-detail-points [items]="features()" [locale]="locale()" />
-  }
-
-  @if (results().length) {
-    <h3>{{ lang.t('project.results') }}</h3>
-    <app-project-detail-points [items]="results()" [locale]="locale()" />
-  }
-</article>
+}

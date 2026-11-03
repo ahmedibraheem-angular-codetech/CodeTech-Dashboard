@@ -1,20 +1,24 @@
-<article class="project-tile project-detail__panel">
-  <dl class="project-detail__seo">
-    <div>
-      <dt>{{ lang.t('project.seoSlug') }}</dt>
-      <dd dir="ltr">{{ text(project().seo.slug) || '—' }}</dd>
+<article class="detail-panel">
+  <header class="detail-panel__head">
+    <h2>{{ lang.t('project.detailSeo') }}</h2>
+    <span class="icon-badge"><i class="pi pi-globe" aria-hidden="true"></i></span>
+  </header>
+  <div class="detail-fields">
+    <div class="detail-field">
+      <span>{{ lang.t('project.seoSlug') }}</span>
+      <strong dir="ltr">{{ text(project().seo.slug) || '—' }}</strong>
     </div>
-    <div>
-      <dt>{{ lang.t('project.seoTitle') }}</dt>
-      <dd>{{ text(project().seo.title) || '—' }}</dd>
+    <div class="detail-field">
+      <span>{{ lang.t('project.seoTitle') }}</span>
+      <strong>{{ text(project().seo.title) || '—' }}</strong>
     </div>
-    <div>
-      <dt>{{ lang.t('project.seoKeywords') }}</dt>
-      <dd>{{ text(project().seo.keywords) || '—' }}</dd>
+    <div class="detail-field">
+      <span>{{ lang.t('project.seoKeywords') }}</span>
+      <strong>{{ text(project().seo.keywords) || '—' }}</strong>
     </div>
-    <div>
-      <dt>{{ lang.t('project.seoDescription') }}</dt>
-      <dd>{{ text(project().seo.description) || '—' }}</dd>
+    <div class="detail-field">
+      <span>{{ lang.t('project.seoDescription') }}</span>
+      <p>{{ text(project().seo.description) || '—' }}</p>
     </div>
-  </dl>
+  </div>
 </article>

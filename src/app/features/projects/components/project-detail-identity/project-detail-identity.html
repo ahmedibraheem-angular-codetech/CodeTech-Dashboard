@@ -1,18 +1,64 @@
-<div class="project-detail__identity">
-  @for (button of project().identityButtons; track button.id) {
-    <article class="project-tile project-detail__panel">
-      <h2>{{ text(button.title) || lang.t('project.identity') }}</h2>
-      @if (text(button.body)) {
-        <p>{{ text(button.body) }}</p>
-      }
-      <div class="project-detail__gallery">
-        @for (image of button.images; track image.id) {
-          @let url = mediaUrl(image.image);
-          @if (show(url)) {
-            <img [src]="url" [alt]="text(button.title)" />
+<div class="detail-stack">
+  <div class="detail-overview">
+    <article class="detail-panel">
+      <header class="detail-panel__head">
+        <h2>{{ lang.t('project.identity') }}</h2>
+        <span class="icon-badge"><i class="pi pi-desktop" aria-hidden="true"></i></span>
+      </header>
+      @if (buttons().length) {
+        <div class="stat-block">
+          <div class="stat-tabs">
+            @for (button of buttons(); track button.id; let index = $index) {
+              <button
+                type="button"
+                class="stat-tab"
+                [class.is-active]="identityIndex() === index"
+                (click)="identityIndex.set(index)"
+              >
+                {{ text(button.title) || lang.t('project.identity') }}
+              </button>
+            }
+          </div>
+          @if (buttons()[identityIndex()]; as button) {
+            <div class="stat-panel">
+              <div class="detail-fields">
+                <div class="detail-field">
+                  <span>{{ lang.t('project.identityTitle') }}</span>
+                  <strong class="detail-field__lead">
+                    <i class="pi pi-user" aria-hidden="true"></i>
+                    {{ text(button.title) || '—' }}
+                  </strong>
+                </div>
+                @if (text(button.body)) {
+                  <div class="detail-field">
+                    <span>{{ lang.t('project.identityBody') }}</span>
+                    <p class="detail-field__lead">
+                      <i class="pi pi-align-left" aria-hidden="true"></i>
+                      {{ text(button.body) }}
+                    </p>
+                  </div>
+                }
+              </div>
+            </div>
           }
-        }
-      </div>
+        </div>
+      }
     </article>
-  }
+    <article class="detail-panel">
+      <header class="detail-panel__head">
+        <h2>{{ lang.t('project.identityImages') }}</h2>
+        <span class="icon-badge"><i class="pi pi-image" aria-hidden="true"></i></span>
+      </header>
+      @if (buttons()[identityIndex()]; as button) {
+        <div class="project-detail__gallery project-detail__identity">
+          @for (image of button.images; track image.id) {
+            @let url = mediaUrl(image.image);
+            @if (show(url)) {
+              <img [src]="url" [alt]="text(button.title)" />
+            }
+          }
+        </div>
+      }
+    </article>
+  </div>
 </div>

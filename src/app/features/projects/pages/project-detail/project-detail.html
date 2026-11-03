@@ -4,28 +4,61 @@
   } @else if (status() === 'missing' || !item()) {
     <app-state-view mode="empty" [message]="lang.t('project.notFound')" />
   } @else if (item(); as project) {
-    <app-page-header [title]="title(project)">
-      <span class="project-detail__badge" [class.is-live]="project.published">
-        {{ lang.t(project.published ? 'project.live' : 'project.draft') }}
+    <app-page-header [title]="title(project)" [subtitle]="summary(project)">
+      <span class="detail-status" [class.is-draft]="!project.published">
+        {{ project.published ? lang.t('project.live') : lang.t('project.draft') }}
       </span>
       <a
         *appHasPermission="'projects.update'"
-        class="projects-board__add"
+        class="detail-edit"
         [routerLink]="['/projects', project.id, 'edit']"
       >
-        {{ lang.t('project.edit') }}
+        <i class="pi pi-pen-to-square" aria-hidden="true"></i>
+        {{ lang.t('project.editAction') }}
       </a>
+      <button
+        *appHasPermission="'projects.delete'"
+        type="button"
+        class="detail-delete"
+        (click)="removeProject()"
+      >
+        <i class="pi pi-trash" aria-hidden="true"></i>
+        {{ lang.t('about.delete') }}
+      </button>
     </app-page-header>
 
-    @if (coverUrl(); as cover) {
-      <img class="project-detail__cover" [src]="cover" [alt]="title(project)" />
-    }
-
-    <app-page-tabs [tabs]="tabs()" [value]="tab()" (valueChange)="chooseTab($event)" />
+    <app-page-tabs [tabs]="tabs" [value]="tab()" (valueChange)="chooseTab($event)" />
 
     @switch (tab()) {
-      @case ('gallery') {
-        <app-project-detail-gallery [project]="project" />
+      @case ('about') {
+        <app-project-detail-data [project]="project" [locale]="lang.language()" section="about" />
+      }
+      @case ('challenges') {
+        <app-project-detail-data
+          [project]="project"
+          [locale]="lang.language()"
+          section="challenges"
+        />
+      }
+      @case ('solutions') {
+        <div class="detail-stack">
+          <app-project-detail-data
+            [project]="project"
+            [locale]="lang.language()"
+            section="solutions"
+          />
+          <app-project-detail-gallery [project]="project" />
+        </div>
+      }
+      @case ('features') {
+        <app-project-detail-data
+          [project]="project"
+          [locale]="lang.language()"
+          section="features"
+        />
+      }
+      @case ('results') {
+        <app-project-detail-data [project]="project" [locale]="lang.language()" section="results" />
       }
       @case ('identity') {
         <app-project-detail-identity [project]="project" [locale]="lang.language()" />
@@ -33,9 +66,7 @@
       @case ('seo') {
         <app-project-detail-seo [project]="project" [locale]="lang.language()" />
       }
-      @default {
-        <app-project-detail-data [project]="project" [locale]="lang.language()" />
-      }
     }
+    <app-confirm-dialog />
   }
 </section>

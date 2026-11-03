@@ -7,6 +7,13 @@ import { projectPointVisual, usableProjectImage } from '../../utils/project-deta
 import { localeFilled } from '../../utils/project-field-rules';
 import { ProjectDetailPoints } from '../project-detail-points/project-detail-points';
 
+export type ProjectDetailSection =
+  | 'about'
+  | 'challenges'
+  | 'solutions'
+  | 'features'
+  | 'results';
+
 @Component({
   selector: 'app-project-detail-data',
   imports: [ProjectDetailPoints],
@@ -18,6 +25,7 @@ export class ProjectDetailData {
   readonly lang = inject(LanguageService);
   readonly project = input.required<Project>();
   readonly locale = input.required<AppLanguage>();
+  readonly section = input.required<ProjectDetailSection>();
 
   protected readonly aboutCards = computed(() => this.points('aboutCards'));
   protected readonly challenges = computed(() => this.points('challenges'));
@@ -36,6 +44,10 @@ export class ProjectDetailData {
     const entry = this.project().solutionsImage;
     const media = readMedia(entry.image, this.locale());
     return usableProjectImage(media.imageUrl) ? { ...entry, media } : null;
+  });
+  protected readonly coverUrl = computed(() => {
+    const url = readMedia(this.project().cover, this.locale()).imageUrl;
+    return usableProjectImage(url) ? url : '';
   });
 
   protected text(value: LocaleText): string {
