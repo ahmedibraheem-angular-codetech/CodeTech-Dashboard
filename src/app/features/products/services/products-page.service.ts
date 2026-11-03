@@ -10,7 +10,7 @@ import type {
   ProductsPageFeatureDto,
   ProductsPageSectionsWriteDto,
   ProductsPageSectorDto,
-} from '../models/product.api';
+} from '../models/products-page.api';
 import type {
   ProductsPageContent,
   ProductsPageFeature,

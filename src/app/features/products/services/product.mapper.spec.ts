@@ -121,7 +121,6 @@ describe('product.mapper', () => {
     expect(detail.units[0]?.points[0]?.title.en).toBe('Point');
     expect(detail.seo.slug.en).toBe('itsm');
     expect(detail.seo.keywords.en).toBe('ITSM');
-    expect(detail.category).toEqual({ ar: '', en: '' });
   });
 
   it('writes stats label as title and figure as value, ignoring body', () => {

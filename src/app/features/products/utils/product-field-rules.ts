@@ -1,5 +1,18 @@
-/** Backend max length per `meta_keywords` entry after comma split. */
-export const PRODUCT_META_KEYWORD_MAX = 50;
+import {
+  PRODUCT_META_KEYWORD_MAX,
+  PRODUCT_SHORT_DESCRIPTION_MAX,
+  PRODUCT_SLUG_PATTERN,
+} from '../constants/product-limits';
+
+/** True when empty/whitespace (optional) or the trimmed value matches `PRODUCT_SLUG_PATTERN`. */
+export function isValidProductSlug(value: string): boolean {
+  const trimmed = value.trim();
+  return trimmed.length === 0 || PRODUCT_SLUG_PATTERN.test(trimmed);
+}
+
+export function isValidShortDescription(value: string): boolean {
+  return value.length <= PRODUCT_SHORT_DESCRIPTION_MAX;
+}
 
 /** Same split rules as `toProductWrite` (`/[,،]/`, trim, drop empties). */
 export function splitProductKeywords(value: string): string[] {

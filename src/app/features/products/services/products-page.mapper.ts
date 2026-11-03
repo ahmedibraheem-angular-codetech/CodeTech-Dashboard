@@ -4,7 +4,7 @@ import type {
   ProductsPageFeatureWriteDto,
   ProductsPageSectorDto,
   ProductsPageSectorWriteDto,
-} from '../models/product.api';
+} from '../models/products-page.api';
 import { localeText, type LocaleText } from '../models/product.model';
 import type {
   ProductsPageContent,

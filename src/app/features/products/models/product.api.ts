@@ -195,67 +195,9 @@ export interface ProductStatusWriteDto {
   status: string;
 }
 
-export type ProductListName =
-  | 'features'
-  | 'stats'
-  | 'sectors'
-  | 'challenges'
-  | 'offerings'
-  | 'results'
-  | 'advantages'
-  | 'integrations'
-  | 'modules'
-  | 'workflow_steps'
-  | 'identity_items'
-  | 'reasons'
-  | 'faqs';
-
 export interface ProductListQuery {
   search?: string;
   status?: string;
   page?: number;
   perPage?: number;
-}
-
-/** Products marketing page (GET /admin/pages/products). */
-export interface ProductsPageSectionsDto {
-  features_enabled: boolean;
-  sectors_enabled: boolean;
-  products_visible: boolean;
-}
-
-export interface ProductsPageFeatureDto {
-  id: number;
-  title: ProductLocaleDto;
-  description: ProductLocaleDto;
-  icon: FileObject | null;
-  sort_order?: number;
-}
-
-export interface ProductsPageSectorDto {
-  id: number;
-  image: { ar: FileObject | null; en: FileObject | null };
-  sort_order?: number;
-}
-
-export interface ProductsPageDto {
-  sections: ProductsPageSectionsDto;
-  features: ProductsPageFeatureDto[];
-  sectors: ProductsPageSectorDto[];
-}
-
-export interface ProductsPageSectionsWriteDto {
-  features_enabled?: boolean;
-  sectors_enabled?: boolean;
-  products_visible?: boolean;
-}
-
-export interface ProductsPageFeatureWriteDto {
-  title: { ar: string; en?: string };
-  description?: { ar: string; en?: string };
-  icon?: string | null;
-}
-
-export interface ProductsPageSectorWriteDto {
-  image: { ar: string | null; en?: string | null };
 }

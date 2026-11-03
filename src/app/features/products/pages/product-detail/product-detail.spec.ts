@@ -6,7 +6,7 @@ import { authSession } from '../../../../core/auth/auth-session.fixture';
 import { AuthService } from '../../../../core/auth/auth.service';
 import { API_LATENCY_MS } from '../../../../core/config/latency';
 import type { ProductDetailRemovable } from './product-detail.types';
-import { ProductsMemoryService } from '../../services/products.memory';
+import { ProductsMemoryService } from '../../products.spec-helpers';
 import { ProductsService } from '../../services/products.service';
 import { ProductDetailPage } from './product-detail';
 

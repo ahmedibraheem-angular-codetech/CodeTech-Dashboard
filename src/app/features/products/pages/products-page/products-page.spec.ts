@@ -7,7 +7,7 @@ import { API_LATENCY_MS } from '../../../../core/config/latency';
 import { ConfirmDialog } from '../../../../shared/components/confirm-dialog/confirm-dialog';
 import { localeText } from '../../models/product.model';
 import type { ProductsPageFeature, ProductsPageSector } from '../../models/products-page.model';
-import { ProductsPageMemoryService } from '../../services/products-page.memory';
+import { ProductsPageMemoryService } from '../../products.spec-helpers';
 import { ProductsPageService } from '../../services/products-page.service';
 import { ProductsPageManage } from './products-page';
 

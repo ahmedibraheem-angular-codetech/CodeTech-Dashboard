@@ -8,10 +8,9 @@ import { AuthService } from '../../../../core/auth/auth.service';
 import { API_LATENCY_MS } from '../../../../core/config/latency';
 import { LanguageService } from '../../../../core/services/language.service';
 import { blankProduct, localeText, type Product } from '../../models/product.model';
-import { PRODUCTS_SEED } from '../../services/products.mock';
-import { ProductsMemoryService } from '../../services/products.memory';
+import { PRODUCTS_SEED, ProductsMemoryService } from '../../products.spec-helpers';
 import { ProductsService } from '../../services/products.service';
-import { ProductsPage } from './products-list';
+import { ProductsListPage } from './products-list';
 
 const PRODUCT_GRANTS = [
   'products.view',
@@ -20,7 +19,7 @@ const PRODUCT_GRANTS = [
   'products.delete',
 ] as const;
 
-describe('ProductsPage', () => {
+describe('ProductsListPage', () => {
   async function settle<T>(fixture: { detectChanges(): void; whenStable(): Promise<void> } & T) {
     await new Promise((resolve) => setTimeout(resolve, 20));
     await fixture.whenStable();
@@ -29,7 +28,7 @@ describe('ProductsPage', () => {
 
   async function render(prepare?: (api: ProductsService) => Promise<void>) {
     TestBed.configureTestingModule({
-      imports: [ProductsPage],
+      imports: [ProductsListPage],
       providers: [
         MessageService,
         { provide: API_LATENCY_MS, useValue: 0 },
@@ -50,13 +49,13 @@ describe('ProductsPage', () => {
     );
     const api = TestBed.inject(ProductsService);
     await prepare?.(api);
-    const fixture = TestBed.createComponent(ProductsPage);
+    const fixture = TestBed.createComponent(ProductsListPage);
     fixture.detectChanges();
     return { fixture, api, root: fixture.nativeElement as HTMLElement };
   }
 
   const cards = (root: HTMLElement) => root.querySelectorAll('.product-card');
-  const confirmOf = (fixture: { componentRef: { instance: ProductsPage } }) =>
+  const confirmOf = (fixture: { componentRef: { instance: ProductsListPage } }) =>
     fixture.componentRef.instance['confirm']();
   const deleteButtons = (root: HTMLElement) =>
     root.querySelectorAll<HTMLButtonElement>('button[aria-label="حذف المنتج"]');
@@ -87,7 +86,7 @@ describe('ProductsPage', () => {
 
   it('shows an error instead of the empty state when loading fails', async () => {
     TestBed.configureTestingModule({
-      imports: [ProductsPage],
+      imports: [ProductsListPage],
       providers: [
         MessageService,
         { provide: API_LATENCY_MS, useValue: 0 },
@@ -100,7 +99,7 @@ describe('ProductsPage', () => {
     const api = TestBed.inject(ProductsService);
     vi.spyOn(api, 'listAll').mockReturnValue(throwError(() => new Error('offline')));
     vi.spyOn(api, 'loadCatalogVisibility').mockReturnValue(throwError(() => new Error('offline')));
-    const fixture = TestBed.createComponent(ProductsPage);
+    const fixture = TestBed.createComponent(ProductsListPage);
     fixture.detectChanges();
     await settle(fixture);
     const root: HTMLElement = fixture.nativeElement;
@@ -115,7 +114,7 @@ describe('ProductsPage', () => {
 
   it('retries after a load failure and shows the catalog on success', async () => {
     TestBed.configureTestingModule({
-      imports: [ProductsPage],
+      imports: [ProductsListPage],
       providers: [
         MessageService,
         { provide: API_LATENCY_MS, useValue: 0 },
@@ -132,7 +131,7 @@ describe('ProductsPage', () => {
     vi.spyOn(api, 'loadCatalogVisibility')
       .mockReturnValueOnce(throwError(() => new Error('offline')))
       .mockReturnValue(of(true));
-    const fixture = TestBed.createComponent(ProductsPage);
+    const fixture = TestBed.createComponent(ProductsListPage);
     fixture.detectChanges();
     await settle(fixture);
     expect(fixture.componentInstance.status()).toBe('error');
@@ -151,7 +150,7 @@ describe('ProductsPage', () => {
 
   it('keeps the error state when retry fails again', async () => {
     TestBed.configureTestingModule({
-      imports: [ProductsPage],
+      imports: [ProductsListPage],
       providers: [
         MessageService,
         { provide: API_LATENCY_MS, useValue: 0 },
@@ -164,7 +163,7 @@ describe('ProductsPage', () => {
     const api = TestBed.inject(ProductsService);
     vi.spyOn(api, 'listAll').mockReturnValue(throwError(() => new Error('offline')));
     vi.spyOn(api, 'loadCatalogVisibility').mockReturnValue(throwError(() => new Error('offline')));
-    const fixture = TestBed.createComponent(ProductsPage);
+    const fixture = TestBed.createComponent(ProductsListPage);
     fixture.detectChanges();
     await settle(fixture);
 
@@ -179,7 +178,7 @@ describe('ProductsPage', () => {
 
   it('ignores a stale list response after a newer load has started', async () => {
     TestBed.configureTestingModule({
-      imports: [ProductsPage],
+      imports: [ProductsListPage],
       providers: [
         MessageService,
         { provide: API_LATENCY_MS, useValue: 0 },
@@ -198,7 +197,7 @@ describe('ProductsPage', () => {
       calls += 1;
       return calls === 1 ? first.asObservable() : second.asObservable();
     });
-    const fixture = TestBed.createComponent(ProductsPage);
+    const fixture = TestBed.createComponent(ProductsListPage);
     fixture.detectChanges();
     expect(fixture.componentInstance.status()).toBe('loading');
 

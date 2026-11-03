@@ -18,12 +18,13 @@ import { MediaService } from '../../../core/media/media.service';
 import type {
   ProductDetailDto,
   ProductListDto,
-  ProductListName,
   ProductListQuery,
   ProductStatusWriteDto,
+} from '../models/product.api';
+import type {
   ProductsPageDto,
   ProductsPageSectionsWriteDto,
-} from '../models/product.api';
+} from '../models/products-page.api';
 import type {
   Product,
   ProductImage,
@@ -44,7 +45,6 @@ const PAGE_PATH = 'admin/pages/products';
  * Catalog products. List is paginated (`search`, `filter[status]`, `per_page`).
  * Nested lists are embedded on write; media uses coat-check UUIDs (omit/null/set).
  * `catalogVisible` maps to `products_visible` on the products page sections API.
- * Product `category` is UI-only and is not sent (absent from OpenAPI write body).
  */
 @Injectable({ providedIn: 'root' })
 export class ProductsService {
@@ -108,24 +108,6 @@ export class ProductsService {
   remove(id: string): Observable<void> {
     return this.http
       .delete(apiUrl(this.base, `${PATH}/${id}`), { responseType: 'text' })
-      .pipe(map(() => undefined));
-  }
-
-  removeListItem(productId: string, list: ProductListName, itemId: string): Observable<void> {
-    return this.http
-      .delete(apiUrl(this.base, `${PATH}/${productId}/${list}/${itemId}`), {
-        responseType: 'text',
-      })
-      .pipe(map(() => undefined));
-  }
-
-  reorder(ids: readonly string[]): Observable<void> {
-    return this.http
-      .post(
-        apiUrl(this.base, `${PATH}/reorder`),
-        { ids: ids.map((id) => Number(id)).filter((id) => Number.isFinite(id)) },
-        { responseType: 'text' },
-      )
       .pipe(map(() => undefined));
   }
 

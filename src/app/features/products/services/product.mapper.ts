@@ -139,7 +139,6 @@ function mapCore(
   | 'published'
   | 'name'
   | 'summary'
-  | 'category'
   | 'cover'
   | 'coverTitle'
   | 'coverAlt'
@@ -157,7 +156,6 @@ function mapCore(
     published: dto.status === 'published',
     name: locale(dto.title),
     summary: filled(summary) ? summary : description,
-    category: localeText(),
     cover: sharedMedia(dto.cover),
     coverTitle: localeText(),
     coverAlt: localeText(),
@@ -190,7 +188,6 @@ export function mapProductDetail(dto: ProductDetailDto): Product {
     published: dto.status === 'published',
     name: locale(dto.title),
     summary: filled(summary) ? summary : description,
-    category: localeText(),
     cover: sharedMedia(dto.cover),
     coverTitle: locale(dto.cover_title),
     coverAlt: locale(dto.cover_alt),
@@ -240,7 +237,6 @@ function blankNested(): Omit<
   | 'published'
   | 'name'
   | 'summary'
-  | 'category'
   | 'cover'
   | 'coverTitle'
   | 'coverAlt'

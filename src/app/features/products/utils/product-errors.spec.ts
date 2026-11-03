@@ -5,7 +5,7 @@ import {
   productStepIndexForServerPath,
   serverErrorMessage,
   serverErrorPrefixMessage,
-} from './product-server-errors';
+} from './product-errors';
 
 describe('product server errors', () => {
   const errors = {

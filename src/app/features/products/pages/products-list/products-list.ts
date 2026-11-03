@@ -33,7 +33,7 @@ import { ProductsService } from '../../services/products.service';
 type LoadState = 'loading' | 'ready' | 'error';
 
 @Component({
-  selector: 'app-products-page',
+  selector: 'app-products-list',
   imports: [
     FormsModule,
     PageHeader,
@@ -49,7 +49,7 @@ type LoadState = 'loading' | 'ready' | 'error';
   templateUrl: './products-list.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ProductsPage {
+export class ProductsListPage {
   private readonly messages = inject(MessageService);
   private readonly router = inject(Router);
   private readonly auth = inject(AuthService);

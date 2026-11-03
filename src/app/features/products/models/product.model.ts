@@ -95,11 +95,6 @@ export interface Product {
   published: boolean;
   name: LocaleText;
   summary: LocaleText;
-  /**
-   * UI-only category chip. Not present on admin product write/read DTOs —
-   * kept so the editor field is not deleted; value is not persisted by the API.
-   */
-  category: LocaleText;
   /** Cover image per editor locale. API still stores one shared cover file. */
   cover: LocalizedMedia;
   coverTitle: LocaleText;
@@ -124,19 +119,6 @@ export interface Product {
   highlights: ProductPoint[];
   seo: ProductSeo;
 }
-
-export const PRODUCT_STEPS = [
-  { id: 'info', labelKey: 'product.step.info' },
-  { id: 'sectors', labelKey: 'product.step.sectors' },
-  { id: 'offer', labelKey: 'product.step.offer' },
-  { id: 'tools', labelKey: 'product.step.tools' },
-  { id: 'units', labelKey: 'product.step.units' },
-  { id: 'identity', labelKey: 'product.step.identity' },
-  { id: 'faq', labelKey: 'product.step.faq' },
-  { id: 'seo', labelKey: 'product.step.seo' },
-] as const;
-
-export type ProductStepId = (typeof PRODUCT_STEPS)[number]['id'];
 
 export function localeText(ar = '', en = ''): LocaleText {
   return { ar, en };
@@ -200,7 +182,6 @@ export function blankProduct(): Product {
     published: true,
     name: localeText(),
     summary: localeText(),
-    category: localeText(),
     cover: emptyLocalizedMedia(),
     coverTitle: localeText(),
     coverAlt: localeText(),

@@ -219,7 +219,7 @@ export const routes: Routes = [
             canActivate: [permissionGuard()],
             loadComponent: () =>
               import('./features/products/pages/products-list/products-list').then(
-                (m) => m.ProductsPage,
+                (m) => m.ProductsListPage,
               ),
             data: {
               permission: 'products.view',

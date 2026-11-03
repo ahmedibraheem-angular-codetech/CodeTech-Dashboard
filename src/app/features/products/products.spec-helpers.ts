@@ -1,3 +1,10 @@
+import { Injectable, inject, signal } from '@angular/core';
+import { type Observable, map, timer } from 'rxjs';
+
+import { API_LATENCY_MS } from '../../core/config/latency';
+import type { PaginatedEnvelope } from '../../core/http/api.model';
+import { ObjectUrls } from '../../shared/components/product-upload/object-urls';
+import type { ProductListDto, ProductListQuery } from './models/product.api';
 import {
   emptyProductImage,
   localeText,
@@ -6,21 +13,169 @@ import {
   productSector,
   productStat,
   productUnit,
+  readMedia,
   type LocalizedMedia,
   type Product,
   type ProductSector,
-} from '../models/product.model';
+} from './models/product.model';
+import {
+  productsPageFeature,
+  productsPageSector,
+  type ProductsPageContent,
+  type ProductsPageFeature,
+  type ProductsPageSector,
+} from './models/products-page.model';
 
-const FLAT = '/images/product-cover-flat.jpg';
+
 const DESK = '/images/product-cover-desk.jpg';
 const WOOD = '/images/product-cover-wood.jpg';
+const FLAT = '/images/product-cover-flat.jpg';
 const PROJECT = '/images/project-cover.jpg';
 const POSTER = '/images/video-poster.jpg';
-const brief = localeText('وصف يمكن استبدالة لاحقاً', 'Description can be replaced later.');
-const story = localeText(
+
+const brief = localeText(
   'وصف نصي قصير تعريفي عن كود التقنية يتم كتابته — مصدرها فريق العمل لاحقًا.',
   'A short description written by the team later.',
 );
+
+function pageSector(arTitle: string, enTitle: string, imageUrl: string): ProductsPageSector {
+  const image = { ...emptyProductImage(), imageName: `${enTitle}.jpg`, imageUrl };
+  return {
+    ...productsPageSector(localeText(arTitle, enTitle)),
+    image: { ar: { ...image }, en: { ...image } },
+  };
+}
+
+export const PRODUCTS_PAGE_SEED: ProductsPageContent = {
+  featuresEnabled: true,
+  sectorsEnabled: true,
+  productsVisible: true,
+  features: [
+    productsPageFeature(
+      localeText('مصمم وفق أفضل الممارسات العالمية', 'Built on global best practice'),
+      brief,
+      'pi-th-large',
+    ),
+    productsPageFeature(localeText('مرونة عالية', 'High flexibility'), brief, 'pi-cog'),
+    productsPageFeature(localeText('أمان موثوق', 'Trusted security'), brief, 'pi-shield'),
+    productsPageFeature(localeText('سهولة الاستخدام', 'Easy to use'), brief, 'pi-user'),
+    productsPageFeature(localeText('تكامل مرن', 'Flexible integration'), brief, 'pi-sitemap'),
+    productsPageFeature(localeText('قابلية التوسع', 'Room to grow'), brief, 'pi-expand'),
+  ],
+  sectors: [
+    pageSector('حكومي', 'Government', PROJECT),
+    pageSector('شركات', 'Companies', DESK),
+    pageSector('الصحة', 'Health', WOOD),
+    pageSector('تعليم', 'Education', FLAT),
+    pageSector('القطاع الخاص', 'Private sector', DESK),
+    pageSector('المؤسسات', 'Institutions', PROJECT),
+    pageSector('الأفراد', 'Individuals', POSTER),
+    pageSector('سياحة', 'Tourism', WOOD),
+  ],
+};
+
+
+
+
+/**
+ * In-memory products page backend for UI/integration specs only.
+ * Production uses {@link ProductsPageService} (HTTP).
+ */
+@Injectable()
+export class ProductsPageMemoryService {
+  private readonly latency = inject(API_LATENCY_MS, { optional: true }) ?? 0;
+  private readonly objectUrls = inject(ObjectUrls);
+  private state = structuredClone(PRODUCTS_PAGE_SEED);
+
+  get(): Observable<ProductsPageContent> {
+    return timer(this.latency).pipe(map(() => structuredClone(this.state)));
+  }
+
+  toggleFeatures(enabled: boolean): Observable<ProductsPageContent> {
+    this.state = { ...this.state, featuresEnabled: enabled };
+    return this.get();
+  }
+
+  toggleSectors(enabled: boolean): Observable<ProductsPageContent> {
+    this.state = { ...this.state, sectorsEnabled: enabled };
+    return this.get();
+  }
+
+  toggleProductsVisible(visible: boolean): Observable<ProductsPageContent> {
+    this.state = { ...this.state, productsVisible: visible };
+    return this.get();
+  }
+
+  saveFeature(feature: ProductsPageFeature): Observable<ProductsPageFeature> {
+    const next = structuredClone(feature);
+    if (!next.id) {
+      next.id = this.newId('page-feature');
+    }
+    const previous =
+      this.state.features.find((item) => item.id === next.id) ?? null;
+    this.objectUrls.sync(previous, next);
+    this.state = {
+      ...this.state,
+      features: this.upsert(this.state.features, next),
+    };
+    return timer(this.latency).pipe(map(() => structuredClone(next)));
+  }
+
+  removeFeature(id: string): Observable<void> {
+    const previous = this.state.features.find((item) => item.id === id) ?? null;
+    this.objectUrls.sync(previous, null);
+    this.state = {
+      ...this.state,
+      features: this.state.features.filter((item) => item.id !== id),
+    };
+    return timer(this.latency).pipe(map(() => undefined));
+  }
+
+  saveSector(sector: ProductsPageSector): Observable<ProductsPageSector> {
+    const next = structuredClone(sector);
+    if (!next.id) {
+      next.id = this.newId('page-sector');
+    }
+    const previous = this.state.sectors.find((item) => item.id === next.id) ?? null;
+    this.objectUrls.sync(previous, next);
+    this.state = {
+      ...this.state,
+      sectors: this.upsert(this.state.sectors, next),
+    };
+    return timer(this.latency).pipe(map(() => structuredClone(next)));
+  }
+
+  removeSector(id: string): Observable<void> {
+    const previous = this.state.sectors.find((item) => item.id === id) ?? null;
+    this.objectUrls.sync(previous, null);
+    this.state = {
+      ...this.state,
+      sectors: this.state.sectors.filter((item) => item.id !== id),
+    };
+    return timer(this.latency).pipe(map(() => undefined));
+  }
+
+  private upsert<T extends { id: string }>(items: readonly T[], next: T): T[] {
+    const index = items.findIndex((item) => item.id === next.id);
+    if (index === -1) {
+      return [...items, next];
+    }
+    return items.map((item) => (item.id === next.id ? next : item));
+  }
+
+  private newId(prefix: string): string {
+    let stamp = Date.now();
+    while (
+      this.state.features.some((item) => item.id === `${prefix}-${stamp}`) ||
+      this.state.sectors.some((item) => item.id === `${prefix}-${stamp}`)
+    ) {
+      stamp += 1;
+    }
+    return `${prefix}-${stamp}`;
+  }
+}
+
+const story = brief;
 
 function localeImage(imageUrl: string, imageName = 'image.jpg'): LocalizedMedia {
   const image = { ...emptyProductImage(), imageName, imageUrl };
@@ -52,7 +207,6 @@ function featured(): Product {
       'منصة متكاملة لإدارة خدمات تقنية المعلومات، والطلبات، والأصول، والتغييرات، مع تقارير ولوحات تحكم تساعد على رفع كفاءة فرق العمل.',
       'A platform for IT services, requests, assets, changes, reports, and dashboards.',
     ),
-    category: localeText('أنظمة تشغيلية', 'Operations systems'),
     cover: localeImage(DESK, 'cover.jpg'),
     coverTitle: localeText(),
     coverAlt: localeText(),
@@ -306,3 +460,176 @@ export const PRODUCTS_SEED: Product[] = [
   card('info-system-5', WOOD),
   card('info-system-6', DESK),
 ];
+
+
+
+
+/**
+ * In-memory products backend for UI/integration specs only.
+ * Production uses {@link ProductsService} (HTTP).
+ */
+@Injectable()
+export class ProductsMemoryService {
+  private readonly latency = inject(API_LATENCY_MS, { optional: true }) ?? 0;
+  private readonly objectUrls = inject(ObjectUrls);
+  private readonly state = signal<Product[]>(structuredClone(PRODUCTS_SEED));
+
+  /** Whether product cards show on the public products page. */
+  private catalogVisibleState = PRODUCTS_PAGE_SEED.productsVisible;
+  readonly catalogVisible = signal(this.catalogVisibleState);
+
+  list(query: ProductListQuery = {}): Observable<Product[]> {
+    return timer(this.latency).pipe(map(() => this.filterList(query)));
+  }
+
+  listPage(query: ProductListQuery = {}): Observable<PaginatedEnvelope<ProductListDto>> {
+    return timer(this.latency).pipe(
+      map(() => {
+        const items = this.filterList(query);
+        const page = query.page ?? 1;
+        const perPage = query.perPage ?? (items.length || 100);
+        const start = (page - 1) * perPage;
+        const slice = items.slice(start, start + perPage);
+        const lastPage = Math.max(1, Math.ceil(items.length / perPage));
+        return {
+          data: slice.map((item, index) => this.toListDto(item, start + index + 1)),
+          links: { first: null, last: null, prev: null, next: null },
+          meta: {
+            current_page: page,
+            from: items.length === 0 ? null : start + 1,
+            last_page: lastPage,
+            path: '',
+            per_page: perPage,
+            to: items.length === 0 ? null : Math.min(start + slice.length, items.length),
+            total: items.length,
+          },
+        };
+      }),
+    );
+  }
+
+  listAll(query: Omit<ProductListQuery, 'page'> = {}): Observable<Product[]> {
+    return this.list(query);
+  }
+
+  get(id: string): Observable<Product | null> {
+    return timer(this.latency).pipe(
+      map(() => {
+        const match = this.state().find((item) => item.id === id);
+        return match ? structuredClone(match) : null;
+      }),
+    );
+  }
+
+  save(product: Product): Observable<Product> {
+    const next: Product = {
+      ...structuredClone(product),
+      id: product.id || this.newId(),
+      code: product.code || product.id || '',
+    };
+    const previous = this.state().find((item) => item.id === next.id) ?? null;
+    this.objectUrls.sync(previous, next);
+    this.state.update((items) => {
+      const index = items.findIndex((item) => item.id === next.id);
+      if (index === -1) {
+        return [next, ...items];
+      }
+      return items.map((item) => (item.id === next.id ? next : item));
+    });
+    return timer(this.latency).pipe(map(() => structuredClone(next)));
+  }
+
+  setPublished(id: string, published: boolean): Observable<Product> {
+    let saved: Product | null = null;
+    this.state.update((items) =>
+      items.map((item) => {
+        if (item.id !== id) {
+          return item;
+        }
+        saved = { ...item, published };
+        return saved;
+      }),
+    );
+    return timer(this.latency).pipe(
+      map(() => structuredClone(saved ?? this.state().find((item) => item.id === id)!)),
+    );
+  }
+
+  remove(id: string): Observable<void> {
+    const previous = this.state().find((item) => item.id === id) ?? null;
+    this.objectUrls.sync(previous, null);
+    this.state.update((items) => items.filter((item) => item.id !== id));
+    return timer(this.latency).pipe(map(() => undefined));
+  }
+
+  loadCatalogVisibility(): Observable<boolean> {
+    return timer(this.latency).pipe(
+      map(() => {
+        this.catalogVisible.set(this.catalogVisibleState);
+        return this.catalogVisibleState;
+      }),
+    );
+  }
+
+  toggleCatalog(): void {
+    this.catalogVisibleState = !this.catalogVisibleState;
+    this.catalogVisible.set(this.catalogVisibleState);
+  }
+
+  private filterList(query: ProductListQuery): Product[] {
+    let items = structuredClone(this.state());
+    const search = query.search?.trim().toLowerCase();
+    if (search) {
+      items = items.filter(
+        (item) =>
+          item.name.ar.toLowerCase().includes(search) ||
+          item.name.en.toLowerCase().includes(search) ||
+          item.code.toLowerCase().includes(search),
+      );
+    }
+    if (query.status === 'published') {
+      items = items.filter((item) => item.published);
+    } else if (query.status === 'draft') {
+      items = items.filter((item) => !item.published);
+    }
+    return items;
+  }
+
+  private newId(): string {
+    let stamp = Date.now();
+    while (this.state().some((item) => item.id === `product-${stamp}`)) {
+      stamp += 1;
+    }
+    return `product-${stamp}`;
+  }
+
+  private toListDto(item: Product, fallbackId: number): ProductListDto {
+    const numericId = /^\d+$/.test(item.id) ? Number(item.id) : fallbackId;
+    const coverUrl = readMedia(item.cover, 'ar').imageUrl;
+    const thumbUrl = readMedia(item.thumb, 'ar').imageUrl;
+    return {
+      id: numericId,
+      code: item.code,
+      title: { ar: item.name.ar, en: item.name.en },
+      description: { ar: item.summary.ar, en: item.summary.en },
+      short_description: { ar: item.summary.ar, en: item.summary.en },
+      cover: coverUrl ? ({ url: coverUrl } as ProductListDto['cover']) : null,
+      thumbnail: thumbUrl ? ({ url: thumbUrl } as ProductListDto['thumbnail']) : null,
+      features: item.features.map((feature, sort) => {
+        const iconUrl = readMedia(feature.image, 'ar').imageUrl;
+        return {
+          id: sort + 1,
+          title: { ar: feature.title.ar, en: feature.title.en },
+          short_description: { ar: feature.body.ar, en: feature.body.en },
+          icon: iconUrl ? ({ url: iconUrl } as ProductListDto['features'][0]['icon']) : null,
+          sort_order: sort,
+        };
+      }),
+      status: item.published ? 'published' : 'draft',
+      slug: item.seo.slug.en || item.seo.slug.ar || null,
+      sort_order: fallbackId,
+      created_at: '',
+      updated_at: '',
+    };
+  }
+}

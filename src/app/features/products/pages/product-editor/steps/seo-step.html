@@ -57,12 +57,14 @@
         pTextarea
         [fluid]="true"
         rows="4"
-        maxlength="160"
+        [attr.maxlength]="editor.descriptionMax"
         [value]="editor.text(editor.draft().seo.description)"
         [placeholder]="editor.copy('product.seoDescriptionPh')"
         (input)="editor.setSeo('description', $event)"
       ></textarea>
-      <small class="counter">{{ editor.text(editor.draft().seo.description).length }}/160</small>
+      <small class="counter"
+        >{{ editor.text(editor.draft().seo.description).length }}/{{ editor.descriptionMax }}</small
+      >
     </label>
   </div>
 </section>

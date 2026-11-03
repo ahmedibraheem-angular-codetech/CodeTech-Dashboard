@@ -10,7 +10,7 @@ import {
   productSector,
   productStat,
   productUnit,
-} from './product.model';
+} from '../models/product.model';
 import {
   firstRepeaterValidationIssue,
   isNewFaqValid,
@@ -18,7 +18,9 @@ import {
   isNewPointTitleBodyValid,
   isNewStatValid,
   isNewUnitValid,
+  isSectorArabicImageValid,
   isServerItemId,
+  isWorkflowStepArabicValid,
   newFaqAnswerArMissing,
   newFaqQuestionArMissing,
   newIntegrationImageMissing,
@@ -27,8 +29,13 @@ import {
   newStatTitleArMissing,
   newStatValueArMissing,
   productRepeatersValid,
+  sectorHasAnyMedia,
+  sectorHasArabicImage,
   sectorImageArMissing,
   slotHasImage,
+  workflowStepBodyArMissing,
+  workflowStepHasContent,
+  workflowStepTitleArMissing,
 } from './product-repeater-validation';
 
 describe('product-repeater-validation', () => {
@@ -73,7 +80,12 @@ describe('product-repeater-validation', () => {
   });
 
   it('requires Arabic label and value on new stats', () => {
-    const item = { ...productStat(), id: productId('stat'), label: localeText('', 'L'), value: localeText('1', '1') };
+    const item = {
+      ...productStat(),
+      id: productId('stat'),
+      label: localeText('', 'L'),
+      value: localeText('1', '1'),
+    };
     expect(newStatTitleArMissing(item)).toBe(true);
     expect(newStatValueArMissing(item)).toBe(false);
     expect(isNewStatValid(item)).toBe(false);
@@ -172,5 +184,125 @@ describe('product-repeater-validation', () => {
       },
     ];
     expect(firstRepeaterValidationIssue(draft)?.step).toBe(2);
+  });
+});
+
+describe('product sector media validation', () => {
+  function withImage(
+    locale: 'ar' | 'en',
+    image: { imageUrl: string; imageUuid?: string | null; imageName?: string },
+  ) {
+    const sector = productSector();
+    return {
+      ...sector,
+      image: {
+        ...emptyLocalizedMedia(),
+        [locale]: {
+          imageName: image.imageName ?? 'sector.png',
+          imageUrl: image.imageUrl,
+          imageUuid: image.imageUuid ?? null,
+        },
+      },
+    };
+  }
+
+  it('treats a completely empty sector as optional (not payload-included)', () => {
+    const sector = productSector();
+    expect(sectorHasAnyMedia(sector)).toBe(false);
+    expect(isSectorArabicImageValid(sector)).toBe(true);
+  });
+
+  it('accepts a new sector with an Arabic image', () => {
+    const sector = withImage('ar', { imageUrl: 'blob:sector/1', imageUuid: null });
+    expect(sectorHasAnyMedia(sector)).toBe(true);
+    expect(sectorHasArabicImage(sector)).toBe(true);
+    expect(isSectorArabicImageValid(sector)).toBe(true);
+  });
+
+  it('rejects a new sector with an English-only image', () => {
+    const sector = withImage('en', { imageUrl: 'blob:sector/en', imageUuid: null });
+    expect(sectorHasAnyMedia(sector)).toBe(true);
+    expect(sectorHasArabicImage(sector)).toBe(false);
+    expect(isSectorArabicImageValid(sector)).toBe(false);
+  });
+
+  it('accepts an existing sector with an Arabic remote image without re-upload', () => {
+    const sector = {
+      ...productSector(),
+      id: '31',
+      image: {
+        ar: {
+          imageName: 'sector.png',
+          imageUrl: 'https://cdn.example/sec-ar.png',
+          imageUuid: 'sec-ar',
+        },
+        en: emptyProductImage(),
+      },
+    };
+    expect(isSectorArabicImageValid(sector)).toBe(true);
+  });
+
+  it('rejects an existing English-only sector when it would be included in the payload', () => {
+    const sector = {
+      ...withImage('en', {
+        imageUrl: 'https://cdn.example/sec-en.png',
+        imageUuid: 'sec-en',
+      }),
+      id: '31',
+    };
+    expect(sectorHasAnyMedia(sector)).toBe(true);
+    expect(isSectorArabicImageValid(sector)).toBe(false);
+  });
+});
+
+describe('product workflow step validation', () => {
+  it('treats a completely empty row as optional', () => {
+    const step = productPoint();
+    expect(workflowStepHasContent(step)).toBe(false);
+    expect(isWorkflowStepArabicValid(step)).toBe(true);
+    expect(workflowStepTitleArMissing(step)).toBe(false);
+    expect(workflowStepBodyArMissing(step)).toBe(false);
+  });
+
+  it('requires Arabic title and short description when any locale has content', () => {
+    const enOnly = {
+      ...productPoint(),
+      title: localeText('', 'English title'),
+      body: localeText('', 'English body'),
+    };
+    expect(workflowStepHasContent(enOnly)).toBe(true);
+    expect(isWorkflowStepArabicValid(enOnly)).toBe(false);
+    expect(workflowStepTitleArMissing(enOnly)).toBe(true);
+    expect(workflowStepBodyArMissing(enOnly)).toBe(true);
+
+    const titleOnlyAr = {
+      ...productPoint(),
+      title: localeText('عنوان', ''),
+      body: localeText('', ''),
+    };
+    expect(isWorkflowStepArabicValid(titleOnlyAr)).toBe(false);
+    expect(workflowStepTitleArMissing(titleOnlyAr)).toBe(false);
+    expect(workflowStepBodyArMissing(titleOnlyAr)).toBe(true);
+  });
+
+  it('accepts a row with both Arabic title and short description', () => {
+    const step = {
+      ...productPoint(),
+      title: localeText('عنوان', 'Title'),
+      body: localeText('وصف', 'Body'),
+    };
+    expect(isWorkflowStepArabicValid(step)).toBe(true);
+    expect(workflowStepTitleArMissing(step)).toBe(false);
+    expect(workflowStepBodyArMissing(step)).toBe(false);
+  });
+
+  it('preserves partial English content while still failing Arabic validation', () => {
+    const partial = {
+      ...productPoint(),
+      title: localeText('', 'Only English'),
+      body: localeText('', ''),
+    };
+    expect(partial.title.en).toBe('Only English');
+    expect(isWorkflowStepArabicValid(partial)).toBe(false);
   });
 });
