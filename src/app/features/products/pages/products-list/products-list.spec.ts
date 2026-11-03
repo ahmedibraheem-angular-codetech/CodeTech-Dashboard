@@ -7,7 +7,7 @@ import { authSession } from '../../../../core/auth/auth-session.fixture';
 import { AuthService } from '../../../../core/auth/auth.service';
 import { API_LATENCY_MS } from '../../../../core/config/latency';
 import { LanguageService } from '../../../../core/services/language.service';
-import { blankProduct, localeText, type Product } from '../../models/product.model';
+import { localeText, type Product } from '../../models/product.model';
 import { PRODUCTS_SEED, ProductsMemoryService } from '../../products.spec-helpers';
 import { ProductsService } from '../../services/products.service';
 import { ProductsListPage } from './products-list';
@@ -276,25 +276,45 @@ describe('ProductsListPage', () => {
     expect(fixture.componentInstance.first()).toBe(0);
   });
 
+  it('hides the paginator until the list exceeds six products', async () => {
+    const { fixture, root } = await render();
+    await settle(fixture);
+    expect(cards(root)).toHaveLength(6);
+    expect(root.querySelector('app-paginator')).toBeNull();
+
+    const api = TestBed.inject(ProductsService);
+    const base = PRODUCTS_SEED[0]!;
+    await firstValueFrom(
+      api.save({
+        ...structuredClone(base),
+        id: 'extra-7',
+        name: localeText('إضافي', 'Extra'),
+      }),
+    );
+    fixture.componentInstance['source'].set(await firstValueFrom(api.list()));
+    fixture.detectChanges();
+
+    expect(cards(root)).toHaveLength(6);
+    expect(root.querySelector('app-paginator')).not.toBeNull();
+  });
+
   it('paginates long lists and steps back when the last card of a page is removed', async () => {
     const { fixture, root } = await render(async (api) => {
       const base = PRODUCTS_SEED[0]!;
-      for (let index = 0; index < 5; index += 1) {
-        await firstValueFrom(
-          api.save({
-            ...structuredClone(base),
-            id: `extra-${index}`,
-            name: localeText(`إضافي ${index}`, `Extra ${index}`),
-          }),
-        );
-      }
+      await firstValueFrom(
+        api.save({
+          ...structuredClone(base),
+          id: 'extra-0',
+          name: localeText('إضافي 0', 'Extra 0'),
+        }),
+      );
     });
     await settle(fixture);
-    expect(cards(root)).toHaveLength(10);
+    expect(cards(root)).toHaveLength(6);
     expect(root.querySelector('app-paginator')).not.toBeNull();
 
     const page = fixture.componentInstance;
-    page['page']({ first: 10, rows: 10 });
+    page['page']({ first: 6, rows: 6 });
     fixture.detectChanges();
     expect(cards(root)).toHaveLength(1);
 
@@ -303,13 +323,14 @@ describe('ProductsListPage', () => {
     await settle(fixture);
 
     expect(page.first()).toBe(0);
-    expect(cards(root)).toHaveLength(10);
+    expect(cards(root)).toHaveLength(6);
+    expect(root.querySelector('app-paginator')).toBeNull();
   });
 
   it('keeps the current page when other items remain after a deletion', async () => {
     const { fixture, root } = await render(async (api) => {
       const base = PRODUCTS_SEED[0]!;
-      for (let index = 0; index < 5; index += 1) {
+      for (let index = 0; index < 2; index += 1) {
         await firstValueFrom(
           api.save({
             ...structuredClone(base),
@@ -322,21 +343,7 @@ describe('ProductsListPage', () => {
     await settle(fixture);
 
     const page = fixture.componentInstance;
-    page['page']({ first: 10, rows: 10 });
-    fixture.detectChanges();
-    expect(cards(root)).toHaveLength(1);
-
-    const api = TestBed.inject(ProductsService);
-    await firstValueFrom(
-      api.save({
-        ...blankProduct(),
-        id: 'extra-tail',
-        name: localeText('ذيل', 'Tail'),
-        published: true,
-      }),
-    );
-
-    page['source'].set(await firstValueFrom(api.list()));
+    page['page']({ first: 6, rows: 6 });
     fixture.detectChanges();
     expect(cards(root)).toHaveLength(2);
 
@@ -344,7 +351,7 @@ describe('ProductsListPage', () => {
     deleteButtons(root)[0]!.click();
     await settle(fixture);
 
-    expect(page.first()).toBe(10);
+    expect(page.first()).toBe(6);
     expect(cards(root)).toHaveLength(1);
   });
 
@@ -391,20 +398,18 @@ describe('ProductsListPage', () => {
   it('recovers to a valid page when the displayed list shrinks below the current offset', async () => {
     const { fixture, root } = await render(async (api) => {
       const base = PRODUCTS_SEED[0]!;
-      for (let index = 0; index < 5; index += 1) {
-        await firstValueFrom(
-          api.save({
-            ...structuredClone(base),
-            id: `extra-${index}`,
-            name: localeText(`إضافي ${index}`, `Extra ${index}`),
-          }),
-        );
-      }
+      await firstValueFrom(
+        api.save({
+          ...structuredClone(base),
+          id: 'extra-0',
+          name: localeText('إضافي 0', 'Extra 0'),
+        }),
+      );
     });
     await settle(fixture);
 
     const page = fixture.componentInstance;
-    page['page']({ first: 10, rows: 10 });
+    page['page']({ first: 6, rows: 6 });
     fixture.detectChanges();
     expect(cards(root)).toHaveLength(1);
 

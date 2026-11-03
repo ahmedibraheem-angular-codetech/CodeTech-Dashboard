@@ -2,31 +2,31 @@
   <app-locale-switch [value]="locale()" (picked)="locale.set($event)" />
   @if (kind() === 'feature') {
     <label class="field">
-      <span class="field__label">{{ lang.t('product.featureTitle') }}</span>
+      <span class="field__label">{{ copy('product.featureTitle') }}</span>
       <p-iconfield>
         <input
           pInputText
           [fluid]="true"
           [value]="text(feature().title)"
-          [placeholder]="lang.t('product.featureTitlePh')"
+          [placeholder]="copy('product.featureTitlePh')"
           (input)="setFeatureText('title', $event)"
         />
         <p-inputicon class="pi pi-pen-to-square" />
       </p-iconfield>
     </label>
     <label class="field">
-      <span class="field__label">{{ lang.t('product.page.featureBody') }}</span>
+      <span class="field__label">{{ copy('product.page.featureBody') }}</span>
       <textarea
         pTextarea
         [fluid]="true"
         rows="4"
         [value]="text(feature().body)"
-        [placeholder]="lang.t('product.page.featureBodyPh')"
+        [placeholder]="copy('product.page.featureBodyPh')"
         (input)="setFeatureText('body', $event)"
       ></textarea>
     </label>
     <div class="field">
-      <span class="field__label">{{ lang.t('product.uploadIcon') }}</span>
+      <span class="field__label">{{ copy('product.uploadIcon') }}</span>
       <app-product-upload
         [locale]="locale()"
         [name]="feature().imageName"
@@ -36,20 +36,20 @@
     </div>
   } @else {
     <label class="field">
-      <span class="field__label">{{ lang.t('product.page.sectorTitle') }}</span>
+      <span class="field__label">{{ copy('product.page.sectorTitle') }}</span>
       <p-iconfield>
         <input
           pInputText
           [fluid]="true"
           [value]="text(sector().title)"
-          [placeholder]="lang.t('product.page.sectorTitlePh')"
+          [placeholder]="copy('product.page.sectorTitlePh')"
           (input)="setSectorTitle($event)"
         />
         <p-inputicon class="pi pi-pen-to-square" />
       </p-iconfield>
     </label>
     <div class="field">
-      <span class="field__label">{{ lang.t('product.sectorImage') }}</span>
+      <span class="field__label">{{ copy('product.sectorImage') }}</span>
       <app-product-upload
         [locale]="locale()"
         [name]="sector().image[locale()].imageName"

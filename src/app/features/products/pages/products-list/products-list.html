@@ -52,12 +52,16 @@
         }
       </div>
 
-      <app-paginator
-        [first]="first()"
-        [rows]="rows()"
-        [totalRecords]="total()"
-        (pageChange)="page($event)"
-      />
+      @if (total() > rows()) {
+        <app-paginator
+          [first]="first()"
+          [rows]="rows()"
+          [totalRecords]="total()"
+          [alwaysShow]="false"
+          [rowsPerPageOptions]="[6, 12, 24]"
+          (pageChange)="page($event)"
+        />
+      }
     }
   </section>
 

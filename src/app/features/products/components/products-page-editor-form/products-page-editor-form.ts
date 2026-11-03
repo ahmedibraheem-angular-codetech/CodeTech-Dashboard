@@ -31,6 +31,11 @@ export class ProductsPageEditorForm {
     return readLocale(value, this.locale());
   }
 
+  /** Field chrome follows the AR/EN tab, not the dashboard UI language. */
+  protected copy(key: string): string {
+    return this.lang.lookup(key, this.locale()) ?? key;
+  }
+
   protected setFeatureText(field: 'title' | 'body', event: Event): void {
     const value = this.read(event);
     if (value === undefined) {
