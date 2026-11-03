@@ -7,8 +7,9 @@
       }
       <div class="project-detail__gallery">
         @for (image of button.images; track image.id) {
-          @if (show(image.imageUrl)) {
-            <img [src]="image.imageUrl" [alt]="text(button.title)" />
+          @let url = mediaUrl(image.image);
+          @if (show(url)) {
+            <img [src]="url" [alt]="text(button.title)" />
           }
         }
       </div>

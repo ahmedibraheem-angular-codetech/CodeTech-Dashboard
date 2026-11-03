@@ -15,11 +15,11 @@ import type {
   ProjectsPageSectionsWriteDto,
 } from '../models/project.api';
 import type {
+  LocalizedMedia,
   Project,
   ProjectGalleryImage,
   ProjectIdentityButton,
-  ProjectMedia,
-  ProjectPoint,
+  ProjectImage,
 } from '../models/project.model';
 import {
   isUploadUrl,
@@ -30,8 +30,6 @@ import {
 
 const PATH = 'admin/projects';
 const PAGE_PATH = 'admin/pages/projects';
-
-type Slot = { imageName: string; imageUrl: string; imageUuid?: string | null };
 
 /**
  * Catalog projects. List is paginated (`search`, `filter[status]`, `per_page`).
@@ -161,92 +159,75 @@ export class ProjectsService {
   private prepareUploads(project: Project): Observable<Project> {
     const next = structuredClone(project);
     return forkJoin({
-      cover: this.uploadSlot({
-        imageName: next.coverName,
-        imageUrl: next.coverUrl,
-        imageUuid: next.coverUuid,
-      }),
-      thumb: this.uploadSlot({
-        imageName: next.thumbName,
-        imageUrl: next.thumbUrl,
-        imageUuid: next.thumbUuid,
-      }),
-      solutionsImage: this.uploadSlot(next.solutionsImage),
-      categories: this.uploadPoints(next.categories),
-      aboutCards: this.uploadPoints(next.aboutCards),
-      challenges: this.uploadPoints(next.challenges),
-      tools: this.uploadMediaItems(next.tools),
-      solutions: this.uploadPoints(next.solutions),
-      gallery: this.uploadGallery(next.gallery),
-      features: this.uploadPoints(next.features),
-      results: this.uploadPoints(next.results),
+      cover: this.uploadLocalized(next.cover),
+      thumb: this.uploadLocalized(next.thumb),
+      solutionsImage: this.uploadLocalized(next.solutionsImage.image),
+      categories: this.uploadItemImages(next.categories),
+      aboutCards: this.uploadItemImages(next.aboutCards),
+      challenges: this.uploadItemImages(next.challenges),
+      tools: this.uploadItemImages(next.tools),
+      solutions: this.uploadItemImages(next.solutions),
+      gallery: this.uploadItemImages(next.gallery),
+      features: this.uploadItemImages(next.features),
+      results: this.uploadItemImages(next.results),
       identityButtons: this.uploadIdentity(next.identityButtons),
     }).pipe(
       map((uploaded) => ({
         ...next,
-        coverName: uploaded.cover.imageName,
-        coverUrl: uploaded.cover.imageUrl,
-        coverUuid: uploaded.cover.imageUuid ?? null,
-        thumbName: uploaded.thumb.imageName,
-        thumbUrl: uploaded.thumb.imageUrl,
-        thumbUuid: uploaded.thumb.imageUuid ?? null,
-        solutionsImage: { ...next.solutionsImage, ...uploaded.solutionsImage },
+        cover: uploaded.cover,
+        thumb: uploaded.thumb,
+        solutionsImage: { ...next.solutionsImage, image: uploaded.solutionsImage },
         categories: next.categories.map((item, index) => ({
           ...item,
-          ...(uploaded.categories[index] ?? {}),
+          image: uploaded.categories[index] ?? item.image,
         })),
         aboutCards: next.aboutCards.map((item, index) => ({
           ...item,
-          ...(uploaded.aboutCards[index] ?? {}),
+          image: uploaded.aboutCards[index] ?? item.image,
         })),
         challenges: next.challenges.map((item, index) => ({
           ...item,
-          ...(uploaded.challenges[index] ?? {}),
+          image: uploaded.challenges[index] ?? item.image,
         })),
         tools: next.tools.map((item, index) => ({
           ...item,
-          ...(uploaded.tools[index] ?? {}),
+          image: uploaded.tools[index] ?? item.image,
         })),
         solutions: next.solutions.map((item, index) => ({
           ...item,
-          ...(uploaded.solutions[index] ?? {}),
+          image: uploaded.solutions[index] ?? item.image,
         })),
         gallery: next.gallery.map((item, index) => ({
           ...item,
-          ...(uploaded.gallery[index] ?? {}),
+          image: uploaded.gallery[index] ?? item.image,
         })),
         features: next.features.map((item, index) => ({
           ...item,
-          ...(uploaded.features[index] ?? {}),
+          image: uploaded.features[index] ?? item.image,
         })),
         results: next.results.map((item, index) => ({
           ...item,
-          ...(uploaded.results[index] ?? {}),
+          image: uploaded.results[index] ?? item.image,
         })),
         identityButtons: uploaded.identityButtons,
       })),
     );
   }
 
-  private uploadPoints(items: readonly ProjectPoint[]): Observable<Slot[]> {
-    if (items.length === 0) {
-      return of([]);
-    }
-    return forkJoin(items.map((item) => this.uploadSlot(item)));
+  private uploadLocalized(image: LocalizedMedia): Observable<LocalizedMedia> {
+    return forkJoin({
+      ar: this.uploadSlot(image.ar),
+      en: this.uploadSlot(image.en),
+    });
   }
 
-  private uploadMediaItems(items: readonly ProjectMedia[]): Observable<Slot[]> {
+  private uploadItemImages(
+    items: readonly { image: LocalizedMedia }[],
+  ): Observable<LocalizedMedia[]> {
     if (items.length === 0) {
       return of([]);
     }
-    return forkJoin(items.map((item) => this.uploadSlot(item)));
-  }
-
-  private uploadGallery(items: readonly ProjectGalleryImage[]): Observable<Slot[]> {
-    if (items.length === 0) {
-      return of([]);
-    }
-    return forkJoin(items.map((item) => this.uploadSlot(item)));
+    return forkJoin(items.map((item) => this.uploadLocalized(item.image)));
   }
 
   private uploadIdentity(
@@ -257,12 +238,12 @@ export class ProjectsService {
     }
     return forkJoin(
       items.map((button) =>
-        this.uploadGallery(button.images).pipe(
+        this.uploadItemImages(button.images).pipe(
           map((images) => ({
             ...button,
-            images: button.images.map((image, index) => ({
+            images: button.images.map((image, index): ProjectGalleryImage => ({
               ...image,
-              ...(images[index] ?? {}),
+              image: images[index] ?? image.image,
             })),
           })),
         ),
@@ -270,7 +251,7 @@ export class ProjectsService {
     );
   }
 
-  private uploadSlot(image: Slot): Observable<Slot> {
+  private uploadSlot(image: ProjectImage): Observable<ProjectImage> {
     if (!isUploadUrl(image.imageUrl)) {
       return of(image);
     }

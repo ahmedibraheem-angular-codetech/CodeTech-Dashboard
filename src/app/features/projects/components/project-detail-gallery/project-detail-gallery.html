@@ -1,7 +1,8 @@
 <div class="project-detail__gallery">
   @for (image of project().gallery; track image.id) {
-    @if (show(image.imageUrl)) {
-      <img [src]="image.imageUrl" alt="" />
+    @let url = mediaUrl(image.image);
+    @if (show(url)) {
+      <img [src]="url" alt="" />
     }
   }
 </div>

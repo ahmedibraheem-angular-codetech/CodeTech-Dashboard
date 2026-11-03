@@ -2,7 +2,13 @@ import { ChangeDetectionStrategy, Component, inject, input } from '@angular/core
 
 import type { AppLanguage } from '../../../../core/i18n/language';
 import { LanguageService } from '../../../../core/services/language.service';
-import { readLocale, type LocaleText, type Project } from '../../models/project.model';
+import {
+  readLocale,
+  readMedia,
+  type LocaleText,
+  type LocalizedMedia,
+  type Project,
+} from '../../models/project.model';
 import { usableProjectImage } from '../../utils/project-detail-visual';
 
 @Component({
@@ -18,6 +24,10 @@ export class ProjectDetailIdentity {
 
   protected text(value: LocaleText): string {
     return readLocale(value, this.locale()) || value.ar;
+  }
+
+  protected mediaUrl(image: LocalizedMedia): string {
+    return readMedia(image, this.locale()).imageUrl;
   }
 
   protected show(url: string): boolean {

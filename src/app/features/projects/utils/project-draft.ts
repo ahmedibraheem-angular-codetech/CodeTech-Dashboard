@@ -5,7 +5,9 @@ import {
   projectMedia,
   projectPoint,
   type LocaleText,
+  type LocalizedMedia,
   type Project,
+  type ProjectImage,
 } from '../models/project.model';
 
 export type ProjectPointList =
@@ -40,20 +42,39 @@ export function patchItemLocaleField<T extends Record<K, LocaleText>, K extends 
   }));
 }
 
-export function withProjectImage<
-  T extends { imageName: string; imageUrl: string; imageUuid?: string | null },
->(item: T, file: ProjectUploadFile): T {
-  return { ...item, imageName: file.name, imageUrl: file.url, imageUuid: null };
+export function withProjectImage(item: ProjectImage, file: ProjectUploadFile): ProjectImage {
+  return { imageName: file.name, imageUrl: file.url, imageUuid: null };
 }
 
-export function withoutProjectImage<
-  T extends { imageName: string; imageUrl: string; imageUuid?: string | null },
->(item: T): T {
+export function withoutProjectImage(item: ProjectImage): ProjectImage {
   return { ...item, imageName: '', imageUrl: '', imageUuid: null };
 }
 
 export function removeKeepingMinOne<T>(items: readonly T[], index: number): T[] {
   return items.length > 1 ? items.filter((_, item) => item !== index) : [...items];
+}
+
+export function setLocalizedSlotImage<T extends { image: LocalizedMedia }>(
+  items: readonly T[],
+  index: number,
+  language: AppLanguage,
+  file: ProjectUploadFile,
+): T[] {
+  return mapAtIndex(items, index, (item) => ({
+    ...item,
+    image: { ...item.image, [language]: withProjectImage(item.image[language], file) },
+  }));
+}
+
+export function clearLocalizedSlotImage<T extends { image: LocalizedMedia }>(
+  items: readonly T[],
+  index: number,
+  language: AppLanguage,
+): T[] {
+  return mapAtIndex(items, index, (item) => ({
+    ...item,
+    image: { ...item.image, [language]: withoutProjectImage(item.image[language]) },
+  }));
 }
 
 export function draftSetLocaleField(
@@ -91,46 +112,38 @@ export function draftSetPointImage(
   project: Project,
   list: ProjectPointList,
   index: number,
+  language: AppLanguage,
   file: ProjectUploadFile,
 ): Project {
-  return {
-    ...project,
-    [list]: mapAtIndex(project[list], index, (item) => withProjectImage(item, file)),
-  };
+  return { ...project, [list]: setLocalizedSlotImage(project[list], index, language, file) };
 }
 
 export function draftClearPointImage(
   project: Project,
   list: ProjectPointList,
   index: number,
+  language: AppLanguage,
 ): Project {
-  return {
-    ...project,
-    [list]: mapAtIndex(project[list], index, (item) => withoutProjectImage(item)),
-  };
+  return { ...project, [list]: clearLocalizedSlotImage(project[list], index, language) };
 }
 
 export function draftSetMediaImage(
   project: Project,
   list: ProjectMediaList,
   index: number,
+  language: AppLanguage,
   file: ProjectUploadFile,
 ): Project {
-  return {
-    ...project,
-    [list]: mapAtIndex(project[list], index, (item) => withProjectImage(item, file)),
-  };
+  return { ...project, [list]: setLocalizedSlotImage(project[list], index, language, file) };
 }
 
 export function draftClearMediaImage(
   project: Project,
   list: ProjectMediaList,
   index: number,
+  language: AppLanguage,
 ): Project {
-  return {
-    ...project,
-    [list]: mapAtIndex(project[list], index, (item) => withoutProjectImage(item)),
-  };
+  return { ...project, [list]: clearLocalizedSlotImage(project[list], index, language) };
 }
 
 export function draftAddMedia(project: Project, list: ProjectMediaList): Project {
@@ -144,17 +157,28 @@ export function draftRemoveMedia(project: Project, list: ProjectMediaList, index
 export function draftSetCover(
   project: Project,
   kind: 'cover' | 'thumb',
+  language: AppLanguage,
   file: ProjectUploadFile,
 ): Project {
-  return kind === 'cover'
-    ? { ...project, coverName: file.name, coverUrl: file.url, coverUuid: null }
-    : { ...project, thumbName: file.name, thumbUrl: file.url, thumbUuid: null };
+  const slot = kind === 'cover' ? project.cover : project.thumb;
+  const next = {
+    ...slot,
+    [language]: withProjectImage(slot[language], file),
+  };
+  return kind === 'cover' ? { ...project, cover: next } : { ...project, thumb: next };
 }
 
-export function draftClearCover(project: Project, kind: 'cover' | 'thumb'): Project {
-  return kind === 'cover'
-    ? { ...project, coverName: '', coverUrl: '', coverUuid: null }
-    : { ...project, thumbName: '', thumbUrl: '', thumbUuid: null };
+export function draftClearCover(
+  project: Project,
+  kind: 'cover' | 'thumb',
+  language: AppLanguage,
+): Project {
+  const slot = kind === 'cover' ? project.cover : project.thumb;
+  const next = {
+    ...slot,
+    [language]: withoutProjectImage(slot[language]),
+  };
+  return kind === 'cover' ? { ...project, cover: next } : { ...project, thumb: next };
 }
 
 export function draftSetCoverText(
@@ -166,12 +190,34 @@ export function draftSetCoverText(
   return { ...project, [key]: writeLocaleText(project[key], language, value) };
 }
 
-export function draftSetSolutionsImage(project: Project, file: ProjectUploadFile): Project {
-  return { ...project, solutionsImage: withProjectImage(project.solutionsImage, file) };
+export function draftSetSolutionsImage(
+  project: Project,
+  language: AppLanguage,
+  file: ProjectUploadFile,
+): Project {
+  return {
+    ...project,
+    solutionsImage: {
+      ...project.solutionsImage,
+      image: {
+        ...project.solutionsImage.image,
+        [language]: withProjectImage(project.solutionsImage.image[language], file),
+      },
+    },
+  };
 }
 
-export function draftClearSolutionsImage(project: Project): Project {
-  return { ...project, solutionsImage: withoutProjectImage(project.solutionsImage) };
+export function draftClearSolutionsImage(project: Project, language: AppLanguage): Project {
+  return {
+    ...project,
+    solutionsImage: {
+      ...project.solutionsImage,
+      image: {
+        ...project.solutionsImage.image,
+        [language]: withoutProjectImage(project.solutionsImage.image[language]),
+      },
+    },
+  };
 }
 
 export function draftSetSolutionsImageText(
@@ -192,18 +238,23 @@ export function draftSetSolutionsImageText(
 export function draftSetGalleryImage(
   project: Project,
   index: number,
+  language: AppLanguage,
   file: ProjectUploadFile,
 ): Project {
   return {
     ...project,
-    gallery: mapAtIndex(project.gallery, index, (item) => withProjectImage(item, file)),
+    gallery: setLocalizedSlotImage(project.gallery, index, language, file),
   };
 }
 
-export function draftClearGalleryImage(project: Project, index: number): Project {
+export function draftClearGalleryImage(
+  project: Project,
+  index: number,
+  language: AppLanguage,
+): Project {
   return {
     ...project,
-    gallery: mapAtIndex(project.gallery, index, (item) => withoutProjectImage(item)),
+    gallery: clearLocalizedSlotImage(project.gallery, index, language),
   };
 }
 
@@ -246,13 +297,14 @@ export function draftSetIdentityButtonImage(
   project: Project,
   buttonIndex: number,
   imageIndex: number,
+  language: AppLanguage,
   file: ProjectUploadFile,
 ): Project {
   return {
     ...project,
     identityButtons: mapAtIndex(project.identityButtons, buttonIndex, (button) => ({
       ...button,
-      images: mapAtIndex(button.images, imageIndex, (image) => withProjectImage(image, file)),
+      images: setLocalizedSlotImage(button.images, imageIndex, language, file),
     })),
   };
 }
@@ -261,12 +313,13 @@ export function draftClearIdentityButtonImage(
   project: Project,
   buttonIndex: number,
   imageIndex: number,
+  language: AppLanguage,
 ): Project {
   return {
     ...project,
     identityButtons: mapAtIndex(project.identityButtons, buttonIndex, (button) => ({
       ...button,
-      images: mapAtIndex(button.images, imageIndex, (image) => withoutProjectImage(image)),
+      images: clearLocalizedSlotImage(button.images, imageIndex, language),
     })),
   };
 }

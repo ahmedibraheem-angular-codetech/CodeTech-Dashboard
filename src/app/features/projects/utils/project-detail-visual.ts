@@ -1,4 +1,11 @@
-import type { ProjectMedia, ProjectPoint } from '../models/project.model';
+import type { AppLanguage } from '../../../core/i18n/language';
+import {
+  readMedia,
+  type LocalizedMedia,
+  type ProjectImage,
+  type ProjectMedia,
+  type ProjectPoint,
+} from '../models/project.model';
 
 const ICON_CLASS = /^pi-[a-z0-9-]+$/;
 
@@ -12,9 +19,15 @@ export function usableProjectImage(url: string): boolean {
 }
 
 export function projectPointVisual(
-  entry: Pick<ProjectPoint, 'imageUrl'> | ProjectMedia,
+  entry: { image: LocalizedMedia } | ProjectPoint | ProjectMedia,
+  language: AppLanguage = 'ar',
 ): ProjectPointVisual {
-  const url = entry.imageUrl;
+  const media = readMedia(entry.image, language);
+  return projectImageVisual(media);
+}
+
+export function projectImageVisual(media: ProjectImage): ProjectPointVisual {
+  const url = media.imageUrl;
   if (!url) {
     return { icon: '', image: '' };
   }

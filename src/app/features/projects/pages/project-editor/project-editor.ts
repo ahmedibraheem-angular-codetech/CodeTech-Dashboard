@@ -429,11 +429,13 @@ export class ProjectEditor {
   }
 
   setPointImage(list: ProjectPointList, index: number, file: { name: string; url: string }): void {
-    this.draft.update((current) => draftSetPointImage(current, list, index, file));
+    const language = this.locale();
+    this.draft.update((current) => draftSetPointImage(current, list, index, language, file));
   }
 
   setMediaImage(list: ProjectMediaList, index: number, file: { name: string; url: string }): void {
-    this.draft.update((current) => draftSetMediaImage(current, list, index, file));
+    const language = this.locale();
+    this.draft.update((current) => draftSetMediaImage(current, list, index, language, file));
   }
 
   addMedia(list: ProjectMediaList): void {
@@ -445,27 +447,33 @@ export class ProjectEditor {
   }
 
   setCover(kind: 'cover' | 'thumb', file: { name: string; url: string }): void {
-    this.draft.update((current) => draftSetCover(current, kind, file));
+    const language = this.locale();
+    this.draft.update((current) => draftSetCover(current, kind, language, file));
   }
 
   clearCover(kind: 'cover' | 'thumb'): void {
-    this.draft.update((current) => draftClearCover(current, kind));
+    const language = this.locale();
+    this.draft.update((current) => draftClearCover(current, kind, language));
   }
 
   clearPointImage(list: ProjectPointList, index: number): void {
-    this.draft.update((current) => draftClearPointImage(current, list, index));
+    const language = this.locale();
+    this.draft.update((current) => draftClearPointImage(current, list, index, language));
   }
 
   clearMediaImage(list: ProjectMediaList, index: number): void {
-    this.draft.update((current) => draftClearMediaImage(current, list, index));
+    const language = this.locale();
+    this.draft.update((current) => draftClearMediaImage(current, list, index, language));
   }
 
   clearSolutionsImage(): void {
-    this.draft.update((current) => draftClearSolutionsImage(current));
+    const language = this.locale();
+    this.draft.update((current) => draftClearSolutionsImage(current, language));
   }
 
   clearGalleryImage(index: number): void {
-    this.draft.update((current) => draftClearGalleryImage(current, index));
+    const language = this.locale();
+    this.draft.update((current) => draftClearGalleryImage(current, index, language));
   }
 
   setCoverText(key: 'coverTitle' | 'coverAlt' | 'thumbTitle' | 'thumbAlt', event: Event): void {
@@ -487,7 +495,8 @@ export class ProjectEditor {
   }
 
   setSolutionsImage(file: { name: string; url: string }): void {
-    this.draft.update((current) => draftSetSolutionsImage(current, file));
+    const language = this.locale();
+    this.draft.update((current) => draftSetSolutionsImage(current, language, file));
   }
 
   setSolutionsImageText(field: 'title' | 'body', event: Event): void {
@@ -503,7 +512,8 @@ export class ProjectEditor {
   }
 
   setGalleryImage(index: number, file: { name: string; url: string }): void {
-    this.draft.update((current) => draftSetGalleryImage(current, index, file));
+    const language = this.locale();
+    this.draft.update((current) => draftSetGalleryImage(current, index, language, file));
   }
 
   addGallery(): void {
@@ -548,13 +558,17 @@ export class ProjectEditor {
     imageIndex: number,
     file: { name: string; url: string },
   ): void {
+    const language = this.locale();
     this.draft.update((current) =>
-      draftSetIdentityButtonImage(current, buttonIndex, imageIndex, file),
+      draftSetIdentityButtonImage(current, buttonIndex, imageIndex, language, file),
     );
   }
 
   clearIdentityButtonImage(buttonIndex: number, imageIndex: number): void {
-    this.draft.update((current) => draftClearIdentityButtonImage(current, buttonIndex, imageIndex));
+    const language = this.locale();
+    this.draft.update((current) =>
+      draftClearIdentityButtonImage(current, buttonIndex, imageIndex, language),
+    );
   }
 
   setSeo(field: keyof Project['seo'], event: Event): void {

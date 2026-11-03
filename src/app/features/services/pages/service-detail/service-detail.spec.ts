@@ -525,7 +525,9 @@ describe('ServiceDetailPage', () => {
         const project = PROJECTS_SEED.find((item) => item.id === id);
         expect(cards[index]?.textContent).toContain(project?.name.ar);
         expect(cards[index]?.getAttribute('href')).toBe(`/projects/${id}`);
-        expect(cards[index]?.querySelector('img')?.getAttribute('src')).toBe(project?.coverUrl);
+        expect(cards[index]?.querySelector('img')?.getAttribute('src')).toBe(
+          project?.cover.ar.imageUrl,
+        );
         expect(cards[index]?.querySelector('p-toggleswitch')).not.toBeNull();
       });
       expect(text(root)).not.toContain('لم تعد متوفرة');

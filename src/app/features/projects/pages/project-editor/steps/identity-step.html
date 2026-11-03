@@ -33,8 +33,8 @@
                 [keyPrefix]="uploadPrefix"
                 [locale]="editor.locale()"
                 [clearable]="true"
-                [name]="image.imageName"
-                [url]="image.imageUrl"
+                [name]="image.image[editor.locale()].imageName"
+                [url]="image.image[editor.locale()].imageUrl"
                 (picked)="editor.setIdentityButtonImage(buttonIndex, imageIndex, $event)"
                 (cleared)="editor.clearIdentityButtonImage(buttonIndex, imageIndex)"
               />

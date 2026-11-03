@@ -14,29 +14,52 @@ export function localeText(ar = '', en = ''): LocaleText {
   return { ar, en };
 }
 
+export interface ProjectImage {
+  imageName: string;
+  imageUrl: string;
+  /** Media coat-check UUID when known from the API or a fresh upload. */
+  imageUuid?: string | null;
+}
+
+/** Per-locale media slots used in the project editor (AR/EN tabs). */
+export type LocalizedMedia = Record<AppLanguage, ProjectImage>;
+
+export function emptyProjectImage(): ProjectImage {
+  return { imageName: '', imageUrl: '', imageUuid: null };
+}
+
+export function emptyLocalizedMedia(): LocalizedMedia {
+  return { ar: emptyProjectImage(), en: emptyProjectImage() };
+}
+
+/**
+ * Active-locale media with Arabic fallback (matches website behavior when EN is empty).
+ */
+export function readMedia(image: LocalizedMedia, language: AppLanguage): ProjectImage {
+  const current = image[language];
+  if (current.imageUrl) {
+    return current;
+  }
+  return image.ar.imageUrl ? image.ar : current;
+}
+
 export interface ProjectPoint {
   id: string;
   title: LocaleText;
   body: LocaleText;
-  imageName: string;
-  imageUrl: string;
-  imageUuid?: string | null;
+  image: LocalizedMedia;
 }
 
 export interface ProjectMedia {
   id: string;
   title: LocaleText;
   body: LocaleText;
-  imageName: string;
-  imageUrl: string;
-  imageUuid?: string | null;
+  image: LocalizedMedia;
 }
 
 export interface ProjectGalleryImage {
   id: string;
-  imageName: string;
-  imageUrl: string;
-  imageUuid?: string | null;
+  image: LocalizedMedia;
 }
 
 export interface ProjectIdentityButton {
@@ -59,14 +82,12 @@ export interface Project {
   published: boolean;
   name: LocaleText;
   summary: LocaleText;
-  coverName: string;
-  coverUrl: string;
-  coverUuid?: string | null;
+  /** Cover image per editor locale. API still stores one shared cover file. */
+  cover: LocalizedMedia;
   coverTitle: LocaleText;
   coverAlt: LocaleText;
-  thumbName: string;
-  thumbUrl: string;
-  thumbUuid?: string | null;
+  /** Thumbnail per editor locale. API still stores one shared thumbnail file. */
+  thumb: LocalizedMedia;
   thumbTitle: LocaleText;
   thumbAlt: LocaleText;
 
@@ -101,7 +122,7 @@ export function projectId(prefix: string): string {
 }
 
 export function projectPoint(title = localeText(), body = localeText()): ProjectPoint {
-  return { id: projectId('point'), title, body, imageName: '', imageUrl: '', imageUuid: null };
+  return { id: projectId('point'), title, body, image: emptyLocalizedMedia() };
 }
 
 export function projectMedia(): ProjectMedia {
@@ -109,14 +130,12 @@ export function projectMedia(): ProjectMedia {
     id: projectId('media'),
     title: localeText(),
     body: localeText(),
-    imageName: '',
-    imageUrl: '',
-    imageUuid: null,
+    image: emptyLocalizedMedia(),
   };
 }
 
 export function projectGalleryImage(): ProjectGalleryImage {
-  return { id: projectId('gallery'), imageName: '', imageUrl: '', imageUuid: null };
+  return { id: projectId('gallery'), image: emptyLocalizedMedia() };
 }
 
 export function projectIdentityButton(
@@ -138,14 +157,10 @@ export function blankProject(): Project {
     published: true,
     name: localeText(),
     summary: localeText(),
-    coverName: '',
-    coverUrl: '',
-    coverUuid: null,
+    cover: emptyLocalizedMedia(),
     coverTitle: localeText(),
     coverAlt: localeText(),
-    thumbName: '',
-    thumbUrl: '',
-    thumbUuid: null,
+    thumb: emptyLocalizedMedia(),
     thumbTitle: localeText(),
     thumbAlt: localeText(),
     categories: [projectPoint()],

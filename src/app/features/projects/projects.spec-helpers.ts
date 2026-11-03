@@ -6,12 +6,15 @@ import { ObjectUrls } from '../../shared/components/product-upload/object-urls';
 import type { ProjectDetailDto, ProjectListDto, ProjectsPageDto } from './models/project.api';
 import {
   blankProject,
+  emptyProjectImage,
   localeText,
   projectGalleryImage,
   projectIdentityButton,
   projectMedia,
   projectPoint,
+  type LocalizedMedia,
   type Project,
+  type ProjectImage,
 } from './models/project.model';
 
 /** UI/test fixtures — not used by the HTTP ProjectsService. */
@@ -20,6 +23,18 @@ const COVER = '/images/project-cover.jpg';
 const DESK = '/images/product-cover-desk.jpg';
 const FLAT = '/images/product-cover-flat.jpg';
 const WOOD = '/images/product-cover-wood.jpg';
+
+function mediaFrom(image: ProjectImage): LocalizedMedia {
+  return { ar: image, en: emptyProjectImage() };
+}
+
+function iconMedia(icon: string): LocalizedMedia {
+  return mediaFrom({ imageName: icon, imageUrl: `icon:${icon}`, imageUuid: null });
+}
+
+function urlMedia(url: string, name: string): LocalizedMedia {
+  return mediaFrom({ imageName: name, imageUrl: url, imageUuid: null });
+}
 
 function tagged(
   ar: string,
@@ -30,8 +45,7 @@ function tagged(
 ) {
   return {
     ...projectPoint(localeText(ar, en), localeText(bodyAr, bodyEn)),
-    imageUrl: `icon:${icon}`,
-    imageName: icon,
+    image: iconMedia(icon),
   };
 }
 
@@ -51,12 +65,10 @@ function build(
     published,
     name: localeText(nameAr, nameEn),
     summary: localeText(summaryAr, summaryEn),
-    coverName: 'cover.jpg',
-    coverUrl,
+    cover: urlMedia(coverUrl, 'cover.jpg'),
     coverTitle: localeText(nameAr, nameEn),
     coverAlt: localeText(`غلاف ${nameAr}`, `Cover for ${nameEn}`),
-    thumbName: 'thumb.jpg',
-    thumbUrl: coverUrl,
+    thumb: urlMedia(coverUrl, 'thumb.jpg'),
     thumbTitle: localeText(nameAr, nameEn),
     thumbAlt: localeText(`مصغرة ${nameAr}`, `Thumbnail for ${nameEn}`),
     categories: [
@@ -73,8 +85,7 @@ function build(
             'A short overview of the project goals and the context it was built for.',
           ),
         ),
-        imageUrl: WOOD,
-        imageName: 'about.jpg',
+        image: urlMedia(WOOD, 'about.jpg'),
       },
     ],
     challenges: [
@@ -90,8 +101,7 @@ function build(
       {
         ...projectMedia(),
         title: localeText('أداة التكامل', 'Integration tool'),
-        imageUrl: FLAT,
-        imageName: 'tool.jpg',
+        image: urlMedia(FLAT, 'tool.jpg'),
       },
     ],
     solutions: [
@@ -106,12 +116,11 @@ function build(
     solutionsImage: {
       ...projectMedia(),
       title: localeText('صورة الحلول', 'Solutions image'),
-      imageUrl: DESK,
-      imageName: 'solutions.jpg',
+      image: urlMedia(DESK, 'solutions.jpg'),
     },
     gallery: [
-      { ...projectGalleryImage(), imageUrl: COVER, imageName: 'gallery-1.jpg' },
-      { ...projectGalleryImage(), imageUrl: DESK, imageName: 'gallery-2.jpg' },
+      { ...projectGalleryImage(), image: urlMedia(COVER, 'gallery-1.jpg') },
+      { ...projectGalleryImage(), image: urlMedia(DESK, 'gallery-2.jpg') },
     ],
     features: [
       tagged(
@@ -141,10 +150,10 @@ function build(
           ),
         ),
         images: [
-          { ...projectGalleryImage(), imageUrl: COVER, imageName: 'id-1.jpg' },
-          { ...projectGalleryImage(), imageUrl: DESK, imageName: 'id-2.jpg' },
-          { ...projectGalleryImage(), imageUrl: FLAT, imageName: 'id-3.jpg' },
-          { ...projectGalleryImage(), imageUrl: WOOD, imageName: 'id-4.jpg' },
+          { ...projectGalleryImage(), image: urlMedia(COVER, 'id-1.jpg') },
+          { ...projectGalleryImage(), image: urlMedia(DESK, 'id-2.jpg') },
+          { ...projectGalleryImage(), image: urlMedia(FLAT, 'id-3.jpg') },
+          { ...projectGalleryImage(), image: urlMedia(WOOD, 'id-4.jpg') },
         ],
       },
     ],

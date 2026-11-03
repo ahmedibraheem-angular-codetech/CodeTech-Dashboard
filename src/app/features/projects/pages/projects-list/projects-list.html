@@ -29,7 +29,7 @@
       @for (project of visible(); track project.id) {
         <article class="project-tile">
           <a class="project-tile__media" [routerLink]="['/projects', project.id]">
-            @if (coverSrc(project.coverUrl); as cover) {
+            @if (coverSrc(project); as cover) {
               <img [src]="cover" [alt]="title(project)" />
             }
             @if (canUpdate() || canDelete()) {

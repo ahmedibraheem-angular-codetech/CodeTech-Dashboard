@@ -12,7 +12,7 @@ import { ProjectDetailData } from '../../components/project-detail-data/project-
 import { ProjectDetailGallery } from '../../components/project-detail-gallery/project-detail-gallery';
 import { ProjectDetailIdentity } from '../../components/project-detail-identity/project-detail-identity';
 import { ProjectDetailSeo } from '../../components/project-detail-seo/project-detail-seo';
-import { readLocale, type Project } from '../../models/project.model';
+import { readLocale, readMedia, type Project } from '../../models/project.model';
 import { ProjectsService } from '../../services/projects.service';
 import { usableProjectImage } from '../../utils/project-detail-visual';
 
@@ -52,7 +52,11 @@ export class ProjectDetailPage {
   });
 
   protected readonly coverUrl = computed(() => {
-    const url = this.item()?.coverUrl ?? '';
+    const project = this.item();
+    if (!project) {
+      return '';
+    }
+    const url = readMedia(project.cover, this.lang.language()).imageUrl;
     return usableProjectImage(url) ? url : '';
   });
 

@@ -27,7 +27,7 @@ import { PageTabs, type PageTab } from '../../../../shared/components/page-tabs/
 import { SectorCard } from '../../../../shared/components/sector-card/sector-card';
 import { StateView } from '../../../../shared/components/state-view/state-view';
 import { HasPermissionDirective } from '../../../../shared/directives/has-permission.directive';
-import type { Project } from '../../../projects/models/project.model';
+import { readMedia, type Project } from '../../../projects/models/project.model';
 import { ProjectsService } from '../../../projects/services/projects.service';
 import { ServiceProjectCard } from '../../components/service-project-card/service-project-card';
 import {
@@ -44,11 +44,7 @@ import {
   type ServiceProjectsStatus,
 } from '../../constants/service.constants';
 import { filledLocale } from '../../utils/service-locale';
-import {
-  serviceIconClass,
-  serviceVisual,
-  type ServiceVisual,
-} from '../../utils/service-visual';
+import { serviceIconClass, serviceVisual, type ServiceVisual } from '../../utils/service-visual';
 
 export type { ServiceVisual };
 
@@ -160,7 +156,7 @@ export class ServiceDetailPage {
               id: match.id,
               name: match.name,
               summary: match.summary,
-              coverUrl: match.coverUrl,
+              coverUrl: readMedia(match.cover, this.lang.language()).imageUrl,
               published: match.published,
             },
           ]

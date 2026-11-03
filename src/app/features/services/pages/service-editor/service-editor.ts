@@ -21,7 +21,7 @@ import {
   EditorShell,
   type EditorShellLabels,
 } from '../../../../shared/components/editor-shell/editor-shell';
-import type { Project } from '../../../projects/models/project.model';
+import { readMedia, type Project } from '../../../projects/models/project.model';
 import { ProjectsService } from '../../../projects/services/projects.service';
 import {
   SERVICE_STEPS,
@@ -136,7 +136,6 @@ export class ServiceEditor {
   );
 
   constructor() {
-
     this.destroyRef.onDestroy(() => this.objectUrls.abandon(this.draft()));
 
     effect(() => {
@@ -394,6 +393,10 @@ export class ServiceEditor {
     return this.draft().projectIds.includes(projectId);
   }
 
+  projectCoverUrl(project: Project): string {
+    return readMedia(project.cover, this.locale()).imageUrl;
+  }
+
   setProject(projectId: string, selected: boolean): void {
     this.draft.update((current) => {
       const without = current.projectIds.filter((item) => item !== projectId);
@@ -467,7 +470,6 @@ export class ServiceEditor {
     message: 'service.saved' | 'service.draftSaved',
     leave: boolean,
   ): void {
-
     if (this.saving() || this.status() !== 'ready') {
       return;
     }

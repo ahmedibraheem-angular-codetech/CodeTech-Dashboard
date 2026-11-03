@@ -144,9 +144,10 @@ describe('ProjectsService (HTTP)', () => {
       id: '7',
       name: localeText('مشروع', 'Project'),
       summary: localeText('وصف', 'Desc'),
-      coverUrl: 'blob:https://local/cover',
-      coverName: 'cover.png',
-      coverUuid: null,
+      cover: {
+        ar: { imageUrl: 'blob:https://local/cover', imageName: 'cover.png', imageUuid: null },
+        en: { imageUrl: '', imageName: '', imageUuid: null },
+      },
       categories: [],
       aboutCards: [],
       challenges: [],

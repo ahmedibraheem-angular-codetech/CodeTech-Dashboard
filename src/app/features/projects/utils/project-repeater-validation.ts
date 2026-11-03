@@ -1,5 +1,6 @@
 import type {
   LocaleText,
+  LocalizedMedia,
   Project,
   ProjectIdentityButton,
   ProjectPoint,
@@ -19,17 +20,21 @@ function isNewRepeaterItem(id: string): boolean {
   return !isServerItemId(id);
 }
 
-function hasMedia(item: { imageUrl?: string; imageUuid?: string | null }): boolean {
-  const url = item.imageUrl?.trim() ?? '';
+function slotHasMedia(slot: { imageUrl?: string; imageUuid?: string | null }): boolean {
+  const url = slot.imageUrl?.trim() ?? '';
   if (url.length > 0) {
     return true;
   }
-  return typeof item.imageUuid === 'string' && item.imageUuid.trim().length > 0;
+  return typeof slot.imageUuid === 'string' && slot.imageUuid.trim().length > 0;
+}
+
+function hasMedia(image: LocalizedMedia): boolean {
+  return slotHasMedia(image.ar) || slotHasMedia(image.en);
 }
 
 /** Matches `toProjectWrite` inclusion for point-like rows. */
 export function pointHasContent(item: ProjectPoint): boolean {
-  return localeFilled(item.title) || localeFilled(item.body) || hasMedia(item);
+  return localeFilled(item.title) || localeFilled(item.body) || hasMedia(item.image);
 }
 
 function newPointNeedsArTitleBody(item: ProjectPoint): boolean {
@@ -55,7 +60,7 @@ function identityHasContent(item: ProjectIdentityButton): boolean {
   return (
     localeFilled(item.title) ||
     localeFilled(item.body) ||
-    item.images.some((image) => hasMedia(image))
+    item.images.some((image) => hasMedia(image.image))
   );
 }
 

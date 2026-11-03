@@ -109,18 +109,24 @@ describe('ProjectDetailPage', () => {
   it('renders uploaded aboutCards, features, and results images and icons', async () => {
     const aboutImage = {
       ...projectPoint(localeText('بطاقة بصورة', 'Card with image'), localeText()),
-      imageName: 'about.png',
-      imageUrl: '/images/about-card.png',
+      image: {
+        ar: { imageName: 'about.png', imageUrl: '/images/about-card.png', imageUuid: null },
+        en: { imageName: '', imageUrl: '', imageUuid: null },
+      },
     };
     const featureIcon = {
       ...projectPoint(localeText('ميزة بأيقونة', 'Feature with icon'), localeText()),
-      imageName: 'icon',
-      imageUrl: 'icon:pi-bolt',
+      image: {
+        ar: { imageName: 'icon', imageUrl: 'icon:pi-bolt', imageUuid: null },
+        en: { imageName: '', imageUrl: '', imageUuid: null },
+      },
     };
     const resultImage = {
       ...projectPoint(localeText(), localeText()),
-      imageName: 'result.png',
-      imageUrl: '/images/result.png',
+      image: {
+        ar: { imageName: 'result.png', imageUrl: '/images/result.png', imageUuid: null },
+        en: { imageName: '', imageUrl: '', imageUuid: null },
+      },
     };
     const project = {
       ...blankProject(),
@@ -130,15 +136,19 @@ describe('ProjectDetailPage', () => {
       challenges: [
         {
           ...projectPoint(localeText('تحدي محفوظ', 'Kept challenge'), localeText()),
-          imageName: 'icon',
-          imageUrl: 'icon:pi-exclamation-triangle',
+          image: {
+            ar: { imageName: 'icon', imageUrl: 'icon:pi-exclamation-triangle', imageUuid: null },
+            en: { imageName: '', imageUrl: '', imageUuid: null },
+          },
         },
       ],
       solutions: [
         {
           ...projectPoint(localeText('حل محفوظ', 'Kept solution'), localeText()),
-          imageName: 'solution.png',
-          imageUrl: '/images/solution.png',
+          image: {
+            ar: { imageName: 'solution.png', imageUrl: '/images/solution.png', imageUuid: null },
+            en: { imageName: '', imageUrl: '', imageUuid: null },
+          },
         },
       ],
       features: [featureIcon],
@@ -176,11 +186,11 @@ describe('ProjectDetailPage', () => {
       id: 'invalid-visuals',
       name: localeText('نقاط فارغة', 'Empty points'),
       aboutCards: [
-        { ...projectPoint(), imageName: '', imageUrl: '' },
-        { ...projectPoint(), imageName: 'bad', imageUrl: 'icon:not valid' },
+        { ...projectPoint(), image: { ar: { imageName: '', imageUrl: '', imageUuid: null }, en: { imageName: '', imageUrl: '', imageUuid: null } } },
+        { ...projectPoint(), image: { ar: { imageName: 'bad', imageUrl: 'icon:not valid', imageUuid: null }, en: { imageName: '', imageUrl: '', imageUuid: null } } },
       ],
-      features: [{ ...projectPoint(), imageName: '', imageUrl: '' }],
-      results: [{ ...projectPoint(), imageName: 'bad', imageUrl: 'icon:' }],
+      features: [{ ...projectPoint(), image: { ar: { imageName: '', imageUrl: '', imageUuid: null }, en: { imageName: '', imageUrl: '', imageUuid: null } } }],
+      results: [{ ...projectPoint(), image: { ar: { imageName: 'bad', imageUrl: 'icon:', imageUuid: null }, en: { imageName: '', imageUrl: '', imageUuid: null } } }],
       challenges: [projectPoint()],
       solutions: [projectPoint()],
     };
@@ -220,7 +230,10 @@ describe('ProjectDetailPage', () => {
       id: 'sparse',
       name: localeText('مشروع فارغ', 'Sparse project'),
       summary: localeText(),
-      coverUrl: '',
+      cover: {
+        ar: { imageName: '', imageUrl: '', imageUuid: null },
+        en: { imageName: '', imageUrl: '', imageUuid: null },
+      },
       aboutCards: [projectPoint()],
       challenges: [projectPoint()],
       tools: [projectMedia()],
@@ -228,15 +241,15 @@ describe('ProjectDetailPage', () => {
       solutionsImage: projectMedia(),
       features: [projectPoint(localeText('ميزة', 'Feature'), localeText())],
       results: [projectPoint()],
-      gallery: [{ id: 'g1', imageName: '', imageUrl: '' }],
+      gallery: [{ id: 'g1', image: { ar: { imageName: '', imageUrl: '', imageUuid: null }, en: { imageName: '', imageUrl: '', imageUuid: null } } }],
       identityButtons: [
         {
           id: 'id1',
           title: localeText(),
           body: localeText(),
           images: [
-            { id: 'i1', imageName: '', imageUrl: '' },
-            { id: 'i2', imageName: 'icon', imageUrl: 'icon:pi-star' },
+            { id: 'i1', image: { ar: { imageName: '', imageUrl: '', imageUuid: null }, en: { imageName: '', imageUrl: '', imageUuid: null } } },
+            { id: 'i2', image: { ar: { imageName: 'icon', imageUrl: 'icon:pi-star', imageUuid: null }, en: { imageName: '', imageUrl: '', imageUuid: null } } },
           ],
         },
       ],

@@ -19,6 +19,6 @@ export class ProjectDetailPoints {
   }
 
   protected visual(entry: ProjectPoint) {
-    return projectPointVisual(entry);
+    return projectPointVisual(entry, this.locale());
   }
 }

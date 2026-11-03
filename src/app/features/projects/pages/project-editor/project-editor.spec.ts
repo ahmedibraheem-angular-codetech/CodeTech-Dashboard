@@ -140,6 +140,44 @@ describe('ProjectEditor', () => {
     expect(editor.draft().gallery).toHaveLength(1);
   });
 
+  it('keeps cover and feature images independent per locale tab', async () => {
+    const fixture = await render('create');
+    const editor = fixture.componentInstance;
+
+    editor.useLocale('ar');
+    editor.setCover('cover', { name: 'ar-cover.png', url: 'blob:cover-ar' });
+    editor.setPointImage('features', 0, { name: 'ar-feat.png', url: 'blob:feat-ar' });
+
+    editor.useLocale('en');
+    expect(editor.draft().cover.en.imageUrl).toBe('');
+    expect(editor.draft().features[0]?.image.en.imageUrl).toBe('');
+
+    editor.setCover('cover', { name: 'en-cover.png', url: 'blob:cover-en' });
+    editor.setPointImage('features', 0, { name: 'en-feat.png', url: 'blob:feat-en' });
+
+    expect(editor.draft().cover.ar).toMatchObject({
+      imageName: 'ar-cover.png',
+      imageUrl: 'blob:cover-ar',
+    });
+    expect(editor.draft().cover.en).toMatchObject({
+      imageName: 'en-cover.png',
+      imageUrl: 'blob:cover-en',
+    });
+    expect(editor.draft().features[0]?.image.ar).toMatchObject({
+      imageName: 'ar-feat.png',
+      imageUrl: 'blob:feat-ar',
+    });
+    expect(editor.draft().features[0]?.image.en).toMatchObject({
+      imageName: 'en-feat.png',
+      imageUrl: 'blob:feat-en',
+    });
+
+    editor.useLocale('ar');
+    editor.clearCover('cover');
+    expect(editor.draft().cover.ar.imageUrl).toBe('');
+    expect(editor.draft().cover.en.imageUrl).toBe('blob:cover-en');
+  });
+
   it('clears cover and gallery image slots without removing sibling entries', async () => {
     const fixture = await render('edit', 'wasly');
     const editor = fixture.componentInstance;
@@ -150,14 +188,14 @@ describe('ProjectEditor', () => {
     expect(editor.draft().gallery).toHaveLength(3);
 
     editor.clearGalleryImage(0);
-    expect(editor.draft().gallery[0]?.imageUrl).toBe('');
-    expect(editor.draft().gallery[1]?.imageUrl).toBe('blob:b');
+    expect(editor.draft().gallery[0]?.image.ar.imageUrl).toBe('');
+    expect(editor.draft().gallery[1]?.image.ar.imageUrl).toBe('blob:b');
     expect(editor.draft().gallery).toHaveLength(3);
 
     editor.clearCover('cover');
-    expect(editor.draft().coverUrl).toBe('');
-    expect(editor.draft().coverName).toBe('');
-    expect(editor.draft().thumbUrl.length).toBeGreaterThan(0);
+    expect(editor.draft().cover.ar.imageUrl).toBe('');
+    expect(editor.draft().cover.ar.imageName).toBe('');
+    expect(editor.draft().thumb.ar.imageUrl.length).toBeGreaterThan(0);
   });
 
   it('adds and removes identity buttons without dropping the last entry', async () => {
@@ -277,10 +315,10 @@ describe('ProjectEditor', () => {
     editor.clearIdentityButtonImage(0, 1);
     const images = editor.draft().identityButtons[0]?.images ?? [];
     expect(images).toHaveLength(4);
-    expect(images[0]?.imageUrl).toBe('blob:a');
-    expect(images[1]?.imageUrl).toBe('');
-    expect(images[1]?.imageName).toBe('');
-    expect(images[2]?.imageUrl).toBe('blob:c');
+    expect(images[0]?.image.ar.imageUrl).toBe('blob:a');
+    expect(images[1]?.image.ar.imageUrl).toBe('');
+    expect(images[1]?.image.ar.imageName).toBe('');
+    expect(images[2]?.image.ar.imageUrl).toBe('blob:c');
   });
 
   it('preserves identity draft data across step navigation and locale switches', async () => {
@@ -309,7 +347,8 @@ describe('ProjectEditor', () => {
     expect(editor.stepId()).toBe('identity');
     expect(editor.draft().identityButtons).toHaveLength(2);
     expect(editor.draft().identityButtons[0]?.title).toEqual(localeText('أول', 'First'));
-    expect(editor.draft().identityButtons[0]?.images[0]?.imageUrl).toBe('blob:mark');
+    expect(editor.draft().identityButtons[0]?.images[0]?.image.en.imageUrl).toBe('blob:mark');
+    expect(editor.draft().identityButtons[0]?.images[0]?.image.ar.imageUrl).toBe('');
 
     clickNext(root);
     fixture.detectChanges();
@@ -352,7 +391,8 @@ describe('ProjectEditor', () => {
     const reloaded = await firstValueFrom(api.get(savedId));
     expect(reloaded?.identityButtons).toHaveLength(2);
     expect(reloaded?.identityButtons[0]?.title).toEqual(localeText('زر واحد', 'One button'));
-    expect(reloaded?.identityButtons[0]?.images[3]?.imageUrl).toBe('blob:slot');
+    expect(reloaded?.identityButtons[0]?.images[3]?.image.en.imageUrl).toBe('blob:slot');
+    expect(reloaded?.identityButtons[0]?.images[3]?.image.ar.imageUrl).toBe('');
     expect(reloaded?.identityButtons[0]?.images).toHaveLength(4);
     expect(reloaded?.identityButtons[1]?.images).toHaveLength(4);
   });
@@ -502,7 +542,7 @@ describe('ProjectEditor', () => {
 
       pickFile(root, '.editor-section--cover input[type="file"]', 'cover.png');
       await settle(fixture);
-      const url = editor.draft().coverUrl;
+      const url = editor.draft().cover.ar.imageUrl;
       expect(url).toBe('blob:project/1');
 
       editor.select(1);
@@ -511,7 +551,7 @@ describe('ProjectEditor', () => {
       await settle(fixture);
 
       expect(revoke).not.toHaveBeenCalled();
-      expect(editor.draft().coverUrl).toBe(url);
+      expect(editor.draft().cover.ar.imageUrl).toBe(url);
       expect(
         root.querySelector('.editor-section--cover img.uploader__preview')?.getAttribute('src'),
       ).toBe(url);
@@ -521,7 +561,7 @@ describe('ProjectEditor', () => {
 
       expect(revoke).toHaveBeenCalledTimes(1);
       expect(revoke).toHaveBeenCalledWith(url);
-      expect(editor.draft().coverUrl).toBe('');
+      expect(editor.draft().cover.ar.imageUrl).toBe('');
     });
 
     it('revokes only the replaced cover', async () => {
@@ -536,7 +576,7 @@ describe('ProjectEditor', () => {
 
       expect(revoke).toHaveBeenCalledTimes(1);
       expect(revoke).toHaveBeenCalledWith('blob:project/1');
-      expect(editor.draft().coverUrl).toBe('blob:project/2');
+      expect(editor.draft().cover.ar.imageUrl).toBe('blob:project/2');
     });
 
     it('revokes a newly selected unsaved cover when the editor is closed', async () => {
@@ -544,7 +584,7 @@ describe('ProjectEditor', () => {
       const editor = fixture.componentInstance;
       pickFile(fixture.nativeElement, '.editor-section--cover input[type="file"]', 'cover.png');
       await settle(fixture);
-      const url = editor.draft().coverUrl;
+      const url = editor.draft().cover.ar.imageUrl;
       fixture.destroy();
       expect(revoke).toHaveBeenCalledTimes(1);
       expect(revoke).toHaveBeenCalledWith(url);
@@ -558,10 +598,10 @@ describe('ProjectEditor', () => {
       await settle(fixture);
       clickButton(root, 'حفظ كمسودة');
       await settle(fixture);
-      const saved = (await firstValueFrom(api.get('wasly')))?.coverUrl;
+      const saved = (await firstValueFrom(api.get('wasly')))?.cover.ar.imageUrl;
       fixture.destroy();
       expect(revoke).not.toHaveBeenCalled();
-      expect((await firstValueFrom(api.get('wasly')))?.coverUrl).toBe(saved);
+      expect((await firstValueFrom(api.get('wasly')))?.cover.ar.imageUrl).toBe(saved);
     });
 
     it('does not break a saved cover when an unsaved edit replaces or clears it', async () => {
@@ -574,21 +614,21 @@ describe('ProjectEditor', () => {
       await settle(fixture);
       clickButton(root, 'حفظ كمسودة');
       await settle(fixture);
-      const saved = editor.draft().coverUrl;
-      expect((await firstValueFrom(api.get('wasly')))?.coverUrl).toBe(saved);
+      const saved = editor.draft().cover.ar.imageUrl;
+      expect((await firstValueFrom(api.get('wasly')))?.cover.ar.imageUrl).toBe(saved);
 
       pickFile(root, '.editor-section--cover input[type="file"]', 'unsaved.png');
       await settle(fixture);
       expect(revoke).not.toHaveBeenCalled();
-      expect((await firstValueFrom(api.get('wasly')))?.coverUrl).toBe(saved);
+      expect((await firstValueFrom(api.get('wasly')))?.cover.ar.imageUrl).toBe(saved);
 
       root.querySelector<HTMLButtonElement>('.editor-section--cover .uploader__clear')?.click();
       await settle(fixture);
 
       expect(revoke).toHaveBeenCalledTimes(1);
       expect(revoke).toHaveBeenCalledWith('blob:project/2');
-      expect((await firstValueFrom(api.get('wasly')))?.coverUrl).toBe(saved);
-      expect(editor.draft().coverUrl).toBe('');
+      expect((await firstValueFrom(api.get('wasly')))?.cover.ar.imageUrl).toBe(saved);
+      expect(editor.draft().cover.ar.imageUrl).toBe('');
     });
 
     it('revokes the previous cover once a later save no longer uses it, and keeps the new one after close', async () => {
@@ -600,7 +640,7 @@ describe('ProjectEditor', () => {
       await settle(fixture);
       clickButton(root, 'حفظ كمسودة');
       await settle(fixture);
-      const first = (await firstValueFrom(api.get('wasly')))?.coverUrl;
+      const first = (await firstValueFrom(api.get('wasly')))?.cover.ar.imageUrl;
 
       pickFile(root, '.editor-section--cover input[type="file"]', 'second.png');
       await settle(fixture);
@@ -608,11 +648,11 @@ describe('ProjectEditor', () => {
       await settle(fixture);
 
       expect(revoke).toHaveBeenCalledWith(first);
-      expect((await firstValueFrom(api.get('wasly')))?.coverUrl).toBe('blob:project/2');
+      expect((await firstValueFrom(api.get('wasly')))?.cover.ar.imageUrl).toBe('blob:project/2');
 
       fixture.destroy();
       expect(revoke).toHaveBeenCalledTimes(1);
-      expect((await firstValueFrom(api.get('wasly')))?.coverUrl).toBe('blob:project/2');
+      expect((await firstValueFrom(api.get('wasly')))?.cover.ar.imageUrl).toBe('blob:project/2');
     });
   });
 });

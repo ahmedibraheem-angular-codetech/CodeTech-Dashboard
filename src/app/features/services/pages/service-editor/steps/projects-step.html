@@ -25,7 +25,7 @@
               <app-service-project-card
                 [title]="editor.text(project.name) || project.name.ar"
                 [summary]="editor.text(project.summary) || project.summary.ar"
-                [coverUrl]="project.coverUrl"
+                [coverUrl]="editor.projectCoverUrl(project)"
                 [selected]="editor.projectSelected(project.id)"
                 [toggleLabel]="editor.copy('service.projectToggle')"
                 (selectedChange)="editor.setProject(project.id, $event)"

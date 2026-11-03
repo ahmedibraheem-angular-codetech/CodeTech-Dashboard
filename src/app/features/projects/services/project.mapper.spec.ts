@@ -31,8 +31,8 @@ describe('project.mapper', () => {
     expect(item.published).toBe(false);
     expect(item.id).toBe('7');
     expect(item.code).toBe('PRJ-00007');
-    expect(item.coverUuid).toBe('cover-7');
-    expect(item.categories[0]?.imageUuid).toBe('tag-1');
+    expect(item.cover.ar.imageUuid).toBe('cover-7');
+    expect(item.categories[0]?.image.ar.imageUuid).toBe('tag-1');
     expect(item.aboutCards).toEqual([]);
     expect(item.identityButtons).toEqual([]);
   });
@@ -66,7 +66,7 @@ describe('project.mapper', () => {
     expect(detail.solutionsImage.title).toEqual({ ar: 'صورة الحلول', en: 'Solutions image' });
     expect(detail.solutionsImage.body).toEqual({ ar: 'وصف', en: 'Caption' });
     expect(detail.identityButtons[0]?.images).toHaveLength(4);
-    expect(detail.identityButtons[0]?.images[0]?.imageUuid).toBe('id-1');
+    expect(detail.identityButtons[0]?.images[0]?.image.ar.imageUuid).toBe('id-1');
     expect(detail.seo.keywords).toEqual({ ar: 'أ, ب', en: 'a, b' });
     expect(detail.seo.slug).toEqual({ ar: 'project-7', en: 'project-7' });
   });
@@ -81,18 +81,20 @@ describe('project.mapper', () => {
         {
           ...projectPoint(localeText('عنوان', 'Title'), localeText('نص', 'Body')),
           id: '21',
-          imageUuid: 'bg-1',
-          imageUrl: 'https://cdn.test/bg.png',
-          imageName: 'bg.png',
+          image: {
+            ar: { imageUuid: 'bg-1', imageUrl: 'https://cdn.test/bg.png', imageName: 'bg.png' },
+            en: { imageUuid: null, imageUrl: '', imageName: '' },
+          },
         },
       ],
       results: [
         {
           ...projectPoint(localeText('نتيجة', 'Result'), localeText('10+', '10+')),
           id: '81',
-          imageUuid: null,
-          imageUrl: '',
-          imageName: '',
+          image: {
+            ar: { imageUuid: null, imageUrl: '', imageName: '' },
+            en: { imageUuid: null, imageUrl: '', imageName: '' },
+          },
         },
       ],
       categories: [],
@@ -130,9 +132,10 @@ describe('project.mapper', () => {
       {
         ...projectGalleryImage(),
         id: '911',
-        imageUuid: 'id-1',
-        imageUrl: 'https://cdn/x',
-        imageName: 'x',
+        image: {
+          ar: { imageUuid: 'id-1', imageUrl: 'https://cdn/x', imageName: 'x' },
+          en: { imageUuid: null, imageUrl: '', imageName: '' },
+        },
       },
       projectGalleryImage(),
       projectGalleryImage(),
@@ -163,15 +166,18 @@ describe('project.mapper', () => {
       ...blankProject(),
       id: '7',
       name: localeText('مشروع', 'Project'),
-      coverUrl: '',
-      coverUuid: null,
+      cover: {
+        ar: { imageUrl: '', imageName: '', imageUuid: null },
+        en: { imageUrl: '', imageName: '', imageUuid: null },
+      },
       categories: [
         {
           ...projectPoint(localeText('وسم', 'Tag'), localeText()),
           id: '11',
-          imageUrl: 'icon:pi-tag',
-          imageName: 'pi-tag',
-          imageUuid: null,
+          image: {
+            ar: { imageUrl: 'icon:pi-tag', imageName: 'pi-tag', imageUuid: null },
+            en: { imageUrl: '', imageName: '', imageUuid: null },
+          },
         },
       ],
       aboutCards: [],

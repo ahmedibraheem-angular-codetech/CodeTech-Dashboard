@@ -15,12 +15,15 @@ import type {
 import { IDENTITY_IMAGE_SLOTS } from '../constants/project-limits';
 import {
   blankProject,
+  emptyProjectImage,
   localeText,
   projectGalleryImage,
   type LocaleText,
+  type LocalizedMedia,
   type Project,
   type ProjectGalleryImage,
   type ProjectIdentityButton,
+  type ProjectImage,
   type ProjectPoint,
 } from '../models/project.model';
 import { localeFilled } from '../utils/project-field-rules';
@@ -36,19 +39,23 @@ function serverId(id: string): number | undefined {
   return /^\d+$/.test(id) ? Number(id) : undefined;
 }
 
-export function mapProjectMedia(file: FileObject | null | undefined): {
-  imageName: string;
-  imageUrl: string;
-  imageUuid: string | null;
-} {
+export function mapProjectMedia(file: FileObject | null | undefined): ProjectImage {
   if (!file || typeof file.uuid !== 'string' || typeof file.url !== 'string') {
-    return { imageName: '', imageUrl: '', imageUuid: null };
+    return emptyProjectImage();
   }
   return {
     imageUuid: file.uuid,
     imageUrl: file.url,
     imageName: file.file_name || file.name || 'file',
   };
+}
+
+/**
+ * Shared API file → editor slots. Only Arabic is seeded so the English tab
+ * starts empty and can hold an independent preview while editing.
+ */
+function sharedMedia(file: FileObject | null | undefined): LocalizedMedia {
+  return { ar: mapProjectMedia(file), en: emptyProjectImage() };
 }
 
 function mapPoint(
@@ -59,21 +66,20 @@ function mapPoint(
   } & ({ icon?: FileObject | null } | { image?: FileObject | null }),
   mediaKey: 'icon' | 'image',
 ): ProjectPoint {
-  const media = mapProjectMedia(
-    mediaKey === 'icon' ? ('icon' in dto ? dto.icon : null) : 'image' in dto ? dto.image : null,
-  );
+  const file =
+    mediaKey === 'icon' ? ('icon' in dto ? dto.icon : null) : 'image' in dto ? dto.image : null;
   return {
     id: String(dto.id),
     title: locale(dto.title),
     body: locale(dto.short_description),
-    ...media,
+    image: sharedMedia(file),
   };
 }
 
 function mapGallery(dto: { id: number; image: FileObject | null }): ProjectGalleryImage {
   return {
     id: String(dto.id),
-    ...mapProjectMedia(dto.image),
+    image: sharedMedia(dto.image),
   };
 }
 
@@ -97,12 +103,11 @@ function mapIdentity(dto: ProjectDetailDto['identity_items'][number]): ProjectId
 function mapAboutCard(dto: ProjectDetailDto['overview_cards'][number]): ProjectPoint {
   const title = locale(dto.title);
   const subject = locale(dto.subject);
-  const media = mapProjectMedia(dto.background);
   return {
     id: String(dto.id),
     title: localeFilled(title) ? title : subject,
     body: locale(dto.description),
-    ...media,
+    image: sharedMedia(dto.background),
   };
 }
 
@@ -129,35 +134,25 @@ function mapCore(
   | 'published'
   | 'name'
   | 'summary'
-  | 'coverName'
-  | 'coverUrl'
-  | 'coverUuid'
+  | 'cover'
   | 'coverTitle'
   | 'coverAlt'
-  | 'thumbName'
-  | 'thumbUrl'
-  | 'thumbUuid'
+  | 'thumb'
   | 'thumbTitle'
   | 'thumbAlt'
   | 'categories'
   | 'seo'
 > {
-  const cover = mapProjectMedia(dto.cover);
-  const thumb = mapProjectMedia(dto.thumbnail);
   return {
     id: String(dto.id),
     code: dto.code || String(dto.id).padStart(5, '0'),
     published: dto.status === 'published',
     name: locale(dto.title),
     summary: locale(dto.description),
-    coverName: cover.imageName,
-    coverUrl: cover.imageUrl,
-    coverUuid: cover.imageUuid,
+    cover: sharedMedia(dto.cover),
     coverTitle: localeText(),
     coverAlt: localeText(),
-    thumbName: thumb.imageName,
-    thumbUrl: thumb.imageUrl,
-    thumbUuid: thumb.imageUuid,
+    thumb: sharedMedia(dto.thumbnail),
     thumbTitle: localeText(),
     thumbAlt: localeText(),
     categories: (dto.tags ?? []).map((item) => mapPoint(item, 'icon')),
@@ -204,23 +199,16 @@ export function mapProjectListItem(dto: ProjectListDto): Project {
 }
 
 export function mapProjectDetail(dto: ProjectDetailDto): Project {
-  const cover = mapProjectMedia(dto.cover);
-  const thumb = mapProjectMedia(dto.thumbnail);
-  const solutionsImage = mapProjectMedia(dto.solutions_image);
   return {
     id: String(dto.id),
     code: dto.code || String(dto.id).padStart(5, '0'),
     published: dto.status === 'published',
     name: locale(dto.title),
     summary: locale(dto.description),
-    coverName: cover.imageName,
-    coverUrl: cover.imageUrl,
-    coverUuid: cover.imageUuid,
+    cover: sharedMedia(dto.cover),
     coverTitle: locale(dto.cover_title),
     coverAlt: locale(dto.cover_alt),
-    thumbName: thumb.imageName,
-    thumbUrl: thumb.imageUrl,
-    thumbUuid: thumb.imageUuid,
+    thumb: sharedMedia(dto.thumbnail),
     thumbTitle: locale(dto.thumbnail_title),
     thumbAlt: locale(dto.thumbnail_alt),
     categories: (dto.tags ?? []).map((item) => mapPoint(item, 'icon')),
@@ -230,14 +218,14 @@ export function mapProjectDetail(dto: ProjectDetailDto): Project {
       id: String(item.id),
       title: localeText(),
       body: localeText(),
-      ...mapProjectMedia(item.image),
+      image: sharedMedia(item.image),
     })),
     solutions: (dto.solutions ?? []).map((item) => mapPoint(item, 'icon')),
     solutionsImage: {
       id: 'solutions-image',
       title: locale(dto.solutions_image_title),
       body: locale(dto.solutions_image_alt),
-      ...solutionsImage,
+      image: sharedMedia(dto.solutions_image),
     },
     gallery: (dto.gallery ?? []).map(mapGallery),
     features: (dto.features ?? []).map((item) => mapPoint(item, 'image')),
@@ -245,7 +233,7 @@ export function mapProjectDetail(dto: ProjectDetailDto): Project {
       id: String(item.id),
       title: locale(item.title),
       body: locale(item.value),
-      ...mapProjectMedia(item.icon),
+      image: sharedMedia(item.icon),
     })),
     identityButtons: (dto.identity_items ?? []).map(mapIdentity),
     seo: {
@@ -288,6 +276,17 @@ function ticket(
   return undefined;
 }
 
+/** API still accepts one UUID for shared media — prefer Arabic, then English. */
+function sharedTicket(image: LocalizedMedia, clearEmpty: boolean): string | null | undefined {
+  if (image.ar.imageUrl) {
+    return ticket(image.ar, clearEmpty);
+  }
+  if (image.en.imageUrl) {
+    return ticket(image.en, clearEmpty);
+  }
+  return clearEmpty ? null : undefined;
+}
+
 function applyTicket(
   target: Record<string, unknown>,
   key: string,
@@ -298,17 +297,17 @@ function applyTicket(
   }
 }
 
+function hasMedia(image: LocalizedMedia): boolean {
+  return !!(image.ar.imageUrl || image.en.imageUrl);
+}
+
 function pointWrite(item: ProjectPoint, mediaKey: 'icon' | 'image'): ProjectPointWriteDto {
   const row: ProjectPointWriteDto = withOptionalId(item.id, {
     title: { ar: item.title.ar.trim(), en: item.title.en.trim() },
     short_description: { ar: item.body.ar.trim(), en: item.body.en.trim() },
   });
-  applyTicket(row as unknown as Record<string, unknown>, mediaKey, ticket(item, true));
+  applyTicket(row as unknown as Record<string, unknown>, mediaKey, sharedTicket(item.image, true));
   return row;
-}
-
-function hasMedia(item: { imageUrl?: string }): boolean {
-  return !!(item.imageUrl ?? '').trim();
 }
 
 export function toProjectWrite(project: Project): ProjectWriteDto {
@@ -345,25 +344,25 @@ export function toProjectWrite(project: Project): ProjectWriteDto {
   applyTicket(
     body as unknown as Record<string, unknown>,
     'cover',
-    ticket({ imageUrl: project.coverUrl, imageUuid: project.coverUuid }, true),
+    sharedTicket(project.cover, true),
   );
   applyTicket(
     body as unknown as Record<string, unknown>,
     'thumbnail',
-    ticket({ imageUrl: project.thumbUrl, imageUuid: project.thumbUuid }, true),
+    sharedTicket(project.thumb, true),
   );
   applyTicket(
     body as unknown as Record<string, unknown>,
     'solutions_image',
-    ticket(project.solutionsImage, true),
+    sharedTicket(project.solutionsImage.image, true),
   );
 
   body.tags = project.categories
-    .filter((item) => localeFilled(item.title) || localeFilled(item.body) || hasMedia(item))
+    .filter((item) => localeFilled(item.title) || localeFilled(item.body) || hasMedia(item.image))
     .map((item): ProjectTagWriteDto => pointWrite(item, 'icon'));
 
   body.overview_cards = project.aboutCards
-    .filter((item) => localeFilled(item.title) || localeFilled(item.body) || hasMedia(item))
+    .filter((item) => localeFilled(item.title) || localeFilled(item.body) || hasMedia(item.image))
     .map((item): ProjectOverviewCardWriteDto => {
       const title = { ar: item.title.ar.trim(), en: item.title.en.trim() };
       const row: ProjectOverviewCardWriteDto = withOptionalId(item.id, {
@@ -371,46 +370,62 @@ export function toProjectWrite(project: Project): ProjectWriteDto {
         title,
         description: { ar: item.body.ar.trim(), en: item.body.en.trim() },
       });
-      applyTicket(row as unknown as Record<string, unknown>, 'background', ticket(item, true));
+      applyTicket(
+        row as unknown as Record<string, unknown>,
+        'background',
+        sharedTicket(item.image, true),
+      );
       return row;
     });
 
   body.challenges = project.challenges
-    .filter((item) => localeFilled(item.title) || localeFilled(item.body) || hasMedia(item))
+    .filter((item) => localeFilled(item.title) || localeFilled(item.body) || hasMedia(item.image))
     .map((item) => pointWrite(item, 'image'));
 
   body.tools = project.tools
-    .filter((item) => hasMedia(item))
+    .filter((item) => hasMedia(item.image))
     .map((item): ProjectToolWriteDto => {
       const row: ProjectToolWriteDto = withOptionalId(item.id, {});
-      applyTicket(row as unknown as Record<string, unknown>, 'image', ticket(item, true));
+      applyTicket(
+        row as unknown as Record<string, unknown>,
+        'image',
+        sharedTicket(item.image, true),
+      );
       return row;
     });
 
   body.solutions = project.solutions
-    .filter((item) => localeFilled(item.title) || localeFilled(item.body) || hasMedia(item))
+    .filter((item) => localeFilled(item.title) || localeFilled(item.body) || hasMedia(item.image))
     .map((item) => pointWrite(item, 'icon'));
 
   body.gallery = project.gallery
-    .filter((item) => hasMedia(item))
+    .filter((item) => hasMedia(item.image))
     .map((item): ProjectGalleryWriteDto => {
       const row: ProjectGalleryWriteDto = withOptionalId(item.id, {});
-      applyTicket(row as unknown as Record<string, unknown>, 'image', ticket(item, true));
+      applyTicket(
+        row as unknown as Record<string, unknown>,
+        'image',
+        sharedTicket(item.image, true),
+      );
       return row;
     });
 
   body.features = project.features
-    .filter((item) => localeFilled(item.title) || localeFilled(item.body) || hasMedia(item))
+    .filter((item) => localeFilled(item.title) || localeFilled(item.body) || hasMedia(item.image))
     .map((item) => pointWrite(item, 'image'));
 
   body.results = project.results
-    .filter((item) => localeFilled(item.title) || localeFilled(item.body) || hasMedia(item))
+    .filter((item) => localeFilled(item.title) || localeFilled(item.body) || hasMedia(item.image))
     .map((item): ProjectResultWriteDto => {
       const row: ProjectResultWriteDto = withOptionalId(item.id, {
         title: { ar: item.title.ar.trim(), en: item.title.en.trim() },
         value: { ar: item.body.ar.trim(), en: item.body.en.trim() },
       });
-      applyTicket(row as unknown as Record<string, unknown>, 'icon', ticket(item, true));
+      applyTicket(
+        row as unknown as Record<string, unknown>,
+        'icon',
+        sharedTicket(item.image, true),
+      );
       return row;
     });
 
@@ -419,14 +434,24 @@ export function toProjectWrite(project: Project): ProjectWriteDto {
       (item) =>
         localeFilled(item.title) ||
         localeFilled(item.body) ||
-        item.images.some((image) => hasMedia(image) || !!serverId(image.id)),
+        item.images.some((image) => hasMedia(image.image) || !!serverId(image.id)),
     )
     .map((item): ProjectIdentityItemWriteDto => {
       const images = item.images
-        .filter((image) => !!serverId(image.id) || !!image.imageUuid || hasMedia(image))
+        .filter(
+          (image) =>
+            !!serverId(image.id) ||
+            !!image.image.ar.imageUuid ||
+            !!image.image.en.imageUuid ||
+            hasMedia(image.image),
+        )
         .map((image) => {
           const row = withOptionalId(image.id, {} as { image?: string | null });
-          applyTicket(row as unknown as Record<string, unknown>, 'image', ticket(image, true));
+          applyTicket(
+            row as unknown as Record<string, unknown>,
+            'image',
+            sharedTicket(image.image, true),
+          );
           return row;
         });
       return withOptionalId(item.id, {

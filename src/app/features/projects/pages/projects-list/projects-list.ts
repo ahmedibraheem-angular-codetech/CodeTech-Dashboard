@@ -23,7 +23,7 @@ import { ConfirmDialog } from '../../../../shared/components/confirm-dialog/conf
 import { PageHeader } from '../../../../shared/components/page-header/page-header';
 import { StateView } from '../../../../shared/components/state-view/state-view';
 import { HasPermissionDirective } from '../../../../shared/directives/has-permission.directive';
-import { readLocale, type Project } from '../../models/project.model';
+import { readLocale, readMedia, type Project } from '../../models/project.model';
 import { ProjectsService } from '../../services/projects.service';
 
 type LoadState = 'loading' | 'ready' | 'error';
@@ -81,18 +81,20 @@ export class ProjectsList {
     return readLocale(project.summary, this.lang.language()) || project.summary.ar;
   }
 
-  protected coverSrc(url: string): string {
-    const value = url.trim();
+  protected coverSrc(project: Project): string {
+    const value = readMedia(project.cover, this.lang.language()).imageUrl.trim();
     return value.length > 0 && !value.startsWith('icon:') ? value : '';
   }
 
   protected tags(project: Project): { icon: string; label: string }[] {
-    return project.categories.slice(0, 4).map((category) => ({
-      icon: category.imageUrl.startsWith('icon:')
-        ? `pi ${category.imageUrl.slice(5)}`
-        : 'pi pi-tag',
-      label: readLocale(category.title, this.lang.language()) || category.title.ar,
-    }));
+    const language = this.lang.language();
+    return project.categories.slice(0, 4).map((category) => {
+      const url = readMedia(category.image, language).imageUrl;
+      return {
+        icon: url.startsWith('icon:') ? `pi ${url.slice(5)}` : 'pi pi-tag',
+        label: readLocale(category.title, language) || category.title.ar,
+      };
+    });
   }
 
   protected page(event: PaginatorState): void {

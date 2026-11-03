@@ -7,7 +7,7 @@
   <ul class="project-tile__tags">
     @for (category of project().categories; track category.id) {
       <li>
-        <i class="pi" [class]="categoryIcon(category.imageUrl)" aria-hidden="true"></i>
+        <i class="pi" [class]="categoryIcon(categoryMediaUrl(category))" aria-hidden="true"></i>
         {{ text(category.title) }}
       </li>
     }
@@ -45,7 +45,7 @@
     @if (solutionsImage(); as image) {
       <img
         class="project-detail__solutions-image"
-        [src]="image.imageUrl"
+        [src]="image.media.imageUrl"
         [alt]="text(image.title) || lang.t('project.solutionsImage')"
       />
     }
