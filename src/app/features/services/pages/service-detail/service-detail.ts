@@ -27,13 +27,18 @@ import { PageTabs, type PageTab } from '../../../../shared/components/page-tabs/
 import { SectorCard } from '../../../../shared/components/sector-card/sector-card';
 import { StateView } from '../../../../shared/components/state-view/state-view';
 import { HasPermissionDirective } from '../../../../shared/directives/has-permission.directive';
-import { readMedia, type Project } from '../../../projects/models/project.model';
+import {
+  readMedia as readProjectMedia,
+  type Project,
+} from '../../../projects/models/project.model';
 import { ProjectsService } from '../../../projects/services/projects.service';
 import { ServiceProjectCard } from '../../components/service-project-card/service-project-card';
 import {
   SERVICE_STEPS,
   readLocale,
+  readMedia,
   type LocaleText,
+  type LocalizedMedia,
   type Service,
   type ServiceImage,
   type ServiceSector,
@@ -115,7 +120,10 @@ export class ServiceDetailPage {
   });
 
   protected readonly whyItems = computed(() =>
-    (this.item()?.whyItems ?? []).filter((entry) => filledLocale(entry.title) || entry.imageUrl),
+    (this.item()?.whyItems ?? []).filter((entry) => {
+      const media = readMedia(entry.image, this.lang.language());
+      return filledLocale(entry.title) || !!media.imageUrl;
+    }),
   );
   protected readonly whyImage = computed(() => this.item()?.whyImage ?? null);
   protected readonly solutions = computed(() => this.points('solutions'));
@@ -156,7 +164,7 @@ export class ServiceDetailPage {
               id: match.id,
               name: match.name,
               summary: match.summary,
-              coverUrl: readMedia(match.cover, this.lang.language()).imageUrl,
+              coverUrl: readProjectMedia(match.cover, this.lang.language()).imageUrl,
               published: match.published,
             },
           ]
@@ -316,11 +324,17 @@ export class ServiceDetailPage {
   }
 
   protected sectorMedia(sector: ServiceSector): ServiceImage {
-    const language = this.lang.language();
-    return sector.image[language] ?? sector.image.ar;
+    return readMedia(sector.image, this.lang.language());
   }
 
-  protected visual(image: ServiceImage): ServiceVisual {
+  protected slotMedia(image: LocalizedMedia): ServiceImage {
+    return readMedia(image, this.lang.language());
+  }
+
+  protected visual(image: ServiceImage | LocalizedMedia): ServiceVisual {
+    if ('ar' in image && 'en' in image) {
+      return serviceVisual(this.slotMedia(image));
+    }
     return serviceVisual(image);
   }
 
@@ -333,8 +347,10 @@ export class ServiceDetailPage {
   }
 
   private points(list: 'solutions' | 'stages' | 'features') {
-    return (this.item()?.[list] ?? []).filter(
-      (entry) => filledLocale(entry.title) || filledLocale(entry.body) || entry.imageUrl,
-    );
+    const language = this.lang.language();
+    return (this.item()?.[list] ?? []).filter((entry) => {
+      const media = readMedia(entry.image, language);
+      return filledLocale(entry.title) || filledLocale(entry.body) || !!media.imageUrl;
+    });
   }
 }

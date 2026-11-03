@@ -41,8 +41,10 @@ import {
   type ServiceProjectsStatus,
 } from '../../constants/service.constants';
 import {
+  clearLocalizedSlotImage,
   mapAt,
   patchLocaleField,
+  setLocalizedSlotImage,
   withImage,
   withoutAt,
   withoutImage,
@@ -282,16 +284,30 @@ export class ServiceEditor {
   }
 
   setWhyImage(file: ServiceImageFile): void {
+    const language = this.locale();
     this.draft.update((current) => ({
       ...current,
-      whyImage: withImage(current.whyImage, file),
+      whyImage: {
+        ...current.whyImage,
+        image: {
+          ...current.whyImage.image,
+          [language]: withImage(current.whyImage.image[language], file),
+        },
+      },
     }));
   }
 
   clearWhyImage(): void {
+    const language = this.locale();
     this.draft.update((current) => ({
       ...current,
-      whyImage: withoutImage(current.whyImage),
+      whyImage: {
+        ...current.whyImage,
+        image: {
+          ...current.whyImage.image,
+          [language]: withoutImage(current.whyImage.image[language]),
+        },
+      },
     }));
   }
 
@@ -321,16 +337,18 @@ export class ServiceEditor {
   }
 
   setWhyIcon(index: number, file: ServiceImageFile): void {
+    const language = this.locale();
     this.draft.update((current) => ({
       ...current,
-      whyItems: mapAt(current.whyItems, index, (item) => withImage(item, file)),
+      whyItems: setLocalizedSlotImage(current.whyItems, index, language, file),
     }));
   }
 
   clearWhyIcon(index: number): void {
+    const language = this.locale();
     this.draft.update((current) => ({
       ...current,
-      whyItems: mapAt(current.whyItems, index, (item) => withoutImage(item)),
+      whyItems: clearLocalizedSlotImage(current.whyItems, index, language),
     }));
   }
 
@@ -368,16 +386,18 @@ export class ServiceEditor {
   }
 
   setPointImage(list: ServicePointList, index: number, file: ServiceImageFile): void {
+    const language = this.locale();
     this.draft.update((current) => ({
       ...current,
-      [list]: mapAt(current[list], index, (item) => withImage(item, file)),
+      [list]: setLocalizedSlotImage(current[list], index, language, file),
     }));
   }
 
   clearPointImage(list: ServicePointList, index: number): void {
+    const language = this.locale();
     this.draft.update((current) => ({
       ...current,
-      [list]: mapAt(current[list], index, (item) => withoutImage(item)),
+      [list]: clearLocalizedSlotImage(current[list], index, language),
     }));
   }
 

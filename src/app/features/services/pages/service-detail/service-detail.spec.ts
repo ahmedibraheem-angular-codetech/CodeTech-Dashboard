@@ -282,11 +282,11 @@ describe('ServiceDetailPage', () => {
       service.whyItems.forEach((item, index) => {
         expect(items[index]?.textContent).toContain(item.title.ar);
         expect(items[index]?.querySelector('i')?.className).toContain(
-          item.imageUrl.slice('icon:'.length),
+          item.image.ar.imageUrl.slice('icon:'.length),
         );
       });
       const photo = root.querySelector<HTMLImageElement>('.service-detail__photo');
-      expect(photo?.getAttribute('src')).toBe(service.whyImage.imageUrl);
+      expect(photo?.getAttribute('src')).toBe(service.whyImage.image.ar.imageUrl);
       expect(text(root)).toContain(service.whyImage.title.ar);
     });
 
@@ -339,7 +339,7 @@ describe('ServiceDetailPage', () => {
         expect(cards[index]?.textContent).toContain(item.title.ar);
         expect(cards[index]?.textContent).toContain(item.body.ar);
         expect(cards[index]?.querySelector('i')?.className).toContain(
-          item.imageUrl.slice('icon:'.length),
+          item.image.ar.imageUrl.slice('icon:'.length),
         );
       });
     });
@@ -356,7 +356,7 @@ describe('ServiceDetailPage', () => {
         expect(cards[index]?.querySelector('.service-detail__number')?.textContent?.trim()).toBe(
           `0${index + 1}`,
         );
-        expect(cards[index]?.querySelector('img')?.getAttribute('src')).toBe(item.imageUrl);
+        expect(cards[index]?.querySelector('img')?.getAttribute('src')).toBe(item.image.ar.imageUrl);
       });
     });
 

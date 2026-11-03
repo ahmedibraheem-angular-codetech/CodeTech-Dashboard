@@ -92,7 +92,8 @@ describe('service.mapper', () => {
 
     expect(detail.iconUuid).toBe('icon-1');
     expect(detail.iconUrl).toBe('https://cdn.test/i.png');
-    expect(detail.whyImage.imageUuid).toBe('why-1');
+    expect(detail.whyImage.image.ar.imageUuid).toBe('why-1');
+    expect(detail.whyImage.image.en.imageUrl).toBe('');
     expect(detail.whyImage.title.ar).toBe('نص');
     expect(detail.faqs[0].id).toBe('61');
     expect(detail.projectIds).toEqual(['3']);
@@ -108,24 +109,31 @@ describe('service.mapper', () => {
       description: localeText('وصف', 'Desc'),
       whyImage: {
         title: localeText('نص', 'Caption'),
-        imageName: 'w.png',
-        imageUrl: 'https://cdn.test/w.png',
-        imageUuid: 'why-1',
+        image: {
+          ar: {
+            imageName: 'w.png',
+            imageUrl: 'https://cdn.test/w.png',
+            imageUuid: 'why-1',
+          },
+          en: { imageName: '', imageUrl: '', imageUuid: null },
+        },
       },
       whyItems: [
         {
           id: '11',
           title: localeText('حاجة', 'Need'),
-          imageName: '',
-          imageUrl: '',
-          imageUuid: null,
+          image: {
+            ar: { imageName: '', imageUrl: '', imageUuid: null },
+            en: { imageName: '', imageUrl: '', imageUuid: null },
+          },
         },
         {
           id: 'why-empty',
           title: localeText(),
-          imageName: '',
-          imageUrl: '',
-          imageUuid: null,
+          image: {
+            ar: { imageName: '', imageUrl: '', imageUuid: null },
+            en: { imageName: '', imageUrl: '', imageUuid: null },
+          },
         },
       ],
       solutions: [
@@ -133,9 +141,14 @@ describe('service.mapper', () => {
           id: 'sol-new',
           title: localeText('حل', 'Solution'),
           body: localeText('سطر', 'Line'),
-          imageName: 's.png',
-          imageUrl: 'https://cdn.test/s.png',
-          imageUuid: 'sol-1',
+          image: {
+            ar: {
+              imageName: 's.png',
+              imageUrl: 'https://cdn.test/s.png',
+              imageUuid: 'sol-1',
+            },
+            en: { imageName: '', imageUrl: '', imageUuid: null },
+          },
         },
       ],
       stages: [],
@@ -248,9 +261,14 @@ describe('service.mapper', () => {
         {
           id: 'why-1',
           title: localeText('حاجة', 'Need'),
-          imageName: 'pi-cog',
-          imageUrl: 'icon:pi-cog',
-          imageUuid: null,
+          image: {
+            ar: {
+              imageName: 'pi-cog',
+              imageUrl: 'icon:pi-cog',
+              imageUuid: null,
+            },
+            en: { imageName: '', imageUrl: '', imageUuid: null },
+          },
         },
       ],
       solutions: [],

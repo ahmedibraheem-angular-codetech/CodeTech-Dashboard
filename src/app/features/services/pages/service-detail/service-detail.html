@@ -77,10 +77,11 @@
                 <span class="icon-badge"><i class="pi pi-image" aria-hidden="true"></i></span>
               </header>
               @if (whyImage(); as hero) {
-                @if (hero.imageUrl && !visual(hero).icon) {
+                @let heroArt = visual(hero.image);
+                @if (heroArt.image) {
                   <img
                     class="detail-photo service-detail__photo"
-                    [src]="hero.imageUrl"
+                    [src]="heroArt.image"
                     [alt]="text(hero.title)"
                   />
                 } @else {
@@ -105,7 +106,7 @@
             @if (whyItems().length) {
               <ul class="detail-features service-detail__list">
                 @for (entry of whyItems(); track entry.id) {
-                  @let art = visual(entry);
+                  @let art = visual(entry.image);
                   <li>
                     <strong>{{ text(entry.title) }}</strong>
                     <span class="detail-features__icon" aria-hidden="true">
@@ -133,7 +134,7 @@
           @if (solutions().length) {
             <ul class="service-detail__cards">
               @for (entry of solutions(); track entry.id) {
-                @let art = visual(entry);
+                @let art = visual(entry.image);
                 <li class="service-detail__card">
                   <span class="detail-features__icon" aria-hidden="true">
                     @if (art.image) {
@@ -163,7 +164,7 @@
           @if (stages().length) {
             <ol class="service-detail__cards service-detail__stages">
               @for (entry of stages(); track entry.id; let index = $index) {
-                @let art = visual(entry);
+                @let art = visual(entry.image);
                 <li class="service-detail__card service-detail__stage">
                   <div class="service-detail__stage-copy">
                     <span class="service-detail__number" aria-hidden="true">

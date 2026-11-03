@@ -13,8 +13,11 @@ import type {
   ServiceWriteDto,
 } from '../models/service.api';
 import {
+  emptyLocalizedMedia,
+  emptyServiceImage,
   localeText,
   type LocaleText,
+  type LocalizedMedia,
   type Service,
   type ServiceFaq,
   type ServiceImage,
@@ -38,7 +41,7 @@ function serverId(id: string): number | undefined {
 
 export function mapServiceMedia(file: FileObject | null | undefined): ServiceImage {
   if (!file || typeof file.uuid !== 'string' || typeof file.url !== 'string') {
-    return { imageName: '', imageUrl: '', imageUuid: null };
+    return emptyServiceImage();
   }
   return {
     imageUuid: file.uuid,
@@ -47,12 +50,19 @@ export function mapServiceMedia(file: FileObject | null | undefined): ServiceIma
   };
 }
 
+/**
+ * Shared API file → editor slots. Only Arabic is seeded so the English tab
+ * starts empty and can hold an independent preview while editing.
+ */
+function sharedMedia(file: FileObject | null | undefined): LocalizedMedia {
+  return { ar: mapServiceMedia(file), en: emptyServiceImage() };
+}
+
 function mapWhyItem(dto: ServiceDetailDto['needs'][number]): ServiceWhyItem {
-  const media = mapServiceMedia(dto.icon);
   return {
     id: String(dto.id),
     title: locale(dto.title),
-    ...media,
+    image: sharedMedia(dto.icon),
   };
 }
 
@@ -63,12 +73,11 @@ function mapPoint(
     short_description: ServiceLocaleDto;
   } & ({ icon: FileObject | null } | { image: FileObject | null }),
 ): ServicePoint {
-  const media = mapServiceMedia('icon' in dto ? dto.icon : dto.image);
   return {
     id: String(dto.id),
     title: locale(dto.title),
     body: locale(dto.short_description),
-    ...media,
+    image: sharedMedia('icon' in dto ? dto.icon : dto.image),
   };
 }
 
@@ -84,6 +93,10 @@ function mapSector(dto: ServiceDetailDto['sectors'][number]): ServiceSector {
 
 function sectorHasMedia(item: ServiceSector): boolean {
   return !!(item.image.ar.imageUrl || item.image.en.imageUrl);
+}
+
+function hasMedia(image: LocalizedMedia): boolean {
+  return !!(image.ar.imageUrl || image.en.imageUrl);
 }
 
 function mapFaq(dto: ServiceDetailDto['faqs'][number]): ServiceFaq {
@@ -106,7 +119,9 @@ export function mapLinkedProject(dto: ServiceLinkedProjectDto): ServiceLinkedPro
   };
 }
 
-function mapCore(dto: ServiceListDto): Pick<
+function mapCore(
+  dto: ServiceListDto,
+): Pick<
   Service,
   'id' | 'code' | 'icon' | 'iconUrl' | 'iconUuid' | 'published' | 'name' | 'description'
 > {
@@ -126,7 +141,7 @@ function mapCore(dto: ServiceListDto): Pick<
 export function mapServiceListItem(dto: ServiceListDto): Service {
   return {
     ...mapCore(dto),
-    whyImage: { title: localeText(), imageName: '', imageUrl: '', imageUuid: null },
+    whyImage: { title: localeText(), image: emptyLocalizedMedia() },
     whyItems: [],
     solutions: [],
     stages: [],
@@ -139,13 +154,12 @@ export function mapServiceListItem(dto: ServiceListDto): Service {
 }
 
 export function mapServiceDetail(dto: ServiceDetailDto): Service {
-  const whyMedia = mapServiceMedia(dto.why_image);
   const linked = Array.isArray(dto.projects) ? dto.projects.map(mapLinkedProject) : [];
   return {
     ...mapCore(dto),
     whyImage: {
       title: locale(dto.why_image_text),
-      ...whyMedia,
+      image: sharedMedia(dto.why_image),
     },
     whyItems: Array.isArray(dto.needs) ? dto.needs.map(mapWhyItem) : [],
     solutions: Array.isArray(dto.solutions) ? dto.solutions.map(mapPoint) : [],
@@ -169,10 +183,7 @@ function withOptionalId<T extends object>(id: string, body: T): T & { id?: numbe
  * - icon:pi-* → omit
  * - uuid present → send uuid
  */
-function ticket(
-  image: ServiceImage,
-  clearEmpty: boolean,
-): string | null | undefined {
+function ticket(image: ServiceImage, clearEmpty: boolean): string | null | undefined {
   const url = image.imageUrl ?? '';
   if (!url) {
     return clearEmpty ? null : undefined;
@@ -186,7 +197,22 @@ function ticket(
   return undefined;
 }
 
-function applyTicket(target: Record<string, unknown>, key: string, value: string | null | undefined): void {
+/** API still accepts one UUID for shared media — prefer Arabic, then English. */
+function sharedTicket(image: LocalizedMedia, clearEmpty: boolean): string | null | undefined {
+  if (image.ar.imageUrl) {
+    return ticket(image.ar, clearEmpty);
+  }
+  if (image.en.imageUrl) {
+    return ticket(image.en, clearEmpty);
+  }
+  return clearEmpty ? null : undefined;
+}
+
+function applyTicket(
+  target: Record<string, unknown>,
+  key: string,
+  value: string | null | undefined,
+): void {
   if (value !== undefined) {
     target[key] = value;
   }
@@ -209,53 +235,64 @@ export function toServiceWrite(service: Service): ServiceWriteDto {
     },
   };
 
-  applyTicket(body as unknown as Record<string, unknown>, 'icon', ticket({
-    imageUrl: service.iconUrl,
-    imageName: '',
-    imageUuid: service.iconUuid,
-  }, !!service.iconUuid));
-  applyTicket(body as unknown as Record<string, unknown>, 'why_image', ticket(service.whyImage, true));
+  applyTicket(
+    body as unknown as Record<string, unknown>,
+    'icon',
+    ticket(
+      {
+        imageUrl: service.iconUrl,
+        imageName: '',
+        imageUuid: service.iconUuid,
+      },
+      !!service.iconUuid,
+    ),
+  );
+  applyTicket(
+    body as unknown as Record<string, unknown>,
+    'why_image',
+    sharedTicket(service.whyImage.image, true),
+  );
 
   body.needs = service.whyItems
-    .filter((item) => filledLocale(item.title))
+    .filter((item) => filledLocale(item.title) || hasMedia(item.image))
     .map((item): ServiceNeedWriteDto => {
       const row: ServiceNeedWriteDto = withOptionalId(item.id, {
         title: { ar: item.title.ar.trim(), en: item.title.en.trim() },
       });
-      applyTicket(row as unknown as Record<string, unknown>, 'icon', ticket(item, true));
+      applyTicket(row as unknown as Record<string, unknown>, 'icon', sharedTicket(item.image, true));
       return row;
     });
 
   body.solutions = service.solutions
-    .filter((item) => filledLocale(item.title) || filledLocale(item.body))
+    .filter((item) => filledLocale(item.title) || filledLocale(item.body) || hasMedia(item.image))
     .map((item): ServiceSolutionWriteDto => {
       const row: ServiceSolutionWriteDto = withOptionalId(item.id, {
         title: { ar: item.title.ar.trim(), en: item.title.en.trim() },
         short_description: { ar: item.body.ar.trim(), en: item.body.en.trim() },
       });
-      applyTicket(row as unknown as Record<string, unknown>, 'icon', ticket(item, true));
+      applyTicket(row as unknown as Record<string, unknown>, 'icon', sharedTicket(item.image, true));
       return row;
     });
 
   body.stages = service.stages
-    .filter((item) => filledLocale(item.title) || filledLocale(item.body))
+    .filter((item) => filledLocale(item.title) || filledLocale(item.body) || hasMedia(item.image))
     .map((item): ServiceStageWriteDto => {
       const row: ServiceStageWriteDto = withOptionalId(item.id, {
         title: { ar: item.title.ar.trim(), en: item.title.en.trim() },
         short_description: { ar: item.body.ar.trim(), en: item.body.en.trim() },
       });
-      applyTicket(row as unknown as Record<string, unknown>, 'image', ticket(item, true));
+      applyTicket(row as unknown as Record<string, unknown>, 'image', sharedTicket(item.image, true));
       return row;
     });
 
   body.features = service.features
-    .filter((item) => filledLocale(item.title) || filledLocale(item.body))
+    .filter((item) => filledLocale(item.title) || filledLocale(item.body) || hasMedia(item.image))
     .map((item): ServiceFeatureWriteDto => {
       const row: ServiceFeatureWriteDto = withOptionalId(item.id, {
         title: { ar: item.title.ar.trim(), en: item.title.en.trim() },
         short_description: { ar: item.body.ar.trim(), en: item.body.en.trim() },
       });
-      applyTicket(row as unknown as Record<string, unknown>, 'image', ticket(item, true));
+      applyTicket(row as unknown as Record<string, unknown>, 'image', sharedTicket(item.image, true));
       return row;
     });
 

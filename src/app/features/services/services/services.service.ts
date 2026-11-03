@@ -22,7 +22,7 @@ import type {
   ServiceListName,
   ServiceStatusWriteDto,
 } from '../models/service.api';
-import type { Service, ServiceImage, ServiceSector } from '../models/service.model';
+import type { LocalizedMedia, Service, ServiceImage, ServiceSector } from '../models/service.model';
 import {
   isUploadUrl,
   mapServiceDetail,
@@ -134,35 +134,53 @@ export class ServicesService {
         },
         true,
       ),
-      whyImage: this.uploadSlot(next.whyImage),
-      whyItems: this.uploadSlots(next.whyItems),
-      solutions: this.uploadSlots(next.solutions),
-      stages: this.uploadSlots(next.stages),
-      features: this.uploadSlots(next.features),
+      whyImage: this.uploadLocalized(next.whyImage.image),
+      whyItems: this.uploadItemImages(next.whyItems),
+      solutions: this.uploadItemImages(next.solutions),
+      stages: this.uploadItemImages(next.stages),
+      features: this.uploadItemImages(next.features),
       sectors: this.uploadSectors(next.sectors),
     }).pipe(
       map((uploaded) => ({
         ...next,
         iconUrl: uploaded.icon.imageUrl,
         iconUuid: uploaded.icon.imageUuid ?? null,
-        whyImage: { ...next.whyImage, ...uploaded.whyImage },
-        whyItems: next.whyItems.map((item, index) => ({ ...item, ...uploaded.whyItems[index] })),
+        whyImage: { ...next.whyImage, image: uploaded.whyImage },
+        whyItems: next.whyItems.map((item, index) => ({
+          ...item,
+          image: uploaded.whyItems[index] ?? item.image,
+        })),
         solutions: next.solutions.map((item, index) => ({
           ...item,
-          ...uploaded.solutions[index],
+          image: uploaded.solutions[index] ?? item.image,
         })),
-        stages: next.stages.map((item, index) => ({ ...item, ...uploaded.stages[index] })),
-        features: next.features.map((item, index) => ({ ...item, ...uploaded.features[index] })),
+        stages: next.stages.map((item, index) => ({
+          ...item,
+          image: uploaded.stages[index] ?? item.image,
+        })),
+        features: next.features.map((item, index) => ({
+          ...item,
+          image: uploaded.features[index] ?? item.image,
+        })),
         sectors: uploaded.sectors,
       })),
     );
   }
 
-  private uploadSlots(items: readonly ServiceImage[]): Observable<ServiceImage[]> {
+  private uploadLocalized(image: LocalizedMedia): Observable<LocalizedMedia> {
+    return forkJoin({
+      ar: this.uploadSlot(image.ar),
+      en: this.uploadSlot(image.en),
+    });
+  }
+
+  private uploadItemImages(
+    items: readonly { image: LocalizedMedia }[],
+  ): Observable<LocalizedMedia[]> {
     if (items.length === 0) {
       return of([]);
     }
-    return forkJoin(items.map((item) => this.uploadSlot(item)));
+    return forkJoin(items.map((item) => this.uploadLocalized(item.image)));
   }
 
   private uploadSectors(items: readonly ServiceSector[]): Observable<ServiceSector[]> {
@@ -171,10 +189,7 @@ export class ServicesService {
     }
     return forkJoin(
       items.map((sector) =>
-        forkJoin({
-          ar: this.uploadSlot(sector.image.ar),
-          en: this.uploadSlot(sector.image.en),
-        }).pipe(map((image) => ({ ...sector, image }))),
+        this.uploadLocalized(sector.image).pipe(map((image) => ({ ...sector, image }))),
       ),
     );
   }

@@ -160,11 +160,30 @@ describe('ServicesService', () => {
     const item = await result;
     expect(item).toMatchObject({
       id: '4',
-      whyImage: expect.objectContaining({ imageUuid: 'why-1', title: { ar: 'نص', en: 'Caption' } }),
+      whyImage: expect.objectContaining({
+        title: { ar: 'نص', en: 'Caption' },
+        image: expect.objectContaining({
+          ar: expect.objectContaining({ imageUuid: 'why-1' }),
+          en: expect.objectContaining({ imageUrl: '' }),
+        }),
+      }),
       whyItems: [expect.objectContaining({ id: '11', title: { ar: 'حاجة', en: 'Need' } })],
       solutions: [expect.objectContaining({ body: { ar: 'سطر', en: 'Line' } })],
-      stages: [expect.objectContaining({ imageUuid: 'stage-1' })],
-      features: [expect.objectContaining({ id: '41', imageUrl: '' })],
+      stages: [
+        expect.objectContaining({
+          image: expect.objectContaining({
+            ar: expect.objectContaining({ imageUuid: 'stage-1' }),
+          }),
+        }),
+      ],
+      features: [
+        expect.objectContaining({
+          id: '41',
+          image: expect.objectContaining({
+            ar: expect.objectContaining({ imageUrl: '' }),
+          }),
+        }),
+      ],
       sectors: [
         expect.objectContaining({
           image: expect.objectContaining({
@@ -198,9 +217,10 @@ describe('ServicesService', () => {
         {
           id: 'why-local',
           title: localeText('حاجة', 'Need'),
-          imageName: '',
-          imageUrl: '',
-          imageUuid: null,
+          image: {
+            ar: { imageName: '', imageUrl: '', imageUuid: null },
+            en: { imageName: '', imageUrl: '', imageUuid: null },
+          },
         },
       ],
       faqs: [
@@ -242,17 +262,27 @@ describe('ServicesService', () => {
       published: false,
       whyImage: {
         title: localeText('نص', 'Caption'),
-        imageName: 'why.png',
-        imageUrl: 'https://cdn.test/why.png',
-        imageUuid: 'why-1',
+        image: {
+          ar: {
+            imageName: 'why.png',
+            imageUrl: 'https://cdn.test/why.png',
+            imageUuid: 'why-1',
+          },
+          en: { imageName: '', imageUrl: '', imageUuid: null },
+        },
       },
       whyItems: [
         {
           id: '11',
           title: localeText('حاجة', 'Need'),
-          imageName: 'n.png',
-          imageUrl: 'https://cdn.test/n.png',
-          imageUuid: 'need-1',
+          image: {
+            ar: {
+              imageName: 'n.png',
+              imageUrl: 'https://cdn.test/n.png',
+              imageUuid: 'need-1',
+            },
+            en: { imageName: '', imageUrl: '', imageUuid: null },
+          },
         },
       ],
       solutions: [],
@@ -302,9 +332,14 @@ describe('ServicesService', () => {
       published: true,
       whyImage: {
         title: localeText('نص', 'Caption'),
-        imageName: 'hero.png',
-        imageUrl: blobUrl,
-        imageUuid: null,
+        image: {
+          ar: {
+            imageName: 'hero.png',
+            imageUrl: blobUrl,
+            imageUuid: null,
+          },
+          en: { imageName: '', imageUrl: '', imageUuid: null },
+        },
       },
       whyItems: [],
       solutions: [],

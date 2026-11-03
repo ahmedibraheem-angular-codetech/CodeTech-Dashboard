@@ -1,5 +1,5 @@
 import type { AppLanguage } from '../../../core/i18n/language';
-import type { LocaleText, ServiceImage } from '../models/service.model';
+import type { LocaleText, LocalizedMedia, ServiceImage } from '../models/service.model';
 
 export interface ServiceImageFile {
   name: string;
@@ -35,10 +35,33 @@ export function patchLocaleField<T extends Record<K, LocaleText>, K extends keyo
   }));
 }
 
-export function withImage<T extends ServiceImage>(item: T, file: ServiceImageFile): T {
-  return { ...item, imageName: file.name, imageUrl: file.url, imageUuid: null };
+export function withImage(item: ServiceImage, file: ServiceImageFile): ServiceImage {
+  return { imageName: file.name, imageUrl: file.url, imageUuid: null };
 }
 
-export function withoutImage<T extends ServiceImage>(item: T): T {
+export function withoutImage(item: ServiceImage): ServiceImage {
   return { ...item, imageName: '', imageUrl: '', imageUuid: null };
+}
+
+export function setLocalizedSlotImage<T extends { image: LocalizedMedia }>(
+  items: readonly T[],
+  index: number,
+  language: AppLanguage,
+  file: ServiceImageFile,
+): T[] {
+  return mapAt(items, index, (item) => ({
+    ...item,
+    image: { ...item.image, [language]: withImage(item.image[language], file) },
+  }));
+}
+
+export function clearLocalizedSlotImage<T extends { image: LocalizedMedia }>(
+  items: readonly T[],
+  index: number,
+  language: AppLanguage,
+): T[] {
+  return mapAt(items, index, (item) => ({
+    ...item,
+    image: { ...item.image, [language]: withoutImage(item.image[language]) },
+  }));
 }

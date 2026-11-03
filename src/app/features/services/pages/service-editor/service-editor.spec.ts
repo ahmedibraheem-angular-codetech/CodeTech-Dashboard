@@ -167,10 +167,10 @@ describe('ServiceEditor', () => {
         'app-service-faq-step',
       ];
       editor.setField('name', inputEvent('خدمة'));
+      editor.setWhyImage({ name: 'why.png', url: 'blob:why' });
       editor.useLocale('en');
       editor.setField('name', inputEvent('Service'));
       editor.setField('description', inputEvent('Description'));
-      editor.setWhyImage({ name: 'why.png', url: 'blob:why' });
 
       for (const [index, host] of hosts.entries()) {
         expect(root.querySelector(host), host).not.toBeNull();
@@ -187,7 +187,11 @@ describe('ServiceEditor', () => {
       fixture.detectChanges();
       expect(editor.draft().name).toEqual(localeText('خدمة', 'Service'));
       expect(editor.draft().description.en).toBe('Description');
-      expect(editor.draft().whyImage).toMatchObject({ imageName: 'why.png', imageUrl: 'blob:why' });
+      expect(editor.draft().whyImage.image.ar).toMatchObject({
+        imageName: 'why.png',
+        imageUrl: 'blob:why',
+      });
+      expect(editor.draft().whyImage.image.en.imageUrl).toBe('');
     });
 
     it('will not jump ahead of the current step before it is reached', async () => {
@@ -241,27 +245,29 @@ describe('ServiceEditor', () => {
         description: { ar: 'وصف', en: 'Description' },
         whyImage: {
           title: { ar: 'عنوان', en: 'Title' },
-          imageName: 'why.png',
-          imageUrl: 'blob:why',
+          image: {
+            ar: { imageName: 'why.png', imageUrl: 'blob:why' },
+            en: { imageName: '', imageUrl: '' },
+          },
         },
         projectIds: ['wasly'],
       });
       expect(saved?.whyItems[0]).toMatchObject({
         title: { ar: 'سبب', en: 'Reason' },
-        imageUrl: 'icon:pi-star',
+        image: { ar: { imageUrl: 'icon:pi-star' }, en: { imageUrl: '' } },
       });
       expect(saved?.solutions[0]).toMatchObject({
         title: { ar: 'حل', en: 'Solution' },
         body: { ar: 'تفصيل الحل', en: 'Solution body' },
-        imageUrl: 'icon:pi-bolt',
+        image: { ar: { imageUrl: 'icon:pi-bolt' }, en: { imageUrl: '' } },
       });
       expect(saved?.stages[0]).toMatchObject({
         title: { ar: 'مرحلة', en: 'Stage' },
-        imageUrl: 'blob:stage',
+        image: { ar: { imageUrl: 'blob:stage' }, en: { imageUrl: '' } },
       });
       expect(saved?.features[0]).toMatchObject({
         title: { ar: 'ميزة', en: 'Feature' },
-        imageUrl: 'blob:feature',
+        image: { ar: { imageUrl: 'blob:feature' }, en: { imageUrl: '' } },
       });
       expect(saved?.sectors[0]?.image.ar).toMatchObject({
         imageName: 'sector.png',
@@ -490,24 +496,63 @@ describe('ServiceEditor', () => {
       const after = editor.draft().stages;
       expect(after[1]?.title).toEqual({ ar: before[1]?.title.ar, en: 'Edited stage' });
       expect(after[1]?.body.en).toBe('Edited body');
-      expect(after[1]?.imageUrl).toBe(before[1]?.imageUrl);
-      expect(after[1]?.imageName).toBe(before[1]?.imageName);
+      expect(after[1]?.image.ar.imageUrl).toBe(before[1]?.image.ar.imageUrl);
+      expect(after[1]?.image.ar.imageName).toBe(before[1]?.image.ar.imageName);
       expect(after[0]).toEqual(before[0]);
       expect(after[2]).toEqual(before[2]);
       expect(after.map((item) => item.id)).toEqual(before.map((item) => item.id));
+    });
+
+
+    it('keeps why and feature images independent per locale tab', async () => {
+      const { editor } = await render('create');
+
+      editor.useLocale('ar');
+      editor.setWhyImage({ name: 'ar-why.png', url: 'blob:why-ar' });
+      editor.setPointImage('features', 0, { name: 'ar-feat.png', url: 'blob:feat-ar' });
+
+      editor.useLocale('en');
+      expect(editor.draft().whyImage.image.en.imageUrl).toBe('');
+      expect(editor.draft().features[0]?.image.en.imageUrl).toBe('');
+
+      editor.setWhyImage({ name: 'en-why.png', url: 'blob:why-en' });
+      editor.setPointImage('features', 0, { name: 'en-feat.png', url: 'blob:feat-en' });
+
+      expect(editor.draft().whyImage.image.ar).toMatchObject({
+        imageName: 'ar-why.png',
+        imageUrl: 'blob:why-ar',
+      });
+      expect(editor.draft().whyImage.image.en).toMatchObject({
+        imageName: 'en-why.png',
+        imageUrl: 'blob:why-en',
+      });
+      expect(editor.draft().features[0]?.image.ar).toMatchObject({
+        imageName: 'ar-feat.png',
+        imageUrl: 'blob:feat-ar',
+      });
+      expect(editor.draft().features[0]?.image.en).toMatchObject({
+        imageName: 'en-feat.png',
+        imageUrl: 'blob:feat-en',
+      });
+
+      editor.useLocale('ar');
+      editor.clearWhyImage();
+      expect(editor.draft().whyImage.image.ar.imageUrl).toBe('');
+      expect(editor.draft().whyImage.image.en.imageUrl).toBe('blob:why-en');
     });
 
     it('sets and clears images on one item only', async () => {
       const { editor } = await render('edit', 'web-development');
       const before = editor.draft();
       editor.setPointImage('features', 0, { name: 'new.png', url: 'blob:new' });
-      expect(editor.draft().features[0]).toMatchObject({
+      expect(editor.draft().features[0]?.image.ar).toMatchObject({
         imageName: 'new.png',
         imageUrl: 'blob:new',
       });
+      expect(editor.draft().features[0]?.image.en.imageUrl).toBe('');
       expect(editor.draft().features[1]).toEqual(before.features[1]);
       editor.clearPointImage('features', 0);
-      expect(editor.draft().features[0]).toMatchObject({ imageName: '', imageUrl: '' });
+      expect(editor.draft().features[0]?.image.ar).toMatchObject({ imageName: '', imageUrl: '' });
       expect(editor.draft().features[0]?.title).toEqual(before.features[0]?.title);
 
       editor.setSectorImage(1, { name: 's.png', url: 'blob:s' });
@@ -539,12 +584,13 @@ describe('ServiceEditor', () => {
         imageUrl: 'blob:ar',
       });
 
+      editor.useLocale('ar');
       editor.clearWhyIcon(0);
-      expect(editor.draft().whyItems[0]).toMatchObject({ imageName: '', imageUrl: '' });
+      expect(editor.draft().whyItems[0]?.image.ar).toMatchObject({ imageName: '', imageUrl: '' });
       expect(editor.draft().whyItems[0]?.title).toEqual(before.whyItems[0]?.title);
       expect(editor.draft().whyItems[1]).toEqual(before.whyItems[1]);
       editor.clearWhyImage();
-      expect(editor.draft().whyImage.imageUrl).toBe('');
+      expect(editor.draft().whyImage.image.ar.imageUrl).toBe('');
       expect(editor.draft().whyImage.title).toEqual(before.whyImage.title);
     });
 
@@ -1226,7 +1272,7 @@ describe('ServiceEditor', () => {
 
       pickFile(lastFileInput(root), 'why.png');
       await settle(fixture);
-      const url = editor.draft().whyImage.imageUrl;
+      const url = editor.draft().whyImage.image.ar.imageUrl;
       expect(url).toBe('blob:service/1');
 
       editor.select(1);
@@ -1236,7 +1282,7 @@ describe('ServiceEditor', () => {
       await settle(fixture);
 
       expect(revoke).not.toHaveBeenCalled();
-      expect(editor.draft().whyImage.imageUrl).toBe(url);
+      expect(editor.draft().whyImage.image.ar.imageUrl).toBe(url);
       expect(lastFileInput(root).closest('app-product-upload')?.querySelector('img')?.src).toBe(
         url,
       );
@@ -1249,7 +1295,7 @@ describe('ServiceEditor', () => {
 
       expect(revoke).toHaveBeenCalledTimes(1);
       expect(revoke).toHaveBeenCalledWith(url);
-      expect(editor.draft().whyImage.imageUrl).toBe('');
+      expect(editor.draft().whyImage.image.ar.imageUrl).toBe('');
     });
 
     it('revokes only the replaced image', async () => {
@@ -1266,14 +1312,14 @@ describe('ServiceEditor', () => {
 
       expect(revoke).toHaveBeenCalledTimes(1);
       expect(revoke).toHaveBeenCalledWith('blob:service/1');
-      expect(editor.draft().whyImage.imageUrl).toBe('blob:service/2');
+      expect(editor.draft().whyImage.image.ar.imageUrl).toBe('blob:service/2');
     });
 
     it('revokes a newly selected unsaved image when the editor is closed', async () => {
       const { fixture, editor, root } = await render('edit', 'web-development');
       pickFile(lastFileInput(root), 'why.png');
       await settle(fixture);
-      const url = editor.draft().whyImage.imageUrl;
+      const url = editor.draft().whyImage.image.ar.imageUrl;
       fixture.destroy();
       expect(revoke).toHaveBeenCalledTimes(1);
       expect(revoke).toHaveBeenCalledWith(url);
@@ -1286,10 +1332,10 @@ describe('ServiceEditor', () => {
       await settle(fixture);
       headerButton(root, 'حفظ كمسودة')?.click();
       await settle(fixture);
-      const saved = (await firstValueFrom(api.get('web-development')))?.whyImage.imageUrl;
+      const saved = (await firstValueFrom(api.get('web-development')))?.whyImage.image.ar.imageUrl;
       fixture.destroy();
       expect(revoke).not.toHaveBeenCalled();
-      expect((await firstValueFrom(api.get('web-development')))?.whyImage.imageUrl).toBe(saved);
+      expect((await firstValueFrom(api.get('web-development')))?.whyImage.image.ar.imageUrl).toBe(saved);
     });
 
     it('does not break a saved image when an unsaved edit replaces or clears it', async () => {
@@ -1300,13 +1346,13 @@ describe('ServiceEditor', () => {
       await settle(fixture);
       headerButton(root, 'حفظ كمسودة')?.click();
       await settle(fixture);
-      const saved = editor.draft().whyImage.imageUrl;
-      expect((await firstValueFrom(api.get('web-development')))?.whyImage.imageUrl).toBe(saved);
+      const saved = editor.draft().whyImage.image.ar.imageUrl;
+      expect((await firstValueFrom(api.get('web-development')))?.whyImage.image.ar.imageUrl).toBe(saved);
 
       pickFile(lastFileInput(root), 'unsaved.png');
       await settle(fixture);
       expect(revoke).not.toHaveBeenCalled();
-      expect((await firstValueFrom(api.get('web-development')))?.whyImage.imageUrl).toBe(saved);
+      expect((await firstValueFrom(api.get('web-development')))?.whyImage.image.ar.imageUrl).toBe(saved);
 
       lastFileInput(root)
         .closest('app-product-upload')
@@ -1315,8 +1361,8 @@ describe('ServiceEditor', () => {
       await settle(fixture);
       expect(revoke).toHaveBeenCalledTimes(1);
       expect(revoke).toHaveBeenCalledWith('blob:service/2');
-      expect((await firstValueFrom(api.get('web-development')))?.whyImage.imageUrl).toBe(saved);
-      expect(editor.draft().whyImage.imageUrl).toBe('');
+      expect((await firstValueFrom(api.get('web-development')))?.whyImage.image.ar.imageUrl).toBe(saved);
+      expect(editor.draft().whyImage.image.ar.imageUrl).toBe('');
     });
 
     it('revokes the previous image once a later save no longer uses it, and keeps the new one after close', async () => {
@@ -1327,7 +1373,7 @@ describe('ServiceEditor', () => {
       await settle(fixture);
       headerButton(root, 'حفظ كمسودة')?.click();
       await settle(fixture);
-      const first = (await firstValueFrom(api.get('web-development')))?.whyImage.imageUrl;
+      const first = (await firstValueFrom(api.get('web-development')))?.whyImage.image.ar.imageUrl;
 
       pickFile(lastFileInput(root), 'second.png');
       await settle(fixture);
@@ -1335,13 +1381,13 @@ describe('ServiceEditor', () => {
       await settle(fixture);
 
       expect(revoke).toHaveBeenCalledWith(first);
-      expect((await firstValueFrom(api.get('web-development')))?.whyImage.imageUrl).toBe(
+      expect((await firstValueFrom(api.get('web-development')))?.whyImage.image.ar.imageUrl).toBe(
         'blob:service/2',
       );
 
       fixture.destroy();
       expect(revoke).toHaveBeenCalledTimes(1);
-      expect((await firstValueFrom(api.get('web-development')))?.whyImage.imageUrl).toBe(
+      expect((await firstValueFrom(api.get('web-development')))?.whyImage.image.ar.imageUrl).toBe(
         'blob:service/2',
       );
     });

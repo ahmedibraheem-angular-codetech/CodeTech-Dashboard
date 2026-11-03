@@ -47,7 +47,7 @@ describe('SERVICES_SEED', () => {
 
   it('populates all seven sections', () => {
     for (const item of SERVICES_SEED) {
-      expect(item.whyImage.imageUrl, item.id).not.toBe('');
+      expect(item.whyImage.image.ar.imageUrl, item.id).not.toBe('');
       expect(item.whyItems.length, item.id).toBeGreaterThan(0);
       expect(item.solutions.length, item.id).toBeGreaterThan(0);
       expect(item.stages.length, item.id).toBeGreaterThan(0);
@@ -103,13 +103,14 @@ describe('SERVICES_SEED', () => {
 
   it('uses only library icons or shipped local images, and unique item ids', () => {
     const images: ServiceImage[] = SERVICES_SEED.flatMap((item) => [
-      item.whyImage,
-      ...item.whyItems,
-      ...item.solutions,
-      ...item.stages,
-      ...item.features,
+      item.whyImage.image.ar,
+      item.whyImage.image.en,
+      ...item.whyItems.flatMap((entry) => [entry.image.ar, entry.image.en]),
+      ...item.solutions.flatMap((entry) => [entry.image.ar, entry.image.en]),
+      ...item.stages.flatMap((entry) => [entry.image.ar, entry.image.en]),
+      ...item.features.flatMap((entry) => [entry.image.ar, entry.image.en]),
       ...item.sectors.flatMap((sector) => [sector.image.ar, sector.image.en]),
-    ]);
+    ]).filter((image) => image.imageUrl);
     for (const image of images) {
       expect(image.imageUrl.startsWith('icon:') || image.imageUrl.startsWith('/images/')).toBe(
         true,

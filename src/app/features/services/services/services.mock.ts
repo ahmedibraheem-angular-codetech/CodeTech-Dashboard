@@ -1,11 +1,13 @@
 import {
   blankService,
+  emptyServiceImage,
   localeText,
   serviceFaq,
   servicePoint,
   serviceSector,
   serviceWhyItem,
   type LocaleText,
+  type LocalizedMedia,
   type Service,
   type ServiceImage,
   type ServicePoint,
@@ -51,16 +53,26 @@ function picture(index: number): ServiceImage {
   return { imageName: url.slice(url.lastIndexOf('/') + 1), imageUrl: url };
 }
 
+function mediaFrom(slot: ServiceImage): LocalizedMedia {
+  return { ar: slot, en: emptyServiceImage() };
+}
+
 function iconImage(icon: string): ServiceImage {
   return { imageName: icon, imageUrl: `icon:${icon}` };
 }
 
 function iconPoint(seed: PointSeed, icon: string): ServicePoint {
-  return { ...servicePoint(text(seed.title), text(seed.body)), ...iconImage(icon) };
+  return {
+    ...servicePoint(text(seed.title), text(seed.body)),
+    image: mediaFrom(iconImage(icon)),
+  };
 }
 
 function imagePoint(seed: PointSeed, index: number): ServicePoint {
-  return { ...servicePoint(text(seed.title), text(seed.body)), ...picture(index) };
+  return {
+    ...servicePoint(text(seed.title), text(seed.body)),
+    image: mediaFrom(picture(index)),
+  };
 }
 
 function build(seed: ServiceSeed): Service {
@@ -71,10 +83,10 @@ function build(seed: ServiceSeed): Service {
     published: seed.published,
     name: text(seed.name),
     description: text(seed.description),
-    whyImage: { title: text(seed.whyTitle), ...picture(0) },
+    whyImage: { title: text(seed.whyTitle), image: mediaFrom(picture(0)) },
     whyItems: seed.why.map((item) => ({
       ...serviceWhyItem(text(item.title)),
-      ...iconImage(item.icon),
+      image: mediaFrom(iconImage(item.icon)),
     })),
     solutions: seed.solutions.map((item) => iconPoint(item, item.icon)),
     stages: seed.stages.map((item, index) => imagePoint(item, index + 1)),
