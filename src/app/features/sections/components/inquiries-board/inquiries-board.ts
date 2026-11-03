@@ -85,7 +85,7 @@ export class InquiriesBoard {
     transform: (value: string | undefined) => value ?? '/contact/inquiries',
   });
 
-  /** `inquiries` hits the real API; `project_requests` stays mock in this phase. */
+  /** Routes pick the inbox; each uses its own admin API base path. */
   readonly inbox = input<InquiryInbox>('inquiries');
 
   readonly heading = computed(() => {

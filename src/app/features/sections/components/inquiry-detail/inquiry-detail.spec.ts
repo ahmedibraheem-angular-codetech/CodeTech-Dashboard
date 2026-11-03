@@ -316,6 +316,79 @@ describe('InquiryDetailPage', () => {
     expect(component.item()!.notes).toHaveLength(0);
     expect(component.item()!.status).toBe('new');
   });
+
+  it('loads project requests from /admin/project-requests and maps the service label', async () => {
+    TestBed.configureTestingModule({
+      imports: [InquiryDetailPage],
+      providers: [
+        MessageService,
+        provideHttpClient(withInterceptors([])),
+        provideHttpClientTesting(),
+        { provide: API_BASE_URL, useValue: base },
+        provideRouter([]),
+      ],
+    });
+    TestBed.inject(AuthService).session.set(
+      authSession({
+        token: 't',
+        email: 'admin@codetech.sa',
+        name: 'Admin',
+        profileLoaded: true,
+        permissions: [
+          'project_requests.view',
+          'project_requests.create',
+          'project_requests.update',
+          'project_requests.delete',
+        ],
+      }),
+    );
+    const fixture = TestBed.createComponent(InquiryDetailPage);
+    fixture.componentRef.setInput('id', '57');
+    fixture.componentRef.setInput('permissionModule', 'project_requests');
+    fixture.componentRef.setInput('inbox', 'project_requests');
+    fixture.detectChanges();
+
+    const http = TestBed.inject(HttpTestingController);
+    http.expectOne(`${base}/admin/project-requests/57`).flush({
+      data: {
+        id: 57,
+        reference: 'REQ-00057',
+        type: 'project_request',
+        status: 'new',
+        name: 'سارة العتيبي',
+        organization: 'مؤسسة الريادة',
+        phone: '+966 50 412 7788',
+        email: 'sara@example.com',
+        service: { id: 2, name: 'تصميم UI/UX' },
+        message: 'نرغب في إعادة تصميم تطبيق خدمة العملاء لدينا.',
+        close_note: null,
+        closed_at: null,
+        notes: [],
+        replies: [],
+        timeline: [
+          {
+            key: 'received',
+            state: 'done',
+            title: 'تم استلام الطلب',
+            description: 'تم الاستقبال',
+            at: '2026-10-29T08:00:00.000000Z',
+            by: null,
+          },
+        ],
+        created_at: '2026-10-29T08:00:00.000000Z',
+        updated_at: '2026-10-29T08:00:00.000000Z',
+      },
+    });
+    http.expectNone((req) => req.url.includes('/admin/inquiries'));
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    const root: HTMLElement = fixture.nativeElement;
+    expect(root.textContent).toContain('REQ-00057');
+    expect(root.textContent).toContain('سارة العتيبي');
+    expect(root.textContent).toContain('تصميم UI/UX');
+    expect(page(fixture).item()?.product).toBe('تصميم UI/UX');
+  });
 });
 
 function detailDto(
