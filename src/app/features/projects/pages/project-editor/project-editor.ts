@@ -68,6 +68,8 @@ import {
 import {
   clearServerErrorPaths,
   clearServerErrorPrefix,
+  firstFieldErrorMessage,
+  identityBodyErrorMessage,
   identityTitleErrorMessage,
   keywordsErrorMessage,
   localeFromServerPath,
@@ -388,6 +390,16 @@ export class ProjectEditor {
     );
   }
 
+  identityBodyError(index: number): string {
+    return identityBodyErrorMessage(
+      this.draft(),
+      index,
+      this.locale(),
+      this.serverErrors(),
+      (key) => this.copy(key),
+    );
+  }
+
   setField(key: 'name' | 'summary', event: Event): void {
     const value = this.read(event);
     if (value === undefined) {
@@ -655,12 +667,13 @@ export class ProjectEditor {
         error: (error: unknown) => {
           if (isApiError(error) && error.kind === 'validation') {
             this.applyServerErrors(error.fieldErrors);
-            if (Object.keys(error.fieldErrors).length === 0) {
-              this.messages.add({
-                severity: 'error',
-                summary: error.serverMessage ?? this.lang.t('common.error'),
-              });
-            }
+            this.messages.add({
+              severity: 'error',
+              summary:
+                firstFieldErrorMessage(error.fieldErrors) ||
+                error.serverMessage ||
+                this.lang.t('common.error'),
+            });
             return;
           }
           this.messages.add({

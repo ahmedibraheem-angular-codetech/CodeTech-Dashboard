@@ -376,8 +376,10 @@ describe('ProjectEditor', () => {
     editor.addIdentityButton();
     editor.useLocale('ar');
     editor.setIdentityButtonText(0, 'title', inputEvent('زر واحد'));
+    editor.setIdentityButtonText(0, 'body', inputEvent('وصف الزر'));
     editor.useLocale('en');
     editor.setIdentityButtonText(0, 'title', inputEvent('One button'));
+    editor.setIdentityButtonText(0, 'body', inputEvent('Button body'));
     editor.setIdentityButtonImage(0, 3, { name: 'slot.jpg', url: 'blob:slot' });
 
     for (let step = 0; step < 6; step += 1) {
@@ -391,6 +393,7 @@ describe('ProjectEditor', () => {
     const reloaded = await firstValueFrom(api.get(savedId));
     expect(reloaded?.identityButtons).toHaveLength(2);
     expect(reloaded?.identityButtons[0]?.title).toEqual(localeText('زر واحد', 'One button'));
+    expect(reloaded?.identityButtons[0]?.body).toEqual(localeText('وصف الزر', 'Button body'));
     expect(reloaded?.identityButtons[0]?.images[3]?.image.en.imageUrl).toBe('blob:slot');
     expect(reloaded?.identityButtons[0]?.images[3]?.image.ar.imageUrl).toBe('');
     expect(reloaded?.identityButtons[0]?.images).toHaveLength(4);

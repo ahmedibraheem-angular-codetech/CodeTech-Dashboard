@@ -3,6 +3,7 @@ import type { FieldErrors } from '../../../core/http/api-error';
 import { PROJECT_STEPS } from '../constants/project-steps';
 import type { Project } from '../models/project.model';
 import {
+  newIdentityBodyArMissing,
   newIdentityTitleArMissing,
   newPointBodyArMissing,
   newPointTitleArMissing,
@@ -176,6 +177,34 @@ export function identityTitleErrorMessage(
     `identity_items.${index}.title.ar`,
     `identity_items.${index}.title.${language}`,
   );
+}
+
+export function identityBodyErrorMessage(
+  project: Project,
+  index: number,
+  language: AppLanguage,
+  errors: FieldErrors,
+  copy: ProjectCopy,
+): string {
+  const item = project.identityButtons[index];
+  if (item && newIdentityBodyArMissing(item)) {
+    return copy('project.required');
+  }
+  return firstServerMessage(
+    errors,
+    `identity_items.${index}.short_description.ar`,
+    `identity_items.${index}.short_description.${language}`,
+  );
+}
+
+/** First human-readable message from a Laravel-style fieldErrors map. */
+export function firstFieldErrorMessage(errors: FieldErrors): string {
+  for (const messages of Object.values(errors)) {
+    if (messages[0]) {
+      return messages[0];
+    }
+  }
+  return '';
 }
 
 export function slugErrorMessage(

@@ -17,7 +17,10 @@ export type ProductPointList =
 
 export type ProductMediaList = 'tools' | 'integrations' | 'identity';
 
-export type ProductUploadFile = { name: string; url: string };
+export interface ProductUploadFile {
+  name: string;
+  url: string;
+}
 
 export function writeLocaleText(
   current: LocaleText,

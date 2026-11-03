@@ -64,19 +64,24 @@ function identityHasContent(item: ProjectIdentityButton): boolean {
   );
 }
 
-function newIdentityNeedsArTitle(item: ProjectIdentityButton): boolean {
+/** Backend requires Arabic title + short_description when the identity row is sent. */
+function newIdentityNeedsArTitleBody(item: ProjectIdentityButton): boolean {
   return isNewRepeaterItem(item.id) && identityHasContent(item);
 }
 
-export function isNewIdentityTitleValid(item: ProjectIdentityButton): boolean {
-  if (!newIdentityNeedsArTitle(item)) {
+export function isNewIdentityTitleBodyValid(item: ProjectIdentityButton): boolean {
+  if (!newIdentityNeedsArTitleBody(item)) {
     return true;
   }
-  return arFilled(item.title);
+  return arFilled(item.title) && arFilled(item.body);
 }
 
 export function newIdentityTitleArMissing(item: ProjectIdentityButton): boolean {
-  return newIdentityNeedsArTitle(item) && !arFilled(item.title);
+  return newIdentityNeedsArTitleBody(item) && !arFilled(item.title);
+}
+
+export function newIdentityBodyArMissing(item: ProjectIdentityButton): boolean {
+  return newIdentityNeedsArTitleBody(item) && !arFilled(item.body);
 }
 
 export type ProjectRepeaterStepIndex = 0 | 1 | 2 | 3 | 4 | 5;
@@ -109,7 +114,7 @@ export function firstRepeaterValidationIssue(project: Project): ProjectRepeaterI
   if (project.results.some((item) => !isNewPointTitleBodyValid(item))) {
     return { step: 4, preferAr: true };
   }
-  if (project.identityButtons.some((item) => !isNewIdentityTitleValid(item))) {
+  if (project.identityButtons.some((item) => !isNewIdentityTitleBodyValid(item))) {
     return { step: 5, preferAr: true };
   }
   return null;

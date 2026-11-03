@@ -14,6 +14,7 @@
         [body]="editor.text(button.body)"
         [bodyLabel]="editor.copy('project.identityBody')"
         [bodyPlaceholder]="editor.copy('project.identityBodyPh')"
+        [bodyError]="editor.identityBodyError(buttonIndex)"
         [bodyRows]="1"
         [iconLabel]="editor.copy('project.identityImage')"
         [showIcon]="false"

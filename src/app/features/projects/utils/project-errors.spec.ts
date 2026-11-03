@@ -3,6 +3,7 @@ import { describe, expect, it } from 'vitest';
 import {
   clearServerErrorPaths,
   clearServerErrorPrefix,
+  firstFieldErrorMessage,
   localeFromServerPath,
   projectStepIndexForServerPath,
   serverErrorMessage,
@@ -17,6 +18,8 @@ describe('project-errors', () => {
     };
     expect(serverErrorMessage(errors, 'slug')).toBe('bad slug');
     expect(serverErrorPrefixMessage(errors, 'meta_keywords.ar')).toBe('too long');
+    expect(firstFieldErrorMessage(errors)).toBe('bad slug');
+    expect(firstFieldErrorMessage({})).toBe('');
   });
 
   it('clears exact paths and prefixes', () => {

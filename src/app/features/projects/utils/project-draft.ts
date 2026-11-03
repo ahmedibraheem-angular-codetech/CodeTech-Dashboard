@@ -15,7 +15,10 @@ export type ProjectPointList =
 
 export type ProjectMediaList = 'tools';
 
-export type ProjectUploadFile = { name: string; url: string };
+export interface ProjectUploadFile {
+  name: string;
+  url: string;
+}
 
 export function writeLocaleText(
   current: LocaleText,

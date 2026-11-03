@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, inject, input, signal } from '@angular/core';
 import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
-import { of, switchMap } from 'rxjs';
+import { switchMap } from 'rxjs';
 
 import { LanguageService } from '../../../../core/services/language.service';
 import { PageHeader } from '../../../../shared/components/page-header/page-header';

@@ -1,9 +1,14 @@
 import { describe, expect, it } from 'vitest';
 
-import { blankProject, localeText, projectIdentityButton, projectPoint } from '../models/project.model';
+import {
+  blankProject,
+  localeText,
+  projectIdentityButton,
+  projectPoint,
+} from '../models/project.model';
 import {
   firstRepeaterValidationIssue,
-  isNewIdentityTitleValid,
+  isNewIdentityTitleBodyValid,
   isNewPointTitleBodyValid,
   projectRepeatersValid,
 } from './project-repeater-validation';
@@ -25,13 +30,23 @@ describe('project-repeater-validation', () => {
     ).toBe(true);
   });
 
-  it('requires Arabic title for new identity buttons with content', () => {
-    expect(isNewIdentityTitleValid(projectIdentityButton())).toBe(true);
+  it('requires Arabic title and body for new identity buttons with content', () => {
+    expect(isNewIdentityTitleBodyValid(projectIdentityButton())).toBe(true);
     expect(
-      isNewIdentityTitleValid(projectIdentityButton(localeText('', 'Title'), localeText())),
+      isNewIdentityTitleBodyValid(projectIdentityButton(localeText('', 'Title'), localeText())),
     ).toBe(false);
     expect(
-      isNewIdentityTitleValid({
+      isNewIdentityTitleBodyValid(
+        projectIdentityButton(localeText('عنوان', 'Title'), localeText()),
+      ),
+    ).toBe(false);
+    expect(
+      isNewIdentityTitleBodyValid(
+        projectIdentityButton(localeText('عنوان', 'Title'), localeText('وصف', 'Body')),
+      ),
+    ).toBe(true);
+    expect(
+      isNewIdentityTitleBodyValid({
         ...projectIdentityButton(localeText('', 'Title'), localeText()),
         id: '9',
       }),
@@ -43,5 +58,11 @@ describe('project-repeater-validation', () => {
     project.features = [projectPoint(localeText('', 'Feature'), localeText('', 'Body'))];
     expect(firstRepeaterValidationIssue(project)).toEqual({ step: 3, preferAr: true });
     expect(projectRepeatersValid(project)).toBe(false);
+
+    project.features = [projectPoint()];
+    project.identityButtons = [
+      projectIdentityButton(localeText('عنوان', 'Title'), localeText('', 'Body')),
+    ];
+    expect(firstRepeaterValidationIssue(project)).toEqual({ step: 5, preferAr: true });
   });
 });
