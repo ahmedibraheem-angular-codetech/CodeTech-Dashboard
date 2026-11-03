@@ -20,6 +20,7 @@
         [imageUrl]="item.image[editor.locale()].imageUrl"
         [locale]="editor.locale()"
         [uploadKeyPrefix]="uploadPrefix"
+        [actions]="true"
         [clearable]="true"
         [removeDisabled]="editor.draft().results.length === 1"
         [removeLabel]="editor.copy('project.deleteTitle')"

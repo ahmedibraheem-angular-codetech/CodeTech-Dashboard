@@ -1,7 +1,7 @@
 <section class="editor-section editor-section--units">
   <header class="editor-section__head">
-    <h2>{{ editor.copy('product.units') }}</h2>
     <span class="icon-badge" aria-hidden="true"><i class="pi pi-cog"></i></span>
+    <h2>{{ editor.copy('product.units') }}</h2>
   </header>
   <div class="editor-section__body">
     @for (unit of editor.draft().units; track unit.id; let index = $index) {
@@ -19,12 +19,14 @@
           [imageName]="unit.image[editor.locale()].imageName"
           [imageUrl]="unit.image[editor.locale()].imageUrl"
           [locale]="editor.locale()"
-          [actions]="false"
+          [actions]="true"
+          [clearable]="true"
           [removeDisabled]="editor.draft().units.length === 1 || editor.saving()"
           [removeLabel]="editor.copy('product.deleteTitle')"
           (titleChange)="editor.setUnit(index, 'title', $event)"
           (bodyChange)="editor.setUnit(index, 'body', $event)"
           (imageChange)="editor.setUnitImage(index, $event)"
+          (imageCleared)="editor.clearUnitImage(index)"
           (removed)="editor.removeUnit(index)"
         />
         <div class="unit-grid">
@@ -42,12 +44,15 @@
                 [imageName]="point.image[editor.locale()].imageName"
                 [imageUrl]="point.image[editor.locale()].imageUrl"
                 [locale]="editor.locale()"
+                [actions]="true"
+                [clearable]="true"
                 [removeDisabled]="unit.points.length === 1 || editor.saving()"
                 [removeLabel]="editor.copy('product.deleteTitle')"
                 (removed)="editor.removeUnitPoint(index, pointIndex)"
                 (titleChange)="editor.setUnitPoint(index, pointIndex, 'title', $event)"
                 (bodyChange)="editor.setUnitPoint(index, pointIndex, 'body', $event)"
                 (imageChange)="editor.setUnitPointImage(index, pointIndex, $event)"
+                (imageCleared)="editor.clearUnitPointImage(index, pointIndex)"
               />
             </div>
           }

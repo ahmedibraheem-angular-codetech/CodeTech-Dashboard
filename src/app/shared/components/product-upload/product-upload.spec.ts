@@ -124,7 +124,7 @@ describe('ProductUpload', () => {
       '.uploader__mark--icon img.icon-library__img--preview',
     ) as HTMLImageElement | null;
     expect(previewImg).not.toBeNull();
-    expect(previewImg?.getAttribute('src')).toBe('iconLibrary/fi-br-globe.svg');
+    expect(previewImg?.getAttribute('src')).toBe('/iconLibrary/fi-br-globe.svg');
   });
   function fileInput(fixture: ReturnType<typeof create>): HTMLInputElement {
     return fixture.nativeElement.querySelector('input[type="file"]') as HTMLInputElement;

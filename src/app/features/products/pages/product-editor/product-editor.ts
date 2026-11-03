@@ -51,7 +51,14 @@ import {
   draftAddStat,
   draftAddUnit,
   draftAddUnitPoint,
+  draftClearCover,
+  draftClearMediaImage,
+  draftClearPointImage,
   draftClearSectorImage,
+  draftClearSolutionImage,
+  draftClearStatImage,
+  draftClearUnitImage,
+  draftClearUnitPointImage,
   draftRemoveFaq,
   draftRemoveMedia,
   draftRemovePoint,
@@ -390,6 +397,11 @@ export class ProductEditor {
     this.draft.update((current) => draftSetPointImage(current, list, index, language, file));
   }
 
+  clearPointImage(list: ProductPointList, index: number): void {
+    const language = this.locale();
+    this.draft.update((current) => draftClearPointImage(current, list, index, language));
+  }
+
   setMediaText(list: ProductMediaList, index: number, field: 'title' | 'body', event: Event): void {
     const value = this.read(event);
     if (value === undefined) {
@@ -402,6 +414,11 @@ export class ProductEditor {
   setMediaImage(list: ProductMediaList, index: number, file: { name: string; url: string }): void {
     const language = this.locale();
     this.draft.update((current) => draftSetMediaImage(current, list, index, language, file));
+  }
+
+  clearMediaImage(list: ProductMediaList, index: number): void {
+    const language = this.locale();
+    this.draft.update((current) => draftClearMediaImage(current, list, index, language));
   }
 
   addMedia(list: ProductMediaList): void {
@@ -682,9 +699,19 @@ export class ProductEditor {
     this.draft.update((current) => draftSetSolutionImage(current, language, file));
   }
 
+  clearSingleImage(_key: 'solution'): void {
+    const language = this.locale();
+    this.draft.update((current) => draftClearSolutionImage(current, language));
+  }
+
   setCover(kind: 'cover' | 'thumb', file: { name: string; url: string }): void {
     const language = this.locale();
     this.draft.update((current) => draftSetCover(current, kind, language, file));
+  }
+
+  clearCover(kind: 'cover' | 'thumb'): void {
+    const language = this.locale();
+    this.draft.update((current) => draftClearCover(current, kind, language));
   }
 
   setCoverText(key: 'coverTitle' | 'coverAlt' | 'thumbTitle' | 'thumbAlt', event: Event): void {
@@ -715,6 +742,11 @@ export class ProductEditor {
     this.draft.update((current) => draftSetStatImage(current, index, language, file));
   }
 
+  clearStatImage(index: number): void {
+    const language = this.locale();
+    this.draft.update((current) => draftClearStatImage(current, index, language));
+  }
+
   addStat(): void {
     this.draft.update((current) => draftAddStat(current));
   }
@@ -737,6 +769,11 @@ export class ProductEditor {
     this.draft.update((current) => draftSetUnitImage(current, index, language, file));
   }
 
+  clearUnitImage(index: number): void {
+    const language = this.locale();
+    this.draft.update((current) => draftClearUnitImage(current, index, language));
+  }
+
   setUnitPoint(unitIndex: number, pointIndex: number, field: 'title' | 'body', event: Event): void {
     const value = this.read(event);
     if (value === undefined) {
@@ -756,6 +793,13 @@ export class ProductEditor {
     const language = this.locale();
     this.draft.update((current) =>
       draftSetUnitPointImage(current, unitIndex, pointIndex, language, file),
+    );
+  }
+
+  clearUnitPointImage(unitIndex: number, pointIndex: number): void {
+    const language = this.locale();
+    this.draft.update((current) =>
+      draftClearUnitPointImage(current, unitIndex, pointIndex, language),
     );
   }
 

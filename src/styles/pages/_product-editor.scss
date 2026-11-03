@@ -14,11 +14,11 @@
 
 .icon-library {
   display: grid;
-  grid-template-columns: repeat(8, minmax(0, 1fr));
-  gap: 8px;
-  padding: 12px;
+  grid-template-columns: repeat(10, minmax(0, 1fr));
+  gap: 6px;
+  padding: 8px;
   border: 1px solid #e3e8f2;
-  border-radius: 16px;
+  border-radius: 14px;
   background: var(--app-surface);
 }
 
@@ -28,23 +28,23 @@
   aspect-ratio: 1;
   place-items: center;
   border: 1px solid transparent;
-  border-radius: 12px;
+  border-radius: 10px;
   background: #f7f9fc;
   color: var(--app-text);
-  font-size: 18px;
+  font-size: 16px;
   cursor: pointer;
 }
 
 .icon-library__img {
   display: block;
-  width: 18px;
-  height: 18px;
+  width: 14px;
+  height: 14px;
   object-fit: contain;
 }
 
 .icon-library__img--preview {
-  width: 28px;
-  height: 28px;
+  width: 22px;
+  height: 22px;
 }
 
 .icon-library__item.is-selected {
@@ -185,7 +185,7 @@
 .editor-footer {
   display: flex;
   justify-content: flex-start;
-  gap: 12px;
+  gap: 8px;
   padding: 16px;
   border: 1px solid var(--app-border);
   border-radius: 20px;
@@ -193,31 +193,54 @@
 }
 
 .editor-footer .editor-nav {
-  --p-button-border-radius: 14px;
-  --p-button-padding-y: 0;
-  --p-button-padding-x: 28px;
+  --p-button-border-radius: 16px;
+  --p-button-padding-y: 16px;
+  --p-button-padding-x: 16px;
+  --p-button-gap: 8px;
 
+  box-sizing: border-box;
   height: 48px;
-  min-width: 168px;
+  padding: 16px;
+  gap: 8px;
+  border-radius: 16px;
   font-weight: 700;
 }
 
 .editor-footer .editor-nav--next {
-  --p-button-primary-background: var(--app-primary);
-  --p-button-primary-border-color: var(--app-primary);
-  --p-button-primary-hover-background: var(--app-primary);
-  --p-button-primary-hover-border-color: var(--app-primary);
-}
+  --p-button-primary-background: #1c81d3;
+  --p-button-primary-border-color: #1c81d3;
+  --p-button-primary-hover-background: #1670b8;
+  --p-button-primary-hover-border-color: #1670b8;
+  --p-button-primary-active-background: #125f9c;
+  --p-button-primary-active-border-color: #125f9c;
+  --p-button-primary-color: #fff;
 
-.editor-footer .editor-back {
-  order: -1;
+  width: 284.5px;
+  background: #1c81d3;
+  border-color: #1c81d3;
+  color: #fff;
 }
 
 .editor-footer .editor-nav--back {
-  --p-button-outlined-secondary-color: var(--app-muted);
-  --p-button-outlined-secondary-border-color: #e3e8f2;
-  --p-button-outlined-secondary-hover-background: var(--app-surface-muted);
-  --p-button-outlined-secondary-hover-border-color: #e3e8f2;
+  --p-button-outlined-secondary-background: #fafafa;
+  --p-button-outlined-secondary-hover-background: #f3f4f6;
+  --p-button-outlined-secondary-active-background: #eceff3;
+  --p-button-outlined-secondary-border-color: #eceff3;
+  --p-button-outlined-secondary-hover-border-color: #eceff3;
+  --p-button-outlined-secondary-active-border-color: #eceff3;
+  --p-button-outlined-secondary-color: #12324f;
+  --p-button-outlined-secondary-hover-color: #12324f;
+
+  width: 286.5px;
+  border: 1px solid #eceff3;
+  background: #fafafa;
+  color: #12324f;
+  opacity: 0.4;
+}
+
+.editor-footer .editor-nav--back:hover:not(:disabled),
+.editor-footer .editor-nav--back:focus-visible {
+  opacity: 1;
 }
 
 .editor-draft .editor-draft__button {
@@ -334,15 +357,6 @@ app-product-editor .locale-switch__option.is-active {
 .editor-section--stats > .editor-section__body {
   align-self: stretch;
   width: 100%;
-}
-
-.editor-section--stats .uploader,
-.editor-section__body .uploader {
-  min-height: 112px;
-}
-
-.editor-section--stats .uploader {
-  min-height: 140px;
 }
 
 .editor-section--units > .editor-section__head {
@@ -537,7 +551,10 @@ app-product-editor .locale-switch__option.is-active {
 .editor-section--cover > .editor-section__head,
 .editor-section--thumb > .editor-section__head,
 .editor-section--features > .editor-section__head,
-.editor-section--stats > .editor-section__head {
+.editor-section--stats > .editor-section__head,
+.editor-section--offer > .editor-section__head,
+.editor-section--tools > .editor-section__head,
+.editor-section--identity > .editor-section__head {
   justify-content: flex-start;
   gap: 8px;
 }
@@ -550,6 +567,15 @@ app-product-editor .locale-switch__option.is-active {
   display: grid;
   flex: none;
   order: -1;
+  place-items: center;
+}
+
+.editor-section--offer > .editor-section__head .icon-badge,
+.editor-section--tools > .editor-section__head .icon-badge,
+.editor-section--units > .editor-section__head .icon-badge,
+.editor-section--identity > .editor-section__head .icon-badge {
+  display: grid;
+  flex: none;
   place-items: center;
 }
 
@@ -697,27 +723,36 @@ app-product-editor .locale-switch__option.is-active {
   position: relative;
 }
 
-// Figma (global): circle 16.67×16.67, border 1.02px #1C81D3 @ 50%.
+// Figma: outer circle 20×20 (7.5 + 5 + 7.5), border 1.02px #1C81D3.
 .add-row__mark {
   position: relative;
   box-sizing: border-box;
-  display: grid;
+  display: block;
   order: 1; // icon after label text
-  place-items: center;
-  width: 16.67px;
-  height: 16.67px;
-  border: 1.02px solid rgb(28 129 211 / 0.5);
+  width: 20px;
+  height: 20px;
+  border: 1.02px solid #1c81d3;
   border-radius: 50%;
   color: #1c81d3;
   font-size: 0;
 }
 
-// Figma: plus glyph 5×5, #1C81D3 @ 100%.
-.add-row__mark .pi {
-  font-size: 5px;
-  line-height: 1;
-  color: #1c81d3;
+// Figma inner plus: 5×5 @ top/left 7.5, stroke 1.02px #1C81D3, opacity 1.
+.add-row__mark::before {
+  content: '';
+  position: absolute;
+  top: 7.5px;
+  left: 7.5px;
+  width: 5px;
+  height: 5px;
   opacity: 1;
+  background:
+    linear-gradient(#1c81d3, #1c81d3) center / 5px 1.02px no-repeat,
+    linear-gradient(#1c81d3, #1c81d3) center / 1.02px 5px no-repeat;
+}
+
+.add-row__mark .pi {
+  display: none;
 }
 
 // Figma (global): 629×48, r16, gap 8, pad 16, bg #F4F9FD, mt-2.

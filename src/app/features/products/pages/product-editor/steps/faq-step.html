@@ -18,11 +18,14 @@
         [imageName]="item.image[editor.locale()].imageName"
         [imageUrl]="item.image[editor.locale()].imageUrl"
         [locale]="editor.locale()"
+        [actions]="true"
+        [clearable]="true"
         [removeDisabled]="editor.draft().highlights.length === 1"
         [removeLabel]="editor.copy('product.deleteTitle')"
         (titleChange)="editor.setPoint('highlights', index, 'title', $event)"
         (bodyChange)="editor.setPoint('highlights', index, 'body', $event)"
         (imageChange)="editor.setPointImage('highlights', index, $event)"
+        (imageCleared)="editor.clearPointImage('highlights', index)"
         (removed)="editor.removePoint('highlights', index)"
       />
     }

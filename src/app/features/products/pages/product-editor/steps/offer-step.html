@@ -1,7 +1,7 @@
-<section class="editor-section">
+<section class="editor-section editor-section--offer">
   <header class="editor-section__head">
-    <h2>{{ editor.copy('product.offer') }}</h2>
     <span class="icon-badge" aria-hidden="true"><i class="pi pi-list"></i></span>
+    <h2>{{ editor.copy('product.offer') }}</h2>
   </header>
   <div class="editor-section__body">
     @for (item of editor.draft().offer; track item.id; let index = $index) {
@@ -19,11 +19,14 @@
         [imageName]="item.image[editor.locale()].imageName"
         [imageUrl]="item.image[editor.locale()].imageUrl"
         [locale]="editor.locale()"
+        [actions]="true"
+        [clearable]="true"
         [removeDisabled]="editor.draft().offer.length === 1"
         [removeLabel]="editor.copy('product.deleteTitle')"
         (titleChange)="editor.setPoint('offer', index, 'title', $event)"
         (bodyChange)="editor.setPoint('offer', index, 'body', $event)"
         (imageChange)="editor.setPointImage('offer', index, $event)"
+        (imageCleared)="editor.clearPointImage('offer', index)"
         (removed)="editor.removePoint('offer', index)"
       />
     }
@@ -33,10 +36,10 @@
     </button>
   </div>
 </section>
-<section class="editor-section">
+<section class="editor-section editor-section--offer">
   <header class="editor-section__head">
-    <h2>{{ editor.copy('product.results') }}</h2>
     <span class="icon-badge" aria-hidden="true"><i class="pi pi-chart-bar"></i></span>
+    <h2>{{ editor.copy('product.results') }}</h2>
   </header>
   <div class="editor-section__body">
     @for (item of editor.draft().results; track item.id; let index = $index) {
@@ -54,11 +57,14 @@
         [imageName]="item.image[editor.locale()].imageName"
         [imageUrl]="item.image[editor.locale()].imageUrl"
         [locale]="editor.locale()"
+        [actions]="true"
+        [clearable]="true"
         [removeDisabled]="editor.draft().results.length === 1"
         [removeLabel]="editor.copy('product.deleteTitle')"
         (titleChange)="editor.setPoint('results', index, 'title', $event)"
         (bodyChange)="editor.setPoint('results', index, 'body', $event)"
         (imageChange)="editor.setPointImage('results', index, $event)"
+        (imageCleared)="editor.clearPointImage('results', index)"
         (removed)="editor.removePoint('results', index)"
       />
     }

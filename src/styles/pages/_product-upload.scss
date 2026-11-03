@@ -5,17 +5,17 @@
 .uploader__clear {
   position: absolute;
   z-index: 2;
-  top: 8px;
-  inset-inline-start: 8px;
+  top: 6px;
+  inset-inline-start: 6px;
   display: grid;
-  width: 28px;
-  height: 28px;
+  width: 24px;
+  height: 24px;
   place-items: center;
   border: 0;
   border-radius: 50%;
   background: #fff1f2;
   color: var(--app-danger);
-  font-size: 12px;
+  font-size: 11px;
   cursor: pointer;
 }
 
@@ -24,15 +24,15 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 6px;
-  min-height: 148px;
-  padding: 16px;
+  gap: 4px;
+  min-height: 112px;
+  padding: 12px;
   border: 1px dashed var(--app-primary-soft);
-  border-radius: 16px;
+  border-radius: 14px;
   background: var(--app-surface);
   color: var(--app-text);
   text-align: center;
-  font-size: var(--app-font-sm);
+  font-size: 12px;
   cursor: pointer;
 }
 
@@ -43,7 +43,7 @@
 
 .uploader__mark--icon {
   color: var(--app-primary);
-  font-size: 28px;
+  font-size: 22px;
 }
 
 .uploader__error {
@@ -61,7 +61,7 @@
 
 .uploader__preview {
   width: 100%;
-  max-height: 120px;
+  max-height: 88px;
   object-fit: cover;
   border-radius: 12px;
 }
@@ -70,32 +70,33 @@
   display: grid;
   place-items: center;
   color: var(--app-muted);
-  font-size: 22px;
+  font-size: 18px;
 }
 
 .uploader small {
   color: var(--app-muted);
-  font-size: 12px;
+  font-size: 11px;
 }
 
 .uploader__actions {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 8px;
+  gap: 6px;
 }
 
 .uploader__action {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  height: 48px;
-  padding: 0 16px;
+  gap: 6px;
+  height: 40px;
+  padding: 0 12px;
   border: 1px solid #e3e8f2;
-  border-radius: 14px;
+  border-radius: 12px;
   background: var(--app-surface);
   color: var(--app-text);
   font: inherit;
+  font-size: 13px;
   font-weight: 500;
   cursor: pointer;
 }

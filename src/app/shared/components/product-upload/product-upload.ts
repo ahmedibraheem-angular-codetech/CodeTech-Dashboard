@@ -25,7 +25,7 @@ export class ProductUpload {
   private readonly objectUrls = inject(ObjectUrls);
   readonly name = input('');
   readonly url = input('');
-  readonly actions = input(false);
+  readonly actions = input(true);
   readonly locale = input<AppLanguage | null>(null);
 
   readonly keyPrefix = input('product');
@@ -49,6 +49,10 @@ export class ProductUpload {
       // ownership without releasing — the draft still holds those blobs.
       if (bound !== this.ownedByControl) {
         this.ownedByControl = bound.startsWith('blob:') ? bound : '';
+        // Show library tab as primary when rebound media is a library icon.
+        if (bound.startsWith('icon:')) {
+          this.source.set('library');
+        }
       }
     });
   }
@@ -101,6 +105,7 @@ export class ProductUpload {
     event.stopPropagation();
     this.sizeError.set(false);
     this.replaceOwned('');
+    this.source.set('upload');
     this.cleared.emit();
   }
 

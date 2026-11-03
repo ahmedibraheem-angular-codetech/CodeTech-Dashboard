@@ -21,7 +21,7 @@
         [locale]="editor.locale()"
         [uploadKeyPrefix]="uploadPrefix"
         [clearable]="true"
-        [actions]="false"
+        [actions]="true"
         [removeDisabled]="editor.draft().challenges.length === 1"
         [removeLabel]="editor.copy('project.deleteTitle')"
         removeIcon="pi-times"
@@ -63,6 +63,7 @@
         <app-product-upload
           [keyPrefix]="uploadPrefix"
           [locale]="editor.locale()"
+          [actions]="true"
           [clearable]="true"
           [name]="tool.image[editor.locale()].imageName"
           [url]="tool.image[editor.locale()].imageUrl"

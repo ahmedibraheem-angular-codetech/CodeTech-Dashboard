@@ -123,6 +123,15 @@ export function draftSetPointImage(
   return { ...product, [list]: setLocalizedSlotImage(product[list], index, language, file) };
 }
 
+export function draftClearPointImage(
+  product: Product,
+  list: ProductPointList,
+  index: number,
+  language: AppLanguage,
+): Product {
+  return { ...product, [list]: clearLocalizedSlotImage(product[list], index, language) };
+}
+
 export function draftSetMediaText(
   product: Product,
   list: ProductMediaList,
@@ -145,6 +154,15 @@ export function draftSetMediaImage(
   file: ProductUploadFile,
 ): Product {
   return { ...product, [list]: setLocalizedSlotImage(product[list], index, language, file) };
+}
+
+export function draftClearMediaImage(
+  product: Product,
+  list: ProductMediaList,
+  index: number,
+  language: AppLanguage,
+): Product {
+  return { ...product, [list]: clearLocalizedSlotImage(product[list], index, language) };
 }
 
 export function draftAddMedia(product: Product, list: ProductMediaList): Product {
@@ -218,6 +236,19 @@ export function draftSetSolutionImage(
   };
 }
 
+export function draftClearSolutionImage(product: Product, language: AppLanguage): Product {
+  return {
+    ...product,
+    solution: {
+      ...product.solution,
+      image: {
+        ...product.solution.image,
+        [language]: withoutProductImage(product.solution.image[language]),
+      },
+    },
+  };
+}
+
 export function draftSetCover(
   product: Product,
   kind: 'cover' | 'thumb',
@@ -228,6 +259,19 @@ export function draftSetCover(
   const next = {
     ...slot,
     [language]: withProductImage(slot[language], file),
+  };
+  return kind === 'cover' ? { ...product, cover: next } : { ...product, thumb: next };
+}
+
+export function draftClearCover(
+  product: Product,
+  kind: 'cover' | 'thumb',
+  language: AppLanguage,
+): Product {
+  const slot = kind === 'cover' ? product.cover : product.thumb;
+  const next = {
+    ...slot,
+    [language]: withoutProductImage(slot[language]),
   };
   return kind === 'cover' ? { ...product, cover: next } : { ...product, thumb: next };
 }
@@ -271,6 +315,14 @@ export function draftSetStatImage(
   return { ...product, stats: setLocalizedSlotImage(product.stats, index, language, file) };
 }
 
+export function draftClearStatImage(
+  product: Product,
+  index: number,
+  language: AppLanguage,
+): Product {
+  return { ...product, stats: clearLocalizedSlotImage(product.stats, index, language) };
+}
+
 export function draftAddStat(product: Product): Product {
   return { ...product, stats: [...product.stats, productStat()] };
 }
@@ -299,6 +351,14 @@ export function draftSetUnitImage(
   file: ProductUploadFile,
 ): Product {
   return { ...product, units: setLocalizedSlotImage(product.units, index, language, file) };
+}
+
+export function draftClearUnitImage(
+  product: Product,
+  index: number,
+  language: AppLanguage,
+): Product {
+  return { ...product, units: clearLocalizedSlotImage(product.units, index, language) };
 }
 
 export function draftSetUnitPoint(
@@ -336,6 +396,25 @@ export function draftSetUnitPointImage(
         ? {
             ...unit,
             points: setLocalizedSlotImage(unit.points, pointIndex, language, file),
+          }
+        : unit,
+    ),
+  };
+}
+
+export function draftClearUnitPointImage(
+  product: Product,
+  unitIndex: number,
+  pointIndex: number,
+  language: AppLanguage,
+): Product {
+  return {
+    ...product,
+    units: product.units.map((unit, index) =>
+      index === unitIndex
+        ? {
+            ...unit,
+            points: clearLocalizedSlotImage(unit.points, pointIndex, language),
           }
         : unit,
     ),

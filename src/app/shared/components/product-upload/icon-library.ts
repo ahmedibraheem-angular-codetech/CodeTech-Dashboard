@@ -1,4 +1,4 @@
-
+/** Filenames in `public/iconLibrary` (without `.svg`). */
 export const ICON_LIBRARY_IDS = [
   'fi-br-globe',
   'fi-br-golf',
@@ -29,6 +29,7 @@ export const ICON_LIBRARY_IDS = [
 
 export type IconLibraryId = (typeof ICON_LIBRARY_IDS)[number];
 
+/** Absolute app path so nested routes like `/products/new` still resolve. */
 export function iconLibrarySrc(id: string): string {
-  return `iconLibrary/${id}.svg`;
+  return `/iconLibrary/${id}.svg`;
 }

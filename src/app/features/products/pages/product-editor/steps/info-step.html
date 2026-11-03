@@ -64,6 +64,8 @@
             [imageName]="feature.image[editor.locale()].imageName"
             [imageUrl]="feature.image[editor.locale()].imageUrl"
             [locale]="editor.locale()"
+            [actions]="true"
+            [clearable]="true"
             [active]="featureTab() === index"
             [removeDisabled]="editor.draft().features.length === 1"
             [removeLabel]="editor.copy('product.deleteTitle')"
@@ -71,6 +73,7 @@
             (titleChange)="editor.setPoint('features', index, 'title', $event)"
             (bodyChange)="editor.setPoint('features', index, 'body', $event)"
             (imageChange)="editor.setPointImage('features', index, $event)"
+            (imageCleared)="editor.clearPointImage('features', index)"
             (removed)="removeFeature(index)"
           />
         }
@@ -92,9 +95,12 @@
           <span class="field__label">{{ editor.copy('product.uploadLabel') }}</span>
           <app-product-upload
             [locale]="editor.locale()"
+            [actions]="true"
+            [clearable]="true"
             [name]="editor.draft().cover[editor.locale()].imageName"
             [url]="editor.draft().cover[editor.locale()].imageUrl"
             (picked)="editor.setCover('cover', $event)"
+            (cleared)="editor.clearCover('cover')"
           />
         </div>
         <label class="field">
@@ -129,9 +135,12 @@
           <span class="field__label">{{ editor.copy('product.uploadLabel') }}</span>
           <app-product-upload
             [locale]="editor.locale()"
+            [actions]="true"
+            [clearable]="true"
             [name]="editor.draft().thumb[editor.locale()].imageName"
             [url]="editor.draft().thumb[editor.locale()].imageUrl"
             (picked)="editor.setCover('thumb', $event)"
+            (cleared)="editor.clearCover('thumb')"
           />
         </div>
         <label class="field">
@@ -178,7 +187,8 @@
           [imageName]="stat.image[editor.locale()].imageName"
           [imageUrl]="stat.image[editor.locale()].imageUrl"
           [locale]="editor.locale()"
-          [actions]="false"
+          [actions]="true"
+          [clearable]="true"
           [active]="statTab() === index"
           [removeDisabled]="editor.draft().stats.length === 1"
           [removeLabel]="editor.copy('product.deleteTitle')"
@@ -186,6 +196,7 @@
           (titleChange)="editor.setStat(index, 'label', $event)"
           (bodyChange)="editor.setStat(index, 'value', $event)"
           (imageChange)="editor.setStatImage(index, $event)"
+          (imageCleared)="editor.clearStatImage(index)"
           (removed)="removeStat(index)"
         />
       }

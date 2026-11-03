@@ -34,7 +34,7 @@ export class FeatureCard {
 
   readonly uploadKeyPrefix = input('product');
 
-  readonly clearable = input(false);
+  readonly clearable = input(true);
 
   readonly actions = input(true);
   readonly showIcon = input(true);

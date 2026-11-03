@@ -1,7 +1,7 @@
-<section class="editor-section">
+<section class="editor-section editor-section--identity">
   <header class="editor-section__head">
-    <h2>{{ editor.copy('product.steps') }}</h2>
     <span class="icon-badge" aria-hidden="true"><i class="pi pi-list"></i></span>
+    <h2>{{ editor.copy('product.steps') }}</h2>
   </header>
   <div class="editor-section__body">
     @for (item of editor.draft().steps; track item.id; let index = $index) {
@@ -19,12 +19,14 @@
         [imageName]="item.image[editor.locale()].imageName"
         [imageUrl]="item.image[editor.locale()].imageUrl"
         [locale]="editor.locale()"
-        [actions]="false"
+        [actions]="true"
+        [clearable]="true"
         [removeDisabled]="editor.draft().steps.length === 1"
         [removeLabel]="editor.copy('product.deleteTitle')"
         (titleChange)="editor.setPoint('steps', index, 'title', $event)"
         (bodyChange)="editor.setPoint('steps', index, 'body', $event)"
         (imageChange)="editor.setPointImage('steps', index, $event)"
+        (imageCleared)="editor.clearPointImage('steps', index)"
         (removed)="editor.removePoint('steps', index)"
       />
     }
@@ -34,10 +36,10 @@
     </button>
   </div>
 </section>
-<section class="editor-section">
+<section class="editor-section editor-section--identity">
   <header class="editor-section__head">
-    <h2>{{ editor.copy('product.identityTitle') }}</h2>
     <span class="icon-badge" aria-hidden="true"><i class="pi pi-desktop"></i></span>
+    <h2>{{ editor.copy('product.identityTitle') }}</h2>
   </header>
   <div class="editor-section__body">
     @for (item of editor.draft().identity; track item.id; let index = $index) {
@@ -54,12 +56,14 @@
         [imageName]="item.image[editor.locale()].imageName"
         [imageUrl]="item.image[editor.locale()].imageUrl"
         [locale]="editor.locale()"
-        [actions]="false"
+        [actions]="true"
+        [clearable]="true"
         [removeDisabled]="editor.draft().identity.length === 1"
         [removeLabel]="editor.copy('product.deleteTitle')"
         (titleChange)="editor.setMediaText('identity', index, 'title', $event)"
         (bodyChange)="editor.setMediaText('identity', index, 'body', $event)"
         (imageChange)="editor.setMediaImage('identity', index, $event)"
+        (imageCleared)="editor.clearMediaImage('identity', index)"
         (removed)="editor.removeMedia('identity', index)"
       />
     }

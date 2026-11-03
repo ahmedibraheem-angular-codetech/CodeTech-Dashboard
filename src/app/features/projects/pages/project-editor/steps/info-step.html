@@ -66,6 +66,7 @@
             [imageUrl]="item.image[editor.locale()].imageUrl"
             [locale]="editor.locale()"
             [uploadKeyPrefix]="uploadPrefix"
+            [actions]="true"
             [clearable]="true"
             [active]="categoryTab() === index"
             [removeDisabled]="editor.draft().categories.length === 1"
@@ -98,6 +99,7 @@
           <app-product-upload
             [keyPrefix]="uploadPrefix"
             [locale]="editor.locale()"
+            [actions]="true"
             [clearable]="true"
             [name]="editor.draft().cover[editor.locale()].imageName"
             [url]="editor.draft().cover[editor.locale()].imageUrl"
@@ -139,6 +141,7 @@
           <app-product-upload
             [keyPrefix]="uploadPrefix"
             [locale]="editor.locale()"
+            [actions]="true"
             [clearable]="true"
             [name]="editor.draft().thumb[editor.locale()].imageName"
             [url]="editor.draft().thumb[editor.locale()].imageUrl"
@@ -194,7 +197,7 @@
         [locale]="editor.locale()"
         [uploadKeyPrefix]="uploadPrefix"
         [clearable]="true"
-        [actions]="false"
+        [actions]="true"
         [active]="aboutTab() === index"
         [removeDisabled]="editor.draft().aboutCards.length === 1"
         [removeLabel]="editor.copy('project.deleteTitle')"

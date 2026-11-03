@@ -18,6 +18,7 @@
         </button>
         <app-product-upload
           locale="ar"
+          [actions]="true"
           [clearable]="true"
           [name]="sector.image.ar.imageName"
           [url]="sector.image.ar.imageUrl"
@@ -30,6 +31,7 @@
         @if (editor.locale() === 'en') {
           <app-product-upload
             locale="en"
+            [actions]="true"
             [clearable]="true"
             [name]="sector.image.en.imageName"
             [url]="sector.image.en.imageUrl"
@@ -67,12 +69,15 @@
           [imageName]="item.image[editor.locale()].imageName"
           [imageUrl]="item.image[editor.locale()].imageUrl"
           [locale]="editor.locale()"
+          [actions]="true"
+          [clearable]="true"
           [removeDisabled]="editor.draft().challenges.length === 1"
           [removeLabel]="editor.copy('product.deleteTitle')"
           removeIcon="pi-times"
           (titleChange)="editor.setPoint('challenges', index, 'title', $event)"
           (bodyChange)="editor.setPoint('challenges', index, 'body', $event)"
           (imageChange)="editor.setPointImage('challenges', index, $event)"
+          (imageCleared)="editor.clearPointImage('challenges', index)"
           (removed)="editor.removePoint('challenges', index)"
         />
       </div>
@@ -101,12 +106,14 @@
       [imageName]="editor.draft().solution.image[editor.locale()].imageName"
       [imageUrl]="editor.draft().solution.image[editor.locale()].imageUrl"
       [locale]="editor.locale()"
-      [actions]="false"
+      [actions]="true"
+      [clearable]="true"
       [removeDisabled]="true"
       [removeLabel]="editor.copy('product.deleteTitle')"
       (titleChange)="editor.setSingle('solution', 'title', $event)"
       (bodyChange)="editor.setSingle('solution', 'body', $event)"
       (imageChange)="editor.setSingleImage('solution', $event)"
+      (imageCleared)="editor.clearSingleImage('solution')"
     />
   </div>
 </section>
