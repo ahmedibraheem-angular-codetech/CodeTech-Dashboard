@@ -16,6 +16,8 @@ export const en = {
   'settings.addRole': 'Add new role',
   'settings.deleteRole': 'Delete role',
   'settings.deleteRoleMessage': 'Delete this role? This cannot be undone.',
+  'settings.deleteRoleAssigned':
+    'Users with this role keep their accounts, but they lose access until another role is assigned.',
   'settings.resource': 'Item',
   'settings.roleSuperAdmin': 'General manager',
   'settings.roleName': 'Role name',

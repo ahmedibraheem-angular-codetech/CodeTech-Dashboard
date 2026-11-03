@@ -4,7 +4,7 @@ import { InputText } from 'primeng/inputtext';
 import { ToggleSwitch } from 'primeng/toggleswitch';
 
 import { LanguageService } from '../../../../core/services/language.service';
-import type { PermissionModule } from '../../models/permissions.model';
+import type { CatalogModule } from '../../models/permissions.model';
 
 @Component({
   selector: 'app-permissions-role-form',
@@ -15,7 +15,7 @@ import type { PermissionModule } from '../../models/permissions.model';
 export class PermissionsRoleForm {
   readonly lang = inject(LanguageService);
 
-  readonly modules = input.required<readonly PermissionModule[]>();
+  readonly modules = input.required<readonly CatalogModule[]>();
   readonly draftName = model.required<string>();
   readonly draftModules = model.required<Record<string, boolean>>();
 

@@ -13,19 +13,28 @@
     />
   </app-page-header>
 
-  <app-permissions-matrix
-    [resources]="resources"
-    [actions]="actions"
-    [roleOptions]="roleOptions()"
-    [grants]="selected().grants"
-    [canDelete]="roles().length >= 2"
-    [showUpdate]="canUpdate()"
-    [showDelete]="canDelete()"
-    [(selectedId)]="selectedId"
-    (save)="save()"
-    (remove)="removeRole()"
-    (grantChange)="setGrant($event.resourceId, $event.action, $event.value)"
-  />
+  @if (state() === 'loading') {
+    <app-state-view mode="loading" />
+  } @else if (state() === 'error') {
+    <app-state-view mode="error" [message]="lang.t('common.error')" (retry)="load()" />
+  } @else if (selected(); as role) {
+    <app-permissions-matrix
+      [modules]="catalog().modules"
+      [actions]="catalog().actions"
+      [roleOptions]="roleOptions()"
+      [grants]="grants()"
+      [canDelete]="canDelete() && !role.isProtected"
+      [showUpdate]="canUpdate()"
+      [showDelete]="canDelete()"
+      [locked]="locked()"
+      [(selectedId)]="selectedId"
+      (save)="save()"
+      (remove)="removeRole()"
+      (grantChange)="setGrant($event.moduleKey, $event.action, $event.value)"
+    />
+  } @else {
+    <app-state-view mode="empty" [message]="lang.t('common.empty')" />
+  }
 
   <app-modal
     [(visible)]="editorOpen"
@@ -34,11 +43,12 @@
     saveIcon="pi pi-plus"
     saveIconPos="start"
     [saveLabel]="lang.t('settings.addRoleSubmit')"
-    [saveDisabled]="!draftName().trim()"
+    [saveDisabled]="!draftName().trim() || saving()"
+    [saving]="saving()"
     (save)="saveRole()"
   >
     <app-permissions-role-form
-      [modules]="modules"
+      [modules]="catalog().modules"
       [(draftName)]="draftName"
       [(draftModules)]="draftModules"
     />

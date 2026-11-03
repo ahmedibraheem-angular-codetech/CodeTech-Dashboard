@@ -2,7 +2,7 @@
   <h2>{{ lang.t('settings.roles') }}</h2>
 
   <div class="permissions-toolbar">
-    <label class="permissions-role">
+    <div class="permissions-role">
       <span class="permissions-role__tag">
         <span class="permissions-role__icon" aria-hidden="true">
           <i class="pi pi-user"></i>
@@ -10,14 +10,16 @@
         {{ lang.t('users.role') }}
       </span>
       <p-select
+        styleClass="permissions-role__select"
         [options]="roleOptions()"
         optionLabel="label"
         optionValue="value"
         [ngModel]="selectedId()"
-        (ngModelChange)="selectedId.set($event)"
+        (ngModelChange)="onRoleChange($event)"
+        appendTo="body"
         [ariaLabel]="lang.t('users.role')"
       />
-    </label>
+    </div>
     @if (showUpdate() || showDelete()) {
       <div class="permissions-toolbar__actions">
         @if (showUpdate()) {
@@ -27,6 +29,7 @@
             iconPos="end"
             styleClass="permissions-save"
             [label]="lang.t('common.saveChanges')"
+            [disabled]="locked()"
             (clicked)="save.emit()"
           />
         }
@@ -38,7 +41,7 @@
             iconPos="end"
             styleClass="permissions-delete"
             [label]="lang.t('settings.deleteRole')"
-            [disabled]="!canDelete()"
+            [disabled]="locked() || !canDelete()"
             (clicked)="remove.emit()"
           />
         }
@@ -47,23 +50,25 @@
   </div>
 
   <div class="permissions-table" role="table">
-    <div class="permissions-table__head" role="row">
+    <div class="permissions-table__head" role="row" [style.grid-template-columns]="gridTemplate()">
       <span role="columnheader">{{ lang.t('settings.resource') }}</span>
-      @for (action of actions(); track action) {
+      @for (action of actions(); track action.key) {
         <span role="columnheader">{{ actionLabel(action) }}</span>
       }
     </div>
-    @for (resource of resources(); track resource.id) {
-      <div class="permissions-table__row" role="row">
-        <span role="cell">{{ resourceLabel(resource) }}</span>
-        @for (action of actions(); track action) {
+    @for (module of modules(); track module.key) {
+      <div class="permissions-table__row" role="row" [style.grid-template-columns]="gridTemplate()">
+        <span role="cell">{{ module.label }}</span>
+        @for (action of actions(); track action.key) {
           <span role="cell">
-            <p-toggleswitch
-              [ngModel]="granted(resource.id, action)"
-              (ngModelChange)="setGrant(resource.id, action, $event)"
-              [disabled]="!showUpdate()"
-              [ariaLabel]="resourceLabel(resource) + ' ' + actionLabel(action)"
-            />
+            @if (supports(module, action.key)) {
+              <p-toggleswitch
+                [ngModel]="granted(module.key, action.key)"
+                (ngModelChange)="setGrant(module.key, action.key, $event === true)"
+                [disabled]="!canEdit()"
+                [ariaLabel]="module.label + ' ' + actionLabel(action)"
+              />
+            }
           </span>
         }
       </div>

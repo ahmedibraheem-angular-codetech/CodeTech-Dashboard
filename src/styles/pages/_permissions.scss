@@ -80,7 +80,6 @@
   display: inline-flex;
   align-items: stretch;
   height: 40px;
-  overflow: hidden;
   border: 1px solid #e6edf5;
   border-radius: 12px;
   background: #fff;
@@ -92,11 +91,16 @@
   gap: 8px;
   padding: 0 12px;
   border-inline-end: 1px solid #e6edf5;
+  border-radius: 12px 0 0 12px;
   background: #f4f7fb;
   color: #12324f;
   font-size: 14px;
   font-weight: 500;
   white-space: nowrap;
+}
+
+[dir='rtl'] .permissions-role__tag {
+  border-radius: 0 12px 12px 0;
 }
 
 .permissions-role__icon {
@@ -111,15 +115,17 @@
   font-size: 11px;
 }
 
-.permissions-role .p-select {
+.permissions-role .p-select,
+.permissions-role__select.p-select {
   min-width: 168px;
   height: 100%;
-  border: 0;
-  box-shadow: none;
+  border: 0 !important;
+  box-shadow: none !important;
   background: transparent;
 }
 
-.permissions-role .p-select-label {
+.permissions-role .p-select-label,
+.permissions-role__select .p-select-label {
   display: flex;
   align-items: center;
   padding-inline: 12px;
@@ -128,7 +134,8 @@
   font-weight: 500;
 }
 
-.permissions-role .p-select-dropdown {
+.permissions-role .p-select-dropdown,
+.permissions-role__select .p-select-dropdown {
   width: 32px;
   color: #94a3b8;
 }
@@ -168,7 +175,6 @@
 .permissions-table__head,
 .permissions-table__row {
   display: grid;
-  grid-template-columns: minmax(200px, 1.6fr) repeat(3, minmax(110px, 1fr));
   align-items: center;
   min-height: 52px;
   padding: 0 16px;
@@ -226,7 +232,7 @@
 
   .permissions-table__head,
   .permissions-table__row {
-    min-width: 560px;
+    min-width: 640px;
   }
 }
 

@@ -18,6 +18,8 @@ export const ar: { [K in keyof typeof en]: string } = {
   'settings.addRole': 'إضافة دور جديد',
   'settings.deleteRole': 'حذف الدور',
   'settings.deleteRoleMessage': 'هل تريد حذف هذا الدور؟ لا يمكن التراجع عن هذا الإجراء.',
+  'settings.deleteRoleAssigned':
+    'يبقى حساب المستخدمين المرتبطين بهذا الدور، ويفقدون الصلاحيات حتى يُسند إليهم دور آخر.',
   'settings.resource': 'العنصر',
   'settings.roleSuperAdmin': 'مدير عام',
   'settings.roleName': 'اسم الدور',
