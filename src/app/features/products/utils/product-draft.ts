@@ -13,12 +13,7 @@ import {
 } from '../models/product.model';
 
 export type ProductPointList =
-  | 'features'
-  | 'challenges'
-  | 'offer'
-  | 'results'
-  | 'steps'
-  | 'highlights';
+  'features' | 'challenges' | 'offer' | 'results' | 'steps' | 'highlights';
 
 export type ProductMediaList = 'tools' | 'integrations' | 'identity';
 
@@ -111,11 +106,7 @@ export function draftAddPoint(product: Product, list: ProductPointList): Product
   return { ...product, [list]: [...product[list], productPoint()] };
 }
 
-export function draftRemovePoint(
-  product: Product,
-  list: ProductPointList,
-  index: number,
-): Product {
+export function draftRemovePoint(product: Product, list: ProductPointList, index: number): Product {
   return { ...product, [list]: removeKeepingMinOne(product[list], index) };
 }
 
@@ -157,11 +148,7 @@ export function draftAddMedia(product: Product, list: ProductMediaList): Product
   return { ...product, [list]: [...product[list], productMedia()] };
 }
 
-export function draftRemoveMedia(
-  product: Product,
-  list: ProductMediaList,
-  index: number,
-): Product {
+export function draftRemoveMedia(product: Product, list: ProductMediaList, index: number): Product {
   return { ...product, [list]: removeKeepingMinOne(product[list], index) };
 }
 

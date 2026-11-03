@@ -12,7 +12,11 @@
           />
         </label>
       </ng-container>
-      <a *appHasPermission="'products.create'" class="product-board__add" routerLink="/products/new">
+      <a
+        *appHasPermission="'products.create'"
+        class="product-board__add"
+        routerLink="/products/new"
+      >
         {{ lang.t('product.add') }}
         <i class="pi pi-plus" aria-hidden="true"></i>
       </a>

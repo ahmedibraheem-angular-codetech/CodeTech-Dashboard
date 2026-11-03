@@ -286,9 +286,7 @@ describe('ProductEditor', () => {
     expect(editor.draft().stats[0]?.value.ar).toBe('+10');
     expect(editor.draft().stats[0]?.body.ar).toBe('');
 
-    const answer = root.querySelector<HTMLTextAreaElement>(
-      '.editor-section--stats textarea',
-    );
+    const answer = root.querySelector<HTMLTextAreaElement>('.editor-section--stats textarea');
     expect(answer?.value).toBe('+10');
 
     editor.useLocale('en');
@@ -576,11 +574,15 @@ describe('ProductEditor', () => {
 
       expect(revoke).toHaveBeenCalledTimes(1);
       expect(revoke).toHaveBeenCalledWith(first);
-      expect((await firstValueFrom(api.get('info-system')))?.cover.ar.imageUrl).toBe('blob:product/2');
+      expect((await firstValueFrom(api.get('info-system')))?.cover.ar.imageUrl).toBe(
+        'blob:product/2',
+      );
 
       fixture.destroy();
       expect(revoke).toHaveBeenCalledTimes(1);
-      expect((await firstValueFrom(api.get('info-system')))?.cover.ar.imageUrl).toBe('blob:product/2');
+      expect((await firstValueFrom(api.get('info-system')))?.cover.ar.imageUrl).toBe(
+        'blob:product/2',
+      );
     });
   });
 
@@ -592,8 +594,7 @@ describe('ProductEditor', () => {
     editor.select(7);
     fixture.detectChanges();
 
-    const hint =
-      'استخدم أحرفًا إنجليزية صغيرة وأرقامًا وشرطات فقط (مثال: my-product).';
+    const hint = 'استخدم أحرفًا إنجليزية صغيرة وأرقامًا وشرطات فقط (مثال: my-product).';
     const error = 'الرابط المختصر يقبل الأحرف الإنجليزية الصغيرة والأرقام والشرطات فقط.';
     expect(root.textContent).toContain(hint);
     expect(editor.slugInvalid()).toBe(false);
@@ -951,7 +952,9 @@ describe('ProductEditor', () => {
     enterName(root, 'New product');
     fixture.detectChanges();
     [...root.querySelectorAll<HTMLButtonElement>('.locale-switch__option')]
-      .find((button) => button.textContent?.includes('عربي') || button.textContent?.includes('Arabic'))
+      .find(
+        (button) => button.textContent?.includes('عربي') || button.textContent?.includes('Arabic'),
+      )
       ?.click();
     fixture.detectChanges();
 

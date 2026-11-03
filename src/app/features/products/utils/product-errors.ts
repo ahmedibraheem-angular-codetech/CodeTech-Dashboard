@@ -117,7 +117,6 @@ export function productStepIndexForServerPath(path: string): number {
   return PRODUCT_STEPS.findIndex((step) => step.id === id);
 }
 
-
 export type ProductCopy = (key: string) => string;
 
 type PointErrorList = 'features' | 'challenges' | 'offer' | 'results';
@@ -340,11 +339,7 @@ export function faqAnswerErrorMessage(
   if (item && newFaqAnswerArMissing(item)) {
     return copy('product.required');
   }
-  return firstServerMessage(
-    errors,
-    `faqs.${index}.answer.ar`,
-    `faqs.${index}.answer.${language}`,
-  );
+  return firstServerMessage(errors, `faqs.${index}.answer.ar`, `faqs.${index}.answer.${language}`);
 }
 
 export function statTitleErrorMessage(
@@ -358,11 +353,7 @@ export function statTitleErrorMessage(
   if (item && newStatTitleArMissing(item)) {
     return copy('product.required');
   }
-  return firstServerMessage(
-    errors,
-    `stats.${index}.title.ar`,
-    `stats.${index}.title.${language}`,
-  );
+  return firstServerMessage(errors, `stats.${index}.title.ar`, `stats.${index}.title.${language}`);
 }
 
 export function statValueErrorMessage(
@@ -376,11 +367,7 @@ export function statValueErrorMessage(
   if (item && newStatValueArMissing(item)) {
     return copy('product.required');
   }
-  return firstServerMessage(
-    errors,
-    `stats.${index}.value.ar`,
-    `stats.${index}.value.${language}`,
-  );
+  return firstServerMessage(errors, `stats.${index}.value.ar`, `stats.${index}.value.${language}`);
 }
 
 export function slugErrorMessage(
@@ -403,11 +390,7 @@ export function summaryErrorMessage(
   if (summaryInvalid) {
     return copy('product.summaryMaxError');
   }
-  return firstServerMessage(
-    errors,
-    `short_description.${language}`,
-    `description.${language}`,
-  );
+  return firstServerMessage(errors, `short_description.${language}`, `description.${language}`);
 }
 
 export function keywordsErrorMessage(

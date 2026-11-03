@@ -1,11 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  inject,
-  input,
-  output,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, input, output } from '@angular/core';
 
 import { AuthService } from '../../../../core/auth/auth.service';
 import type { AppLanguage } from '../../../../core/i18n/language';

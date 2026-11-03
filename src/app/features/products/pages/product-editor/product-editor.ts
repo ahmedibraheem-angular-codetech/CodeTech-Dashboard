@@ -30,17 +30,18 @@ import {
   ToolsStep,
   UnitsStep,
 } from './steps/product-steps';
-import {
-  IDENTITY_STEP_INDEX,
-  PRODUCT_STEPS,
-  SEO_STEP_INDEX,
-} from '../../constants/product-steps';
+import { IDENTITY_STEP_INDEX, PRODUCT_STEPS, SEO_STEP_INDEX } from '../../constants/product-steps';
 import {
   PRODUCT_META_KEYWORD_MAX,
   PRODUCT_SEO_DESCRIPTION_MAX,
   PRODUCT_SHORT_DESCRIPTION_MAX,
 } from '../../constants/product-limits';
-import { blankProduct, readLocale, type LocaleText, type Product } from '../../models/product.model';
+import {
+  blankProduct,
+  readLocale,
+  type LocaleText,
+  type Product,
+} from '../../models/product.model';
 import {
   draftAddFaq,
   draftAddMedia,
@@ -205,7 +206,6 @@ export class ProductEditor {
   );
 
   constructor() {
-
     this.destroyRef.onDestroy(() => this.objectUrls.abandon(this.draft()));
 
     effect(() => {
@@ -364,7 +364,9 @@ export class ProductEditor {
       return;
     }
     const language = this.locale();
-    this.draft.update((current) => draftSetPointField(current, list, index, field, language, value));
+    this.draft.update((current) =>
+      draftSetPointField(current, list, index, field, language, value),
+    );
     const apiField = field === 'body' ? 'short_description' : 'title';
     if (list === 'steps') {
       this.dropServerErrors(`workflow_steps.${index}.${apiField}.${language}`);
@@ -386,12 +388,7 @@ export class ProductEditor {
     this.draft.update((current) => draftSetPointImage(current, list, index, language, file));
   }
 
-  setMediaText(
-    list: ProductMediaList,
-    index: number,
-    field: 'title' | 'body',
-    event: Event,
-  ): void {
+  setMediaText(list: ProductMediaList, index: number, field: 'title' | 'body', event: Event): void {
     const value = this.read(event);
     if (value === undefined) {
       return;
@@ -400,11 +397,7 @@ export class ProductEditor {
     this.draft.update((current) => draftSetMediaText(current, list, index, field, language, value));
   }
 
-  setMediaImage(
-    list: ProductMediaList,
-    index: number,
-    file: { name: string; url: string },
-  ): void {
+  setMediaImage(list: ProductMediaList, index: number, file: { name: string; url: string }): void {
     const language = this.locale();
     this.draft.update((current) => draftSetMediaImage(current, list, index, language, file));
   }
@@ -594,12 +587,8 @@ export class ProductEditor {
   }
 
   unitTitleError(index: number): string {
-    return unitTitleErrorMessage(
-      this.draft(),
-      index,
-      this.locale(),
-      this.serverErrors(),
-      (key) => this.copy(key),
+    return unitTitleErrorMessage(this.draft(), index, this.locale(), this.serverErrors(), (key) =>
+      this.copy(key),
     );
   }
 
@@ -624,42 +613,26 @@ export class ProductEditor {
   }
 
   faqQuestionError(index: number): string {
-    return faqQuestionErrorMessage(
-      this.draft(),
-      index,
-      this.locale(),
-      this.serverErrors(),
-      (key) => this.copy(key),
+    return faqQuestionErrorMessage(this.draft(), index, this.locale(), this.serverErrors(), (key) =>
+      this.copy(key),
     );
   }
 
   faqAnswerError(index: number): string {
-    return faqAnswerErrorMessage(
-      this.draft(),
-      index,
-      this.locale(),
-      this.serverErrors(),
-      (key) => this.copy(key),
+    return faqAnswerErrorMessage(this.draft(), index, this.locale(), this.serverErrors(), (key) =>
+      this.copy(key),
     );
   }
 
   statTitleError(index: number): string {
-    return statTitleErrorMessage(
-      this.draft(),
-      index,
-      this.locale(),
-      this.serverErrors(),
-      (key) => this.copy(key),
+    return statTitleErrorMessage(this.draft(), index, this.locale(), this.serverErrors(), (key) =>
+      this.copy(key),
     );
   }
 
   statValueError(index: number): string {
-    return statValueErrorMessage(
-      this.draft(),
-      index,
-      this.locale(),
-      this.serverErrors(),
-      (key) => this.copy(key),
+    return statValueErrorMessage(this.draft(), index, this.locale(), this.serverErrors(), (key) =>
+      this.copy(key),
     );
   }
 
@@ -668,20 +641,14 @@ export class ProductEditor {
   }
 
   summaryErrorText(): string {
-    return summaryErrorMessage(
-      this.summaryInvalid(),
-      this.locale(),
-      this.serverErrors(),
-      (key) => this.copy(key),
+    return summaryErrorMessage(this.summaryInvalid(), this.locale(), this.serverErrors(), (key) =>
+      this.copy(key),
     );
   }
 
   keywordsErrorText(): string {
-    return keywordsErrorMessage(
-      this.keywordsInvalid(),
-      this.locale(),
-      this.serverErrors(),
-      (key) => this.copy(key),
+    return keywordsErrorMessage(this.keywordsInvalid(), this.locale(), this.serverErrors(), (key) =>
+      this.copy(key),
     );
   }
 
@@ -846,7 +813,6 @@ export class ProductEditor {
     message: 'product.saved' | 'product.draftSaved',
     leave: boolean,
   ): void {
-
     if (this.saving() || this.status() !== 'ready') {
       return;
     }

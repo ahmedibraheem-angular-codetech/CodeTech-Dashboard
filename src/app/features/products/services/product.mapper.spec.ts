@@ -254,12 +254,8 @@ describe('product.mapper', () => {
     expect(body.title).toEqual({ ar: 'منتج', en: 'Product' });
     expect(body.cover).toBe('cover-1');
     expect(body.solution_image).toBe('sol-1');
-    expect(body.features?.[0]).toEqual(
-      expect.objectContaining({ id: 11, icon: 'feat-1' }),
-    );
-    expect(body.advantages?.[0]).toEqual(
-      expect.objectContaining({ icon: 'tool-1' }),
-    );
+    expect(body.features?.[0]).toEqual(expect.objectContaining({ id: 11, icon: 'feat-1' }));
+    expect(body.advantages?.[0]).toEqual(expect.objectContaining({ icon: 'tool-1' }));
     expect(body.advantages?.[0]?.id).toBeUndefined();
     expect(body.sectors).toEqual([{ id: 31, image: { ar: 'sec-ar', en: null } }]);
     expect(body.slug).toBe('itsm');

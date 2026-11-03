@@ -389,7 +389,6 @@ describe('ProductsListPage', () => {
   });
 
   it('recovers to a valid page when the displayed list shrinks below the current offset', async () => {
-
     const { fixture, root } = await render(async (api) => {
       const base = PRODUCTS_SEED[0]!;
       for (let index = 0; index < 5; index += 1) {

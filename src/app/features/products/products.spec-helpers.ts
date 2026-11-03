@@ -26,7 +26,6 @@ import {
   type ProductsPageSector,
 } from './models/products-page.model';
 
-
 const DESK = '/images/product-cover-desk.jpg';
 const WOOD = '/images/product-cover-wood.jpg';
 const FLAT = '/images/product-cover-flat.jpg';
@@ -74,9 +73,6 @@ export const PRODUCTS_PAGE_SEED: ProductsPageContent = {
   ],
 };
 
-
-
-
 /**
  * In-memory products page backend for UI/integration specs only.
  * Production uses {@link ProductsPageService} (HTTP).
@@ -111,8 +107,7 @@ export class ProductsPageMemoryService {
     if (!next.id) {
       next.id = this.newId('page-feature');
     }
-    const previous =
-      this.state.features.find((item) => item.id === next.id) ?? null;
+    const previous = this.state.features.find((item) => item.id === next.id) ?? null;
     this.objectUrls.sync(previous, next);
     this.state = {
       ...this.state,
@@ -460,9 +455,6 @@ export const PRODUCTS_SEED: Product[] = [
   card('info-system-5', WOOD),
   card('info-system-6', DESK),
 ];
-
-
-
 
 /**
  * In-memory products backend for UI/integration specs only.

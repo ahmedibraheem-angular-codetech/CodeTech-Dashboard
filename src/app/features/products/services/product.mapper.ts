@@ -127,7 +127,10 @@ function splitKeywords(value: string): string[] {
 }
 
 function joinKeywords(value: readonly string[] | null | undefined): string {
-  return (value ?? []).map((part) => part.trim()).filter(Boolean).join(', ');
+  return (value ?? [])
+    .map((part) => part.trim())
+    .filter(Boolean)
+    .join(', ');
 }
 
 function mapCore(
@@ -357,7 +360,11 @@ export function toProductWrite(product: Product): ProductWriteDto {
   const slug = (product.seo.slug.en || product.seo.slug.ar).trim();
   body.slug = slug || null;
 
-  applyTicket(body as unknown as Record<string, unknown>, 'cover', sharedTicket(product.cover, true));
+  applyTicket(
+    body as unknown as Record<string, unknown>,
+    'cover',
+    sharedTicket(product.cover, true),
+  );
   applyTicket(
     body as unknown as Record<string, unknown>,
     'thumbnail',
@@ -459,12 +466,11 @@ export function toProductWrite(product: Product): ProductWriteDto {
 
   body.faqs = product.faqs
     .filter((item) => filled(item.question) || filled(item.answer))
-    .map(
-      (item): ProductFaqWriteDto =>
-        withOptionalId(item.id, {
-          question: { ar: item.question.ar.trim(), en: item.question.en.trim() },
-          answer: { ar: item.answer.ar.trim(), en: item.answer.en.trim() },
-        }),
+    .map((item): ProductFaqWriteDto =>
+      withOptionalId(item.id, {
+        question: { ar: item.question.ar.trim(), en: item.question.en.trim() },
+        answer: { ar: item.answer.ar.trim(), en: item.answer.en.trim() },
+      }),
     );
 
   return body;

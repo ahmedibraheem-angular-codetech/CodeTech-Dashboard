@@ -116,12 +116,12 @@ describe('product-repeater-validation', () => {
   });
 
   it('accepts existing or blob images and rejects cleared slots for integrations', () => {
-    expect(slotHasImage({ imageName: 'a.png', imageUrl: 'https://cdn/a.png', imageUuid: 'u1' })).toBe(
-      true,
-    );
-    expect(slotHasImage({ imageName: 'b.png', imageUrl: 'blob:http://local/1', imageUuid: null })).toBe(
-      true,
-    );
+    expect(
+      slotHasImage({ imageName: 'a.png', imageUrl: 'https://cdn/a.png', imageUuid: 'u1' }),
+    ).toBe(true);
+    expect(
+      slotHasImage({ imageName: 'b.png', imageUrl: 'blob:http://local/1', imageUuid: null }),
+    ).toBe(true);
     expect(slotHasImage(emptyProductImage())).toBe(false);
 
     const missing = {

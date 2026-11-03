@@ -147,8 +147,7 @@ export const ar: { [K in keyof typeof en]: string } = {
   'product.answerPh': 'ادخل الإجابة',
   'product.seoSlug': 'الرابط المختصر (Slug)',
   'product.seoSlugPh': 'ادخل الرابط المختصر للمنتج',
-  'product.seoSlugHint':
-    'استخدم أحرفًا إنجليزية صغيرة وأرقامًا وشرطات فقط (مثال: my-product).',
+  'product.seoSlugHint': 'استخدم أحرفًا إنجليزية صغيرة وأرقامًا وشرطات فقط (مثال: my-product).',
   'product.seoSlugError': 'الرابط المختصر يقبل الأحرف الإنجليزية الصغيرة والأرقام والشرطات فقط.',
   'product.seoTitle': 'عنوان SEO',
   'product.seoTitlePh': 'ادخل عنوان SEO للمنتج',

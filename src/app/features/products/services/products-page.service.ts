@@ -143,8 +143,16 @@ export class ProductsPageService {
 
   private uploadSectorImages(sector: ProductsPageSector): Observable<ProductsPageSector> {
     return forkJoin({
-      ar: this.uploadImage(sector.image.ar.imageUrl, sector.image.ar.imageName, sector.image.ar.imageUuid),
-      en: this.uploadImage(sector.image.en.imageUrl, sector.image.en.imageName, sector.image.en.imageUuid),
+      ar: this.uploadImage(
+        sector.image.ar.imageUrl,
+        sector.image.ar.imageName,
+        sector.image.ar.imageUuid,
+      ),
+      en: this.uploadImage(
+        sector.image.en.imageUrl,
+        sector.image.en.imageName,
+        sector.image.en.imageUuid,
+      ),
     }).pipe(map((image) => ({ ...sector, image })));
   }
 

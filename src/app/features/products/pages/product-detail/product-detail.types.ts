@@ -1,4 +1,3 @@
-
 export type ProductDetailRemovable = 'stats' | 'sectors' | 'integrations' | 'units' | 'identity';
 
 export interface ProductDetailRemoveEvent {

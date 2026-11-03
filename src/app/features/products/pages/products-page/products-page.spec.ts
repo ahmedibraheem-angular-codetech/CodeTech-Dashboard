@@ -79,9 +79,7 @@ describe('ProductsPageManage', () => {
       return !component.text(component.draftFeature().title).trim();
     }
     const sector = component.draftSector();
-    return (
-      !component.text(sector.title).trim() || !sector.image[component.locale()].imageUrl
-    );
+    return !component.text(sector.title).trim() || !sector.image[component.locale()].imageUrl;
   }
 
   it('loads features and sectors panels', async () => {

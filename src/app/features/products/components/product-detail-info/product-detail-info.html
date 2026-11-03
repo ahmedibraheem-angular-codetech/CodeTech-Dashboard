@@ -67,7 +67,9 @@
                 tabindex="0"
                 [attr.aria-disabled]="product().stats.length < 2"
                 (click)="$event.stopPropagation(); removeItem.emit({ list: 'stats', index })"
-                (keydown.enter)="$event.stopPropagation(); removeItem.emit({ list: 'stats', index })"
+                (keydown.enter)="
+                  $event.stopPropagation(); removeItem.emit({ list: 'stats', index })
+                "
               >
                 <i class="pi pi-trash" aria-hidden="true"></i>
               </span>

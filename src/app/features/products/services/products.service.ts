@@ -1,15 +1,6 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, inject, signal } from '@angular/core';
-import {
-  type Observable,
-  catchError,
-  forkJoin,
-  from,
-  map,
-  of,
-  switchMap,
-  throwError,
-} from 'rxjs';
+import { type Observable, catchError, forkJoin, from, map, of, switchMap, throwError } from 'rxjs';
 
 import { API_BASE_URL, apiUrl } from '../../../core/config/api';
 import { statusOf } from '../../../core/http/api-error';
@@ -21,16 +12,8 @@ import type {
   ProductListQuery,
   ProductStatusWriteDto,
 } from '../models/product.api';
-import type {
-  ProductsPageDto,
-  ProductsPageSectionsWriteDto,
-} from '../models/products-page.api';
-import type {
-  Product,
-  ProductImage,
-  ProductSector,
-  ProductUnit,
-} from '../models/product.model';
+import type { ProductsPageDto, ProductsPageSectionsWriteDto } from '../models/products-page.api';
+import type { Product, ProductImage, ProductSector, ProductUnit } from '../models/product.model';
 import {
   isUploadUrl,
   mapProductDetail,
