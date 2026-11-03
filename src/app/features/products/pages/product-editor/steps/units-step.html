@@ -11,6 +11,7 @@
           [title]="editor.text(unit.title)"
           [titleLabel]="editor.copy('product.unitTitle')"
           [titlePlaceholder]="editor.copy('product.unitTitlePh')"
+          [titleError]="editor.unitTitleError(index)"
           [body]="editor.text(unit.body)"
           [bodyLabel]="editor.copy('product.unitBody')"
           [bodyPlaceholder]="editor.copy('product.unitBodyPh')"

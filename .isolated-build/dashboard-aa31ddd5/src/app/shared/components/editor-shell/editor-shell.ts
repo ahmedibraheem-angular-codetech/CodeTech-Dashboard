@@ -1,0 +1,66 @@
+import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
+import type { AppLanguage } from '../../../core/i18n/language';
+import { AppButton } from '../app-button/app-button';
+import { LocaleSwitch } from '../locale-switch/locale-switch';
+import { PageHeader } from '../page-header/page-header';
+import { PageTabs, type PageTab } from '../page-tabs/page-tabs';
+import { StateView } from '../state-view/state-view';
+import { WizardStepper, type WizardStepItem } from '../wizard-stepper/wizard-stepper';
+
+export interface EditorShellLabels {
+  saveDraft: string;
+  publish: string;
+  unpublish: string;
+  save: string;
+  next: string;
+  previous: string;
+  finish: string;
+  loading: string;
+  missing: string;
+  error: string;
+}
+
+@Component({
+  selector: 'app-editor-shell',
+  imports: [PageHeader, AppButton, LocaleSwitch, StateView, WizardStepper, PageTabs],
+  templateUrl: './editor-shell.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+})
+export class EditorShell {
+  readonly title = input.required<string>();
+  readonly mode = input.required<'create' | 'edit'>();
+  readonly status = input.required<'loading' | 'ready' | 'missing' | 'error'>();
+  readonly saving = input(false);
+  readonly published = input(false);
+  readonly steps = input.required<readonly WizardStepItem[]>();
+  readonly active = input.required<number>();
+  readonly passed = input(-1);
+  readonly lastStep = input(false);
+  readonly locale = input.required<AppLanguage>();
+  readonly labels = input.required<EditorShellLabels>();
+  readonly panelId = input('editor-panel');
+  readonly tabIdPrefix = input('editor-tab');
+
+  readonly saveDraft = output<void>();
+  readonly publishChange = output<boolean>();
+  readonly save = output<void>();
+  readonly retry = output<void>();
+  readonly stepChange = output<number>();
+  readonly next = output<void>();
+  readonly previous = output<void>();
+  readonly localeChange = output<AppLanguage>();
+
+  protected readonly editorTabs = computed<readonly PageTab[]>(() =>
+    this.steps().map((step) => ({
+      id: step.id,
+      labelKey: step.labelKey ?? step.label,
+    })),
+  );
+
+  protected chooseTab(value: string | number | undefined): void {
+    const index = this.steps().findIndex((step) => step.id === value);
+    if (index >= 0) {
+      this.stepChange.emit(index);
+    }
+  }
+}

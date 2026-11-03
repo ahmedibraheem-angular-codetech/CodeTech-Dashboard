@@ -18,6 +18,7 @@ export const ar: { [K in keyof typeof en]: string } = {
   'product.empty': 'لا توجد منتجات بعد',
   'product.draft': 'مسودة',
   'product.required': 'هذا الحقل مطلوب.',
+  'product.imageRequired': 'الصورة مطلوبة.',
   'product.step.info': 'بيانات وإحصائيات',
   'product.step.sectors': 'القطاعات والتحديات',
   'product.step.offer': 'ما نقدمه والنتائج',

@@ -1,0 +1,29 @@
+<p-dialog
+  styleClass="auth-success-dialog"
+  [visible]="visible()"
+  (visibleChange)="visible.set($event)"
+  [modal]="true"
+  [draggable]="false"
+  [resizable]="false"
+  [closable]="false"
+  [dismissableMask]="false"
+  [style]="{ width: 'min(28rem, 92vw)' }"
+>
+  <div class="auth-success">
+    <span class="auth-success__badge" aria-hidden="true">
+      <i class="pi pi-check"></i>
+    </span>
+    <h2 class="auth-success__title">{{ lang.t('auth.resetSuccessTitle') }}</h2>
+    <p class="auth-success__body">{{ lang.t('auth.resetSuccessBody') }}</p>
+    <app-button
+      styleClass="auth-submit auth-success__action"
+      type="button"
+      icon="pi pi-angle-double-right"
+      iconPos="left"
+      size="large"
+      [fluid]="true"
+      [label]="lang.t('auth.submit')"
+      (clicked)="onConfirm()"
+    />
+  </div>
+</p-dialog>

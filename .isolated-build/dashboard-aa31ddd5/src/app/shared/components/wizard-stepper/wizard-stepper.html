@@ -1,0 +1,27 @@
+<p-stepper class="wizard" [value]="active()">
+  <p-step-list>
+    @for (item of steps(); track item.id; let index = $index) {
+      <p-step [value]="index" [disabled]="index > active()">
+        <ng-template #content>
+          <button
+            type="button"
+            class="wizard__step"
+            [class.is-active]="active() === index"
+            [class.is-done]="done(index)"
+            [disabled]="index > active()"
+            (click)="choose(index)"
+          >
+            <span class="wizard__mark">
+              @if (done(index)) {
+                <i class="pi pi-check" aria-hidden="true"></i>
+              } @else {
+                {{ index + 1 }}
+              }
+            </span>
+            <span class="wizard__label">{{ item.label }}</span>
+          </button>
+        </ng-template>
+      </p-step>
+    }
+  </p-step-list>
+</p-stepper>

@@ -46,6 +46,7 @@
         [title]="editor.text(item.title)"
         [titleLabel]="editor.copy('product.unitTitle')"
         [titlePlaceholder]="editor.copy('product.unitTitlePh')"
+        [titleError]="editor.identityTitleError(index)"
         [body]="editor.text(item.body)"
         [bodyLabel]="editor.copy('product.identityBody')"
         [bodyPlaceholder]="editor.copy('product.identityBodyPh')"

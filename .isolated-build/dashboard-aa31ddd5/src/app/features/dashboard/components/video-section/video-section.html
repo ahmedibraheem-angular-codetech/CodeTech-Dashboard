@@ -1,0 +1,91 @@
+<article class="section-card">
+  <div class="section-head">
+    <div class="section-head__title">
+      <h2>{{ lang.t('home.video') }}</h2>
+      @if (name()) {
+        <ng-container *appHasPermission="'home.update'">
+          <p-toggleswitch
+            [ngModel]="enabled()"
+            (ngModelChange)="toggle($event)"
+            [attr.aria-label]="lang.t('home.video')"
+          />
+        </ng-container>
+      }
+    </div>
+    @if (name()) {
+      <div class="page-header__actions">
+        <app-button
+          *appHasPermission="'home.delete'"
+          styleClass="home-delete"
+          icon="pi pi-trash"
+          [ariaLabel]="lang.t('home.deleteVideo')"
+          [pTooltip]="lang.t('home.deleteVideo')"
+          tooltipPosition="top"
+          (clicked)="remove()"
+        />
+        <ng-container *appHasPermission="'home.update'">
+          <p-fileupload
+            mode="basic"
+            accept="video/mp4,video/*"
+            chooseIcon="pi pi-upload"
+            styleClass="home-cta"
+            [chooseLabel]="lang.t('home.reupload')"
+            [auto]="true"
+            [customUpload]="true"
+            [disabled]="saving()"
+            [invalidFileTypeMessageSummary]="lang.t('home.invalidVideoSummary')"
+            [invalidFileTypeMessageDetail]="lang.t('home.invalidVideoDetail')"
+            (onSelect)="onSelected($event)"
+          />
+        </ng-container>
+      </div>
+    }
+  </div>
+  @if (name(); as videoName) {
+    <div class="video-frame" [class.is-off]="!enabled()">
+      @if (playing() && url(); as src) {
+        <video
+          class="video-frame__player"
+          [src]="src"
+          [attr.title]="videoName"
+          controls
+          autoplay
+          playsinline
+        ></video>
+      } @else {
+        <button
+          type="button"
+          class="video-play"
+          [disabled]="!enabled() || !url()"
+          [attr.aria-label]="videoName"
+          (click)="play()"
+        >
+          <i class="pi pi-play" aria-hidden="true"></i>
+        </button>
+      }
+    </div>
+  } @else {
+    <app-section-empty
+      [title]="lang.t('home.videoEmptyTitle')"
+      [hint]="lang.t('home.videoEmptyHint')"
+    >
+      <ng-container *appHasPermission="'home.create'">
+        <p-fileupload
+          mode="basic"
+          accept="video/mp4,video/*"
+          chooseIcon="pi pi-upload"
+          [chooseLabel]="lang.t('home.videoUpload')"
+          [auto]="true"
+          [customUpload]="true"
+          [disabled]="saving()"
+          styleClass="home-empty-cta"
+          [invalidFileTypeMessageSummary]="lang.t('home.invalidVideoSummary')"
+          [invalidFileTypeMessageDetail]="lang.t('home.invalidVideoDetail')"
+          (onSelect)="onSelected($event)"
+        />
+      </ng-container>
+    </app-section-empty>
+  }
+</article>
+
+<app-confirm-dialog />

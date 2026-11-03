@@ -1,0 +1,201 @@
+<article class="section-card">
+  <div class="section-head">
+    <h2>{{ view().title }}</h2>
+    @if (filled()) {
+      <app-button
+        *appHasPermission="'home.update'"
+        styleClass="block-edit"
+        icon="pi pi-pen-to-square"
+        iconPos="right"
+        [label]="lang.t('home.edit')"
+        (clicked)="open()"
+      />
+    }
+  </div>
+  @if (filled()) {
+    <app-content-panel>
+      <div class="story">
+        <div
+          class="story__visual"
+          aria-hidden="true"
+          [style.background-image]="visualUrl() ? 'url(' + visualUrl() + ')' : null"
+        ></div>
+        <div class="story__text">
+          <h3>{{ view().title }}</h3>
+          <p>{{ view().body }}</p>
+          <ul class="check-list">
+            @for (point of view().points; track $index) {
+              <li>
+                <svg
+                  class="check-list__icon"
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="20"
+                  height="20"
+                  viewBox="0 0 20 20"
+                  fill="none"
+                  aria-hidden="true"
+                >
+                  <circle
+                    opacity="0.5"
+                    cx="9.9974"
+                    cy="10"
+                    r="8.33333"
+                    stroke="#576E8A"
+                    stroke-width="1.25"
+                  />
+                  <path
+                    d="M7.08594 10.4167L8.7526 12.0833L12.9193 7.91667"
+                    stroke-width="1.25"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke="#576E8A"
+                  />
+                </svg>
+                <span>{{ point }}</span>
+              </li>
+            }
+          </ul>
+        </div>
+      </div>
+    </app-content-panel>
+  } @else {
+    <app-section-empty
+      [title]="lang.t(kind() === 'about' ? 'home.aboutEmpty' : 'home.visionEmpty')"
+      [hint]="lang.t(kind() === 'about' ? 'home.aboutEmptyHint' : 'home.visionEmptyHint')"
+    >
+      <app-button
+        *appHasPermission="'home.create'"
+        styleClass="home-empty-cta"
+        icon="pi pi-file"
+        [label]="lang.t(kind() === 'about' ? 'home.aboutAdd' : 'home.visionAdd')"
+        (clicked)="open()"
+      />
+    </app-section-empty>
+  }
+</article>
+
+<app-modal
+  [(visible)]="editorOpen"
+  [title]="view().title || lang.t('home.edit')"
+  [icon]="icon()"
+  [saving]="saving()"
+  (save)="save()"
+>
+  <div class="block-form">
+    <app-locale-switch [value]="locale()" (picked)="locale.set($event)" />
+
+    @for (code of locales; track code) {
+      @if (locale() === code) {
+        @let group = form.controls[code];
+        <div class="block-form__lang" [attr.dir]="code === 'ar' ? 'rtl' : 'ltr'" [attr.lang]="code">
+          <div class="field">
+            <label class="field__label" [attr.for]="'block-title-' + code">
+              {{ text('home.title', code) }}
+            </label>
+            <p-iconfield>
+              <input
+                pInputText
+                [id]="'block-title-' + code"
+                [fluid]="true"
+                [formControl]="group.controls.title"
+                [placeholder]="text('home.titlePh', code)"
+              />
+              <p-inputicon [class]="icon()" />
+            </p-iconfield>
+          </div>
+
+          <div class="field">
+            <label class="field__label" [attr.for]="'block-body-' + code">
+              {{ text('home.body', code) }}
+            </label>
+            <textarea
+              pTextarea
+              rows="3"
+              [id]="'block-body-' + code"
+              [fluid]="true"
+              [formControl]="group.controls.body"
+              [placeholder]="text('home.bodyPh', code)"
+            ></textarea>
+          </div>
+
+          <app-content-panel>
+            <div class="points">
+              <h3 class="points__title">{{ text('home.points', code) }}</h3>
+              @for (point of group.controls.points.controls; track point; let i = $index) {
+                <div class="field">
+                  <label class="field__label" [attr.for]="'block-point-' + code + '-' + i">
+                    {{ text('home.point', code) }} {{ i + 1 }}
+                  </label>
+                  <div class="point-row">
+                    <input
+                      pInputText
+                      [id]="'block-point-' + code + '-' + i"
+                      [fluid]="true"
+                      [formControl]="point"
+                      [placeholder]="text('home.pointPh', code)"
+                    />
+                    <app-button
+                      variant="secondary"
+                      styleClass="block-form__delete"
+                      class="point-row__delete"
+                      icon="pi pi-trash"
+                      size="small"
+                      [ariaLabel]="text('home.deletePoint', code) + ' ' + (i + 1)"
+                      (clicked)="removePoint(code, i)"
+                    />
+                  </div>
+                </div>
+              }
+              <app-button
+                variant="secondary"
+                class="points__add"
+                icon="pi pi-plus-circle"
+                iconPos="right"
+                [fluid]="true"
+                [label]="text('home.addPoint', code)"
+                (clicked)="addPoint(code)"
+              />
+            </div>
+          </app-content-panel>
+        </div>
+      }
+    }
+
+    <div class="field">
+      <span class="field__label" id="block-image-label">{{ lang.t('home.image') }}</span>
+      <label class="image-drop" (dragover)="$event.preventDefault()" (drop)="onDrop($event)">
+        <input
+          type="file"
+          accept="image/png,image/jpeg"
+          aria-labelledby="block-image-label"
+          (change)="onPick($event)"
+        />
+        <span class="image-drop__icon"><i class="pi pi-download" aria-hidden="true"></i></span>
+        <strong>{{ lang.t('home.imageUpload') }}</strong>
+        <small>{{ lang.t('home.imageHint') }}</small>
+      </label>
+      @if (imageError()) {
+        <p class="field__error" role="alert">{{ lang.t(imageError()) }}</p>
+      }
+      @if (image(); as file) {
+        <div class="image-file">
+          <img class="image-file__thumb" [src]="thumbUrl()" alt="" />
+          <div class="image-file__text">
+            <strong>{{ file.name }}</strong>
+            <small
+              ><bdi>{{ imageSize() }}</bdi> · <bdi>{{ imageDate() }}</bdi></small
+            >
+          </div>
+          <app-button
+            variant="secondary"
+            styleClass="block-form__delete"
+            icon="pi pi-trash"
+            size="small"
+            [ariaLabel]="lang.t('home.deleteImage')"
+            (clicked)="removeImage()"
+          />
+        </div>
+      }
+    </div>
+  </div>
+</app-modal>

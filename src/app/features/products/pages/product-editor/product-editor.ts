@@ -48,12 +48,23 @@ import {
   PRODUCT_SHORT_DESCRIPTION_MAX,
   isValidShortDescription,
 } from '../../models/product-short-description';
-import { isSectorArabicImageValid } from '../../models/product-sector-media';
 import {
+  firstRepeaterValidationIssue,
   isWorkflowStepArabicValid,
+  newFaqAnswerArMissing,
+  newFaqQuestionArMissing,
+  newIntegrationImageMissing,
+  newPointBodyArMissing,
+  newPointTitleArMissing,
+  newPointTitleOnlyArMissing,
+  newStatTitleArMissing,
+  newStatValueArMissing,
+  newUnitTitleArMissing,
+  productRepeatersValid,
+  sectorImageArMissing,
   workflowStepBodyArMissing,
   workflowStepTitleArMissing,
-} from '../../models/product-workflow-step';
+} from '../../models/product-repeater-validation';
 import {
   PRODUCT_META_KEYWORD_MAX,
   isValidMetaKeywords,
@@ -448,7 +459,7 @@ export class ProductEditor {
 
   sectorArabicImageInvalid(index: number): boolean {
     const sector = this.draft().sectors[index];
-    return sector ? !isSectorArabicImageValid(sector) : false;
+    return sector ? sectorImageArMissing(sector) : false;
   }
 
   sectorImageError(index: number): string {
@@ -480,21 +491,114 @@ export class ProductEditor {
     );
   }
 
+  featureTitleError(index: number): string {
+    return this.pointTitleBodyError('features', index, 'title');
+  }
+
+  featureBodyError(index: number): string {
+    return this.pointTitleBodyError('features', index, 'body');
+  }
+
   challengeTitleError(index: number): string {
-    return (
-      this.serverField(`challenges.${index}.title.ar`) ||
-      this.serverField(`challenges.${index}.title.${this.locale()}`)
-    );
+    return this.pointTitleBodyError('challenges', index, 'title');
   }
 
   challengeBodyError(index: number): string {
+    return this.pointTitleBodyError('challenges', index, 'body');
+  }
+
+  offerTitleError(index: number): string {
+    return this.pointTitleBodyError('offer', index, 'title');
+  }
+
+  offerBodyError(index: number): string {
+    return this.pointTitleBodyError('offer', index, 'body');
+  }
+
+  resultTitleError(index: number): string {
+    return this.pointTitleBodyError('results', index, 'title');
+  }
+
+  resultBodyError(index: number): string {
+    return this.pointTitleBodyError('results', index, 'body');
+  }
+
+  toolTitleError(index: number): string {
+    return this.mediaTitleBodyError('tools', index, 'title');
+  }
+
+  toolBodyError(index: number): string {
+    return this.mediaTitleBodyError('tools', index, 'body');
+  }
+
+  integrationImageError(index: number): string {
+    const item = this.draft().integrations[index];
+    if (item && newIntegrationImageMissing(item)) {
+      return this.copy('product.imageRequired');
+    }
+    return this.serverField(`integrations.${index}.image`);
+  }
+
+  unitTitleError(index: number): string {
+    const item = this.draft().units[index];
+    if (item && newUnitTitleArMissing(item)) {
+      return this.copy('product.required');
+    }
     return (
-      this.serverField(`challenges.${index}.short_description.ar`) ||
-      this.serverField(`challenges.${index}.short_description.${this.locale()}`)
+      this.serverField(`modules.${index}.title.ar`) ||
+      this.serverField(`modules.${index}.title.${this.locale()}`)
+    );
+  }
+
+  identityTitleError(index: number): string {
+    const item = this.draft().identity[index];
+    if (item && newPointTitleOnlyArMissing(item)) {
+      return this.copy('product.required');
+    }
+    return (
+      this.serverField(`identity_items.${index}.title.ar`) ||
+      this.serverField(`identity_items.${index}.title.${this.locale()}`)
+    );
+  }
+
+  highlightTitleError(index: number): string {
+    const item = this.draft().highlights[index];
+    if (item && newPointTitleOnlyArMissing(item)) {
+      return this.copy('product.required');
+    }
+    return (
+      this.serverField(`reasons.${index}.title.ar`) ||
+      this.serverField(`reasons.${index}.title.${this.locale()}`)
+    );
+  }
+
+  faqQuestionError(index: number): string {
+    const item = this.draft().faqs[index];
+    if (item && newFaqQuestionArMissing(item)) {
+      return this.copy('product.required');
+    }
+    return (
+      this.serverField(`faqs.${index}.question.ar`) ||
+      this.serverField(`faqs.${index}.question.${this.locale()}`)
+    );
+  }
+
+  faqAnswerError(index: number): string {
+    const item = this.draft().faqs[index];
+    if (item && newFaqAnswerArMissing(item)) {
+      return this.copy('product.required');
+    }
+    return (
+      this.serverField(`faqs.${index}.answer.ar`) ||
+      this.serverField(`faqs.${index}.answer.${this.locale()}`)
     );
   }
 
   statTitleError(index: number): string {
+    const item = this.draft().stats[index];
+    if (item && newStatTitleArMissing(item)) {
+      return this.copy('product.required');
+    }
     return (
       this.serverField(`stats.${index}.title.ar`) ||
       this.serverField(`stats.${index}.title.${this.locale()}`)
@@ -502,6 +606,10 @@ export class ProductEditor {
   }
 
   statValueError(index: number): string {
+    const item = this.draft().stats[index];
+    if (item && newStatValueArMissing(item)) {
+      return this.copy('product.required');
+    }
     return (
       this.serverField(`stats.${index}.value.ar`) ||
       this.serverField(`stats.${index}.value.${this.locale()}`)
@@ -810,13 +918,8 @@ export class ProductEditor {
       this.step.set(0);
       return;
     }
-    if (!this.sectorsArabicImagesValid()) {
-      this.useLocale('ar');
-      this.step.set(1);
-      return;
-    }
-    if (!this.workflowStepsValid()) {
-      this.focusWorkflowSteps();
+    if (!this.productRepeatersValid()) {
+      this.focusRepeaterValidation();
       return;
     }
     if (!this.seoStepValid()) {
@@ -915,17 +1018,23 @@ export class ProductEditor {
     }
   }
 
-  private sectorsArabicImagesValid(): boolean {
-    return this.draft().sectors.every((sector) => isSectorArabicImageValid(sector));
+  private productRepeatersValid(): boolean {
+    return productRepeatersValid(this.draft());
   }
 
   private workflowStepsValid(): boolean {
     return this.draft().steps.every((step) => isWorkflowStepArabicValid(step));
   }
 
-  private focusWorkflowSteps(): void {
-    this.useLocale('ar');
-    this.step.set(IDENTITY_STEP_INDEX);
+  private focusRepeaterValidation(): void {
+    const issue = firstRepeaterValidationIssue(this.draft());
+    if (!issue) {
+      return;
+    }
+    if (issue.preferAr) {
+      this.useLocale('ar');
+    }
+    this.step.set(issue.step);
   }
 
   private canLeaveEditorStep(target: number): boolean {
@@ -941,6 +1050,46 @@ export class ProductEditor {
     }
     this.useLocale('ar');
     return false;
+  }
+
+  private pointTitleBodyError(
+    list: 'features' | 'challenges' | 'offer' | 'results',
+    index: number,
+    field: 'title' | 'body',
+  ): string {
+    const item = this.draft()[list][index];
+    if (item) {
+      if (field === 'title' && newPointTitleArMissing(item)) {
+        return this.copy('product.required');
+      }
+      if (field === 'body' && newPointBodyArMissing(item)) {
+        return this.copy('product.required');
+      }
+    }
+    const apiList =
+      list === 'offer' ? 'offerings' : list === 'features' ? 'features' : list === 'results' ? 'results' : 'challenges';
+    const apiField = field === 'title' ? 'title' : 'short_description';
+    return (
+      this.serverField(`${apiList}.${index}.${apiField}.ar`) ||
+      this.serverField(`${apiList}.${index}.${apiField}.${this.locale()}`)
+    );
+  }
+
+  private mediaTitleBodyError(list: 'tools', index: number, field: 'title' | 'body'): string {
+    const item = this.draft()[list][index];
+    if (item) {
+      if (field === 'title' && newPointTitleArMissing(item)) {
+        return this.copy('product.required');
+      }
+      if (field === 'body' && newPointBodyArMissing(item)) {
+        return this.copy('product.required');
+      }
+    }
+    const apiField = field === 'title' ? 'title' : 'short_description';
+    return (
+      this.serverField(`advantages.${index}.${apiField}.ar`) ||
+      this.serverField(`advantages.${index}.${apiField}.${this.locale()}`)
+    );
   }
 
   private canLeaveSeoStep(target: number): boolean {

@@ -1,0 +1,13 @@
+<app-auth-shell>
+  <app-auth-otp-form
+    [form]="form"
+    [invalid]="invalid()"
+    [submitting]="submitting()"
+    [remaining]="remaining()"
+    [clock]="clock()"
+    (back)="back()"
+    (submitted)="submit()"
+    (resend)="resend()"
+    (cleared)="clearInvalid()"
+  />
+</app-auth-shell>

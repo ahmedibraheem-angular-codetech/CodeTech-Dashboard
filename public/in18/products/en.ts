@@ -16,6 +16,7 @@ export const en = {
   'product.empty': 'No products yet',
   'product.draft': 'Draft',
   'product.required': 'This field is required.',
+  'product.imageRequired': 'An image is required.',
   'product.step.info': 'Data and statistics',
   'product.step.sectors': 'Sectors and challenges',
   'product.step.offer': 'What we offer and results',

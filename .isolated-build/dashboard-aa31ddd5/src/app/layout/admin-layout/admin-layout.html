@@ -1,0 +1,28 @@
+<a class="skip-link" href="#main-content">{{ lang.t('a11y.skip') }}</a>
+<div
+  class="shell"
+  [class.is-collapsed]="layout.collapsed() && !layout.isMobile()"
+  [class.is-drawer-open]="layout.mobileOpen()"
+>
+  <app-sidebar />
+  <div class="shell__main">
+    <div class="shell__content" id="main-content">
+      <app-header />
+      <div
+        class="shell__page"
+        [class.shell__page--enter]="pageEnter()"
+        (animationend)="onPageEnterEnd($event)"
+      >
+        <router-outlet />
+      </div>
+    </div>
+  </div>
+  @if (layout.mobileOpen()) {
+    <button
+      type="button"
+      class="backdrop"
+      (click)="layout.closeMobile()"
+      [attr.aria-label]="lang.t('common.close')"
+    ></button>
+  }
+</div>

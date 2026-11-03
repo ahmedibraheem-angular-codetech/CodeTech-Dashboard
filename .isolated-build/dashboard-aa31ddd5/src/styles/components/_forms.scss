@@ -1,0 +1,88 @@
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.field__label {
+  font-size: var(--app-font-sm);
+  font-weight: 500;
+  color: var(--app-muted);
+}
+
+// Password visibility button, positioned over the end of the PrimeNG icon field.
+.field__toggle {
+  position: absolute;
+  top: 50%;
+  inset-inline-end: 6px;
+  z-index: 1;
+  transform: translateY(-50%);
+}
+
+.field__hint {
+  margin: 0;
+  color: var(--app-muted);
+  font-size: 12px;
+}
+
+.field__error {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  color: var(--app-danger);
+  font-size: var(--app-font-sm);
+}
+
+.login-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.remember {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #64748b;
+  font-size: var(--app-font-sm);
+  font-weight: 500;
+}
+
+.p-inputotp {
+  display: flex;
+  direction: ltr;
+  justify-content: space-between;
+  gap: 14px;
+  width: 100%;
+}
+
+.p-inputotp .p-inputtext {
+  flex: 1;
+  width: 100%;
+  height: 64px;
+  text-align: center;
+  border-radius: 16px;
+  border: 1px solid #e7edf4;
+  background: #fff;
+  color: #16324f;
+  font-size: 1.25rem;
+  font-weight: 700;
+  box-shadow: none;
+}
+
+.p-inputotp .p-inputtext.otp-invalid,
+.p-inputotp .p-inputtext.ng-invalid.ng-touched {
+  border-color: #f43f5e;
+}
+
+.otp-error {
+  justify-content: flex-start;
+  color: #e11d48;
+}
+
+.form-grid {
+  display: grid;
+  gap: 14px;
+}

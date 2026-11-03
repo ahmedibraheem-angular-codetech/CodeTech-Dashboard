@@ -1,0 +1,58 @@
+<section class="page permissions-page">
+  <app-page-header
+    [title]="lang.t('nav.permissions')"
+    [subtitle]="lang.t('settings.permissionsSubtitle')"
+  >
+    <app-button
+      *appHasPermission="'roles.create'"
+      icon="pi pi-plus"
+      iconPos="end"
+      styleClass="permissions-add"
+      [label]="lang.t('settings.addRole')"
+      (clicked)="openCreate()"
+    />
+  </app-page-header>
+
+  @if (state() === 'loading') {
+    <app-state-view mode="loading" />
+  } @else if (state() === 'error') {
+    <app-state-view mode="error" [message]="lang.t('common.error')" (retry)="load()" />
+  } @else if (selected(); as role) {
+    <app-permissions-matrix
+      [modules]="catalog().modules"
+      [actions]="catalog().actions"
+      [roleOptions]="roleOptions()"
+      [grants]="grants()"
+      [canDelete]="canDelete() && !role.isProtected"
+      [showUpdate]="canUpdate()"
+      [showDelete]="canDelete()"
+      [locked]="locked()"
+      [(selectedId)]="selectedId"
+      (save)="save()"
+      (remove)="removeRole()"
+      (grantChange)="setGrant($event.moduleKey, $event.action, $event.value)"
+    />
+  } @else {
+    <app-state-view mode="empty" [message]="lang.t('common.empty')" />
+  }
+
+  <app-modal
+    [(visible)]="editorOpen"
+    [title]="lang.t('settings.addRole')"
+    icon="pi pi-shield"
+    saveIcon="pi pi-plus"
+    saveIconPos="start"
+    [saveLabel]="lang.t('settings.addRoleSubmit')"
+    [saveDisabled]="!draftName().trim() || saving()"
+    [saving]="saving()"
+    (save)="saveRole()"
+  >
+    <app-permissions-role-form
+      [modules]="catalog().modules"
+      [(draftName)]="draftName"
+      [(draftModules)]="draftModules"
+    />
+  </app-modal>
+
+  <app-confirm-dialog />
+</section>

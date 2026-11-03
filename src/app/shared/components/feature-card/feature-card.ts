@@ -29,6 +29,7 @@ export class FeatureCard {
   readonly iconLabel = input.required<string>();
   readonly imageName = input('');
   readonly imageUrl = input('');
+  readonly imageError = input('');
   readonly locale = input<AppLanguage | null>(null);
 
   readonly uploadKeyPrefix = input('product');

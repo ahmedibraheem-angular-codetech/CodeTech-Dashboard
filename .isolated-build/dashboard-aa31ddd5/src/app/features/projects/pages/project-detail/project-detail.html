@@ -1,0 +1,238 @@
+<section class="page project-detail">
+  @if (status() === 'loading') {
+    <app-state-view mode="loading" [message]="lang.t('common.loading')" />
+  } @else if (status() === 'missing' || !item()) {
+    <app-state-view mode="empty" [message]="lang.t('project.notFound')" />
+  } @else if (item(); as project) {
+    <app-page-header [title]="title(project)">
+      <span class="project-detail__badge" [class.is-live]="project.published">
+        {{ lang.t(project.published ? 'project.live' : 'project.draft') }}
+      </span>
+      <a
+        *appHasPermission="'projects.update'"
+        class="projects-board__add"
+        [routerLink]="['/projects', project.id, 'edit']"
+      >
+        {{ lang.t('project.edit') }}
+      </a>
+    </app-page-header>
+
+    @if (coverUrl(); as cover) {
+      <img class="project-detail__cover" [src]="cover" [alt]="title(project)" />
+    }
+
+    <app-page-tabs [tabs]="tabs()" [value]="tab()" (valueChange)="chooseTab($event)" />
+
+    @switch (tab()) {
+      @case ('gallery') {
+        <div class="project-detail__gallery">
+          @for (image of project.gallery; track image.id) {
+            @if (image.imageUrl && !image.imageUrl.startsWith('icon:')) {
+              <img [src]="image.imageUrl" alt="" />
+            }
+          }
+        </div>
+      }
+      @case ('identity') {
+        <div class="project-detail__identity">
+          @for (button of project.identityButtons; track button.id) {
+            <article class="project-tile project-detail__panel">
+              <h2>{{ locale(button.title) || lang.t('project.identity') }}</h2>
+              @if (locale(button.body)) {
+                <p>{{ locale(button.body) }}</p>
+              }
+              <div class="project-detail__gallery">
+                @for (image of button.images; track image.id) {
+                  @if (image.imageUrl && !image.imageUrl.startsWith('icon:')) {
+                    <img [src]="image.imageUrl" [alt]="locale(button.title)" />
+                  }
+                }
+              </div>
+            </article>
+          }
+        </div>
+      }
+      @case ('seo') {
+        <article class="project-tile project-detail__panel">
+          <dl class="project-detail__seo">
+            <div>
+              <dt>{{ lang.t('project.seoSlug') }}</dt>
+              <dd dir="ltr">{{ locale(project.seo.slug) || '—' }}</dd>
+            </div>
+            <div>
+              <dt>{{ lang.t('project.seoTitle') }}</dt>
+              <dd>{{ locale(project.seo.title) || '—' }}</dd>
+            </div>
+            <div>
+              <dt>{{ lang.t('project.seoKeywords') }}</dt>
+              <dd>{{ locale(project.seo.keywords) || '—' }}</dd>
+            </div>
+            <div>
+              <dt>{{ lang.t('project.seoDescription') }}</dt>
+              <dd>{{ locale(project.seo.description) || '—' }}</dd>
+            </div>
+          </dl>
+        </article>
+      }
+      @default {
+        <article class="project-tile project-detail__panel">
+          @if (summary(project)) {
+            <p>{{ summary(project) }}</p>
+          }
+
+          <h3>{{ lang.t('project.categories') }}</h3>
+          <ul class="project-tile__tags">
+            @for (category of project.categories; track category.id) {
+              <li>
+                <i
+                  class="pi"
+                  [class]="
+                    category.imageUrl.startsWith('icon:') ? category.imageUrl.slice(5) : 'pi-tag'
+                  "
+                  aria-hidden="true"
+                ></i>
+                {{ locale(category.title) }}
+              </li>
+            }
+          </ul>
+
+          @if (aboutCards().length) {
+            <h3>{{ lang.t('project.aboutCards') }}</h3>
+            <ul class="project-detail__list">
+              @for (card of aboutCards(); track card.id) {
+                @let art = visual(card);
+                <li>
+                  @if (art.image) {
+                    <img class="project-detail__thumb" [src]="art.image" alt="" />
+                  } @else if (art.icon) {
+                    <i class="pi project-detail__mark" [class]="art.icon" aria-hidden="true"></i>
+                  }
+                  @if (locale(card.title)) {
+                    <strong>{{ locale(card.title) }}</strong>
+                  }
+                  @if (locale(card.body)) {
+                    <span>{{ locale(card.body) }}</span>
+                  }
+                </li>
+              }
+            </ul>
+          }
+
+          @if (challenges().length) {
+            <h3>{{ lang.t('project.challenges') }}</h3>
+            <ul class="project-detail__list">
+              @for (challenge of challenges(); track challenge.id) {
+                @let art = visual(challenge);
+                <li>
+                  @if (art.image) {
+                    <img class="project-detail__thumb" [src]="art.image" alt="" />
+                  } @else if (art.icon) {
+                    <i class="pi project-detail__mark" [class]="art.icon" aria-hidden="true"></i>
+                  }
+                  @if (locale(challenge.title)) {
+                    <strong>{{ locale(challenge.title) }}</strong>
+                  }
+                  @if (locale(challenge.body)) {
+                    <span>{{ locale(challenge.body) }}</span>
+                  }
+                </li>
+              }
+            </ul>
+          }
+
+          @if (tools().length) {
+            <h3>{{ lang.t('project.tools') }}</h3>
+            <div class="project-detail__gallery">
+              @for (tool of tools(); track tool.id) {
+                @let art = visual(tool);
+                @if (art.image) {
+                  <figure class="project-detail__tool">
+                    <img [src]="art.image" [alt]="locale(tool.title)" />
+                    @if (locale(tool.title)) {
+                      <figcaption>{{ locale(tool.title) }}</figcaption>
+                    }
+                  </figure>
+                }
+              }
+            </div>
+          }
+
+          @if (solutions().length || solutionsImage()) {
+            <h3>{{ lang.t('project.solutions') }}</h3>
+            @if (solutionsImage(); as image) {
+              <img
+                class="project-detail__solutions-image"
+                [src]="image.imageUrl"
+                [alt]="locale(image.title) || lang.t('project.solutionsImage')"
+              />
+            }
+            @if (solutions().length) {
+              <ul class="project-detail__list">
+                @for (solution of solutions(); track solution.id) {
+                  @let art = visual(solution);
+                  <li>
+                    @if (art.image) {
+                      <img class="project-detail__thumb" [src]="art.image" alt="" />
+                    } @else if (art.icon) {
+                      <i class="pi project-detail__mark" [class]="art.icon" aria-hidden="true"></i>
+                    }
+                    @if (locale(solution.title)) {
+                      <strong>{{ locale(solution.title) }}</strong>
+                    }
+                    @if (locale(solution.body)) {
+                      <span>{{ locale(solution.body) }}</span>
+                    }
+                  </li>
+                }
+              </ul>
+            }
+          }
+
+          @if (features().length) {
+            <h3>{{ lang.t('project.features') }}</h3>
+            <ul class="project-detail__list">
+              @for (feature of features(); track feature.id) {
+                @let art = visual(feature);
+                <li>
+                  @if (art.image) {
+                    <img class="project-detail__thumb" [src]="art.image" alt="" />
+                  } @else if (art.icon) {
+                    <i class="pi project-detail__mark" [class]="art.icon" aria-hidden="true"></i>
+                  }
+                  @if (locale(feature.title)) {
+                    <strong>{{ locale(feature.title) }}</strong>
+                  }
+                  @if (locale(feature.body)) {
+                    <span>{{ locale(feature.body) }}</span>
+                  }
+                </li>
+              }
+            </ul>
+          }
+
+          @if (results().length) {
+            <h3>{{ lang.t('project.results') }}</h3>
+            <ul class="project-detail__list">
+              @for (result of results(); track result.id) {
+                @let art = visual(result);
+                <li>
+                  @if (art.image) {
+                    <img class="project-detail__thumb" [src]="art.image" alt="" />
+                  } @else if (art.icon) {
+                    <i class="pi project-detail__mark" [class]="art.icon" aria-hidden="true"></i>
+                  }
+                  @if (locale(result.title)) {
+                    <strong>{{ locale(result.title) }}</strong>
+                  }
+                  @if (locale(result.body)) {
+                    <span>{{ locale(result.body) }}</span>
+                  }
+                </li>
+              }
+            </ul>
+          }
+        </article>
+      }
+    }
+  }
+</section>

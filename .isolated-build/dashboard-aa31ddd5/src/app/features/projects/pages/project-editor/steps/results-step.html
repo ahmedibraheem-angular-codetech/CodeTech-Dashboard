@@ -1,0 +1,37 @@
+<section class="editor-section editor-section--soft">
+  <header class="editor-section__head">
+    <h2>{{ editor.copy('project.results') }}</h2>
+    <span class="icon-badge" aria-hidden="true"><i class="pi pi-chart-bar"></i></span>
+  </header>
+  <div class="editor-section__body">
+    @for (item of editor.draft().results; track item.id; let index = $index) {
+      <app-feature-card
+        [label]="editor.copy('project.resultItem') + ' ' + (index + 1)"
+        [title]="editor.text(item.title)"
+        [titleLabel]="editor.copy('project.resultTitle')"
+        [titlePlaceholder]="editor.copy('project.resultTitlePh')"
+        [body]="editor.text(item.body)"
+        [bodyLabel]="editor.copy('project.resultBody')"
+        [bodyPlaceholder]="editor.copy('project.resultBodyPh')"
+        [iconLabel]="editor.copy('project.icon')"
+        [imageName]="item.imageName"
+        [imageUrl]="item.imageUrl"
+        [locale]="editor.locale()"
+        [uploadKeyPrefix]="uploadPrefix"
+        [clearable]="true"
+        [removeDisabled]="editor.draft().results.length === 1"
+        [removeLabel]="editor.copy('project.deleteTitle')"
+        removeIcon="pi-times"
+        (titleChange)="editor.setPoint('results', index, 'title', $event)"
+        (bodyChange)="editor.setPoint('results', index, 'body', $event)"
+        (imageChange)="editor.setPointImage('results', index, $event)"
+        (imageCleared)="editor.clearPointImage('results', index)"
+        (removed)="editor.removePoint('results', index)"
+      />
+    }
+  </div>
+  <button type="button" class="add-row" (click)="editor.addPoint('results')">
+    <span class="add-row__mark" aria-hidden="true"><i class="pi pi-plus"></i></span>
+    {{ editor.copy('project.addResult') }}
+  </button>
+</section>

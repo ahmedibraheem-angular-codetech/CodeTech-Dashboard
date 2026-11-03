@@ -55,6 +55,9 @@
           (picked)="imageChange.emit($event)"
           (cleared)="imageCleared.emit()"
         />
+        @if (imageError()) {
+          <app-field-error>{{ imageError() }}</app-field-error>
+        }
       </div>
     }
     <ng-content />

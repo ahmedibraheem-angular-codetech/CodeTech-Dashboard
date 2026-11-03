@@ -1,0 +1,48 @@
+<article class="inquiry-card inquiry-card--timeline">
+  <header class="inquiry-card__head">
+    <h2>{{ lang.t('inquiry.timeline') }}</h2>
+    <span class="inquiry-card__icon" aria-hidden="true"><i class="pi pi-comments"></i></span>
+  </header>
+  <ol class="inquiry-steps">
+    @for (step of steps(); track step.id) {
+      <li [class]="'inquiry-step inquiry-step--' + step.state">
+        <span class="inquiry-step__mark" aria-hidden="true">
+          @if (step.state === 'done') {
+            <svg
+              class="inquiry-step__check"
+              xmlns="http://www.w3.org/2000/svg"
+              width="8"
+              height="6"
+              viewBox="0 0 8 6"
+              fill="none"
+            >
+              <path
+                d="M2.86343 6C2.70335 6 2.55128 5.93303 2.43922 5.81583L0.174087 3.44681C-0.058029 3.20405 -0.058029 2.80223 0.174087 2.55947C0.406203 2.31671 0.790395 2.31671 1.02251 2.55947L2.86343 4.48483L6.97749 0.182072C7.2096 -0.0606906 7.5938 -0.0606906 7.82591 0.182072C8.05803 0.424834 8.05803 0.826648 7.82591 1.06941L3.28764 5.81583C3.17559 5.93303 3.02351 6 2.86343 6Z"
+              />
+            </svg>
+          } @else if (step.state === 'current') {
+            <svg
+              class="inquiry-step__dot"
+              xmlns="http://www.w3.org/2000/svg"
+              width="4"
+              height="4"
+              viewBox="0 0 4 4"
+              fill="none"
+            >
+              <circle cx="2" cy="2" r="2" transform="matrix(-1 0 0 1 4 0)" />
+            </svg>
+          }
+        </span>
+        <div class="inquiry-step__body">
+          <strong>{{ step.title }}</strong>
+          <p>{{ step.hint }}</p>
+          <span class="inquiry-step__when">
+            <span><i class="pi pi-calendar" aria-hidden="true"></i>{{ step.date }}</span>
+            <i class="pi pi-arrow-left inquiry-step__arrow" aria-hidden="true"></i>
+            <span dir="ltr"><i class="pi pi-clock" aria-hidden="true"></i>{{ step.time }}</span>
+          </span>
+        </div>
+      </li>
+    }
+  </ol>
+</article>

@@ -1,0 +1,50 @@
+<section class="editor-section editor-section--identity">
+  <header class="editor-section__head">
+    <h2>{{ editor.copy('project.identity') }}</h2>
+    <span class="icon-badge" aria-hidden="true"><i class="pi pi-desktop"></i></span>
+  </header>
+  <div class="editor-section__body">
+    @for (button of editor.draft().identityButtons; track button.id; let buttonIndex = $index) {
+      <app-feature-card
+        [label]="editor.identityButtonLabel(buttonIndex)"
+        [title]="editor.text(button.title)"
+        [titleLabel]="editor.copy('project.identityTitle')"
+        [titlePlaceholder]="editor.copy('project.identityTitlePh')"
+        [body]="editor.text(button.body)"
+        [bodyLabel]="editor.copy('project.identityBody')"
+        [bodyPlaceholder]="editor.copy('project.identityBodyPh')"
+        [bodyRows]="1"
+        [iconLabel]="editor.copy('project.identityImage')"
+        [showIcon]="false"
+        [removeDisabled]="editor.draft().identityButtons.length === 1 || editor.saving()"
+        [removeLabel]="editor.copy('project.deleteTitle')"
+        (titleChange)="editor.setIdentityButtonText(buttonIndex, 'title', $event)"
+        (bodyChange)="editor.setIdentityButtonText(buttonIndex, 'body', $event)"
+        (removed)="editor.removeIdentityButton(buttonIndex)"
+      >
+        <div class="identity-grid">
+          @for (image of button.images; track image.id; let imageIndex = $index) {
+            <div class="field">
+              <span class="field__label"
+                >{{ editor.copy('project.identityImage') }} {{ imageIndex + 1 }}</span
+              >
+              <app-product-upload
+                [keyPrefix]="uploadPrefix"
+                [locale]="editor.locale()"
+                [clearable]="true"
+                [name]="image.imageName"
+                [url]="image.imageUrl"
+                (picked)="editor.setIdentityButtonImage(buttonIndex, imageIndex, $event)"
+                (cleared)="editor.clearIdentityButtonImage(buttonIndex, imageIndex)"
+              />
+            </div>
+          }
+        </div>
+      </app-feature-card>
+    }
+    <button type="button" class="add-row" (click)="editor.addIdentityButton()">
+      {{ editor.copy('project.addIdentityButton') }}
+      <span class="add-row__mark" aria-hidden="true"><i class="pi pi-plus"></i></span>
+    </button>
+  </div>
+</section>

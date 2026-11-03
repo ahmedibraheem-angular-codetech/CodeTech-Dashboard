@@ -1,0 +1,61 @@
+<form class="verify-form" [formGroup]="form()" (ngSubmit)="onSubmit()">
+  <app-button
+    styleClass="back-btn"
+    type="button"
+    icon="pi pi-angle-left"
+    variant="secondary"
+    [ariaLabel]="lang.t('auth.back')"
+    (clicked)="back.emit()"
+  />
+  <h1>{{ lang.t(titleKey()) }}</h1>
+  <div class="field">
+    <span class="field__label">{{ lang.t('auth.verifyLabel') }}</span>
+    <p-inputotp
+      formControlName="code"
+      [length]="4"
+      [integerOnly]="true"
+      [styleClass]="invalid() ? 'otp-invalid' : ''"
+      [attr.aria-label]="lang.t('auth.verifyLabel')"
+      [attr.aria-describedby]="
+        invalid() || (form().controls.code.touched && form().controls.code.invalid)
+          ? 'otp-error'
+          : null
+      "
+      (onChange)="cleared.emit()"
+    />
+    @if (invalid()) {
+      <app-field-error class="otp-error" id="otp-error" [icon]="true">{{
+        lang.t('auth.invalidOtp')
+      }}</app-field-error>
+    } @else if (form().controls.code.touched && form().controls.code.invalid) {
+      <app-field-error class="otp-error" id="otp-error">{{
+        lang.t('auth.otpRequired')
+      }}</app-field-error>
+    }
+  </div>
+  <app-button
+    styleClass="auth-submit"
+    type="submit"
+    icon="pi pi-angle-double-left"
+    iconPos="right"
+    size="large"
+    [fluid]="true"
+    [label]="lang.t(submitKey())"
+    [loading]="submitting()"
+  />
+  <div class="otp-footer">
+    <span
+      >{{ lang.t('auth.notReceived') }}
+      <strong class="otp-footer__clock">{{ clock() }}</strong></span
+    >
+    <p-button
+      type="button"
+      [link]="true"
+      size="small"
+      styleClass="otp-footer__resend"
+      [label]="lang.t('auth.resend')"
+      [disabled]="remaining() > 0"
+      (onClick)="resend.emit()"
+    />
+  </div>
+</form>

@@ -1,0 +1,126 @@
+<article class="section-card partners-panel">
+  <div class="section-head">
+    <div class="section-head__title">
+      <h2>{{ lang.t('about.partners') }} ({{ partners().length }})</h2>
+    </div>
+    @if (partners().length) {
+      <app-button
+        *appHasPermission="'about.create'"
+        styleClass="home-cta"
+        icon="pi pi-plus"
+        [label]="lang.t('about.addPartner')"
+        (clicked)="open()"
+      />
+    }
+  </div>
+  @if (partners().length === 0) {
+    <app-section-empty
+      [title]="lang.t('about.partnersEmpty')"
+      [hint]="lang.t('about.partnersEmptyHint')"
+    >
+      <app-button
+        *appHasPermission="'about.create'"
+        styleClass="home-empty-cta"
+        icon="pi pi-plus"
+        [label]="lang.t('about.addPartner')"
+        (clicked)="open()"
+      />
+    </app-section-empty>
+  } @else {
+    <app-content-panel>
+      <div class="partner-grid">
+        @for (partner of partners(); track partner.id) {
+          <article class="partner-card" [attr.aria-label]="partner.name">
+            <div class="partner-card__tools">
+              <app-button
+                variant="secondary"
+                styleClass="partner-card__tool partner-card__tool--download"
+                icon="pi pi-download"
+                size="small"
+                [ariaLabel]="lang.t('home.download')"
+                [pTooltip]="lang.t('home.download')"
+                tooltipPosition="top"
+                (clicked)="download(partner)"
+              />
+              <app-button
+                *appHasPermission="'about.delete'"
+                variant="secondary"
+                styleClass="partner-card__tool partner-card__tool--delete"
+                icon="pi pi-trash"
+                size="small"
+                [ariaLabel]="lang.t('users.delete')"
+                [pTooltip]="lang.t('users.delete')"
+                tooltipPosition="top"
+                (clicked)="remove(partner)"
+              />
+            </div>
+            @if (partner.image?.url; as logo) {
+              <img class="partner-card__logo" [src]="logo" [alt]="partner.name" />
+            }
+            <span class="visually-hidden">{{ partner.monogram }}</span>
+          </article>
+        }
+      </div>
+    </app-content-panel>
+  }
+</article>
+
+<app-modal
+  [(visible)]="editorOpen"
+  [title]="lang.t('about.addPartner')"
+  iconUrl="images/partner-add.svg"
+  [saving]="saving()"
+  [saveDisabled]="!image()"
+  [saveLabel]="lang.t('home.add')"
+  saveIcon=""
+  (save)="save()"
+  (cancel)="removeImage()"
+>
+  <div class="field">
+    <span class="field__label" id="about-partner-image-label">{{
+      lang.t('home.partnerImage')
+    }}</span>
+    <label
+      class="image-drop image-drop--partner"
+      (dragover)="$event.preventDefault()"
+      (drop)="onDrop($event)"
+    >
+      <input
+        type="file"
+        tabindex="-1"
+        accept="image/png,image/jpeg"
+        aria-labelledby="about-partner-image-label"
+        (change)="onPick($event)"
+      />
+      <span class="image-drop__icon"><i class="pi pi-download" aria-hidden="true"></i></span>
+      <strong>{{ lang.t('home.partnerImageUpload') }}</strong>
+      <small>{{ lang.t('home.imageHint') }}</small>
+    </label>
+    @if (imageError()) {
+      <p class="field__error" role="alert">{{ lang.t(imageError()) }}</p>
+    }
+    @if (image(); as file) {
+      <div class="image-file">
+        @if (preview(); as url) {
+          <img class="image-file__thumb" [src]="url" alt="" />
+        }
+        <div class="image-file__text">
+          <strong>{{ file.name }}</strong>
+          <small
+            ><bdi>{{ imageSize() }}</bdi> · <bdi>{{ imageDate() }}</bdi></small
+          >
+        </div>
+        <app-button
+          variant="secondary"
+          styleClass="block-form__delete"
+          icon="pi pi-trash"
+          size="small"
+          [ariaLabel]="lang.t('home.deleteImage')"
+          (clicked)="removeImage()"
+        />
+      </div>
+    }
+  </div>
+</app-modal>
+
+<app-confirm-dialog />

@@ -1,0 +1,119 @@
+<div class="editor-layout">
+  <div class="editor-layout__main">
+    <section class="editor-section editor-section--soft">
+      <header class="editor-section__head">
+        <h2>{{ editor.copy('project.solutions') }}</h2>
+        <span class="icon-badge" aria-hidden="true"><i class="pi pi-check-circle"></i></span>
+      </header>
+      <div class="editor-section__body">
+        @for (item of editor.draft().solutions; track item.id; let index = $index) {
+          <app-feature-card
+            [label]="editor.copy('project.solutionItem') + ' ' + (index + 1)"
+            [title]="editor.text(item.title)"
+            [titleLabel]="editor.copy('project.solutionTitle')"
+            [titlePlaceholder]="editor.copy('project.solutionTitlePh')"
+            [body]="editor.text(item.body)"
+            [bodyLabel]="editor.copy('project.solutionBody')"
+            [bodyPlaceholder]="editor.copy('project.solutionBodyPh')"
+            [iconLabel]="editor.copy('project.icon')"
+            [imageName]="item.imageName"
+            [imageUrl]="item.imageUrl"
+            [locale]="editor.locale()"
+            [uploadKeyPrefix]="uploadPrefix"
+            [clearable]="true"
+            [removeDisabled]="editor.draft().solutions.length === 1"
+            [removeLabel]="editor.copy('project.deleteTitle')"
+            removeIcon="pi-times"
+            (titleChange)="editor.setPoint('solutions', index, 'title', $event)"
+            (bodyChange)="editor.setPoint('solutions', index, 'body', $event)"
+            (imageChange)="editor.setPointImage('solutions', index, $event)"
+            (imageCleared)="editor.clearPointImage('solutions', index)"
+            (removed)="editor.removePoint('solutions', index)"
+          />
+        }
+        <button type="button" class="add-row" (click)="editor.addPoint('solutions')">
+          <span class="add-row__mark" aria-hidden="true"><i class="pi pi-plus"></i></span>
+          {{ editor.copy('project.addSolution') }}
+        </button>
+      </div>
+    </section>
+  </div>
+
+  <div class="editor-layout__side">
+    <section class="editor-section editor-section--cover">
+      <header class="editor-section__head">
+        <h2>{{ editor.copy('project.solutionsImage') }}</h2>
+        <span class="icon-badge" aria-hidden="true"><i class="pi pi-images"></i></span>
+      </header>
+      <div class="editor-section__body">
+        <app-product-upload
+          [keyPrefix]="uploadPrefix"
+          [locale]="editor.locale()"
+          [clearable]="true"
+          [name]="editor.draft().solutionsImage.imageName"
+          [url]="editor.draft().solutionsImage.imageUrl"
+          (picked)="editor.setSolutionsImage($event)"
+          (cleared)="editor.clearSolutionsImage()"
+        />
+        <label class="field">
+          <span class="field__label">{{ editor.copy('project.imageTitle') }}</span>
+          <input
+            pInputText
+            [fluid]="true"
+            [value]="editor.text(editor.draft().solutionsImage.title)"
+            [placeholder]="editor.copy('project.imageTitlePh')"
+            (input)="editor.setSolutionsImageText('title', $event)"
+          />
+        </label>
+        <label class="field">
+          <span class="field__label">{{ editor.copy('project.imageAlt') }}</span>
+          <input
+            pInputText
+            [fluid]="true"
+            [value]="editor.text(editor.draft().solutionsImage.body)"
+            [placeholder]="editor.copy('project.imageAltPh')"
+            (input)="editor.setSolutionsImageText('body', $event)"
+          />
+        </label>
+      </div>
+    </section>
+  </div>
+</div>
+
+<section class="editor-section editor-section--soft">
+  <header class="editor-section__head">
+    <h2>{{ editor.copy('project.gallery') }}</h2>
+    <span class="icon-badge" aria-hidden="true"><i class="pi pi-images"></i></span>
+  </header>
+  <div class="editor-section__body">
+    @for (image of editor.draft().gallery; track image.id; let index = $index) {
+      <div class="field">
+        <div class="soft-item__head">
+          <span class="field__label">{{ editor.copy('project.galleryItem') }} {{ index + 1 }}</span>
+          <button
+            type="button"
+            class="feature-card__remove"
+            [disabled]="editor.draft().gallery.length === 1 || editor.saving()"
+            [attr.aria-label]="editor.copy('project.deleteTitle')"
+            (click)="editor.removeGallery(index)"
+          >
+            <i class="pi pi-times" aria-hidden="true"></i>
+          </button>
+        </div>
+        <app-product-upload
+          [keyPrefix]="uploadPrefix"
+          [locale]="editor.locale()"
+          [clearable]="true"
+          [name]="image.imageName"
+          [url]="image.imageUrl"
+          (picked)="editor.setGalleryImage(index, $event)"
+          (cleared)="editor.clearGalleryImage(index)"
+        />
+      </div>
+    }
+  </div>
+  <button type="button" class="add-row" (click)="editor.addGallery()">
+    <span class="add-row__mark" aria-hidden="true"><i class="pi pi-plus"></i></span>
+    {{ editor.copy('project.addGalleryImage') }}
+  </button>
+</section>

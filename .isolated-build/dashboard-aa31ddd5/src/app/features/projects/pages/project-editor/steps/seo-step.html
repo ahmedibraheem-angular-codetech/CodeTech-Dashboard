@@ -1,0 +1,60 @@
+<section class="editor-section editor-section--seo">
+  <header class="editor-section__head">
+    <h2>{{ editor.copy('project.step.seo') }}</h2>
+    <span class="icon-badge" aria-hidden="true"><i class="pi pi-search"></i></span>
+  </header>
+  <div class="editor-section__body">
+    <label class="field">
+      <span class="field__label">{{ editor.copy('project.seoSlug') }}</span>
+      <span class="seo-field">
+        <i class="seo-field__icon pi pi-link" aria-hidden="true"></i>
+        <input
+          pInputText
+          [fluid]="true"
+          [value]="editor.text(editor.draft().seo.slug)"
+          [placeholder]="editor.copy('project.seoSlugPh')"
+          (input)="editor.setSeo('slug', $event)"
+        />
+      </span>
+    </label>
+    <label class="field">
+      <span class="field__label">{{ editor.copy('project.seoTitle') }}</span>
+      <span class="seo-field">
+        <span class="seo-field__mark" aria-hidden="true">T</span>
+        <input
+          pInputText
+          [fluid]="true"
+          [value]="editor.text(editor.draft().seo.title)"
+          [placeholder]="editor.copy('project.seoTitlePh')"
+          (input)="editor.setSeo('title', $event)"
+        />
+      </span>
+    </label>
+    <label class="field">
+      <span class="field__label">{{ editor.copy('project.seoKeywords') }}</span>
+      <span class="seo-field">
+        <i class="seo-field__icon pi pi-tag" aria-hidden="true"></i>
+        <input
+          pInputText
+          [fluid]="true"
+          [value]="editor.text(editor.draft().seo.keywords)"
+          [placeholder]="editor.copy('project.seoKeywordsPh')"
+          (input)="editor.setSeo('keywords', $event)"
+        />
+      </span>
+    </label>
+    <label class="field seo-description">
+      <span class="field__label">{{ editor.copy('project.seoDescription') }}</span>
+      <textarea
+        pTextarea
+        [fluid]="true"
+        rows="4"
+        maxlength="160"
+        [value]="editor.text(editor.draft().seo.description)"
+        [placeholder]="editor.copy('project.seoDescriptionPh')"
+        (input)="editor.setSeo('description', $event)"
+      ></textarea>
+      <small class="counter">{{ editor.text(editor.draft().seo.description).length }}/160</small>
+    </label>
+  </div>
+</section>

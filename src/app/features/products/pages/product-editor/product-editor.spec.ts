@@ -934,6 +934,113 @@ describe('ProductEditor', () => {
     await settle(fixture);
     expect(save).toHaveBeenCalled();
   });
+
+  it('blocks save for incomplete new repeater rows and allows existing server rows', async () => {
+    const fixture = await render('create');
+    const root: HTMLElement = fixture.nativeElement;
+    const editor = fixture.componentInstance;
+    const api = TestBed.inject(ProductsService);
+    const save = vi.spyOn(api, 'save');
+
+    enterName(root, 'منتج جديد');
+    fixture.detectChanges();
+    [...root.querySelectorAll<HTMLButtonElement>('.locale-switch__option')]
+      .find((button) => button.textContent?.includes('English'))
+      ?.click();
+    fixture.detectChanges();
+    enterName(root, 'New product');
+    fixture.detectChanges();
+    [...root.querySelectorAll<HTMLButtonElement>('.locale-switch__option')]
+      .find((button) => button.textContent?.includes('عربي') || button.textContent?.includes('Arabic'))
+      ?.click();
+    fixture.detectChanges();
+
+    editor.draft.update((current) => ({
+      ...current,
+      features: [
+        {
+          id: 'point-new',
+          title: localeText('', 'Only English'),
+          body: localeText('وصف', 'Body'),
+          image: {
+            ar: { imageName: '', imageUrl: '', imageUuid: null },
+            en: { imageName: '', imageUrl: '', imageUuid: null },
+          },
+        },
+      ],
+    }));
+    fixture.detectChanges();
+    expect(editor.featureTitleError(0)).toBe(editor.copy('product.required'));
+    expect(editor.featureBodyError(0)).toBe('');
+
+    clickButton(root, 'حفظ كمسودة');
+    await settle(fixture);
+    expect(save).not.toHaveBeenCalled();
+    expect(editor.step()).toBe(0);
+    expect(editor.locale()).toBe('ar');
+
+    editor.draft.update((current) => ({
+      ...current,
+      features: [
+        {
+          id: '12',
+          title: localeText('', 'Server EN only'),
+          body: localeText('', 'Server EN only'),
+          image: {
+            ar: { imageName: '', imageUrl: '', imageUuid: null },
+            en: { imageName: '', imageUrl: '', imageUuid: null },
+          },
+        },
+      ],
+      integrations: [
+        {
+          id: 'media-new',
+          title: localeText('تكامل', 'Integration'),
+          body: localeText('', ''),
+          image: {
+            ar: { imageName: '', imageUrl: '', imageUuid: null },
+            en: { imageName: '', imageUrl: '', imageUuid: null },
+          },
+        },
+      ],
+    }));
+    fixture.detectChanges();
+    expect(editor.featureTitleError(0)).toBe('');
+    expect(editor.integrationImageError(0)).toBe(editor.copy('product.imageRequired'));
+
+    clickButton(root, 'حفظ كمسودة');
+    await settle(fixture);
+    expect(save).not.toHaveBeenCalled();
+    expect(editor.step()).toBe(3);
+
+    editor.draft.update((current) => ({
+      ...current,
+      integrations: [
+        {
+          id: 'media-new',
+          title: localeText('تكامل', 'Integration'),
+          body: localeText('', ''),
+          image: {
+            ar: {
+              imageName: 'a.png',
+              imageUrl: 'https://cdn.test/a.png',
+              imageUuid: 'img-1',
+            },
+            en: { imageName: '', imageUrl: '', imageUuid: null },
+          },
+        },
+      ],
+    }));
+    fixture.detectChanges();
+    expect(editor.integrationImageError(0)).toBe('');
+
+    clickButton(root, 'حفظ كمسودة');
+    await settle(fixture);
+    expect(save).toHaveBeenCalled();
+    const payload = save.mock.calls[0]?.[0] as Product;
+    expect(payload.features[0]?.id).toBe('12');
+    expect(payload.integrations[0]?.image.ar.imageUuid).toBe('img-1');
+  });
 });
 
 function inputEvent(value: string): Event {

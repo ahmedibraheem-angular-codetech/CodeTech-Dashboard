@@ -1,0 +1,64 @@
+@if (status() === 'loading') {
+  <app-state-view mode="loading" />
+} @else if (status() === 'error') {
+  <app-state-view mode="error" [message]="lang.t('users.loadError')" (retry)="reload()" />
+} @else if (status() === 'missing' || !user()) {
+  <app-state-view mode="empty" [message]="lang.t('users.notFound')" />
+} @else if (user(); as current) {
+  <section class="page user-detail">
+    <app-user-detail-profile
+      [user]="current"
+      [avatarUrl]="current.avatarUrl ?? ''"
+      [roleLabel]="roleLabel()"
+      [statusLabel]="statusLabel()"
+      [timeLabel]="headerTime()"
+      [joinedDate]="headerDate()"
+      [isBlocked]="isBlocked()"
+      [saving]="saving()"
+      [statusChoices]="statusChoices()"
+      [showEdit]="canUpdate()"
+      [showStatus]="canUpdate()"
+      [showDelete]="canDelete()"
+      (edit)="openEdit()"
+      (remove)="remove()"
+      (statusChange)="setStatus($event)"
+    />
+
+    <app-user-detail-fields
+      [user]="current"
+      [displayCode]="displayCode()"
+      [roleLabel]="roleLabel()"
+      [statusLabel]="statusLabel()"
+      [activityStamp]="activityLabel()"
+      [joinedStamp]="joinedLabel()"
+      [isBlocked]="isBlocked()"
+    />
+
+    @if (isBlocked()) {
+      <app-user-detail-ban [reason]="current.blockedReason ?? ''" [stamp]="banLabel()" />
+    }
+  </section>
+}
+
+<app-modal
+  [visible]="editing()"
+  (visibleChange)="setEditingVisible($event)"
+  [title]="editorTitle()"
+  icon="pi pi-user-edit"
+  [saveLabel]="editorSaveLabel()"
+  saveIcon="pi pi-save"
+  saveIconPos="start"
+  [cancelLabel]="editorT('common.cancel')"
+  [saving]="saving()"
+  (save)="save()"
+  (cancel)="closeEditor()"
+>
+  <app-user-editor-form
+    [form]="form"
+    [roles]="editorRoles()"
+    [(locale)]="editorLocale"
+    (submitted)="save()"
+  />
+</app-modal>
+
+<app-confirm-dialog />

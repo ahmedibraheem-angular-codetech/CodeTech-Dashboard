@@ -1,0 +1,27 @@
+import type { en } from './en';
+
+export const ar: { [K in keyof typeof en]: string } = {
+  'seo.title': 'إعدادات SEO',
+  'seo.subtitle': 'إدارة إعدادات SEO في الموقع.',
+  'seo.save': 'حفظ التعديلات',
+  'seo.revert': 'تراجع',
+  'seo.thumbHeading': 'رفع الصورة المصغرة',
+  'seo.uploadHeading': 'رفع الصورة المصغرة',
+  'seo.uploadLabel': 'رفع الصورة',
+  'seo.uploadHint': 'اضغط لرفع صورة أو اسحبها وأفلتها هنا',
+  'seo.uploadTypes': 'صيغة PNG,JPG. الحجم الأقصى 5 ميجابايت',
+  'seo.thumbTitleLabel': 'عنوان الصورة المصغرة',
+  'seo.thumbTitlePh': 'ادخل عنوان الصورة المصغرة',
+  'seo.thumbAltLabel': 'النص البديل للصورة المصغرة',
+  'seo.thumbAltPh': 'ادخل النص البديل للصورة المصغرة',
+  'seo.metaTitle': 'عنوان SEO لصفحة {page}',
+  'seo.metaTitlePh': 'ادخل عنوان SEO لصفحة {page}',
+  'seo.slug': 'الرابط المختصر (Slug)',
+  'seo.slugPh': 'ادخل الرابط المختصر',
+  'seo.keywords': 'كلمات مفتاحية',
+  'seo.keywordsPh': 'ادخل كلمات مفتاحية مفصولة بفاصلة',
+  'seo.description': 'وصف SEO لصفحة {page}',
+  'seo.descriptionPh': 'وصف SEO لصفحة {page} للظهور في محركات البحث',
+  'seo.fileType': 'الصيغة يجب أن تكون PNG أو JPG',
+  'seo.fileSize': 'الحد الأقصى لحجم الصورة 5 ميجابايت',
+};
