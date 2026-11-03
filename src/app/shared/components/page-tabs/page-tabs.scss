@@ -5,25 +5,26 @@ app-page-tabs {
   box-sizing: border-box;
   width: 100%;
   min-width: 0;
+  height: 64px;
   padding: 8px;
-  border: 1px solid #e6edf5;
+  border: 1px solid #f0f1f3;
   border-radius: 16px;
   background: #fff;
   --p-tabs-tablist-background: transparent;
   --p-tabs-tablist-border-width: 0;
   --p-tabs-active-bar-height: 0;
   --p-tabs-tab-background: #fff;
-  --p-tabs-tab-hover-background: #f7f8fa;
-  --p-tabs-tab-active-background: #f3f5f8;
+  --p-tabs-tab-hover-background: #f6f8f9;
+  --p-tabs-tab-active-background: #f6f8f9;
   --p-tabs-tab-color: #8b95a5;
   --p-tabs-tab-hover-color: #1b2a3a;
   --p-tabs-tab-active-color: #1b2a3a;
-  --p-tabs-tab-padding: 0 16px;
+  --p-tabs-tab-padding: 4px 14px;
   --p-tabs-tab-font-weight: 500;
   --p-tabs-tab-border-width: 1px;
-  --p-tabs-tab-border-color: #e6ebf2;
-  --p-tabs-tab-hover-border-color: #e6ebf2;
-  --p-tabs-tab-active-border-color: #e1e6ee;
+  --p-tabs-tab-border-color: #f6f8f9;
+  --p-tabs-tab-hover-border-color: #f6f8f9;
+  --p-tabs-tab-active-border-color: #f6f8f9;
 }
 
 app-page-tabs .p-tabs,
@@ -31,24 +32,30 @@ app-page-tabs .p-tablist,
 app-page-tabs .p-tablist-content,
 app-page-tabs .p-tablist-tab-list {
   width: 100%;
+  height: 100%;
   background: transparent;
   border: 0;
 }
 
 app-page-tabs .p-tablist-tab-list {
   display: flex;
+  align-items: center;
   min-width: 100%;
-  gap: 8px;
+  height: 100%;
+  gap: 6px;
 }
 
 app-page-tabs .p-tab {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  flex: 1 0 auto;
-  gap: 8px;
-  height: 40px;
-  border: 1px solid #e6ebf2;
+  flex: 0 0 auto;
+  box-sizing: border-box;
+  width: 175px;
+  height: 48px;
+  gap: 6px;
+  padding: 4px 14px;
+  border: 1px solid #f6f8f9;
   border-radius: 12px;
   background: #fff;
   color: #8b95a5;
@@ -67,13 +74,14 @@ app-page-tabs .p-tab .pi {
 }
 
 app-page-tabs .p-tab:hover {
-  background: #f7f8fa;
+  background: #f6f8f9;
+  border-color: #f6f8f9;
   color: #1b2a3a;
 }
 
 app-page-tabs .p-tab-active {
-  border-color: #e1e6ee;
-  background: #f3f5f8;
+  border-color: #f6f8f9;
+  background: #f6f8f9;
   color: #1b2a3a;
 }
 
