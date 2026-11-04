@@ -66,8 +66,8 @@ export const ar: { [K in keyof typeof en]: string } = {
   'social.platform.whatsapp': 'واتساب',
   'social.lastUpdated': 'آخر تحديث بتاريخ {date}',
   'social.loadError': 'تعذر تحميل روابط التواصل',
-  'social.localOnlyNotice':
-    'التعديلات تبقى في هذه الجلسة فقط. لم تُحفظ على الخادم بعد.',
+  'social.siteLoadError': 'تعذر تحميل إعدادات الموقع',
+  'social.channelsLoadError': 'تعذر تحميل وسائل التواصل',
   'social.channelSaved': 'تم حفظ الوسيلة',
   'social.channelDeleted': 'تم حذف الوسيلة',
   'social.deleteChannel': 'حذف الوسيلة',

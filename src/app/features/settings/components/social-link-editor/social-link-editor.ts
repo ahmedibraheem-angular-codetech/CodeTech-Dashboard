@@ -14,7 +14,6 @@ import { Select } from 'primeng/select';
 
 import type { AppLanguage } from '../../../../core/i18n/language';
 import { LanguageService } from '../../../../core/services/language.service';
-import { LocaleSwitch } from '../../../../shared/components/locale-switch/locale-switch';
 import { Modal } from '../../../../shared/components/modal/modal';
 import type {
   SocialChannel,
@@ -22,11 +21,15 @@ import type {
   SocialPlatformId,
   SocialPublishStatus,
 } from '../../models/social-links.model';
-import { emptyLocaleText } from '../../models/social-links.model';
 
+/**
+ * Create/edit a social channel.
+ * OpenAPI stores a single URL (not bilingual) and `is_published`
+ * (editor "publish status" select maps published/draft ↔ boolean).
+ */
 @Component({
   selector: 'app-social-link-editor',
-  imports: [ReactiveFormsModule, Select, LocaleSwitch, Modal],
+  imports: [ReactiveFormsModule, Select, Modal],
   templateUrl: './social-link-editor.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -44,7 +47,6 @@ export class SocialLinkEditor {
   readonly cancelled = output<void>();
 
   readonly locale = linkedSignal<AppLanguage>(() => this.lang.language());
-  private readonly urlDraft = signal(emptyLocaleText());
   private readonly editing = signal<SocialChannel | null>(null);
 
   t(key: string): string {
@@ -89,30 +91,18 @@ export class SocialLinkEditor {
   });
 
   open(channel: SocialChannel | null, platforms: SocialPlatformId[]): void {
-    const source = channel?.url ?? emptyLocaleText();
     const loc = this.contentLocale() ?? this.lang.language();
     this.editing.set(channel);
-    this.urlDraft.set({ ...source });
     this.locale.set(loc);
     this.form.reset({
       platform: channel?.platform ?? platforms[0] ?? 'linkedin',
       status: channel?.status ?? 'published',
-      url: source[loc] || source.ar || source.en,
+      url: channel?.url ?? '',
     });
     this.visible.set(true);
   }
 
-  protected setLocale(next: AppLanguage): void {
-    if (next === this.locale()) {
-      return;
-    }
-    this.flushUrl();
-    this.locale.set(next);
-    this.form.controls.url.setValue(this.urlDraft()[next]);
-  }
-
   protected onSave(): void {
-    this.flushUrl();
     if (this.form.invalid) {
       this.form.markAllAsTouched();
       return;
@@ -121,17 +111,11 @@ export class SocialLinkEditor {
     this.saved.emit({
       platform: raw.platform,
       status: raw.status,
-      url: { ...this.urlDraft() },
+      url: raw.url.trim(),
     });
   }
 
   protected onCancel(): void {
     this.cancelled.emit();
-  }
-
-  private flushUrl(): void {
-    const draft = { ...this.urlDraft() };
-    draft[this.locale()] = this.form.controls.url.value.trim();
-    this.urlDraft.set(draft);
   }
 }

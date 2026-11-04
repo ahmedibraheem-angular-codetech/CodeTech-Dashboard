@@ -64,8 +64,8 @@ export const en = {
   'social.platform.whatsapp': 'WhatsApp',
   'social.lastUpdated': 'Last update at {date}',
   'social.loadError': 'Could not load social links',
-  'social.localOnlyNotice':
-    'Changes stay in this browser session only. They are not saved to the server yet.',
+  'social.siteLoadError': 'Could not load site settings',
+  'social.channelsLoadError': 'Could not load social channels',
   'social.channelSaved': 'Channel saved',
   'social.channelDeleted': 'Channel deleted',
   'social.deleteChannel': 'Delete channel',

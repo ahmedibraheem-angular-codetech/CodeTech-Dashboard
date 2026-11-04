@@ -17,8 +17,6 @@
     [attr.dir]="locale() === 'ar' ? 'rtl' : 'ltr'"
     (ngSubmit)="onSave()"
   >
-    <app-locale-switch [value]="locale()" (picked)="setLocale($event)" />
-
     <label class="field">
       <span class="field__label">{{ t('social.platform') }}</span>
       <p-select

@@ -12,10 +12,8 @@ const channel: SocialChannel = {
   platform: 'linkedin',
   enabled: true,
   status: 'published',
-  url: {
-    ar: 'Https://Www.Linkedin.Com/Company/Codetech',
-    en: 'Https://Www.Linkedin.Com/Company/Codetech',
-  },
+  url: 'Https://Www.Linkedin.Com/Company/Codetech',
+  sortOrder: 1,
 };
 
 @Component({

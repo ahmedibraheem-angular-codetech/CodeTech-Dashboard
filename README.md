@@ -88,7 +88,7 @@ Rules of thumb:
 - `src/app/features/products` · `projects` · `services` — catalog editors (wizard + `EditorShell`)
 - `src/app/features/knowledge` — articles board and article editor (reactive forms + Quill)
 - `src/app/features/users` — searchable, sortable user table (API-backed)
-- `src/app/features/settings` — language, density, sidebar preference; social links UI (in-memory until BE)
+- `src/app/features/settings` — language, density, sidebar preference; social links + site settings (HTTP `/admin/social-links`, `/admin/site-settings`)
 - `src/app/features/sections` — about, inquiries, FAQ, reviews, legal, and related boards
 - `src/styles` — tokens, light theme, shared components, and page partials (`pages/*`, including split `knowledge/` and `product-editor/`)
 

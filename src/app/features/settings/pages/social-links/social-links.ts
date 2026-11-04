@@ -16,13 +16,13 @@ import { IconField } from 'primeng/iconfield';
 import { InputIcon } from 'primeng/inputicon';
 import { InputText } from 'primeng/inputtext';
 import { Textarea } from 'primeng/textarea';
-import { startWith } from 'rxjs';
+import { catchError, forkJoin, of, startWith } from 'rxjs';
 
 import { AuthService } from '../../../../core/auth/auth.service';
 import { loadFailureStatus } from '../../../../core/http/api-error';
-import { NetworkStatusService } from '../../../../core/services/network-status.service';
 import type { AppLanguage } from '../../../../core/i18n/language';
 import { LanguageService } from '../../../../core/services/language.service';
+import { NetworkStatusService } from '../../../../core/services/network-status.service';
 import { AppButton } from '../../../../shared/components/app-button/app-button';
 import { ConfirmDialog } from '../../../../shared/components/confirm-dialog/confirm-dialog';
 import { LocaleSwitch } from '../../../../shared/components/locale-switch/locale-switch';
@@ -33,13 +33,17 @@ import { formatIsoDate } from '../../../../shared/utils/date';
 import { SocialLinkCard } from '../../components/social-link-card/social-link-card';
 import type { SocialLinkCopyResult } from '../../components/social-link-card/social-link-url';
 import { SocialLinkEditor } from '../../components/social-link-editor/social-link-editor';
+import type { SiteSettings, SiteSettingsDraft } from '../../models/site-settings.model';
 import type {
   SocialChannel,
   SocialChannelDraft,
-  SocialLinksDocument,
   SocialPlatformId,
 } from '../../models/social-links.model';
-import { emptyLocaleText, readLocale } from '../../models/social-links.model';
+import {
+  availableSocialPlatforms,
+  emptyLocaleText,
+} from '../../models/social-links.model';
+import { SiteSettingsService } from '../../services/site-settings.service';
 import { SocialLinksService } from '../../services/social-links.service';
 
 type LoadState = 'loading' | 'ready' | 'error' | 'offline';
@@ -65,7 +69,8 @@ type LoadState = 'loading' | 'ready' | 'error' | 'offline';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SocialLinksPage {
-  private readonly api = inject(SocialLinksService);
+  private readonly socialApi = inject(SocialLinksService);
+  private readonly siteApi = inject(SiteSettingsService);
   private readonly messages = inject(MessageService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly network = inject(NetworkStatusService);
@@ -81,10 +86,13 @@ export class SocialLinksPage {
   readonly saving = signal(false);
   readonly editorSaving = signal(false);
   readonly locale = signal<AppLanguage>('ar');
-  readonly document = signal<SocialLinksDocument | null>(null);
-  private readonly baseline = signal<SocialLinksDocument | null>(null);
+  readonly site = signal<SiteSettings | null>(null);
+  private readonly siteBaseline = signal<SiteSettings | null>(null);
+  readonly channels = signal<SocialChannel[]>([]);
   readonly editingId = signal<string | null>(null);
   readonly editorPlatforms = signal<SocialPlatformId[]>([]);
+  private pendingLogoFile: File | null = null;
+  private objectUrl: string | null = null;
 
   private readonly descriptionDraft = signal(emptyLocaleText());
   private readonly locationNameDraft = signal(emptyLocaleText());
@@ -106,21 +114,22 @@ export class SocialLinksPage {
 
   readonly updatedLabel = computed(() => {
     this.locale();
-    const doc = this.document();
-    if (!doc) {
+    const site = this.site();
+    if (!site?.updatedAt) {
       return '';
     }
     return this.t('social.lastUpdated').replace(
       '{date}',
-      formatIsoDate(doc.updatedAt, this.locale()),
+      formatIsoDate(site.updatedAt, this.locale()),
     );
   });
+
+  readonly logoPreviewUrl = computed(() => this.site()?.logo.url ?? null);
+  readonly logoPreviewName = computed(() => this.site()?.logo.name ?? '');
 
   t(key: string): string {
     return this.lang.lookup(key, this.locale()) ?? key;
   }
-
-  readonly channels = computed(() => this.document()?.channels ?? []);
 
   readonly canUpdate = computed(() => {
     const session = this.auth.session();
@@ -151,13 +160,42 @@ export class SocialLinksPage {
 
   protected reload(): void {
     this.state.set('loading');
-    this.api
-      .get()
+    forkJoin({
+      site: this.siteApi.get().pipe(catchError((error: unknown) => of({ error }))),
+      channels: this.socialApi.list().pipe(catchError((error: unknown) => of({ error }))),
+    })
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
-        next: (doc) => {
-          this.applyDocument(doc);
-          this.state.set('ready');
+        next: ({ site, channels }) => {
+          const siteFailed = site && typeof site === 'object' && 'error' in site;
+          const channelsFailed = channels && typeof channels === 'object' && 'error' in channels;
+
+          if (siteFailed && channelsFailed) {
+            const err = (site as { error: unknown }).error;
+            this.state.set(loadFailureStatus(err, this.network.online()));
+            return;
+          }
+
+          if (!siteFailed) {
+            this.applySite(site as SiteSettings);
+          } else {
+            this.messages.add({
+              severity: 'error',
+              summary: this.lang.t('social.siteLoadError'),
+            });
+          }
+
+          if (!channelsFailed) {
+            this.channels.set(channels as SocialChannel[]);
+          } else {
+            this.channels.set([]);
+            this.messages.add({
+              severity: 'error',
+              summary: this.lang.t('social.channelsLoadError'),
+            });
+          }
+
+          this.state.set(!siteFailed || !channelsFailed ? 'ready' : 'error');
         },
         error: (error: unknown) => this.state.set(loadFailureStatus(error, this.network.online())),
       });
@@ -181,7 +219,7 @@ export class SocialLinksPage {
   }
 
   protected channelUrl(channel: SocialChannel): string {
-    return readLocale(channel.url, this.locale());
+    return channel.url;
   }
 
   protected openLinkLabel(channel: SocialChannel): string {
@@ -211,7 +249,7 @@ export class SocialLinksPage {
   }
 
   protected openAdd(): void {
-    const platforms = this.api.availablePlatforms();
+    const platforms = availableSocialPlatforms(this.channels());
     if (platforms.length === 0) {
       this.messages.add({
         severity: 'warn',
@@ -225,7 +263,7 @@ export class SocialLinksPage {
   }
 
   protected openEdit(channel: SocialChannel): void {
-    const platforms = [channel.platform, ...this.api.availablePlatforms(channel.id)];
+    const platforms = [channel.platform, ...availableSocialPlatforms(this.channels(), channel.id)];
     this.editingId.set(channel.id);
     this.editorPlatforms.set(platforms);
     this.editor().open(channel, platforms);
@@ -233,24 +271,25 @@ export class SocialLinksPage {
 
   protected onEditorSaved(draft: SocialChannelDraft): void {
     this.editorSaving.set(true);
-    this.api
-      .upsertChannel(draft, this.editingId() ?? undefined)
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe({
-        next: (doc) => {
-          this.editorSaving.set(false);
-          this.applyDocument(doc);
-          this.editor().visible.set(false);
-          this.messages.add({
-            severity: 'success',
-            summary: this.lang.t('social.channelSaved'),
-          });
-        },
-        error: () => {
-          this.editorSaving.set(false);
-          this.messages.add({ severity: 'error', summary: this.lang.t('common.error') });
-        },
-      });
+    const id = this.editingId();
+    const request = id
+      ? this.socialApi.update(id, draft)
+      : this.socialApi.create(draft);
+    request.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: (channel) => {
+        this.editorSaving.set(false);
+        this.upsertLocalChannel(channel);
+        this.editor().visible.set(false);
+        this.messages.add({
+          severity: 'success',
+          summary: this.lang.t('social.channelSaved'),
+        });
+      },
+      error: () => {
+        this.editorSaving.set(false);
+        this.messages.add({ severity: 'error', summary: this.lang.t('common.error') });
+      },
+    });
   }
 
   protected async removeChannel(channel: SocialChannel): Promise<void> {
@@ -264,12 +303,12 @@ export class SocialLinksPage {
     if (!ok) {
       return;
     }
-    this.api
-      .removeChannel(channel.id)
+    this.socialApi
+      .remove(channel.id)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
-        next: (doc) => {
-          this.applyDocument(doc);
+        next: () => {
+          this.channels.set(this.channels().filter((item) => item.id !== channel.id));
           this.messages.add({
             severity: 'success',
             summary: this.lang.t('social.channelDeleted'),
@@ -282,16 +321,14 @@ export class SocialLinksPage {
   }
 
   protected setEnabled(channel: SocialChannel, enabled: boolean): void {
-    this.api
-      .setChannelEnabled(channel.id, enabled)
+    this.socialApi
+      .setPublished(channel.id, enabled)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
-        next: (doc) => this.applyDocument(doc),
+        next: (updated) => this.upsertLocalChannel(updated),
         error: () => {
-          const current = this.document();
-          if (current) {
-            this.document.set(structuredClone(current));
-          }
+          // Force card re-bind to previous enabled value.
+          this.channels.set([...this.channels()]);
           this.messages.add({ severity: 'error', summary: this.lang.t('common.error') });
         },
       });
@@ -304,27 +341,32 @@ export class SocialLinksPage {
     if (!file) {
       return;
     }
-    const doc = this.document();
-    if (!doc) {
+    const current = this.site();
+    if (!current) {
       return;
     }
+    this.revokeObjectUrl();
     const url = URL.createObjectURL(file);
-    this.document.set({
-      ...doc,
-      site: {
-        ...doc.site,
-        imageName: file.name,
-        imageUrl: url,
+    this.objectUrl = url;
+    this.pendingLogoFile = file;
+    this.site.set({
+      ...current,
+      logo: {
+        uuid: current.logo.uuid,
+        name: file.name,
+        url,
       },
     });
   }
 
   protected cancel(): void {
-    const saved = this.baseline();
+    const saved = this.siteBaseline();
     if (!saved) {
       return;
     }
-    this.applyDocument(structuredClone(saved));
+    this.pendingLogoFile = null;
+    this.revokeObjectUrl();
+    this.applySite(structuredClone(saved));
     this.messages.add({
       severity: 'info',
       summary: this.lang.t('social.changesDiscarded'),
@@ -332,33 +374,34 @@ export class SocialLinksPage {
   }
 
   protected save(): void {
-    const doc = this.document();
-    if (!doc || this.saving()) {
+    const current = this.site();
+    if (!current || this.saving()) {
       return;
     }
     this.flushLocaleFields();
     const raw = this.form.getRawValue();
-    const next: SocialLinksDocument = {
-      ...doc,
-      site: {
-        ...doc.site,
-        description: { ...this.descriptionDraft() },
-        phone: raw.phone.trim(),
-        email: raw.email.trim(),
-      },
-      location: {
-        name: { ...this.locationNameDraft() },
-        mapUrl: raw.mapUrl.trim(),
-      },
+    const draft: SiteSettingsDraft = {
+      description: { ...this.descriptionDraft() },
+      companyName: { ...current.companyName },
+      websiteUrl: current.websiteUrl,
+      phone: raw.phone.trim(),
+      email: raw.email.trim(),
+      locationName: { ...this.locationNameDraft() },
+      mapUrl: raw.mapUrl.trim(),
+      logo: this.pendingLogoFile
+        ? { kind: 'replace', file: this.pendingLogoFile }
+        : { kind: 'omit' },
     };
     this.saving.set(true);
-    this.api
-      .save(next)
+    this.siteApi
+      .save(draft)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (saved) => {
           this.saving.set(false);
-          this.applyDocument(saved);
+          this.pendingLogoFile = null;
+          this.revokeObjectUrl();
+          this.applySite(saved);
           this.messages.add({
             severity: 'success',
             summary: this.lang.t('common.saveChanges'),
@@ -371,21 +414,31 @@ export class SocialLinksPage {
       });
   }
 
-  private applyDocument(doc: SocialLinksDocument, asBaseline = true): void {
-    this.document.set(doc);
-    if (asBaseline) {
-      this.baseline.set(structuredClone(doc));
-    }
-    this.descriptionDraft.set({ ...doc.site.description });
-    this.locationNameDraft.set({ ...doc.location.name });
+  private applySite(site: SiteSettings): void {
+    this.site.set(site);
+    this.siteBaseline.set(structuredClone(site));
+    this.descriptionDraft.set({ ...site.description });
+    this.locationNameDraft.set({ ...site.locationName });
     const loc = this.locale();
     this.form.reset({
-      description: doc.site.description[loc] || doc.site.description.ar,
-      phone: doc.site.phone,
-      email: doc.site.email,
-      locationName: doc.location.name[loc] || doc.location.name.ar,
-      mapUrl: doc.location.mapUrl,
+      description: site.description[loc] || site.description.ar,
+      phone: site.phone,
+      email: site.email,
+      locationName: site.locationName[loc] || site.locationName.ar,
+      mapUrl: site.mapUrl,
     });
+  }
+
+  private upsertLocalChannel(channel: SocialChannel): void {
+    const list = this.channels();
+    const index = list.findIndex((item) => item.id === channel.id);
+    if (index < 0) {
+      this.channels.set([...list, channel]);
+      return;
+    }
+    const next = [...list];
+    next[index] = channel;
+    this.channels.set(next);
   }
 
   private flushLocaleFields(): void {
@@ -396,5 +449,12 @@ export class SocialLinksPage {
     locationName[this.locale()] = raw.locationName;
     this.descriptionDraft.set(description);
     this.locationNameDraft.set(locationName);
+  }
+
+  private revokeObjectUrl(): void {
+    if (this.objectUrl) {
+      URL.revokeObjectURL(this.objectUrl);
+      this.objectUrl = null;
+    }
   }
 }

@@ -1,111 +1,71 @@
-import { Injectable, inject, signal } from '@angular/core';
-import { type Observable, map, timer } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
+import { Injectable, inject } from '@angular/core';
+import { type Observable, map } from 'rxjs';
 
-import { API_LATENCY_MS } from '../../../core/config/latency';
-import { toIsoDate } from '../../../shared/utils/date';
+import { API_BASE_URL, apiUrl } from '../../../core/config/api';
+import type { ApiEnvelope } from '../../../core/http/api.model';
 import type {
-  SocialChannel,
-  SocialChannelDraft,
-  SocialLinksDocument,
-  SocialPlatformId,
-} from '../models/social-links.model';
-import { SOCIAL_LINKS_SEED } from './social-links.mock';
+  SocialLinkDto,
+  SocialLinkPublishWriteDto,
+} from '../models/social-links.api';
+import type { SocialChannel, SocialChannelDraft } from '../models/social-links.model';
+import { mapSocialLink, toSocialLinkWrite } from './social-links.mapper';
 
+const PATH = 'admin/social-links';
+
+/**
+ * Social channels CRUD + publish.
+ * Reorder exists on the API but is not wired — the UI has no drag handle
+ * (OpenAPI: "the design draws no drag handle").
+ */
 @Injectable({ providedIn: 'root' })
 export class SocialLinksService {
-  private readonly latency = inject(API_LATENCY_MS);
-  private readonly document = signal<SocialLinksDocument>(structuredClone(SOCIAL_LINKS_SEED));
+  private readonly http = inject(HttpClient);
+  private readonly base = inject(API_BASE_URL);
 
-  get(): Observable<SocialLinksDocument> {
-    return timer(this.latency).pipe(map(() => structuredClone(this.document())));
+  list(): Observable<SocialChannel[]> {
+    return this.http
+      .get<ApiEnvelope<SocialLinkDto[]>>(apiUrl(this.base, PATH))
+      .pipe(map((envelope) => this.requireList(envelope).map(mapSocialLink)));
   }
 
-  save(next: SocialLinksDocument): Observable<SocialLinksDocument> {
-    return timer(this.latency).pipe(
-      map(() => {
-        const saved: SocialLinksDocument = {
-          ...structuredClone(next),
-          updatedAt: toIsoDate(new Date()),
-        };
-        this.document.set(saved);
-        return structuredClone(saved);
-      }),
-    );
+  create(draft: SocialChannelDraft): Observable<SocialChannel> {
+    return this.http
+      .post<ApiEnvelope<SocialLinkDto>>(apiUrl(this.base, PATH), toSocialLinkWrite(draft))
+      .pipe(map((envelope) => mapSocialLink(this.requireOne(envelope))));
   }
 
-  upsertChannel(draft: SocialChannelDraft, id?: string): Observable<SocialLinksDocument> {
-    return timer(this.latency).pipe(
-      map(() => {
-        const current = structuredClone(this.document());
-        if (id) {
-          current.channels = current.channels.map((item) =>
-            item.id === id
-              ? {
-                  ...item,
-                  platform: draft.platform,
-                  status: draft.status,
-                  url: structuredClone(draft.url),
-                  enabled: draft.status === 'published' ? item.enabled : false,
-                }
-              : item,
-          );
-        } else {
-          const channel: SocialChannel = {
-            id: `ch-${draft.platform}-${Date.now()}`,
-            platform: draft.platform,
-            enabled: draft.status === 'published',
-            status: draft.status,
-            url: structuredClone(draft.url),
-          };
-          current.channels = [...current.channels, channel];
-        }
-        current.updatedAt = toIsoDate(new Date());
-        this.document.set(current);
-        return structuredClone(current);
-      }),
-    );
+  update(id: string, draft: SocialChannelDraft): Observable<SocialChannel> {
+    return this.http
+      .put<ApiEnvelope<SocialLinkDto>>(
+        apiUrl(this.base, `${PATH}/${id}`),
+        toSocialLinkWrite(draft),
+      )
+      .pipe(map((envelope) => mapSocialLink(this.requireOne(envelope))));
   }
 
-  removeChannel(id: string): Observable<SocialLinksDocument> {
-    return timer(this.latency).pipe(
-      map(() => {
-        const current = structuredClone(this.document());
-        current.channels = current.channels.filter((item) => item.id !== id);
-        current.updatedAt = toIsoDate(new Date());
-        this.document.set(current);
-        return structuredClone(current);
-      }),
-    );
+  remove(id: string): Observable<void> {
+    return this.http
+      .delete(apiUrl(this.base, `${PATH}/${id}`), { responseType: 'text' })
+      .pipe(map(() => undefined));
   }
 
-  setChannelEnabled(id: string, enabled: boolean): Observable<SocialLinksDocument> {
-    return timer(this.latency).pipe(
-      map(() => {
-        const current = structuredClone(this.document());
-        current.channels = current.channels.map((item) =>
-          item.id === id
-            ? {
-                ...item,
-                enabled,
-                status: enabled ? 'published' : item.status,
-              }
-            : item,
-        );
-        current.updatedAt = toIsoDate(new Date());
-        this.document.set(current);
-        return structuredClone(current);
-      }),
-    );
+  setPublished(id: string, published: boolean): Observable<SocialChannel> {
+    const body: SocialLinkPublishWriteDto = { is_published: published };
+    return this.http
+      .patch<ApiEnvelope<SocialLinkDto>>(apiUrl(this.base, `${PATH}/${id}/publish`), body)
+      .pipe(map((envelope) => mapSocialLink(this.requireOne(envelope))));
   }
 
-  availablePlatforms(excludeId?: string): SocialPlatformId[] {
-    const used = new Set(
-      this.document()
-        .channels.filter((item) => item.id !== excludeId)
-        .map((item) => item.platform),
-    );
-    return (
-      ['linkedin', 'facebook', 'instagram', 'twitter', 'tiktok', 'snapchat', 'whatsapp'] as const
-    ).filter((platform) => !used.has(platform));
+  private requireList(envelope: ApiEnvelope<SocialLinkDto[]>): SocialLinkDto[] {
+    return Array.isArray(envelope?.data) ? envelope.data : [];
+  }
+
+  private requireOne(envelope: ApiEnvelope<SocialLinkDto>): SocialLinkDto {
+    const data = envelope?.data;
+    if (!data || typeof data.id !== 'number') {
+      throw new Error('Invalid social link response');
+    }
+    return data;
   }
 }

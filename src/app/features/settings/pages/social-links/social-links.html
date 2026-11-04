@@ -15,11 +15,6 @@
       />
     </app-page-header>
 
-    <p class="social-page__notice" role="status">
-      <i class="pi pi-info-circle" aria-hidden="true"></i>
-      <span>{{ t('social.localOnlyNotice') }}</span>
-    </p>
-
     <app-locale-switch [value]="locale()" (picked)="setLocale($event)" />
 
     <div class="social-top">
@@ -81,8 +76,8 @@
             @if (canUpdate()) {
               <input type="file" accept="image/*" hidden (change)="onImagePicked($event)" />
             }
-            @if (document()?.site?.imageUrl; as imageUrl) {
-              <img [src]="imageUrl" [alt]="document()?.site?.imageName ?? ''" />
+            @if (logoPreviewUrl(); as imageUrl) {
+              <img [src]="imageUrl" [alt]="logoPreviewName()" />
             } @else {
               <span class="social-upload__empty">{{ t('social.uploadHint') }}</span>
             }
