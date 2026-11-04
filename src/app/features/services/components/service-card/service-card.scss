@@ -27,11 +27,14 @@ app-service-card {
 
 .service-card__icon {
   display: grid;
-  width: 42px;
-  height: 42px;
+  box-sizing: border-box;
+  width: 52px;
+  height: 52px;
   place-items: center;
+  gap: 7.83px;
   overflow: hidden;
-  border-radius: 12px;
+  padding: 15.66px;
+  border-radius: 16px;
   background: #f7f7f7;
   color: #3f4a5c;
   font-size: 16px;
@@ -54,23 +57,23 @@ app-service-card {
   height: 42px;
   padding: 0;
   border-width: 1px;
-  border-radius: 14px;
+  border-radius: 16px;
   background: #fff;
 }
 
 .service-card .p-button.service-card__action .p-button-icon {
-  font-size: 14px;
+  font-size: 16px;
 }
 
 .service-card .p-button.service-card__action.p-button-primary,
 .service-card .p-button.service-card__action:not(.p-button-danger) {
-  border-color: #e6eef5;
-  color: #1b81d3;
+  border-color: #1c81d333;
+  color: #1c81d3;
 }
 
 .service-card .p-button.service-card__action.p-button-danger {
-  border-color: #ece3e4;
-  color: #d64545;
+  border-color: #e5001e33;
+  color: #e5001e;
 }
 
 // Pushes the title block to the bottom so every card in a row aligns, as in the design.
@@ -84,10 +87,14 @@ app-service-card {
 
 .service-card__head h2 {
   margin: 0;
-  color: var(--app-text);
-  font-size: 15px;
+  color: #002951;
+  font-family: 'Thmanyah Sans', sans-serif;
+  font-size: 18px;
   font-weight: 500;
-  line-height: 1.6;
+  font-style: normal;
+  line-height: 160%;
+  letter-spacing: 0;
+  text-transform: capitalize;
 }
 
 // The title is a real button so keyboard users can open the details; it looks like plain text.
@@ -121,7 +128,13 @@ app-service-card {
 
 .service-card__description {
   margin: 0;
-  color: #6b7384;
-  font-size: 11.2px;
-  line-height: 25px;
+  color: var(--Text-Geyser-600, #576e8a);
+  font-family: 'Thmanyah Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  font-style: normal;
+  line-height: 26px;
+  letter-spacing: -0.36px;
+  text-transform: capitalize;
+  vertical-align: middle;
 }

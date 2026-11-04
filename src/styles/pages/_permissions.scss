@@ -30,11 +30,18 @@
 }
 
 .permissions-add.p-button {
-  height: 40px;
-  padding-inline: 16px;
-  border-radius: 12px;
+  box-sizing: border-box;
+  width: max-content;
+  min-width: 189px;
+  height: 48px;
+  padding: 12px 16px;
+  gap: 10px;
+  border: 1px solid var(--Text-100, #eceff3);
+  border-radius: 16px;
+  background: #1c81d3;
+  color: #fff;
   font-size: 14px;
-  font-weight: 700;
+  font-weight: 500;
 }
 
 .permissions-panel {
@@ -78,29 +85,34 @@
 
 .permissions-role {
   display: inline-flex;
+  flex: 1 1 auto;
   align-items: stretch;
-  height: 40px;
-  border: 1px solid #e6edf5;
-  border-radius: 12px;
-  background: #fff;
+  min-width: 0;
+  height: 48px;
+  background: transparent;
 }
 
 .permissions-role__tag {
   display: inline-flex;
+  box-sizing: border-box;
   align-items: center;
-  gap: 8px;
-  padding: 0 12px;
-  border-inline-end: 1px solid #e6edf5;
-  border-radius: 12px 0 0 12px;
-  background: #f4f7fb;
+  justify-content: center;
+  width: max-content;
+  min-width: 89px;
+  height: 48px;
+  padding: 4px 16px;
+  gap: 6px;
+  border: 1px solid #eceff3;
+  border-inline-end-width: 1px;
+  border-start-start-radius: 16px;
+  border-end-start-radius: 16px;
+  border-start-end-radius: 0;
+  border-end-end-radius: 0;
+  background: #fff;
   color: #12324f;
   font-size: 14px;
   font-weight: 500;
   white-space: nowrap;
-}
-
-[dir='rtl'] .permissions-role__tag {
-  border-radius: 0 12px 12px 0;
 }
 
 .permissions-role__icon {
@@ -117,18 +129,34 @@
 
 .permissions-role .p-select,
 .permissions-role__select.p-select {
-  min-width: 168px;
-  height: 100%;
-  border: 0 !important;
+  display: inline-flex;
+  box-sizing: border-box;
+  flex: 1 1 auto;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  min-width: 0;
+  max-width: 631px;
+  height: 48px;
+  padding: 4px 20px;
+  border: 1px solid #eceff3 !important;
+  border-inline-start: 0 !important;
+  border-start-start-radius: 0 !important;
+  border-end-start-radius: 0 !important;
+  border-start-end-radius: 16px !important;
+  border-end-end-radius: 16px !important;
   box-shadow: none !important;
-  background: transparent;
+  background: #fff !important;
 }
 
 .permissions-role .p-select-label,
 .permissions-role__select .p-select-label {
   display: flex;
+  flex: 1 1 auto;
   align-items: center;
-  padding-inline: 12px;
+  justify-content: space-between;
+  min-width: 0;
+  padding: 0;
   color: #12324f;
   font-size: 14px;
   font-weight: 500;
