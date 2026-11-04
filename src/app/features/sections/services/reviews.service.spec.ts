@@ -248,10 +248,12 @@ describe('ReviewsService', () => {
 
   it('surfaces list HTTP failures', async () => {
     const result = firstValueFrom(service.list()).catch((error: unknown) => error);
-    http.expectOne((req) => req.url === LIST && req.params.get('page') === '1').flush('nope', {
-      status: 500,
-      statusText: 'Server Error',
-    });
+    http
+      .expectOne((req) => req.url === LIST && req.params.get('page') === '1')
+      .flush('nope', {
+        status: 500,
+        statusText: 'Server Error',
+      });
     expect(await result).toBeTruthy();
   });
 

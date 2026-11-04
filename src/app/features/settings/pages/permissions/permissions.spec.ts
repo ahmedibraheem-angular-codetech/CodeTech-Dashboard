@@ -15,7 +15,11 @@ describe('PermissionsPage', () => {
   function render() {
     TestBed.configureTestingModule({
       imports: [PermissionsPage],
-      providers: [MessageService, provideHttpClient(withInterceptors([])), provideHttpClientTesting()],
+      providers: [
+        MessageService,
+        provideHttpClient(withInterceptors([])),
+        provideHttpClientTesting(),
+      ],
     });
     TestBed.inject(AuthService).session.set(
       authSession({
@@ -152,7 +156,11 @@ describe('PermissionsPage', () => {
   it('shows an error state when the catalog request fails', () => {
     TestBed.configureTestingModule({
       imports: [PermissionsPage],
-      providers: [MessageService, provideHttpClient(withInterceptors([])), provideHttpClientTesting()],
+      providers: [
+        MessageService,
+        provideHttpClient(withInterceptors([])),
+        provideHttpClientTesting(),
+      ],
     });
     TestBed.inject(AuthService).session.set(
       authSession({

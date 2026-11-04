@@ -98,10 +98,7 @@ export class AboutService {
     return this.media.upload('image', file).pipe(
       switchMap((uploaded) => {
         const body: AboutPartnerCreateDto = { logo: uploaded.uuid };
-        return this.http.post<ApiEnvelope<AboutPartnerDto>>(
-          apiUrl(this.base, PARTNERS_PATH),
-          body,
-        );
+        return this.http.post<ApiEnvelope<AboutPartnerDto>>(apiUrl(this.base, PARTNERS_PATH), body);
       }),
       map((envelope) => mapPartner(this.requirePartner(envelope))),
     );

@@ -89,12 +89,8 @@ export class InquiryDetailPage {
 
   readonly steps = computed(() => this.buildSteps(this.item()));
 
-  readonly updatePermission = computed(
-    (): PermissionName => `${this.permissionModule()}.update`,
-  );
-  readonly deletePermission = computed(
-    (): PermissionName => `${this.permissionModule()}.delete`,
-  );
+  readonly updatePermission = computed((): PermissionName => `${this.permissionModule()}.update`);
+  readonly deletePermission = computed((): PermissionName => `${this.permissionModule()}.delete`);
 
   readonly composerCopy = computed(() => {
     const reply = this.composer() === 'reply';

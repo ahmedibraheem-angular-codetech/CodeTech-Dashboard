@@ -204,7 +204,6 @@ export class LegalDocumentBoard {
 
     const syncEditor = this.mode() === 'edit' && this.quill !== null;
     if (syncEditor) {
-
       this.syncingEditor = true;
     }
 

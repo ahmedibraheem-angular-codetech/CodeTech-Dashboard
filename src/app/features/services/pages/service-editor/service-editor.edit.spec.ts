@@ -200,5 +200,4 @@ describe('ServiceEditor', () => {
       expect(restored).toEqual(original);
     });
   });
-
 });

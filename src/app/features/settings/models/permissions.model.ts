@@ -79,7 +79,9 @@ export function mapRoleSummary(dto: RoleSummaryDto): PermissionRole {
 export function mapRoleDetail(dto: RoleDetailDto): PermissionRole {
   return {
     ...mapRoleSummary(dto),
-    permissions: Array.isArray(dto.permissions) ? dto.permissions.filter((name) => typeof name === 'string') : [],
+    permissions: Array.isArray(dto.permissions)
+      ? dto.permissions.filter((name) => typeof name === 'string')
+      : [],
   };
 }
 

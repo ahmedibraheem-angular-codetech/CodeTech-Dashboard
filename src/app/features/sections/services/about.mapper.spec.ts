@@ -1,11 +1,5 @@
 import { ABOUT_PAGE_DTO, ABOUT_PARTNERS_DTO } from './about.mock';
-import {
-  mapAboutPage,
-  toCeoWrite,
-  toStoryWrite,
-  toTeamWrite,
-  toVisionWrite,
-} from './about.mapper';
+import { mapAboutPage, toCeoWrite, toStoryWrite, toTeamWrite, toVisionWrite } from './about.mapper';
 
 describe('about.mapper', () => {
   it('maps the about page and partners into the UI model', () => {

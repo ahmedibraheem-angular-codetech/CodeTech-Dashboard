@@ -38,7 +38,10 @@ describe('HasPermissionDirective', () => {
   }
 
   function setSession(
-    partial: Parameters<typeof authSession>[0] & { profileLoaded?: boolean; permissions?: string[] },
+    partial: Parameters<typeof authSession>[0] & {
+      profileLoaded?: boolean;
+      permissions?: string[];
+    },
   ): void {
     auth.session.set(authSession(partial));
   }
@@ -114,9 +117,9 @@ describe('HasPermissionDirective', () => {
       }),
     );
     fixture.detectChanges();
-    expect((fixture.nativeElement as HTMLElement).querySelector('#single')?.textContent?.trim()).toBe(
-      'single',
-    );
+    expect(
+      (fixture.nativeElement as HTMLElement).querySelector('#single')?.textContent?.trim(),
+    ).toBe('single');
   });
 
   it('clears the view when permissions change to deny access', () => {

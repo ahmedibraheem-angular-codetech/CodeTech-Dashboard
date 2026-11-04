@@ -81,7 +81,10 @@ export class UsersService {
     return this.http.get<ApiEnvelope<UserDto>>(apiUrl(this.base, `${USERS_PATH}/${id}`)).pipe(
       map((envelope) => mapUser(this.requireData(envelope))),
       catchError((error: unknown) => {
-        if (statusOf(error) === 404 || (error instanceof HttpErrorResponse && error.status === 404)) {
+        if (
+          statusOf(error) === 404 ||
+          (error instanceof HttpErrorResponse && error.status === 404)
+        ) {
           return of(null);
         }
         return throwError(() => this.normalize(error));
@@ -140,10 +143,12 @@ export class UsersService {
   }
 
   remove(id: string): Observable<void> {
-    return this.http.delete(apiUrl(this.base, `${USERS_PATH}/${id}`), { responseType: 'text' }).pipe(
-      map(() => undefined),
-      catchError((error: unknown) => throwError(() => this.normalize(error))),
-    );
+    return this.http
+      .delete(apiUrl(this.base, `${USERS_PATH}/${id}`), { responseType: 'text' })
+      .pipe(
+        map(() => undefined),
+        catchError((error: unknown) => throwError(() => this.normalize(error))),
+      );
   }
 
   exportCsv(query: Omit<UserListQuery, 'page' | 'perPage'>): Observable<Blob> {

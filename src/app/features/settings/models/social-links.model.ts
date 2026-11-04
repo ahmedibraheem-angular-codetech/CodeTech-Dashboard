@@ -5,13 +5,7 @@ import type { AppLanguage } from '../../../core/i18n/language';
  * Keep `twitter` in the UI so existing i18n keys (`social.platform.twitter`) stay stable.
  */
 export type SocialPlatformId =
-  | 'linkedin'
-  | 'facebook'
-  | 'instagram'
-  | 'twitter'
-  | 'tiktok'
-  | 'snapchat'
-  | 'whatsapp';
+  'linkedin' | 'facebook' | 'instagram' | 'twitter' | 'tiktok' | 'snapchat' | 'whatsapp';
 
 export type SocialPublishStatus = 'published' | 'draft';
 

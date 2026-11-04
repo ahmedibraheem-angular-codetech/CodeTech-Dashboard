@@ -43,21 +43,16 @@ describe('Services routes', () => {
   beforeEach(() => {
     // PrimeNG components in the lazy pages use ResizeObserver; jsdom does not provide it.
     globalThis.ResizeObserver ??= class {
-      observe(): void {
-
-      }
-      unobserve(): void {
-
-      }
-      disconnect(): void {
-
-      }
+      observe(): void {}
+      unobserve(): void {}
+      disconnect(): void {}
     };
     localStorage.setItem('codetech.language', 'ar');
     TestBed.configureTestingModule({
       providers: [
         MessageService,
-        { provide: API_LATENCY_MS, useValue: 0 }, { provide: ServicesService, useClass: ServicesMemoryService },
+        { provide: API_LATENCY_MS, useValue: 0 },
+        { provide: ServicesService, useClass: ServicesMemoryService },
         { provide: TitleStrategy, useClass: AppTitleStrategy },
 
         provideRouter([servicesRoute!]),

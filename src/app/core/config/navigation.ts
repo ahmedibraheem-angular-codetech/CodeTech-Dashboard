@@ -16,10 +16,7 @@ export interface NavPermissionContext {
   hasPermission: (name: PermissionName) => boolean;
 }
 
-export function filterNavItems(
-  items: readonly NavItem[],
-  ctx: NavPermissionContext,
-): NavItem[] {
+export function filterNavItems(items: readonly NavItem[], ctx: NavPermissionContext): NavItem[] {
   return items.flatMap((item) => {
     if (item.permission) {
       if (!ctx.profileLoaded || !ctx.hasPermission(item.permission)) {

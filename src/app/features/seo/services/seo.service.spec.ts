@@ -56,11 +56,7 @@ describe('SeoService', () => {
     const req = http.expectOne(LIST);
     expect(req.request.method).toBe('GET');
     req.flush({
-      data: [
-        page('global'),
-        page('home'),
-        page('knowledge_center', { slug: 'knowledge-center' }),
-      ],
+      data: [page('global'), page('home'), page('knowledge_center', { slug: 'knowledge-center' })],
     });
     const catalog = await result;
     expect(catalog.seo.ar.metaTitle).toBe('global-ar');

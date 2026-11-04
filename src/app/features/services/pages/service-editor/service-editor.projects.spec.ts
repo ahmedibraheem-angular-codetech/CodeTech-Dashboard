@@ -181,5 +181,4 @@ describe('ServiceEditor', () => {
       expect(saved?.projectIds).toEqual([...original, 'care-hub']);
     });
   });
-
 });

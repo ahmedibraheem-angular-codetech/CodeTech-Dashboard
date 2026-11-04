@@ -22,8 +22,14 @@ const emptyHome: HomepageContent = {
   videoEnabled: true,
   videoName: 'intro.mp4',
   videoUrl: 'https://example.test/intro.mp4',
-  about: { texts: { ar: { title: '', body: '', points: [] }, en: { title: '', body: '', points: [] } }, image: null },
-  vision: { texts: { ar: { title: '', body: '', points: [] }, en: { title: '', body: '', points: [] } }, image: null },
+  about: {
+    texts: { ar: { title: '', body: '', points: [] }, en: { title: '', body: '', points: [] } },
+    image: null,
+  },
+  vision: {
+    texts: { ar: { title: '', body: '', points: [] }, en: { title: '', body: '', points: [] } },
+    image: null,
+  },
 };
 
 describe('VideoSection', () => {
@@ -129,7 +135,9 @@ describe('VideoSection', () => {
     const messages = TestBed.inject(MessageService);
     const add = vi.spyOn(messages, 'add');
     fixture.componentInstance.onSelected(
-      selectEvent(new File([new Uint8Array(20 * 1024 * 1024 + 1)], 'big.mp4', { type: 'video/mp4' })),
+      selectEvent(
+        new File([new Uint8Array(20 * 1024 * 1024 + 1)], 'big.mp4', { type: 'video/mp4' }),
+      ),
     );
     await fixture.whenStable();
     expect(save).not.toHaveBeenCalled();

@@ -75,9 +75,15 @@ describe('service.model', () => {
     expect(service.features).toHaveLength(1);
     expect(service.sectors).toHaveLength(1);
     expect(service.faqs).toHaveLength(1);
-    expect(service.whyItems[0]).toMatchObject({ title: { ar: '', en: '' }, image: { ar: { imageUrl: '' }, en: { imageUrl: '' } } });
+    expect(service.whyItems[0]).toMatchObject({
+      title: { ar: '', en: '' },
+      image: { ar: { imageUrl: '' }, en: { imageUrl: '' } },
+    });
     expect(service.whyItems[0]).not.toHaveProperty('body');
-    expect(service.solutions[0]).toMatchObject({ body: { ar: '', en: '' }, image: { ar: { imageUrl: '' }, en: { imageUrl: '' } } });
+    expect(service.solutions[0]).toMatchObject({
+      body: { ar: '', en: '' },
+      image: { ar: { imageUrl: '' }, en: { imageUrl: '' } },
+    });
     expect(service.sectors[0]).toMatchObject({
       image: {
         ar: { imageName: '', imageUrl: '', imageUuid: null },

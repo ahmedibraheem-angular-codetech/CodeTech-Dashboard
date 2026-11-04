@@ -53,5 +53,4 @@ describe('ServiceEditor', () => {
       expect(await firstValueFrom(api.list())).toHaveLength(before);
     });
   });
-
 });

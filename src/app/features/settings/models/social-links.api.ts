@@ -1,13 +1,7 @@
 /** Wire DTOs for `/admin/social-links` (OpenAPI Settings › social links). */
 
 export type SocialPlatformApiId =
-  | 'linkedin'
-  | 'facebook'
-  | 'instagram'
-  | 'x'
-  | 'tiktok'
-  | 'snapchat'
-  | 'whatsapp';
+  'linkedin' | 'facebook' | 'instagram' | 'x' | 'tiktok' | 'snapchat' | 'whatsapp';
 
 export interface SocialLinkDto {
   id: number;

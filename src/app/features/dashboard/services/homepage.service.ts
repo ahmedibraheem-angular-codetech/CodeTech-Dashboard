@@ -5,11 +5,7 @@ import { type Observable, concat, map, of, switchMap, throwError } from 'rxjs';
 import { API_BASE_URL, apiUrl } from '../../../core/config/api';
 import type { ApiEnvelope } from '../../../core/http/api.model';
 import { MediaService } from '../../../core/media/media.service';
-import type {
-  HomePageDto,
-  HomePartnerDto,
-  PartnerCreateDto,
-} from '../models/homepage.api';
+import type { HomePageDto, HomePartnerDto, PartnerCreateDto } from '../models/homepage.api';
 import type {
   BlockImage,
   ContentBlock,
@@ -42,10 +38,7 @@ export class HomepageService {
     return this.media.upload('image', file).pipe(
       switchMap((uploaded) => {
         const body: PartnerCreateDto = { logo: uploaded.uuid };
-        return this.http.post<ApiEnvelope<HomePartnerDto>>(
-          apiUrl(this.base, PARTNERS_PATH),
-          body,
-        );
+        return this.http.post<ApiEnvelope<HomePartnerDto>>(apiUrl(this.base, PARTNERS_PATH), body);
       }),
       map((envelope) => mapPartner(this.requirePartner(envelope))),
     );

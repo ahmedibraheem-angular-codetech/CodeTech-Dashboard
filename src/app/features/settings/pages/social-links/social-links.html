@@ -1,7 +1,11 @@
 @if (state() === 'loading') {
   <app-state-view mode="loading" />
 } @else if (state() === 'error' || state() === 'offline') {
-  <app-state-view [mode]="state() === 'offline' ? 'offline' : 'error'" [message]="lang.t('social.loadError')" (retry)="reload()" />
+  <app-state-view
+    [mode]="state() === 'offline' ? 'offline' : 'error'"
+    [message]="lang.t('social.loadError')"
+    (retry)="reload()"
+  />
 } @else {
   <section class="page social-page" [attr.dir]="locale() === 'ar' ? 'rtl' : 'ltr'">
     <app-page-header [title]="t('nav.social')">

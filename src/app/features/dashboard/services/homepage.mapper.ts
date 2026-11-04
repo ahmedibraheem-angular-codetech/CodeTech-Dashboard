@@ -53,7 +53,10 @@ export function mapBlock(dto: HomeBlockDto | null | undefined): ContentBlock {
   };
 }
 
-export function toBlockWrite(block: ContentBlock, image: string | null | undefined): HomeBlockWriteDto {
+export function toBlockWrite(
+  block: ContentBlock,
+  image: string | null | undefined,
+): HomeBlockWriteDto {
   const body: HomeBlockWriteDto = {
     title: {
       ar: block.texts.ar.title,

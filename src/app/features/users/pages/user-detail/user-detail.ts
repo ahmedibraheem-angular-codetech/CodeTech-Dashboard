@@ -158,8 +158,10 @@ export class UserDetailPage {
 
   readonly headerTime = computed(() => {
     this.lang.language();
-    return formatUserStamp(this.user()?.lastActivityAt ?? this.user()?.createdAt ?? null, this.lang.language())
-      .time;
+    return formatUserStamp(
+      this.user()?.lastActivityAt ?? this.user()?.createdAt ?? null,
+      this.lang.language(),
+    ).time;
   });
 
   readonly headerDate = computed(() => {

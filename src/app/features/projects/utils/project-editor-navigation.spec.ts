@@ -55,9 +55,9 @@ describe('project-editor-navigation', () => {
   });
 
   it('does not advance from the last step and navigates to the list from step 0', () => {
-    expect(
-      decideNextStep(nav({ step: PROJECT_STEPS.length - 1, draft: blankProject() })),
-    ).toEqual({ kind: 'noop' });
+    expect(decideNextStep(nav({ step: PROJECT_STEPS.length - 1, draft: blankProject() }))).toEqual({
+      kind: 'noop',
+    });
     expect(decidePreviousStep(nav({ step: 0, draft: blankProject() }))).toEqual({
       kind: 'navigateList',
     });

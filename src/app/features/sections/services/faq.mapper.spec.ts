@@ -40,9 +40,7 @@ describe('faq.mapper', () => {
   });
 
   it('maps null locale strings to empty editor strings', () => {
-    const category = mapFaqCategory(
-      categoryDto({ name: { ar: 'عام', en: null } }),
-    );
+    const category = mapFaqCategory(categoryDto({ name: { ar: 'عام', en: null } }));
     expect(category.name).toEqual({ ar: 'عام', en: '' });
 
     const faq = mapFaq(

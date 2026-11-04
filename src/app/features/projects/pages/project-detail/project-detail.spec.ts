@@ -208,11 +208,39 @@ describe('ProjectDetailPage', () => {
       id: 'invalid-visuals',
       name: localeText('نقاط فارغة', 'Empty points'),
       aboutCards: [
-        { ...projectPoint(), image: { ar: { imageName: '', imageUrl: '', imageUuid: null }, en: { imageName: '', imageUrl: '', imageUuid: null } } },
-        { ...projectPoint(), image: { ar: { imageName: 'bad', imageUrl: 'icon:not valid', imageUuid: null }, en: { imageName: '', imageUrl: '', imageUuid: null } } },
+        {
+          ...projectPoint(),
+          image: {
+            ar: { imageName: '', imageUrl: '', imageUuid: null },
+            en: { imageName: '', imageUrl: '', imageUuid: null },
+          },
+        },
+        {
+          ...projectPoint(),
+          image: {
+            ar: { imageName: 'bad', imageUrl: 'icon:not valid', imageUuid: null },
+            en: { imageName: '', imageUrl: '', imageUuid: null },
+          },
+        },
       ],
-      features: [{ ...projectPoint(), image: { ar: { imageName: '', imageUrl: '', imageUuid: null }, en: { imageName: '', imageUrl: '', imageUuid: null } } }],
-      results: [{ ...projectPoint(), image: { ar: { imageName: 'bad', imageUrl: 'icon:', imageUuid: null }, en: { imageName: '', imageUrl: '', imageUuid: null } } }],
+      features: [
+        {
+          ...projectPoint(),
+          image: {
+            ar: { imageName: '', imageUrl: '', imageUuid: null },
+            en: { imageName: '', imageUrl: '', imageUuid: null },
+          },
+        },
+      ],
+      results: [
+        {
+          ...projectPoint(),
+          image: {
+            ar: { imageName: 'bad', imageUrl: 'icon:', imageUuid: null },
+            en: { imageName: '', imageUrl: '', imageUuid: null },
+          },
+        },
+      ],
       challenges: [projectPoint()],
       solutions: [projectPoint()],
     };
@@ -279,15 +307,35 @@ describe('ProjectDetailPage', () => {
       solutionsImage: projectMedia(),
       features: [projectPoint(localeText('ميزة', 'Feature'), localeText())],
       results: [projectPoint()],
-      gallery: [{ id: 'g1', image: { ar: { imageName: '', imageUrl: '', imageUuid: null }, en: { imageName: '', imageUrl: '', imageUuid: null } } }],
+      gallery: [
+        {
+          id: 'g1',
+          image: {
+            ar: { imageName: '', imageUrl: '', imageUuid: null },
+            en: { imageName: '', imageUrl: '', imageUuid: null },
+          },
+        },
+      ],
       identityButtons: [
         {
           id: 'id1',
           title: localeText(),
           body: localeText(),
           images: [
-            { id: 'i1', image: { ar: { imageName: '', imageUrl: '', imageUuid: null }, en: { imageName: '', imageUrl: '', imageUuid: null } } },
-            { id: 'i2', image: { ar: { imageName: 'icon', imageUrl: 'icon:pi-star', imageUuid: null }, en: { imageName: '', imageUrl: '', imageUuid: null } } },
+            {
+              id: 'i1',
+              image: {
+                ar: { imageName: '', imageUrl: '', imageUuid: null },
+                en: { imageName: '', imageUrl: '', imageUuid: null },
+              },
+            },
+            {
+              id: 'i2',
+              image: {
+                ar: { imageName: 'icon', imageUrl: 'icon:pi-star', imageUuid: null },
+                en: { imageName: '', imageUrl: '', imageUuid: null },
+              },
+            },
           ],
         },
       ],

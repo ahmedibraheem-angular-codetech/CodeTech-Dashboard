@@ -25,7 +25,11 @@ import { StateView } from '../../../../shared/components/state-view/state-view';
 import { HasPermissionDirective } from '../../../../shared/directives/has-permission.directive';
 import { PermissionsMatrix } from '../../components/permissions-matrix/permissions-matrix';
 import { PermissionsRoleForm } from '../../components/permissions-role-form/permissions-role-form';
-import type { PermissionCatalog, PermissionGrants, PermissionRole } from '../../models/permissions.model';
+import type {
+  PermissionCatalog,
+  PermissionGrants,
+  PermissionRole,
+} from '../../models/permissions.model';
 import {
   grantsFromPermissions,
   permissionsFromGrants,
@@ -163,7 +167,9 @@ export class PermissionsPage {
         next: (saved) => {
           this.saving.set(false);
           this.applyDetail(saved);
-          this.roles.update((list) => list.map((item) => (item.id === saved.id ? { ...item, ...saved } : item)));
+          this.roles.update((list) =>
+            list.map((item) => (item.id === saved.id ? { ...item, ...saved } : item)),
+          );
           this.messages.add({ severity: 'success', summary: this.lang.t('common.saveChanges') });
         },
         error: () => this.fail(),

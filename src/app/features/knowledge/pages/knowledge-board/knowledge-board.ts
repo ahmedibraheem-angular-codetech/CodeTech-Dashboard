@@ -217,7 +217,9 @@ export class KnowledgeBoard {
           URL.revokeObjectURL(href);
           this.messages.add({
             severity: 'success',
-            summary: this.lang.t('knowledge.exported').replace('{count}', `${this.articles().length}`),
+            summary: this.lang
+              .t('knowledge.exported')
+              .replace('{count}', `${this.articles().length}`),
           });
         },
         error: () => this.fail(),

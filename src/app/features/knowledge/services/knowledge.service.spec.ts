@@ -184,10 +184,9 @@ describe('KnowledgeService', () => {
 
   it('maps category-in-use delete conflicts', async () => {
     const removed = firstValueFrom(service.removeCategory('2'));
-    http.expectOne(`${CATEGORIES}/2`).flush(
-      { message: 'Category still has articles' },
-      { status: 409, statusText: 'Conflict' },
-    );
+    http
+      .expectOne(`${CATEGORIES}/2`)
+      .flush({ message: 'Category still has articles' }, { status: 409, statusText: 'Conflict' });
     await expect(removed).rejects.toBeInstanceOf(CategoryInUseError);
   });
 
@@ -257,10 +256,9 @@ describe('KnowledgeService', () => {
 
   it('returns null for missing article details', async () => {
     const result = firstValueFrom(service.get('404'));
-    http.expectOne(`${ARTICLES}/404`).flush(
-      { message: 'Not found' },
-      { status: 404, statusText: 'Not Found' },
-    );
+    http
+      .expectOne(`${ARTICLES}/404`)
+      .flush({ message: 'Not found' }, { status: 404, statusText: 'Not Found' });
     expect(await result).toBeNull();
   });
 

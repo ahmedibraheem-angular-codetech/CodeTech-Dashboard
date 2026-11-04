@@ -13,7 +13,11 @@
   @if (state() === 'loading') {
     <app-state-view mode="loading" />
   } @else if (state() === 'error' || state() === 'offline') {
-    <app-state-view [mode]="state() === 'offline' ? 'offline' : 'error'" [message]="lang.t('users.loadError')" (retry)="load()" />
+    <app-state-view
+      [mode]="state() === 'offline' ? 'offline' : 'error'"
+      [message]="lang.t('users.loadError')"
+      (retry)="load()"
+    />
   } @else {
     <app-statistics-cards [cards]="cards()" />
 

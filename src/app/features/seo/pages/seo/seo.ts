@@ -53,7 +53,9 @@ export class SeoPage {
   readonly saving = signal(false);
 
   readonly loading = computed(() => this.loadState() === 'loading');
-  readonly loadFailed = computed(() => this.loadState() === 'error' || this.loadState() === 'offline');
+  readonly loadFailed = computed(
+    () => this.loadState() === 'error' || this.loadState() === 'offline',
+  );
 
   readonly title = computed(() => {
     const page = this.pages.find((item) => item.id === this.active());

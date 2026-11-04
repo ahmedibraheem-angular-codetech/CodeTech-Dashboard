@@ -100,7 +100,9 @@ describe('ServiceEditor', () => {
       const saved = (await firstValueFrom(api.get('web-development')))?.whyImage.image.ar.imageUrl;
       fixture.destroy();
       expect(revoke).not.toHaveBeenCalled();
-      expect((await firstValueFrom(api.get('web-development')))?.whyImage.image.ar.imageUrl).toBe(saved);
+      expect((await firstValueFrom(api.get('web-development')))?.whyImage.image.ar.imageUrl).toBe(
+        saved,
+      );
     });
 
     it('does not break a saved image when an unsaved edit replaces or clears it', async () => {
@@ -112,12 +114,16 @@ describe('ServiceEditor', () => {
       headerButton(root, 'حفظ كمسودة')?.click();
       await settle(fixture);
       const saved = editor.draft().whyImage.image.ar.imageUrl;
-      expect((await firstValueFrom(api.get('web-development')))?.whyImage.image.ar.imageUrl).toBe(saved);
+      expect((await firstValueFrom(api.get('web-development')))?.whyImage.image.ar.imageUrl).toBe(
+        saved,
+      );
 
       pickFile(lastFileInput(root), 'unsaved.png');
       await settle(fixture);
       expect(revoke).not.toHaveBeenCalled();
-      expect((await firstValueFrom(api.get('web-development')))?.whyImage.image.ar.imageUrl).toBe(saved);
+      expect((await firstValueFrom(api.get('web-development')))?.whyImage.image.ar.imageUrl).toBe(
+        saved,
+      );
 
       lastFileInput(root)
         .closest('app-product-upload')
@@ -126,7 +132,9 @@ describe('ServiceEditor', () => {
       await settle(fixture);
       expect(revoke).toHaveBeenCalledTimes(1);
       expect(revoke).toHaveBeenCalledWith('blob:service/2');
-      expect((await firstValueFrom(api.get('web-development')))?.whyImage.image.ar.imageUrl).toBe(saved);
+      expect((await firstValueFrom(api.get('web-development')))?.whyImage.image.ar.imageUrl).toBe(
+        saved,
+      );
       expect(editor.draft().whyImage.image.ar.imageUrl).toBe('');
     });
 
@@ -157,5 +165,4 @@ describe('ServiceEditor', () => {
       );
     });
   });
-
 });

@@ -72,15 +72,17 @@ export class KnowledgeService {
   }
 
   get(id: string): Observable<Article | null> {
-    return this.http.get<ApiEnvelope<ArticleDetailDto>>(apiUrl(this.base, `${ARTICLES_PATH}/${id}`)).pipe(
-      map((envelope) => mapArticleDetail(this.requireArticle(envelope))),
-      catchError((error: unknown) => {
-        if (statusOf(error) === 404) {
-          return of(null);
-        }
-        return throwError(() => error);
-      }),
-    );
+    return this.http
+      .get<ApiEnvelope<ArticleDetailDto>>(apiUrl(this.base, `${ARTICLES_PATH}/${id}`))
+      .pipe(
+        map((envelope) => mapArticleDetail(this.requireArticle(envelope))),
+        catchError((error: unknown) => {
+          if (statusOf(error) === 404) {
+            return of(null);
+          }
+          return throwError(() => error);
+        }),
+      );
   }
 
   create(draft: ArticleDraft, media: ArticleMediaDraft): Observable<Article> {
@@ -110,14 +112,20 @@ export class KnowledgeService {
   setStatus(id: string, status: ArticleStatus): Observable<Article> {
     const body: ArticleStatusWriteDto = { status };
     return this.http
-      .patch<ApiEnvelope<ArticleDetailDto>>(apiUrl(this.base, `${ARTICLES_PATH}/${id}/status`), body)
+      .patch<ApiEnvelope<ArticleDetailDto>>(
+        apiUrl(this.base, `${ARTICLES_PATH}/${id}/status`),
+        body,
+      )
       .pipe(map((envelope) => mapArticleDetail(this.requireArticle(envelope))));
   }
 
   setFeatured(id: string, featured: boolean): Observable<Article> {
     const body: ArticleFeatureWriteDto = { is_featured: featured };
     return this.http
-      .patch<ApiEnvelope<ArticleDetailDto>>(apiUrl(this.base, `${ARTICLES_PATH}/${id}/feature`), body)
+      .patch<ApiEnvelope<ArticleDetailDto>>(
+        apiUrl(this.base, `${ARTICLES_PATH}/${id}/feature`),
+        body,
+      )
       .pipe(map((envelope) => mapArticleDetail(this.requireArticle(envelope))));
   }
 
@@ -168,12 +176,14 @@ export class KnowledgeService {
   }
 
   removeCategory(id: string): Observable<void> {
-    return this.http.delete(apiUrl(this.base, `${CATEGORIES_PATH}/${id}`), { responseType: 'text' }).pipe(
-      map(() => undefined),
-      catchError((error: unknown) =>
-        throwError(() => this.normalizeCategoryDeleteError(this.normalizeHttpError(error), id)),
-      ),
-    );
+    return this.http
+      .delete(apiUrl(this.base, `${CATEGORIES_PATH}/${id}`), { responseType: 'text' })
+      .pipe(
+        map(() => undefined),
+        catchError((error: unknown) =>
+          throwError(() => this.normalizeCategoryDeleteError(this.normalizeHttpError(error), id)),
+        ),
+      );
   }
 
   exportCategoriesCsv(): Observable<Blob> {
@@ -196,11 +206,11 @@ export class KnowledgeService {
     return error;
   }
 
-  private looksLikeCategoryInUse(error: { serverMessage: string | null; fieldErrors: Record<string, readonly string[]> }): boolean {
-    const haystack = [
-      error.serverMessage ?? '',
-      ...Object.values(error.fieldErrors).flat(),
-    ]
+  private looksLikeCategoryInUse(error: {
+    serverMessage: string | null;
+    fieldErrors: Record<string, readonly string[]>;
+  }): boolean {
+    const haystack = [error.serverMessage ?? '', ...Object.values(error.fieldErrors).flat()]
       .join(' ')
       .toLowerCase();
     return (

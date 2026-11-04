@@ -13,7 +13,11 @@ import { ToggleSwitch } from 'primeng/toggleswitch';
 
 import { LanguageService } from '../../../../core/services/language.service';
 import { AppButton } from '../../../../shared/components/app-button/app-button';
-import type { CatalogAction, CatalogModule, PermissionGrants } from '../../models/permissions.model';
+import type {
+  CatalogAction,
+  CatalogModule,
+  PermissionGrants,
+} from '../../models/permissions.model';
 
 export interface PermissionsRoleOption {
   value: string;

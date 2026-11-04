@@ -23,9 +23,10 @@ describe('article-editor-images', () => {
       kind: 'clear',
     });
     const file = new File([new Uint8Array([1])], 'a.png', { type: 'image/png' });
-    expect(
-      mediaIntentFromSlot({ url: 'blob:1', name: 'a.png', size: 1, date: '', file }),
-    ).toEqual({ kind: 'replace', file });
+    expect(mediaIntentFromSlot({ url: 'blob:1', name: 'a.png', size: 1, date: '', file })).toEqual({
+      kind: 'replace',
+      file,
+    });
   });
 
   it('builds the media draft and article image map', () => {

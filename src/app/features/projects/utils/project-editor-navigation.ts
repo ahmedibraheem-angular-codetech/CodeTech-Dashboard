@@ -1,11 +1,7 @@
 import type { AppLanguage } from '../../../core/i18n/translations';
 import { PROJECT_STEPS, SEO_STEP_INDEX } from '../constants/project-steps';
 import type { Project } from '../models/project.model';
-import {
-  isValidMetaKeywords,
-  isValidProjectSlug,
-  projectNamesValid,
-} from './project-field-rules';
+import { isValidMetaKeywords, isValidProjectSlug, projectNamesValid } from './project-field-rules';
 
 export type ProjectEditorMode = 'create' | 'edit';
 

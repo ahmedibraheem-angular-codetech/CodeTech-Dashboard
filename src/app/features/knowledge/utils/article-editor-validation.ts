@@ -15,7 +15,12 @@ export interface ArticleValidationResult {
 }
 
 function hasVisibleHtml(value: string): boolean {
-  return value.replace(/<[^>]*>/g, '').replace(/&nbsp;/gi, ' ').trim().length > 0;
+  return (
+    value
+      .replace(/<[^>]*>/g, '')
+      .replace(/&nbsp;/gi, ' ')
+      .trim().length > 0
+  );
 }
 
 /**

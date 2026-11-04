@@ -5,7 +5,10 @@
     <app-state-view mode="empty" [message]="lang.t('knowledge.notFound')" />
   } @else if (status() === 'error' || status() === 'offline') {
     <app-state-view
-    [mode]="status() === 'offline' ? 'offline' : 'error'" [message]="lang.t('common.error')" (retry)="retry()" />
+      [mode]="status() === 'offline' ? 'offline' : 'error'"
+      [message]="lang.t('common.error')"
+      (retry)="retry()"
+    />
   } @else if (article(); as current) {
     <app-page-header [title]="title()">
       <span pageHeaderBadge class="kb-status" [class]="'kb-status kb-status--' + current.status">

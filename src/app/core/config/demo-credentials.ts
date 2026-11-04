@@ -1,10 +1,7 @@
 import { InjectionToken } from '@angular/core';
 
 import { environment } from '../../../environments/environment';
-import {
-  TEMPORARY_DEMO_OTP,
-  type DemoCredentials,
-} from '../../../environments/environment.model';
+import { TEMPORARY_DEMO_OTP, type DemoCredentials } from '../../../environments/environment.model';
 
 export { TEMPORARY_DEMO_OTP };
 

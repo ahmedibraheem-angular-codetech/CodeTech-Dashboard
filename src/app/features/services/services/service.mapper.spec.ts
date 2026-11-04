@@ -1,9 +1,5 @@
 import { blankService, localeText } from '../models/service.model';
-import {
-  mapServiceDetail,
-  mapServiceListItem,
-  toServiceWrite,
-} from './service.mapper';
+import { mapServiceDetail, mapServiceListItem, toServiceWrite } from './service.mapper';
 
 describe('service.mapper', () => {
   it('maps list items without inventing nested step data', () => {

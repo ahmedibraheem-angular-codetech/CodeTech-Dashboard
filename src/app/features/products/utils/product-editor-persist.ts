@@ -4,10 +4,7 @@ import { SEO_STEP_INDEX } from '../constants/product-steps';
 import type { Product } from '../models/product.model';
 import { localeFromServerPath, productStepIndexForServerPath } from './product-errors';
 import { isValidShortDescription } from './product-field-rules';
-import {
-  firstRepeaterValidationIssue,
-  productRepeatersValid,
-} from './product-repeater-validation';
+import { firstRepeaterValidationIssue, productRepeatersValid } from './product-repeater-validation';
 import {
   invalidSeoLocale,
   productNamesValid,

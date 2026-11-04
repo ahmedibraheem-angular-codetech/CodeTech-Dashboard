@@ -167,7 +167,10 @@ describe('FaqService', () => {
         updated_at: '2026-11-01T11:00:00.000000Z',
       },
     });
-    await expect(update).resolves.toMatchObject({ published: false, name: { ar: 'محدث', en: 'Updated' } });
+    await expect(update).resolves.toMatchObject({
+      published: false,
+      name: { ar: 'محدث', en: 'Updated' },
+    });
   });
 
   it('publishes a category via PATCH …/publish, not PUT', async () => {

@@ -5,12 +5,7 @@ import { type Observable, map, of, switchMap } from 'rxjs';
 import { API_BASE_URL, apiUrl } from '../../../core/config/api';
 import type { ApiEnvelope, PaginatedEnvelope } from '../../../core/http/api.model';
 import type { FaqCategoryDto, FaqDto, FaqPublishWriteDto } from '../models/faq.api';
-import type {
-  FaqCategory,
-  FaqCategoryDraft,
-  FaqDraft,
-  FaqItem,
-} from '../models/faq.model';
+import type { FaqCategory, FaqCategoryDraft, FaqDraft, FaqItem } from '../models/faq.model';
 import { mapFaq, mapFaqCategory, toFaqCategoryWrite, toFaqWrite } from './faq.mapper';
 
 const CATEGORIES_PATH = 'admin/faq-categories';
@@ -93,19 +88,17 @@ export class FaqService {
 
   private fetchAllFaqs(page = 1, acc: FaqItem[] = []): Observable<FaqItem[]> {
     const params = new HttpParams().set('per_page', String(PAGE_SIZE)).set('page', String(page));
-    return this.http
-      .get<PaginatedEnvelope<FaqDto>>(apiUrl(this.base, FAQS_PATH), { params })
-      .pipe(
-        switchMap((envelope) => {
-          const batch = this.requireFaqs(envelope).map(mapFaq);
-          const next = [...acc, ...batch];
-          const lastPage = envelope.meta?.last_page ?? 1;
-          if (page >= lastPage) {
-            return of(next);
-          }
-          return this.fetchAllFaqs(page + 1, next);
-        }),
-      );
+    return this.http.get<PaginatedEnvelope<FaqDto>>(apiUrl(this.base, FAQS_PATH), { params }).pipe(
+      switchMap((envelope) => {
+        const batch = this.requireFaqs(envelope).map(mapFaq);
+        const next = [...acc, ...batch];
+        const lastPage = envelope.meta?.last_page ?? 1;
+        if (page >= lastPage) {
+          return of(next);
+        }
+        return this.fetchAllFaqs(page + 1, next);
+      }),
+    );
   }
 
   private requireCategories(envelope: ApiEnvelope<FaqCategoryDto[]>): FaqCategoryDto[] {
@@ -128,7 +121,12 @@ export class FaqService {
 
   private requireFaq(envelope: ApiEnvelope<FaqDto>): FaqDto {
     const data = envelope?.data;
-    if (!data || typeof data.id !== 'number' || !data.category || typeof data.category.id !== 'number') {
+    if (
+      !data ||
+      typeof data.id !== 'number' ||
+      !data.category ||
+      typeof data.category.id !== 'number'
+    ) {
       throw new Error('Invalid FAQ response');
     }
     return data;

@@ -26,7 +26,9 @@ describe('project-repeater-validation', () => {
       isNewPointTitleBodyValid(projectPoint(localeText('', 'Title'), localeText('', 'Body'))),
     ).toBe(false);
     expect(
-      isNewPointTitleBodyValid(projectPoint(localeText('عنوان', 'Title'), localeText('وصف', 'Body'))),
+      isNewPointTitleBodyValid(
+        projectPoint(localeText('عنوان', 'Title'), localeText('وصف', 'Body')),
+      ),
     ).toBe(true);
   });
 

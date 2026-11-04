@@ -15,11 +15,7 @@ import type {
 } from '../models/inquiry.api';
 import type { Inquiry, InquiryStats } from '../models/inquiry.model';
 import type { ContactInboxApi } from './contact-inbox.api';
-import {
-  mapInquiryDetail,
-  mapInquiryListItem,
-  mapInquiryStats,
-} from './inquiry.mapper';
+import { mapInquiryDetail, mapInquiryListItem, mapInquiryStats } from './inquiry.mapper';
 
 const PATH = 'admin/inquiries';
 const PAGE_SIZE = 100;
@@ -85,9 +81,7 @@ export class InquiriesService implements ContactInboxApi {
 
   private requireGet(id: string): Observable<Inquiry> {
     return this.get(id).pipe(
-      switchMap((item) =>
-        item ? of(item) : throwError(() => new Error(`missing-inquiry:${id}`)),
-      ),
+      switchMap((item) => (item ? of(item) : throwError(() => new Error(`missing-inquiry:${id}`)))),
     );
   }
 

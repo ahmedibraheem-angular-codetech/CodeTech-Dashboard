@@ -232,15 +232,13 @@ describe('ProfileService', () => {
     const failure = firstValueFrom(
       service.changePassword('wrong', 'NewPassw0rd', 'NewPassw0rd'),
     ).catch((error: unknown) => error);
-    http
-      .expectOne(PASSWORD)
-      .flush(
-        {
-          message: 'كلمة المرور غير صحيحة.',
-          errors: { current_password: ['كلمة المرور غير صحيحة.'] },
-        },
-        { status: 422, statusText: 'Unprocessable Entity' },
-      );
+    http.expectOne(PASSWORD).flush(
+      {
+        message: 'كلمة المرور غير صحيحة.',
+        errors: { current_password: ['كلمة المرور غير صحيحة.'] },
+      },
+      { status: 422, statusText: 'Unprocessable Entity' },
+    );
     const error = await failure;
     expect(isApiError(error)).toBe(true);
     if (isApiError(error)) {

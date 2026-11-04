@@ -2,13 +2,7 @@ import type { AppLanguage } from '../../../core/i18n/language';
 import type { SeoApiPageKey } from './seo.api';
 
 export type SeoTabId =
-  | 'seo'
-  | 'home'
-  | 'about'
-  | 'products'
-  | 'projects'
-  | 'services'
-  | 'knowledge';
+  'seo' | 'home' | 'about' | 'products' | 'projects' | 'services' | 'knowledge';
 
 export interface SeoPageDef {
   id: SeoTabId;

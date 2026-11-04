@@ -78,7 +78,9 @@ export function mapArticleCategory(dto: ArticleCategoryDto): ArticleCategory {
   };
 }
 
-function mapArticleBase(dto: ArticleListDto): Pick<
+function mapArticleBase(
+  dto: ArticleListDto,
+): Pick<
   Article,
   | 'id'
   | 'code'

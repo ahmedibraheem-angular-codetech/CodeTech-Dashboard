@@ -21,7 +21,6 @@ import { serviceIconClass } from '../../utils/service-visual';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ServiceCard {
-
   readonly icon = input('');
   /** Media icon URL from the API; preferred over the PrimeIcon class when set. */
   readonly iconUrl = input('');

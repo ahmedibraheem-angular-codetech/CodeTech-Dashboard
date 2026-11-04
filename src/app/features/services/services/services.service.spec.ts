@@ -200,10 +200,9 @@ describe('ServicesService', () => {
 
   it('returns null for missing services', async () => {
     const result = firstValueFrom(service.get('404'));
-    http.expectOne(`${LIST}/404`).flush(
-      { message: 'Not found' },
-      { status: 404, statusText: 'Not Found' },
-    );
+    http
+      .expectOne(`${LIST}/404`)
+      .flush({ message: 'Not found' }, { status: 404, statusText: 'Not Found' });
     expect(await result).toBeNull();
   });
 
@@ -309,9 +308,7 @@ describe('ServicesService', () => {
     expect(req.request.method).toBe('PUT');
     expect(req.request.body.status).toBe('draft');
     expect(req.request.body.why_image).toBe('why-1');
-    expect(req.request.body.needs[0]).toEqual(
-      expect.objectContaining({ id: 11, icon: 'need-1' }),
-    );
+    expect(req.request.body.needs[0]).toEqual(expect.objectContaining({ id: 11, icon: 'need-1' }));
     expect(req.request.body.sectors[0]).toEqual(
       expect.objectContaining({ id: 51, image: { ar: 'sector-1', en: null } }),
     );

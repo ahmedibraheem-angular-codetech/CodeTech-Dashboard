@@ -16,9 +16,7 @@ function nav(
 describe('service-editor-navigation', () => {
   it('requires both locale names', () => {
     expect(serviceNamesValid(blankService())).toBe(false);
-    expect(
-      serviceNamesValid({ ...blankService(), name: { ar: 'أ', en: 'A' } }),
-    ).toBe(true);
+    expect(serviceNamesValid({ ...blankService(), name: { ar: 'أ', en: 'A' } })).toBe(true);
   });
 
   it('blocks create jumps ahead and name-gated next', () => {
@@ -39,9 +37,9 @@ describe('service-editor-navigation', () => {
   });
 
   it('handles last step, list exit, and back navigation', () => {
-    expect(
-      decideNextStep(nav({ step: SERVICE_STEPS.length - 1, draft: blankService() })),
-    ).toEqual({ kind: 'noop' });
+    expect(decideNextStep(nav({ step: SERVICE_STEPS.length - 1, draft: blankService() }))).toEqual({
+      kind: 'noop',
+    });
     expect(decidePreviousStep(nav({ step: 0, draft: blankService() }))).toEqual({
       kind: 'navigateList',
     });

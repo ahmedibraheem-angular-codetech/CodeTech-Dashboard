@@ -95,9 +95,7 @@ export class UserEditorForm {
     this.pendingFile.set(null);
     this.avatarRemoved.set(false);
     this.photo.set(
-      existing
-        ? { name: existing.name, url: existing.url, sizeLabel: '', dateLabel: '' }
-        : null,
+      existing ? { name: existing.name, url: existing.url, sizeLabel: '', dateLabel: '' } : null,
     );
   }
 

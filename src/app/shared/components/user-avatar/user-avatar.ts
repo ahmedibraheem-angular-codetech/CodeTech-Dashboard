@@ -28,7 +28,6 @@ import { ProfileService } from '../../../core/profile/profile.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class UserAvatar {
-
   readonly size = input(48);
 
   readonly radius = input('50%');

@@ -156,5 +156,4 @@ describe('ServiceEditor', () => {
       expect(save.mock.calls[0]?.[0].published).toBe(false);
     });
   });
-
 });

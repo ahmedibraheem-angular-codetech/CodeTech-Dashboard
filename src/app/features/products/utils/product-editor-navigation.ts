@@ -1,10 +1,7 @@
 import type { AppLanguage } from '../../../core/i18n/translations';
 import { IDENTITY_STEP_INDEX, PRODUCT_STEPS, SEO_STEP_INDEX } from '../constants/product-steps';
 import type { Product } from '../models/product.model';
-import {
-  isValidMetaKeywords,
-  isValidProductSlug,
-} from './product-field-rules';
+import { isValidMetaKeywords, isValidProductSlug } from './product-field-rules';
 import { isWorkflowStepArabicValid } from './product-repeater-validation';
 
 export type ProductEditorMode = 'create' | 'edit';

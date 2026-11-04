@@ -22,10 +22,7 @@ export interface SiteSettings {
 }
 
 /** Coat-check logo intent for PUT `/admin/site-settings`. */
-export type SiteLogoIntent =
-  | { kind: 'omit' }
-  | { kind: 'clear' }
-  | { kind: 'replace'; file: File };
+export type SiteLogoIntent = { kind: 'omit' } | { kind: 'clear' } | { kind: 'replace'; file: File };
 
 export interface SiteSettingsDraft {
   description: LocaleText;

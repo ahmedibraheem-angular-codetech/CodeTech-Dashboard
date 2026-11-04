@@ -82,11 +82,11 @@ describe('product-editor-persist', () => {
 
   it('maps the first server error path to locale and step', () => {
     expect(resolveServerErrorFocus({})).toEqual({ language: null, stepIndex: -1 });
-    expect(resolveServerErrorFocus({ 'slug': ['taken'] })).toEqual({
+    expect(resolveServerErrorFocus({ slug: ['taken'] })).toEqual({
       language: null,
       stepIndex: SEO_STEP_INDEX,
     });
-    expect(resolveServerErrorFocus({ 'title.ar': ['required'], 'slug': ['taken'] })).toEqual({
+    expect(resolveServerErrorFocus({ 'title.ar': ['required'], slug: ['taken'] })).toEqual({
       language: 'ar',
       stepIndex: 0,
     });

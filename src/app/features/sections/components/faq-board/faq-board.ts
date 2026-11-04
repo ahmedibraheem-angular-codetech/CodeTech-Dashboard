@@ -373,7 +373,6 @@ export class FaqBoard {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: () => {
-
           this.categories.update((list) => list.filter((row) => row.id !== category.id));
           this.items.update((list) => list.filter((row) => row.categoryId !== category.id));
           this.messages.add({ severity: 'success', summary: this.lang.t('faq.categoryDeleted') });

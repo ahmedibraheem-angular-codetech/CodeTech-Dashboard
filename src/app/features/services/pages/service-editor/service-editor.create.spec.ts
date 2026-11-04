@@ -265,5 +265,4 @@ describe('ServiceEditor', () => {
       expect(editor.draft().name.ar).toBe('خدمة جديدة');
     });
   });
-
 });

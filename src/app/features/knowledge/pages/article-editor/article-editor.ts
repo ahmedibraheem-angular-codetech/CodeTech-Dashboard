@@ -67,10 +67,7 @@ import {
   collectArticleValidationIssues,
   type ArticleValidationStrictness,
 } from '../../utils/article-editor-validation';
-import {
-  articleFormValueFromArticle,
-  fieldsFromArticleForm,
-} from '../../utils/article-form-map';
+import { articleFormValueFromArticle, fieldsFromArticleForm } from '../../utils/article-form-map';
 import { categoryName, joinKeywords, splitKeywords } from '../../utils/knowledge-format';
 
 type LoadStatus = 'loading' | 'ready' | 'missing' | 'error' | 'offline';
@@ -377,7 +374,10 @@ export class ArticleEditor {
 
   protected removeImage(slot: ImageSlot): void {
     const hadExisting = !!this.existingUrl(slot);
-    this.setImage(slot, hadExisting ? { url: '', name: '', size: 0, date: '', cleared: true } : null);
+    this.setImage(
+      slot,
+      hadExisting ? { url: '', name: '', size: 0, date: '', cleared: true } : null,
+    );
     this.imageErrors.update((errors) => ({ ...errors, [slot]: '' }));
   }
 

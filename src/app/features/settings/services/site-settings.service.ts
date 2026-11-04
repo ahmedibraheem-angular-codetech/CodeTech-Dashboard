@@ -7,11 +7,7 @@ import type { ApiEnvelope } from '../../../core/http/api.model';
 import { MediaService } from '../../../core/media/media.service';
 import type { SiteSettingsDto } from '../models/site-settings.api';
 import type { SiteSettings, SiteSettingsDraft } from '../models/site-settings.model';
-import {
-  mapSiteSettings,
-  resolveLogoUuid,
-  toSiteSettingsWrite,
-} from './site-settings.mapper';
+import { mapSiteSettings, resolveLogoUuid, toSiteSettingsWrite } from './site-settings.mapper';
 
 const PATH = 'admin/site-settings';
 

@@ -343,7 +343,16 @@ export class AboutTeamSection {
     if (!swiper) {
       return;
     }
-    for (const event of ['slideChange', 'reachBeginning', 'reachEnd', 'fromEdge', 'resize', 'update', 'lock', 'unlock'] as const) {
+    for (const event of [
+      'slideChange',
+      'reachBeginning',
+      'reachEnd',
+      'fromEdge',
+      'resize',
+      'update',
+      'lock',
+      'unlock',
+    ] as const) {
       swiper.off(event, this.onSwiperNav);
       swiper.on(event, this.onSwiperNav);
     }

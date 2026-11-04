@@ -57,9 +57,7 @@ describe('ServiceEditor', () => {
 
       // Icon refs open the library panel; switch to upload to assert seeded icon previews.
       for (const upload of root.querySelectorAll('app-product-upload')) {
-        const tabs = [
-          ...upload.querySelectorAll('.uploader__action'),
-        ] as HTMLButtonElement[];
+        const tabs = [...upload.querySelectorAll('.uploader__action')] as HTMLButtonElement[];
         tabs[0]?.click();
       }
       fixture.detectChanges();
@@ -74,5 +72,4 @@ describe('ServiceEditor', () => {
       ).toBe(2);
     });
   });
-
 });

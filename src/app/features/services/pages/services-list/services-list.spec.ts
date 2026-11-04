@@ -77,7 +77,12 @@ describe('ServicesPage', () => {
   it('shows an error instead of the empty state when loading fails', async () => {
     TestBed.configureTestingModule({
       imports: [ServicesPage],
-      providers: [MessageService, { provide: API_LATENCY_MS, useValue: 0 }, { provide: ServicesService, useClass: ServicesMemoryService }, provideRouter([])],
+      providers: [
+        MessageService,
+        { provide: API_LATENCY_MS, useValue: 0 },
+        { provide: ServicesService, useClass: ServicesMemoryService },
+        provideRouter([]),
+      ],
     });
     localStorage.setItem('codetech.language', 'ar');
     TestBed.inject(LanguageService).set('ar');
@@ -99,7 +104,12 @@ describe('ServicesPage', () => {
   it('retries after a load failure and shows the catalog on success', async () => {
     TestBed.configureTestingModule({
       imports: [ServicesPage],
-      providers: [MessageService, { provide: API_LATENCY_MS, useValue: 0 }, { provide: ServicesService, useClass: ServicesMemoryService }, provideRouter([])],
+      providers: [
+        MessageService,
+        { provide: API_LATENCY_MS, useValue: 0 },
+        { provide: ServicesService, useClass: ServicesMemoryService },
+        provideRouter([]),
+      ],
     });
     localStorage.setItem('codetech.language', 'ar');
     TestBed.inject(LanguageService).set('ar');
@@ -125,7 +135,12 @@ describe('ServicesPage', () => {
   it('keeps the error state when retry fails again', async () => {
     TestBed.configureTestingModule({
       imports: [ServicesPage],
-      providers: [MessageService, { provide: API_LATENCY_MS, useValue: 0 }, { provide: ServicesService, useClass: ServicesMemoryService }, provideRouter([])],
+      providers: [
+        MessageService,
+        { provide: API_LATENCY_MS, useValue: 0 },
+        { provide: ServicesService, useClass: ServicesMemoryService },
+        provideRouter([]),
+      ],
     });
     localStorage.setItem('codetech.language', 'ar');
     TestBed.inject(LanguageService).set('ar');
@@ -147,7 +162,12 @@ describe('ServicesPage', () => {
   it('ignores a stale list response after a newer load has started', async () => {
     TestBed.configureTestingModule({
       imports: [ServicesPage],
-      providers: [MessageService, { provide: API_LATENCY_MS, useValue: 0 }, { provide: ServicesService, useClass: ServicesMemoryService }, provideRouter([])],
+      providers: [
+        MessageService,
+        { provide: API_LATENCY_MS, useValue: 0 },
+        { provide: ServicesService, useClass: ServicesMemoryService },
+        provideRouter([]),
+      ],
     });
     localStorage.setItem('codetech.language', 'ar');
     TestBed.inject(LanguageService).set('ar');

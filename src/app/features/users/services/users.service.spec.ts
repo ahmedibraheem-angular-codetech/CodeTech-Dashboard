@@ -127,7 +127,9 @@ describe('UsersService', () => {
     expect(user?.code).toBe('USE-00007');
 
     const missing = firstValueFrom(api.get('99'));
-    http.expectOne(`${base}/admin/users/99`).flush({ message: 'missing' }, { status: 404, statusText: 'Not Found' });
+    http
+      .expectOne(`${base}/admin/users/99`)
+      .flush({ message: 'missing' }, { status: 404, statusText: 'Not Found' });
     expect(await missing).toBeNull();
   });
 
@@ -271,7 +273,8 @@ describe('UsersService', () => {
 
     const exported = firstValueFrom(api.exportCsv({ search: 'يوسف', status: 'active', roleId: 2 }));
     const req = http.expectOne(
-      (call) => call.url === `${base}/admin/users/export` && call.params.get('filter[role]') === '2',
+      (call) =>
+        call.url === `${base}/admin/users/export` && call.params.get('filter[role]') === '2',
     );
     expect(req.request.params.get('filter[status]')).toBe('active');
     expect(req.request.params.get('page')).toBeNull();
@@ -283,10 +286,12 @@ describe('UsersService', () => {
   it('surfaces API failures', async () => {
     const { api, http } = setup();
     const pending = firstValueFrom(api.stats());
-    http.expectOne(`${base}/admin/users/stats`).flush(
-      { message: 'forbidden', errors: { role_id: ['Invalid role'] } },
-      { status: 422, statusText: 'Unprocessable' },
-    );
+    http
+      .expectOne(`${base}/admin/users/stats`)
+      .flush(
+        { message: 'forbidden', errors: { role_id: ['Invalid role'] } },
+        { status: 422, statusText: 'Unprocessable' },
+      );
     try {
       await pending;
       throw new Error('expected failure');

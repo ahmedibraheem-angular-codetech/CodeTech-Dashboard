@@ -180,8 +180,18 @@ export function mapVision(dto: AboutVisionMissionDto | null | undefined): AboutG
     image: null,
     texts: {
       ar: [
-        group('mission', 'رسالتنا', readLocale(dto.mission_quote, 'ar'), readList(dto.mission_points, 'ar')),
-        group('vision', 'رؤيتنا', readLocale(dto.vision_quote, 'ar'), readList(dto.vision_points, 'ar')),
+        group(
+          'mission',
+          'رسالتنا',
+          readLocale(dto.mission_quote, 'ar'),
+          readList(dto.mission_points, 'ar'),
+        ),
+        group(
+          'vision',
+          'رؤيتنا',
+          readLocale(dto.vision_quote, 'ar'),
+          readList(dto.vision_points, 'ar'),
+        ),
       ],
       en: [
         group(

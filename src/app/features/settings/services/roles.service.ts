@@ -5,7 +5,12 @@ import { type Observable, catchError, map, of, throwError } from 'rxjs';
 import { API_BASE_URL, apiUrl } from '../../../core/config/api';
 import { statusOf, toApiError } from '../../../core/http/api-error';
 import type { ApiEnvelope } from '../../../core/http/api.model';
-import type { PermissionCatalogDto, RoleDetailDto, RoleSummaryDto, RoleWriteDto } from '../models/permissions.api';
+import type {
+  PermissionCatalogDto,
+  RoleDetailDto,
+  RoleSummaryDto,
+  RoleWriteDto,
+} from '../models/permissions.api';
 import type { PermissionCatalog, PermissionRole } from '../models/permissions.model';
 import { mapPermissionCatalog, mapRoleDetail, mapRoleSummary } from '../models/permissions.model';
 
@@ -64,10 +69,12 @@ export class RolesService {
   }
 
   remove(id: string): Observable<void> {
-    return this.http.delete(apiUrl(this.base, `${ROLES_PATH}/${id}`), { responseType: 'text' }).pipe(
-      map(() => undefined),
-      catchError((error: unknown) => throwError(() => this.normalize(error))),
-    );
+    return this.http
+      .delete(apiUrl(this.base, `${ROLES_PATH}/${id}`), { responseType: 'text' })
+      .pipe(
+        map(() => undefined),
+        catchError((error: unknown) => throwError(() => this.normalize(error))),
+      );
   }
 
   private requireData<T>(envelope: ApiEnvelope<T>): T {

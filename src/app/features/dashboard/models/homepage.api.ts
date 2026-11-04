@@ -14,7 +14,7 @@ export interface HomeBlockDto {
   title: LocaleString;
   description: LocaleString;
   points: LocaleStringList;
-  
+
   image: FileObject | string | null;
 }
 

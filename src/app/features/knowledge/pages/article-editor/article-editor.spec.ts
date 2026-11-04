@@ -42,11 +42,7 @@ function article(id: string): Article {
 }
 
 describe('ArticleEditor', () => {
-  async function render(
-    mode: 'create' | 'edit',
-    id = '',
-    api: Partial<KnowledgeService> = {},
-  ) {
+  async function render(mode: 'create' | 'edit', id = '', api: Partial<KnowledgeService> = {}) {
     TestBed.configureTestingModule({
       imports: [ArticleEditor],
       providers: [
@@ -66,7 +62,10 @@ describe('ArticleEditor', () => {
             ...api,
           },
         },
-        { provide: MediaService, useValue: { upload: () => of(null), uploadEditorImage: () => of(null) } },
+        {
+          provide: MediaService,
+          useValue: { upload: () => of(null), uploadEditorImage: () => of(null) },
+        },
         { provide: KnowledgeActions, useValue: {} },
         {
           provide: NetworkStatusService,

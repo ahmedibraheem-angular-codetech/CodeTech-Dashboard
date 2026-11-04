@@ -40,7 +40,6 @@ describe('AboutPage', () => {
     const partners = http.expectOne(PARTNERS);
     if (options.fail) {
       about.flush('nope', { status: 500, statusText: 'Server Error' });
-
     } else {
       about.flush({ data: ABOUT_PAGE_DTO });
       partners.flush({ data: ABOUT_PARTNERS_DTO });

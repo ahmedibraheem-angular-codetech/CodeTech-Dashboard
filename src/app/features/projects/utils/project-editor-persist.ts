@@ -4,10 +4,7 @@ import { SEO_STEP_INDEX } from '../constants/project-steps';
 import type { Project } from '../models/project.model';
 import { localeFromServerPath, projectStepIndexForServerPath } from './project-errors';
 import { isValidProjectSummary, projectNamesValid } from './project-field-rules';
-import {
-  firstRepeaterValidationIssue,
-  projectRepeatersValid,
-} from './project-repeater-validation';
+import { firstRepeaterValidationIssue, projectRepeatersValid } from './project-repeater-validation';
 import { invalidSeoLocale, projectSeoStepValid } from './project-editor-navigation';
 
 export type ProjectEditorStatus = 'loading' | 'ready' | 'missing' | 'error' | 'offline';

@@ -356,7 +356,9 @@ describe('ServiceDetailPage', () => {
         expect(cards[index]?.querySelector('.service-detail__number')?.textContent?.trim()).toBe(
           `0${index + 1}`,
         );
-        expect(cards[index]?.querySelector('img')?.getAttribute('src')).toBe(item.image.ar.imageUrl);
+        expect(cards[index]?.querySelector('img')?.getAttribute('src')).toBe(
+          item.image.ar.imageUrl,
+        );
       });
     });
 

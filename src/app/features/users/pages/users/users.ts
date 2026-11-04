@@ -23,7 +23,10 @@ import type { AppLanguage } from '../../../../core/i18n/language';
 import { LanguageService } from '../../../../core/services/language.service';
 import { AppButton } from '../../../../shared/components/app-button/app-button';
 import { ConfirmDialog } from '../../../../shared/components/confirm-dialog/confirm-dialog';
-import type { DataTableBadgeTone, DataTableColumn } from '../../../../shared/components/data-table/data-table.model';
+import type {
+  DataTableBadgeTone,
+  DataTableColumn,
+} from '../../../../shared/components/data-table/data-table.model';
 import { Modal } from '../../../../shared/components/modal/modal';
 import { PageHeader } from '../../../../shared/components/page-header/page-header';
 import { StateView } from '../../../../shared/components/state-view/state-view';
@@ -156,8 +159,24 @@ export class UsersPage {
     const caption = this.lang.t('users.statCaption');
     const stats = this.stats();
     return [
-      this.card('total', this.lang.t('users.statTotal'), 'pi pi-users', '#16a34a', '#dcfce7', caption, stats?.total),
-      this.card('active', this.lang.t('users.statActive'), 'pi pi-user', '#2f6fed', '#dbeafe', caption, stats?.active),
+      this.card(
+        'total',
+        this.lang.t('users.statTotal'),
+        'pi pi-users',
+        '#16a34a',
+        '#dcfce7',
+        caption,
+        stats?.total,
+      ),
+      this.card(
+        'active',
+        this.lang.t('users.statActive'),
+        'pi pi-user',
+        '#2f6fed',
+        '#dbeafe',
+        caption,
+        stats?.active,
+      ),
       this.card(
         'inactive',
         this.lang.t('users.statInactive'),
@@ -301,7 +320,8 @@ export class UsersPage {
   openEdit(user: User): void {
     this.editorLocale.set(this.lang.language());
     this.selected.set(user);
-    const roleId = user.role && isAssignableRoleId(user.role.id, this.roles()) ? user.role.id : null;
+    const roleId =
+      user.role && isAssignableRoleId(user.role.id, this.roles()) ? user.role.id : null;
     this.form.reset({
       name: user.name,
       email: user.email,
@@ -309,9 +329,7 @@ export class UsersPage {
       roleId,
       status: user.status,
     });
-    this.editorForm().prepare(
-      user.avatarUrl ? { url: user.avatarUrl, name: user.name } : null,
-    );
+    this.editorForm().prepare(user.avatarUrl ? { url: user.avatarUrl, name: user.name } : null);
     this.editor.set('edit');
   }
 

@@ -278,7 +278,9 @@ describe('InquiryDetailPage', () => {
     vi.spyOn(ConfirmDialog.prototype, 'ask').mockResolvedValue(true);
 
     await component.remove();
-    http.expectOne(`${base}/admin/inquiries/16`).flush('', { status: 204, statusText: 'No Content' });
+    http
+      .expectOne(`${base}/admin/inquiries/16`)
+      .flush('', { status: 204, statusText: 'No Content' });
     await fixture.whenStable();
 
     expect(navigate).toHaveBeenCalledWith(['/contact/inquiries']);

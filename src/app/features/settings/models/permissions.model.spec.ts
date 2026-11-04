@@ -37,7 +37,12 @@ describe('permission catalog mapping', () => {
     expect(mapped.modules.map((mod) => mod.key)).toEqual(['home', 'products']);
     expect(mapped.modules[0]?.actions).toEqual(['view', 'create', 'update', 'delete']);
     expect(mapped.modules[1]?.actions).toEqual(['view']);
-    expect(mapped.actions.map((action) => action.key)).toEqual(['view', 'create', 'update', 'delete']);
+    expect(mapped.actions.map((action) => action.key)).toEqual([
+      'view',
+      'create',
+      'update',
+      'delete',
+    ]);
   });
 
   it('orders catalog actions as view → create → update → delete without inventing keys', () => {
@@ -50,7 +55,12 @@ describe('permission catalog mapping', () => {
         { key: 'create', label: 'Create' },
       ],
     });
-    expect(mapped.actions.map((action) => action.key)).toEqual(['view', 'create', 'update', 'delete']);
+    expect(mapped.actions.map((action) => action.key)).toEqual([
+      'view',
+      'create',
+      'update',
+      'delete',
+    ]);
   });
 
   it('does not invent a module that the catalog omitted', () => {

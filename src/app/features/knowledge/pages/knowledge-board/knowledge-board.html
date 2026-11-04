@@ -33,7 +33,11 @@
   @if (state() === 'loading') {
     <app-state-view mode="loading" />
   } @else if (state() === 'error' || state() === 'offline') {
-    <app-state-view [mode]="state() === 'offline' ? 'offline' : 'error'" [message]="lang.t('knowledge.loadError')" (retry)="reload()" />
+    <app-state-view
+      [mode]="state() === 'offline' ? 'offline' : 'error'"
+      [message]="lang.t('knowledge.loadError')"
+      (retry)="reload()"
+    />
   } @else {
     <div [hidden]="tab() !== 'articles'">
       <app-knowledge-articles-panel

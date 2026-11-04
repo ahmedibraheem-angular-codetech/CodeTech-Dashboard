@@ -12,11 +12,7 @@
           />
         </label>
       </ng-container>
-      <a
-        *appHasPermission="'products.create'"
-        class="app-add-btn"
-        routerLink="/products/new"
-      >
+      <a *appHasPermission="'products.create'" class="app-add-btn" routerLink="/products/new">
         {{ lang.t('product.add') }}
         <i class="pi pi-plus" aria-hidden="true"></i>
       </a>
@@ -26,7 +22,10 @@
       <app-state-view mode="loading" />
     } @else if (status() === 'error' || status() === 'offline') {
       <app-state-view
-    [mode]="status() === 'offline' ? 'offline' : 'error'" [message]="lang.t('common.error')" (retry)="retry()" />
+        [mode]="status() === 'offline' ? 'offline' : 'error'"
+        [message]="lang.t('common.error')"
+        (retry)="retry()"
+      />
     } @else if (total() === 0) {
       <app-state-view mode="empty" [message]="lang.t('product.empty')" />
     } @else {

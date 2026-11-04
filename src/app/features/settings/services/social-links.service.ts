@@ -4,10 +4,7 @@ import { type Observable, map } from 'rxjs';
 
 import { API_BASE_URL, apiUrl } from '../../../core/config/api';
 import type { ApiEnvelope } from '../../../core/http/api.model';
-import type {
-  SocialLinkDto,
-  SocialLinkPublishWriteDto,
-} from '../models/social-links.api';
+import type { SocialLinkDto, SocialLinkPublishWriteDto } from '../models/social-links.api';
 import type { SocialChannel, SocialChannelDraft } from '../models/social-links.model';
 import { mapSocialLink, toSocialLinkWrite } from './social-links.mapper';
 
@@ -37,10 +34,7 @@ export class SocialLinksService {
 
   update(id: string, draft: SocialChannelDraft): Observable<SocialChannel> {
     return this.http
-      .put<ApiEnvelope<SocialLinkDto>>(
-        apiUrl(this.base, `${PATH}/${id}`),
-        toSocialLinkWrite(draft),
-      )
+      .put<ApiEnvelope<SocialLinkDto>>(apiUrl(this.base, `${PATH}/${id}`), toSocialLinkWrite(draft))
       .pipe(map((envelope) => mapSocialLink(this.requireOne(envelope))));
   }
 

@@ -1,10 +1,7 @@
 @if (status() === 'loading') {
   <app-state-view mode="loading" />
 } @else if (status() === 'error' || status() === 'offline') {
-  <app-state-view
-    [mode]="status() === 'offline' ? 'offline' : 'error'"
-    (retry)="reload()"
-  />
+  <app-state-view [mode]="status() === 'offline' ? 'offline' : 'error'" (retry)="reload()" />
 } @else {
   <section class="page">
     <app-page-header [title]="lang.t('about.manage')" [subtitle]="lang.t('about.subtitle')" />

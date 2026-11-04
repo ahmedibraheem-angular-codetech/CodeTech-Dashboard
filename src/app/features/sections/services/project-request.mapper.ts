@@ -57,7 +57,9 @@ function mapTimelineStep(dto: ProjectRequestTimelineStepDto): InquiryTimelineSte
   };
 }
 
-function mapCore(dto: ProjectRequestListDto): Omit<Inquiry, 'notes' | 'replies' | 'reply' | 'timeline'> {
+function mapCore(
+  dto: ProjectRequestListDto,
+): Omit<Inquiry, 'notes' | 'replies' | 'reply' | 'timeline'> {
   const stamp = stampFromIso(dto.created_at);
   return {
     id: String(dto.id),

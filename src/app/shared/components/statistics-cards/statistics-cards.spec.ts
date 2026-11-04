@@ -223,9 +223,9 @@ describe('StatisticsCards', () => {
 
     finishAnimations();
     fixture.detectChanges();
-    expect(
-      fixture.nativeElement.querySelector('.stat-card__value')?.textContent?.trim(),
-    ).toBe('150');
+    expect(fixture.nativeElement.querySelector('.stat-card__value')?.textContent?.trim()).toBe(
+      '150',
+    );
   });
 
   it('does not restart when the same numeric target is provided again', () => {

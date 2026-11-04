@@ -66,7 +66,6 @@ export function readQuillHtml(quill: AppQuill): string {
 }
 
 export interface WireQuillToolbarOptions {
-
   uploadImage?: QuillImageUploader;
 
   onImageUploadError?: (error: unknown) => void;

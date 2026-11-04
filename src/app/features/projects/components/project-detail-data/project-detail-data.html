@@ -45,7 +45,11 @@
         <ul class="project-detail__tags">
           @for (category of project().categories; track category.id) {
             <li>
-              <i class="pi" [class]="categoryIcon(categoryMediaUrl(category))" aria-hidden="true"></i>
+              <i
+                class="pi"
+                [class]="categoryIcon(categoryMediaUrl(category))"
+                aria-hidden="true"
+              ></i>
               {{ text(category.title) }}
             </li>
           }
@@ -69,7 +73,9 @@
         <article class="detail-panel">
           <header class="detail-panel__head">
             <h2>{{ lang.t('project.challenges') }}</h2>
-            <span class="icon-badge"><i class="pi pi-exclamation-triangle" aria-hidden="true"></i></span>
+            <span class="icon-badge"
+              ><i class="pi pi-exclamation-triangle" aria-hidden="true"></i
+            ></span>
           </header>
           <app-project-detail-points [items]="challenges()" [locale]="locale()" />
         </article>

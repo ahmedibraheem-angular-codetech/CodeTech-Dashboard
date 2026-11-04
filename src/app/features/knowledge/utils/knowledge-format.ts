@@ -19,7 +19,9 @@ export function articleDisplayId(articleOrId: Pick<Article, 'id' | 'code'> | str
   }
   const code = articleOrId.code?.trim();
   if (code) {
-    return code.startsWith('ART-') ? code : `ART-${code.replace(/\D/g, '').slice(-4).padStart(4, '0')}`;
+    return code.startsWith('ART-')
+      ? code
+      : `ART-${code.replace(/\D/g, '').slice(-4).padStart(4, '0')}`;
   }
   return articleDisplayId(articleOrId.id);
 }

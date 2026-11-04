@@ -39,10 +39,7 @@ import type {
   SocialChannelDraft,
   SocialPlatformId,
 } from '../../models/social-links.model';
-import {
-  availableSocialPlatforms,
-  emptyLocaleText,
-} from '../../models/social-links.model';
+import { availableSocialPlatforms, emptyLocaleText } from '../../models/social-links.model';
 import { SiteSettingsService } from '../../services/site-settings.service';
 import { SocialLinksService } from '../../services/social-links.service';
 
@@ -272,9 +269,7 @@ export class SocialLinksPage {
   protected onEditorSaved(draft: SocialChannelDraft): void {
     this.editorSaving.set(true);
     const id = this.editingId();
-    const request = id
-      ? this.socialApi.update(id, draft)
-      : this.socialApi.create(draft);
+    const request = id ? this.socialApi.update(id, draft) : this.socialApi.create(draft);
     request.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (channel) => {
         this.editorSaving.set(false);

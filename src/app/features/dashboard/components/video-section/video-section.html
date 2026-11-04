@@ -48,9 +48,7 @@
       <div class="video-upload__meta">
         <span class="video-upload__label">
           {{
-            uploadPhase() === 'saving'
-              ? lang.t('home.videoSaving')
-              : lang.t('home.videoUploading')
+            uploadPhase() === 'saving' ? lang.t('home.videoSaving') : lang.t('home.videoUploading')
           }}
         </span>
         @if (uploadPhase() === 'upload') {

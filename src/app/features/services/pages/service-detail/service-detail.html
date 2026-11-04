@@ -9,7 +9,10 @@
     </a>
   } @else if (status() === 'error' || status() === 'offline') {
     <app-state-view
-    [mode]="status() === 'offline' ? 'offline' : 'error'" [message]="lang.t('common.error')" (retry)="retry()" />
+      [mode]="status() === 'offline' ? 'offline' : 'error'"
+      [message]="lang.t('common.error')"
+      (retry)="retry()"
+    />
     <a class="detail-edit service-detail__back" routerLink="/services">
       <i class="pi" [class]="backIcon()" aria-hidden="true"></i>
       {{ lang.t('service.back') }}

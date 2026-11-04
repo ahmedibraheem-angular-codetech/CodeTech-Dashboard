@@ -105,7 +105,9 @@ export class ReviewsBoard {
   }
 
   readonly loading = computed(() => this.loadState() === 'loading');
-  readonly loadFailed = computed(() => this.loadState() === 'error' || this.loadState() === 'offline');
+  readonly loadFailed = computed(
+    () => this.loadState() === 'error' || this.loadState() === 'offline',
+  );
 
   readonly filterOptions = computed<FilterOption[]>(() => [
     { value: 'all', label: this.lang.t('review.filterAll') },

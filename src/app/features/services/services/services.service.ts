@@ -1,15 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
-import {
-  type Observable,
-  catchError,
-  forkJoin,
-  from,
-  map,
-  of,
-  switchMap,
-  throwError,
-} from 'rxjs';
+import { type Observable, catchError, forkJoin, from, map, of, switchMap, throwError } from 'rxjs';
 
 import { API_BASE_URL, apiUrl } from '../../../core/config/api';
 import { statusOf } from '../../../core/http/api-error';

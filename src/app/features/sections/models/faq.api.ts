@@ -1,4 +1,3 @@
-
 export interface FaqLocaleDto {
   ar: string | null;
   en: string | null;

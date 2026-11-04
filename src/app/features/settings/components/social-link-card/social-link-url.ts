@@ -1,4 +1,3 @@
-
 export type SocialLinkCopyResult =
   { ok: true } | { ok: false; reason: 'empty' | 'unsupported' | 'denied' };
 

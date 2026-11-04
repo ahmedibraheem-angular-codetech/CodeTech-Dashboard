@@ -1,8 +1,4 @@
-import type {
-  Article,
-  ArticleMediaDraft,
-  KnowledgeMediaIntent,
-} from '../models/knowledge.model';
+import type { Article, ArticleMediaDraft, KnowledgeMediaIntent } from '../models/knowledge.model';
 
 export type ArticleImageSlot = 'avatar' | 'thumbnail' | 'cover';
 
@@ -21,18 +17,11 @@ export const EMPTY_ARTICLE_IMAGES: Record<ArticleImageSlot, ArticleSlotImage | n
   cover: null,
 };
 
-export function slotImageFromUrl(
-  url: string,
-  date: string,
-  size = 0,
-): ArticleSlotImage | null {
+export function slotImageFromUrl(url: string, date: string, size = 0): ArticleSlotImage | null {
   return url ? { url, name: url.split('/').pop() ?? url, size, date } : null;
 }
 
-export function existingArticleImageUrl(
-  article: Article | null,
-  slot: ArticleImageSlot,
-): string {
+export function existingArticleImageUrl(article: Article | null, slot: ArticleImageSlot): string {
   if (!article) {
     return '';
   }
@@ -67,21 +56,12 @@ export function mediaDraftFromImages(
   };
 }
 
-export function articleImagesFromArticle(article: Article): Record<
-  ArticleImageSlot,
-  ArticleSlotImage | null
-> {
+export function articleImagesFromArticle(
+  article: Article,
+): Record<ArticleImageSlot, ArticleSlotImage | null> {
   return {
-    avatar: slotImageFromUrl(
-      article.authorAvatarUrl,
-      article.createdAt,
-      article.authorPhoto?.size,
-    ),
-    thumbnail: slotImageFromUrl(
-      article.thumbnailUrl,
-      article.createdAt,
-      article.thumbnail?.size,
-    ),
+    avatar: slotImageFromUrl(article.authorAvatarUrl, article.createdAt, article.authorPhoto?.size),
+    thumbnail: slotImageFromUrl(article.thumbnailUrl, article.createdAt, article.thumbnail?.size),
     cover: slotImageFromUrl(article.coverUrl, article.createdAt, article.cover?.size),
   };
 }

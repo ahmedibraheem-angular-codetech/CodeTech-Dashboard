@@ -59,7 +59,6 @@ export class SocialLinkCard {
       return;
     }
     try {
-
       await navigator.clipboard.writeText(href);
       this.copyResult.emit({ ok: true });
     } catch {

@@ -14,7 +14,10 @@ describe('apiInterceptor', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [provideHttpClient(withInterceptors([apiInterceptor])), provideHttpClientTesting()],
+      providers: [
+        provideHttpClient(withInterceptors([apiInterceptor])),
+        provideHttpClientTesting(),
+      ],
     });
     http = TestBed.inject(HttpClient);
     backend = TestBed.inject(HttpTestingController);
@@ -50,10 +53,12 @@ describe('apiInterceptor', () => {
     const result = firstValueFrom(http.get(`${environment.apiUrl}/admin/profile`)).catch(
       (error: unknown) => error,
     );
-    backend.expectOne(`${environment.apiUrl}/admin/profile`).flush(
-      { message: 'تم حظر حسابك.', errors: { email: ['blocked'] } },
-      { status: 403, statusText: 'Forbidden' },
-    );
+    backend
+      .expectOne(`${environment.apiUrl}/admin/profile`)
+      .flush(
+        { message: 'تم حظر حسابك.', errors: { email: ['blocked'] } },
+        { status: 403, statusText: 'Forbidden' },
+      );
     const error = await result;
     expect(error).toBeInstanceOf(ApiError);
     expect((error as ApiError).kind).toBe('forbidden');

@@ -1,4 +1,3 @@
-
 const ALLOWED_TAGS = new Set([
   'A',
   'BLOCKQUOTE',
@@ -61,7 +60,6 @@ function sanitizeNode(node: Node): void {
       const tag = el.tagName.toUpperCase();
 
       if (!ALLOWED_TAGS.has(tag)) {
-
         if (tag === 'SCRIPT' || tag === 'STYLE' || tag === 'IFRAME' || tag === 'OBJECT') {
           el.remove();
           continue;

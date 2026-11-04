@@ -24,10 +24,7 @@ import { PageHeader } from '../../../../shared/components/page-header/page-heade
 import { StateView } from '../../../../shared/components/state-view/state-view';
 import { HasPermissionDirective } from '../../../../shared/directives/has-permission.directive';
 import { ServiceCard } from '../../components/service-card/service-card';
-import {
-  SERVICE_LIST_PAGE_SIZE,
-  type ServiceLoadState,
-} from '../../constants/service.constants';
+import { SERVICE_LIST_PAGE_SIZE, type ServiceLoadState } from '../../constants/service.constants';
 import { readLocale, type Service } from '../../models/service.model';
 import { ServicesService } from '../../services/services.service';
 
@@ -109,7 +106,9 @@ export class ServicesPage {
       .subscribe({
         next: (saved) => {
           this.items.update((items) =>
-            items.map((item) => (item.id === id ? { ...item, ...saved, published: saved.published } : item)),
+            items.map((item) =>
+              item.id === id ? { ...item, ...saved, published: saved.published } : item,
+            ),
           );
         },
         error: () => {

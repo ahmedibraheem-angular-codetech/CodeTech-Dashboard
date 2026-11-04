@@ -67,7 +67,10 @@
     <app-state-view mode="empty" [message]="lang.t('knowledge.notFound')" />
   } @else if (status() === 'error' || status() === 'offline') {
     <app-state-view
-    [mode]="status() === 'offline' ? 'offline' : 'error'" [message]="lang.t('common.error')" (retry)="retry()" />
+      [mode]="status() === 'offline' ? 'offline' : 'error'"
+      [message]="lang.t('common.error')"
+      (retry)="retry()"
+    />
   } @else {
     <app-locale-switch [value]="locale()" (picked)="setLocale($event)" />
 

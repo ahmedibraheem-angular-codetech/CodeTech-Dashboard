@@ -17,9 +17,9 @@ describe('project-draft helpers', () => {
 
   it('maps and patches list items by index', () => {
     const items = [{ title: localeText('أ', 'A') }, { title: localeText('ب', 'B') }];
-    expect(mapAtIndex(items, 0, (item) => ({ ...item, title: localeText('ج', 'C') }))[0]?.title).toEqual(
-      localeText('ج', 'C'),
-    );
+    expect(
+      mapAtIndex(items, 0, (item) => ({ ...item, title: localeText('ج', 'C') }))[0]?.title,
+    ).toEqual(localeText('ج', 'C'));
     expect(patchItemLocaleField(items, 1, 'title', 'en', 'Bee')[1]?.title).toEqual(
       localeText('ب', 'Bee'),
     );

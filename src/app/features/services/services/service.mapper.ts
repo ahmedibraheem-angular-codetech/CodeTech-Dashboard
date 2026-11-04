@@ -259,7 +259,11 @@ export function toServiceWrite(service: Service): ServiceWriteDto {
       const row: ServiceNeedWriteDto = withOptionalId(item.id, {
         title: { ar: item.title.ar.trim(), en: item.title.en.trim() },
       });
-      applyTicket(row as unknown as Record<string, unknown>, 'icon', sharedTicket(item.image, true));
+      applyTicket(
+        row as unknown as Record<string, unknown>,
+        'icon',
+        sharedTicket(item.image, true),
+      );
       return row;
     });
 
@@ -270,7 +274,11 @@ export function toServiceWrite(service: Service): ServiceWriteDto {
         title: { ar: item.title.ar.trim(), en: item.title.en.trim() },
         short_description: { ar: item.body.ar.trim(), en: item.body.en.trim() },
       });
-      applyTicket(row as unknown as Record<string, unknown>, 'icon', sharedTicket(item.image, true));
+      applyTicket(
+        row as unknown as Record<string, unknown>,
+        'icon',
+        sharedTicket(item.image, true),
+      );
       return row;
     });
 
@@ -281,7 +289,11 @@ export function toServiceWrite(service: Service): ServiceWriteDto {
         title: { ar: item.title.ar.trim(), en: item.title.en.trim() },
         short_description: { ar: item.body.ar.trim(), en: item.body.en.trim() },
       });
-      applyTicket(row as unknown as Record<string, unknown>, 'image', sharedTicket(item.image, true));
+      applyTicket(
+        row as unknown as Record<string, unknown>,
+        'image',
+        sharedTicket(item.image, true),
+      );
       return row;
     });
 
@@ -292,31 +304,32 @@ export function toServiceWrite(service: Service): ServiceWriteDto {
         title: { ar: item.title.ar.trim(), en: item.title.en.trim() },
         short_description: { ar: item.body.ar.trim(), en: item.body.en.trim() },
       });
-      applyTicket(row as unknown as Record<string, unknown>, 'image', sharedTicket(item.image, true));
+      applyTicket(
+        row as unknown as Record<string, unknown>,
+        'image',
+        sharedTicket(item.image, true),
+      );
       return row;
     });
 
-  body.sectors = service.sectors
-    .filter(sectorHasMedia)
-    .map((item): ServiceSectorWriteDto => {
-      const ar = ticket(item.image.ar, true);
-      const en = ticket(item.image.en, true);
-      return withOptionalId(item.id, {
-        image: {
-          ar: ar === undefined ? null : ar,
-          en: en === undefined ? null : en,
-        },
-      });
+  body.sectors = service.sectors.filter(sectorHasMedia).map((item): ServiceSectorWriteDto => {
+    const ar = ticket(item.image.ar, true);
+    const en = ticket(item.image.en, true);
+    return withOptionalId(item.id, {
+      image: {
+        ar: ar === undefined ? null : ar,
+        en: en === undefined ? null : en,
+      },
     });
+  });
 
   body.faqs = service.faqs
     .filter((item) => filledLocale(item.question) || filledLocale(item.answer))
-    .map(
-      (item): ServiceFaqWriteDto =>
-        withOptionalId(item.id, {
-          question: { ar: item.question.ar.trim(), en: item.question.en.trim() },
-          answer: { ar: item.answer.ar.trim(), en: item.answer.en.trim() },
-        }),
+    .map((item): ServiceFaqWriteDto =>
+      withOptionalId(item.id, {
+        question: { ar: item.question.ar.trim(), en: item.question.en.trim() },
+        answer: { ar: item.answer.ar.trim(), en: item.answer.en.trim() },
+      }),
     );
 
   body.projects = service.projectIds

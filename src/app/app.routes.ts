@@ -4,11 +4,7 @@ import { authGuard, guestGuard, verifyGuard } from './core/guards/auth.guard';
 import { permissionGuard } from './core/guards/permission.guard';
 import type { LegalDocumentKind } from './features/sections/models/legal-document.model';
 
-const placeholder = (
-  path: string,
-  titleKey: string,
-  permission?: string,
-): Routes[number] => ({
+const placeholder = (path: string, titleKey: string, permission?: string): Routes[number] => ({
   path,
   ...(permission ? { canActivate: [permissionGuard()] } : {}),
   loadComponent: () =>
@@ -58,7 +54,6 @@ export const routes: Routes = [
     data: { titleKey: 'auth.verifyTitle' },
   },
   {
-
     path: 'forbidden',
     canActivate: [authGuard],
     loadComponent: () =>

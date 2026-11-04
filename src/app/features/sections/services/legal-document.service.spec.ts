@@ -142,10 +142,9 @@ describe('LegalDocumentService', () => {
 
   it('propagates GET failures', async () => {
     const result = firstValueFrom(service.get('terms'));
-    http.expectOne(TERMS).flush(
-      { message: 'Server error' },
-      { status: 500, statusText: 'Server Error' },
-    );
+    http
+      .expectOne(TERMS)
+      .flush({ message: 'Server error' }, { status: 500, statusText: 'Server Error' });
     await expect(result).rejects.toBeTruthy();
   });
 
@@ -153,10 +152,9 @@ describe('LegalDocumentService', () => {
     const result = firstValueFrom(
       service.save('terms', { content: { ar: '<p>a</p>', en: '<p>b</p>' } }),
     );
-    http.expectOne(TERMS).flush(
-      { message: 'Validation failed' },
-      { status: 422, statusText: 'Unprocessable Entity' },
-    );
+    http
+      .expectOne(TERMS)
+      .flush({ message: 'Validation failed' }, { status: 422, statusText: 'Unprocessable Entity' });
     await expect(result).rejects.toBeTruthy();
   });
 

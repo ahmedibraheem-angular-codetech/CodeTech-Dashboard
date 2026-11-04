@@ -42,9 +42,7 @@ export interface ReviewContentDraft {
  * - `replace` → upload File then send UUID
  */
 export type ReviewMediaIntent =
-  | { kind: 'omit' }
-  | { kind: 'clear' }
-  | { kind: 'replace'; file: File };
+  { kind: 'omit' } | { kind: 'clear' } | { kind: 'replace'; file: File };
 
 export interface ReviewMediaDraft {
   photo: ReviewMediaIntent;

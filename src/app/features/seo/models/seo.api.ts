@@ -1,13 +1,7 @@
 import type { FileObject } from '../../../core/http/api.model';
 
 export type SeoApiPageKey =
-  | 'global'
-  | 'home'
-  | 'about'
-  | 'products'
-  | 'projects'
-  | 'services'
-  | 'knowledge_center';
+  'global' | 'home' | 'about' | 'products' | 'projects' | 'services' | 'knowledge_center';
 
 export interface SeoLocaleDto {
   ar: string | null;

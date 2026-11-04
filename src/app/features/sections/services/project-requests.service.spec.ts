@@ -114,10 +114,9 @@ describe('ProjectRequestsService', () => {
     expect(item?.product).toBe('تصميم UI/UX');
 
     const missing = firstValueFrom(api.get('999'));
-    http.expectOne(`${base}/admin/project-requests/999`).flush(
-      { message: 'Not found' },
-      { status: 404, statusText: 'Not Found' },
-    );
+    http
+      .expectOne(`${base}/admin/project-requests/999`)
+      .flush({ message: 'Not found' }, { status: 404, statusText: 'Not Found' });
     expect(await missing).toBeNull();
   });
 

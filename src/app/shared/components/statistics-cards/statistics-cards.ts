@@ -41,9 +41,7 @@ interface CardMotion {
 }
 
 function prefersReducedMotion(): boolean {
-  return (
-    typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches
-  );
+  return typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches;
 }
 
 function countFractionDigits(value: number): number {

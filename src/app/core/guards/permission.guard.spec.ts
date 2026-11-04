@@ -71,9 +71,7 @@ describe('permissionGuard', () => {
     data: Record<string, unknown> = {},
   ): Promise<GuardResult> {
     const route = { data } as ActivatedRouteSnapshot;
-    const result = TestBed.runInInjectionContext(() =>
-      guard(route, {} as RouterStateSnapshot),
-    );
+    const result = TestBed.runInInjectionContext(() => guard(route, {} as RouterStateSnapshot));
     return firstValueFrom(isObservable(result) ? (result as Observable<GuardResult>) : of(result));
   }
 
@@ -276,8 +274,8 @@ describe('permissionGuard', () => {
         permissions: ['products.view'],
       }),
     );
-    expect(
-      pathOf(await run(permissionGuard('users.view'), { permission: 'products.view' })),
-    ).toBe('/forbidden');
+    expect(pathOf(await run(permissionGuard('users.view'), { permission: 'products.view' }))).toBe(
+      '/forbidden',
+    );
   });
 });

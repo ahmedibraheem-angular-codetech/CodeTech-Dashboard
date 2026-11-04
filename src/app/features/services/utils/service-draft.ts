@@ -17,11 +17,7 @@ export interface ServiceImageFile {
 
 export type ServicePointList = 'solutions' | 'stages' | 'features';
 
-export function writeLocale(
-  current: LocaleText,
-  language: AppLanguage,
-  value: string,
-): LocaleText {
+export function writeLocale(current: LocaleText, language: AppLanguage, value: string): LocaleText {
   return { ...current, [language]: value };
 }
 
@@ -154,11 +150,7 @@ export function draftSetWhyIcon(
   };
 }
 
-export function draftClearWhyIcon(
-  service: Service,
-  index: number,
-  language: AppLanguage,
-): Service {
+export function draftClearWhyIcon(service: Service, index: number, language: AppLanguage): Service {
   return {
     ...service,
     whyItems: clearLocalizedSlotImage(service.whyItems, index, language),
@@ -191,11 +183,7 @@ export function draftAddPoint(service: Service, list: ServicePointList): Service
   return { ...service, [list]: [...service[list], servicePoint()] };
 }
 
-export function draftRemovePoint(
-  service: Service,
-  list: ServicePointList,
-  index: number,
-): Service {
+export function draftRemovePoint(service: Service, list: ServicePointList, index: number): Service {
   return { ...service, [list]: withoutAt(service[list], index) };
 }
 
@@ -224,11 +212,7 @@ export function draftClearPointImage(
   };
 }
 
-export function draftSetProject(
-  service: Service,
-  projectId: string,
-  selected: boolean,
-): Service {
+export function draftSetProject(service: Service, projectId: string, selected: boolean): Service {
   const without = service.projectIds.filter((item) => item !== projectId);
   return { ...service, projectIds: selected ? [...without, projectId] : without };
 }

@@ -85,9 +85,7 @@ export type ArticleCategoryDraft = Pick<ArticleCategory, 'nameAr' | 'nameEn' | '
  * - `replace` → upload File then send UUID
  */
 export type KnowledgeMediaIntent =
-  | { kind: 'omit' }
-  | { kind: 'clear' }
-  | { kind: 'replace'; file: File };
+  { kind: 'omit' } | { kind: 'clear' } | { kind: 'replace'; file: File };
 
 export interface ArticleMediaDraft {
   cover: KnowledgeMediaIntent;

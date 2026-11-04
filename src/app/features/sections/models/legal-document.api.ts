@@ -1,4 +1,3 @@
-
 export interface LegalPageDto {
   key: 'terms' | 'privacy';
   content: {

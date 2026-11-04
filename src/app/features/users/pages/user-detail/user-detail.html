@@ -2,7 +2,10 @@
   <app-state-view mode="loading" />
 } @else if (status() === 'error' || status() === 'offline') {
   <app-state-view
-    [mode]="status() === 'offline' ? 'offline' : 'error'" [message]="lang.t('users.loadError')" (retry)="reload()" />
+    [mode]="status() === 'offline' ? 'offline' : 'error'"
+    [message]="lang.t('users.loadError')"
+    (retry)="reload()"
+  />
 } @else if (status() === 'missing' || !user()) {
   <app-state-view mode="empty" [message]="lang.t('users.notFound')" />
 } @else if (user(); as current) {

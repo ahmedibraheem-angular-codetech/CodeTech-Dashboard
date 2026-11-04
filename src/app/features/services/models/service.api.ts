@@ -152,10 +152,4 @@ export interface ServiceStatusWriteDto {
   status: string;
 }
 
-export type ServiceListName =
-  | 'needs'
-  | 'solutions'
-  | 'stages'
-  | 'features'
-  | 'sectors'
-  | 'faqs';
+export type ServiceListName = 'needs' | 'solutions' | 'stages' | 'features' | 'sectors' | 'faqs';

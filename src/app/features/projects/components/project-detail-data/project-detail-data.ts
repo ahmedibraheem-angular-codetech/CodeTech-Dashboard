@@ -7,12 +7,7 @@ import { projectPointVisual, usableProjectImage } from '../../utils/project-deta
 import { localeFilled } from '../../utils/project-field-rules';
 import { ProjectDetailPoints } from '../project-detail-points/project-detail-points';
 
-export type ProjectDetailSection =
-  | 'about'
-  | 'challenges'
-  | 'solutions'
-  | 'features'
-  | 'results';
+export type ProjectDetailSection = 'about' | 'challenges' | 'solutions' | 'features' | 'results';
 
 @Component({
   selector: 'app-project-detail-data',

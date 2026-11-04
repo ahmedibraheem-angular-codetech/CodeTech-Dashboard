@@ -60,7 +60,12 @@ export function isAssignableRoleId(roleId: number, roles: readonly { id: number 
 }
 
 export function mapAssignableRole(dto: RoleListDto): AssignableRole | null {
-  if (!Number.isInteger(dto.id) || dto.id <= 0 || typeof dto.name !== 'string' || !dto.name.trim()) {
+  if (
+    !Number.isInteger(dto.id) ||
+    dto.id <= 0 ||
+    typeof dto.name !== 'string' ||
+    !dto.name.trim()
+  ) {
     return null;
   }
   return {
@@ -101,10 +106,7 @@ export function mapUserStats(dto: UserStatsDto): UserStats {
 }
 
 /** Writable body. Avatar is included only when the caller resolved a new UUID or a removal. */
-export function toUserWriteDto(
-  draft: UserDraft,
-  avatar: string | null | undefined,
-): UserWriteDto {
+export function toUserWriteDto(draft: UserDraft, avatar: string | null | undefined): UserWriteDto {
   if (!isUserStatus(draft.status)) {
     throw new Error('invalid-user-status');
   }

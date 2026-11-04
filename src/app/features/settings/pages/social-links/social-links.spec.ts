@@ -107,17 +107,15 @@ describe('SocialLinksPage', () => {
       socialReq.flush({ message: 'fail' }, { status: 500, statusText: 'Server Error' });
     } else {
       socialReq.flush({
-        data:
-          options?.channels ??
-          [
-            linkDto(1),
-            linkDto(2, { platform: 'facebook', url: 'https://facebook.com/c' }),
-            linkDto(3, { platform: 'x', url: 'https://x.com/c' }),
-            linkDto(4, { platform: 'instagram' }),
-            linkDto(5, { platform: 'snapchat' }),
-            linkDto(6, { platform: 'tiktok' }),
-            linkDto(7, { platform: 'whatsapp', url: 'https://wa.me/1' }),
-          ],
+        data: options?.channels ?? [
+          linkDto(1),
+          linkDto(2, { platform: 'facebook', url: 'https://facebook.com/c' }),
+          linkDto(3, { platform: 'x', url: 'https://x.com/c' }),
+          linkDto(4, { platform: 'instagram' }),
+          linkDto(5, { platform: 'snapchat' }),
+          linkDto(6, { platform: 'tiktok' }),
+          linkDto(7, { platform: 'whatsapp', url: 'https://wa.me/1' }),
+        ],
       });
     }
 
@@ -291,11 +289,7 @@ describe('SocialLinksPage', () => {
     const siteApi = TestBed.inject(SiteSettingsService);
     const saveSpy = vi.spyOn(siteApi, 'save');
     const page = fixture.componentInstance as unknown as {
-      onEditorSaved: (draft: {
-        platform: 'twitter';
-        status: 'published';
-        url: string;
-      }) => void;
+      onEditorSaved: (draft: { platform: 'twitter'; status: 'published'; url: string }) => void;
     };
     page.onEditorSaved({
       platform: 'twitter',

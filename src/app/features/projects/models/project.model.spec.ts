@@ -46,7 +46,11 @@ describe('project.model', () => {
     expect(project.results).toHaveLength(1);
     expect(project.identityButtons).toHaveLength(1);
     expect(project.identityButtons[0]?.images).toHaveLength(IDENTITY_IMAGE_SLOTS);
-    expect(project.identityButtons[0]?.images.every((image) => image.image.ar.imageUrl === '' && image.image.en.imageUrl === '')).toBe(true);
+    expect(
+      project.identityButtons[0]?.images.every(
+        (image) => image.image.ar.imageUrl === '' && image.image.en.imageUrl === '',
+      ),
+    ).toBe(true);
     expect(project.seo.slug).toEqual(localeText());
   });
 

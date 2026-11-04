@@ -49,8 +49,7 @@ export class AboutPage {
           this.team.set(content.team);
           this.status.set('ready');
         },
-        error: (error: unknown) =>
-          this.status.set(loadFailureStatus(error, this.network.online())),
+        error: (error: unknown) => this.status.set(loadFailureStatus(error, this.network.online())),
       });
   }
 }

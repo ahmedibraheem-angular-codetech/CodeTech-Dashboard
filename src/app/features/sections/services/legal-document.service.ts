@@ -38,10 +38,7 @@ export class LegalDocumentService {
       .pipe(map((envelope) => this.requirePage(envelope, kind)));
   }
 
-  private requirePage(
-    envelope: ApiEnvelope<LegalPageDto>,
-    kind: LegalDocumentKind,
-  ): LegalDocument {
+  private requirePage(envelope: ApiEnvelope<LegalPageDto>, kind: LegalDocumentKind): LegalDocument {
     const data = envelope?.data;
     if (!data || (data.key !== 'terms' && data.key !== 'privacy')) {
       throw new Error('Invalid legal page response');

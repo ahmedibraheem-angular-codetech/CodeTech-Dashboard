@@ -14,13 +14,7 @@ import {
   emptyDraft,
   isSeoTabId,
 } from '../models/seo.model';
-import {
-  draftFingerprint,
-  emptyCatalog,
-  mapSeoPage,
-  toApiPageKey,
-  toSeoWrite,
-} from './seo.mapper';
+import { draftFingerprint, emptyCatalog, mapSeoPage, toApiPageKey, toSeoWrite } from './seo.mapper';
 
 const PATH = 'admin/seo';
 
@@ -50,13 +44,11 @@ export class SeoService {
 
   loadPage(tabId: string): Observable<SeoPageDraft> {
     const key = toApiPageKey(tabId);
-    return this.http
-      .get<ApiEnvelope<SeoPageDto>>(apiUrl(this.base, `${PATH}/${key}`))
-      .pipe(
-        map((envelope) => this.requireOne(envelope, key)),
-        map((dto) => mapSeoPage(dto).draft),
-        tap((draft) => this.replacePage(tabId as SeoTabId, draft)),
-      );
+    return this.http.get<ApiEnvelope<SeoPageDto>>(apiUrl(this.base, `${PATH}/${key}`)).pipe(
+      map((envelope) => this.requireOne(envelope, key)),
+      map((dto) => mapSeoPage(dto).draft),
+      tap((draft) => this.replacePage(tabId as SeoTabId, draft)),
+    );
   }
 
   content(pageId: string, locale: SeoLocale): SeoContent {
@@ -149,9 +141,7 @@ export class SeoService {
     this.revision.update((value) => value + 1);
   }
 
-  private resolveThumbnail(
-    draft: SeoPageDraft,
-  ): Observable<string | null | undefined> {
+  private resolveThumbnail(draft: SeoPageDraft): Observable<string | null | undefined> {
     if (draft.thumbFile) {
       return this.media.upload('image', draft.thumbFile).pipe(map((file) => file.uuid));
     }

@@ -119,7 +119,9 @@ describe('RolesService', () => {
   it('returns null for a missing role and surfaces other API errors', async () => {
     const { api, http } = setup();
     const missing = firstValueFrom(api.get('9'));
-    http.expectOne(`${base}/admin/roles/9`).flush({ message: 'missing' }, { status: 404, statusText: 'Not Found' });
+    http
+      .expectOne(`${base}/admin/roles/9`)
+      .flush({ message: 'missing' }, { status: 404, statusText: 'Not Found' });
     expect(await missing).toBeNull();
 
     const failed = firstValueFrom(api.list());

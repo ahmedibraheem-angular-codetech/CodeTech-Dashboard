@@ -53,7 +53,6 @@ describe('ServiceEditor', () => {
       expect(after.map((item) => item.id)).toEqual(before.map((item) => item.id));
     });
 
-
     it('keeps why and feature images independent per locale tab', async () => {
       const { editor } = await render('create');
 
@@ -289,5 +288,4 @@ describe('ServiceEditor', () => {
       expect(saved ? collect(saved) : []).toEqual(before);
     });
   });
-
 });

@@ -116,10 +116,9 @@ describe('InquiriesService', () => {
     expect(item?.reference).toBe('REQ-00016');
 
     const missing = firstValueFrom(api.get('999'));
-    http.expectOne(`${base}/admin/inquiries/999`).flush(
-      { message: 'Not found' },
-      { status: 404, statusText: 'Not Found' },
-    );
+    http
+      .expectOne(`${base}/admin/inquiries/999`)
+      .flush({ message: 'Not found' }, { status: 404, statusText: 'Not Found' });
     expect(await missing).toBeNull();
   });
 
@@ -197,7 +196,9 @@ describe('InquiriesService', () => {
   it('deletes an inquiry and exports csv', async () => {
     const { api, http } = setup();
     const removePending = firstValueFrom(api.remove('16'));
-    http.expectOne(`${base}/admin/inquiries/16`).flush('', { status: 204, statusText: 'No Content' });
+    http
+      .expectOne(`${base}/admin/inquiries/16`)
+      .flush('', { status: 204, statusText: 'No Content' });
     await removePending;
 
     const exportPending = firstValueFrom(api.exportCsv());

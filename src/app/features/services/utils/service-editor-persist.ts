@@ -5,9 +5,7 @@ import { serviceNamesValid } from './service-editor-navigation';
 import { filterKnownProjectIds } from './service-editor-projects';
 
 export type ServicePersistEvaluation =
-  | { kind: 'busy' }
-  | { kind: 'nameError'; step: 0 }
-  | { kind: 'ready'; service: Service };
+  { kind: 'busy' } | { kind: 'nameError'; step: 0 } | { kind: 'ready'; service: Service };
 
 /**
  * Pre-save gate evaluation matching the previous private `persist` method.
@@ -34,11 +32,7 @@ export function evaluateServicePersist(
     service: {
       ...draft,
       published,
-      projectIds: filterKnownProjectIds(
-        draft.projectIds,
-        options.projects,
-        options.projectsStatus,
-      ),
+      projectIds: filterKnownProjectIds(draft.projectIds, options.projects, options.projectsStatus),
     },
   };
 }

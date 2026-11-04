@@ -1,5 +1,9 @@
 import type { FileObject } from '../../../core/http/api.model';
-import type { SiteLocaleDto, SiteSettingsDto, SiteSettingsWriteDto } from '../models/site-settings.api';
+import type {
+  SiteLocaleDto,
+  SiteSettingsDto,
+  SiteSettingsWriteDto,
+} from '../models/site-settings.api';
 import type {
   SiteLogo,
   SiteLogoIntent,

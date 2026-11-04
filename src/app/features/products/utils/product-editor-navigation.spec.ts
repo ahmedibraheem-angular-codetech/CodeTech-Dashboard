@@ -100,12 +100,13 @@ describe('product-editor-navigation', () => {
         body: { ar: 'نص', en: 'Body' },
       };
     });
-    expect(canLeaveProductEditorStep(IDENTITY_STEP_INDEX, IDENTITY_STEP_INDEX + 1, product)).toEqual(
-      { ok: false, locale: 'ar' },
-    );
     expect(
-      decideNextStep(nav({ step: IDENTITY_STEP_INDEX, draft: product })),
-    ).toEqual({ kind: 'blocked', locale: 'ar' });
+      canLeaveProductEditorStep(IDENTITY_STEP_INDEX, IDENTITY_STEP_INDEX + 1, product),
+    ).toEqual({ ok: false, locale: 'ar' });
+    expect(decideNextStep(nav({ step: IDENTITY_STEP_INDEX, draft: product }))).toEqual({
+      kind: 'blocked',
+      locale: 'ar',
+    });
   });
 
   it('blocks leaving SEO when slug or keywords are invalid and points at the bad locale', () => {
@@ -131,9 +132,9 @@ describe('product-editor-navigation', () => {
 
   it('allows leaving identity and SEO when their rules pass', () => {
     const product = blankProduct();
-    expect(canLeaveProductEditorStep(IDENTITY_STEP_INDEX, IDENTITY_STEP_INDEX + 1, product)).toEqual(
-      { ok: true },
-    );
+    expect(
+      canLeaveProductEditorStep(IDENTITY_STEP_INDEX, IDENTITY_STEP_INDEX + 1, product),
+    ).toEqual({ ok: true });
     expect(canLeaveProductEditorStep(SEO_STEP_INDEX, SEO_STEP_INDEX - 1, product)).toEqual({
       ok: true,
     });

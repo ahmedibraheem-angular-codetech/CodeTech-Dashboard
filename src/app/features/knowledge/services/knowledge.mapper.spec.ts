@@ -44,9 +44,7 @@ describe('knowledge.mapper', () => {
       createdAt: '2026-01-01',
     });
 
-    expect(
-      toArticleCategoryWrite({ nameAr: ' أ ', nameEn: ' B ', published: false }),
-    ).toEqual({
+    expect(toArticleCategoryWrite({ nameAr: ' أ ', nameEn: ' B ', published: false })).toEqual({
       name: { ar: 'أ', en: 'B' },
       is_published: false,
     });

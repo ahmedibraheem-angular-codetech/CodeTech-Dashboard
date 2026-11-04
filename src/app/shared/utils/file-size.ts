@@ -1,4 +1,3 @@
-
 export function formatFileSize(bytes: number): string {
   const mb = 1024 * 1024;
   if (bytes < mb) {

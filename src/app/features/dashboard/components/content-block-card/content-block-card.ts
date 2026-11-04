@@ -28,7 +28,11 @@ import { formatIsoDate } from '../../../../shared/utils/date';
 import { formatFileSize } from '../../../../shared/utils/file-size';
 import { isApiError } from '../../../../core/http/api-error';
 import { parseUploadedImage } from '../../../../shared/utils/image-upload';
-import { type BlockImage, type ContentBlock, type ContentBlockText } from '../../models/homepage.model';
+import {
+  type BlockImage,
+  type ContentBlock,
+  type ContentBlockText,
+} from '../../models/homepage.model';
 import { HomepageService } from '../../services/homepage.service';
 
 export type ContentBlockKind = 'about' | 'vision';

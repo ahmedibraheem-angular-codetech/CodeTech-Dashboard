@@ -8,8 +8,7 @@ import type { ApiEnvelope, FileObject } from '../http/api.model';
 export type MediaUploadType = 'image' | 'video';
 
 export type MediaUploadEvent =
-  | { type: 'progress'; progress: number }
-  | { type: 'response'; file: FileObject };
+  { type: 'progress'; progress: number } | { type: 'response'; file: FileObject };
 
 /**
  * Coat-check upload: POST /admin/media returns a uuid ticket used by form fields
@@ -25,7 +24,10 @@ export class MediaService {
 
   upload(type: MediaUploadType, file: File): Observable<FileObject> {
     return this.uploadWithProgress(type, file).pipe(
-      filter((event): event is Extract<MediaUploadEvent, { type: 'response' }> => event.type === 'response'),
+      filter(
+        (event): event is Extract<MediaUploadEvent, { type: 'response' }> =>
+          event.type === 'response',
+      ),
       map((event) => event.file),
     );
   }

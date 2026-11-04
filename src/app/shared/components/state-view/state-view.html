@@ -4,11 +4,7 @@
       [title]="lang.t('common.offlineTitle')"
       [hint]="lang.t('common.offlineHint')"
     >
-      <app-button
-        [label]="lang.t('common.retry')"
-        variant="outlined"
-        (clicked)="retry.emit()"
-      />
+      <app-button [label]="lang.t('common.retry')" variant="outlined" (clicked)="retry.emit()" />
     </app-section-empty>
   </div>
 } @else {

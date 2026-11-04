@@ -106,7 +106,8 @@ export function projectStepIndexForServerPath(path: string): number {
 
 export type ProjectCopy = (key: string) => string;
 
-type PointErrorList = 'categories' | 'aboutCards' | 'challenges' | 'solutions' | 'features' | 'results';
+type PointErrorList =
+  'categories' | 'aboutCards' | 'challenges' | 'solutions' | 'features' | 'results';
 
 function firstServerMessage(errors: FieldErrors, ...paths: string[]): string {
   for (const path of paths) {
