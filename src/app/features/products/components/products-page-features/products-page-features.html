@@ -12,10 +12,9 @@
     </div>
     <app-button
       *appHasPermission="'products.create'"
-      variant="outlined"
       icon="pi pi-plus"
       iconPos="end"
-      styleClass="products-manage__add"
+      styleClass="app-add-btn"
       [label]="lang.t('product.page.addFeature')"
       (clicked)="add.emit()"
     />

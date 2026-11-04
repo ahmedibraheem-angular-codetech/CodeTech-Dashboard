@@ -29,21 +29,6 @@
   line-height: 1.4;
 }
 
-.permissions-add.p-button {
-  box-sizing: border-box;
-  width: max-content;
-  min-width: 189px;
-  height: 48px;
-  padding: 12px 16px;
-  gap: 10px;
-  border: 1px solid var(--Text-100, #eceff3);
-  border-radius: 16px;
-  background: #1c81d3;
-  color: #fff;
-  font-size: 14px;
-  font-weight: 500;
-}
-
 .permissions-panel {
   display: flex;
   flex-direction: column;

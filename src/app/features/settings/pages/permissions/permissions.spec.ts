@@ -140,7 +140,7 @@ describe('PermissionsPage', () => {
   it('opens the add-role dialog with catalog module labels', () => {
     const { fixture } = render();
     const root: HTMLElement = fixture.nativeElement;
-    root.querySelector<HTMLButtonElement>('.permissions-add')?.click();
+    root.querySelector<HTMLButtonElement>('.app-add-btn')?.click();
     fixture.detectChanges();
 
     expect(fixture.componentInstance.editorOpen()).toBe(true);

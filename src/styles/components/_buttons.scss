@@ -47,6 +47,46 @@
   right: auto;
 }
 
+// Shared “add new …” CTA — matches users “إضافة مستخدم جديد”.
+.app-add-btn.p-button,
+a.app-add-btn {
+  --p-button-primary-background: #1c81d3;
+  --p-button-primary-hover-background: #1670b8;
+  --p-button-primary-active-background: #125f9c;
+  --p-button-primary-border-color: var(--Text-100, #eceff3);
+  --p-button-primary-hover-border-color: var(--Text-100, #eceff3);
+  --p-button-primary-active-border-color: var(--Text-100, #eceff3);
+  --p-button-primary-color: #fff;
+  --p-button-primary-hover-color: #fff;
+  --p-button-primary-active-color: #fff;
+  --p-button-gap: 10px;
+  --p-button-border-radius: 16px;
+
+  display: inline-flex;
+  box-sizing: border-box;
+  align-items: center;
+  justify-content: center;
+  width: max-content;
+  min-width: 189px;
+  height: 48px;
+  padding: 12px 16px;
+  gap: 10px;
+  border: 1px solid var(--Text-100, #eceff3);
+  border-radius: 16px;
+  background: #1c81d3;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1;
+  white-space: nowrap;
+  text-decoration: none;
+}
+
+.app-add-btn.p-button .p-button-icon,
+a.app-add-btn .pi {
+  font-size: 14px;
+}
+
 // Figma back control: 48×48, radius 16, white fill, #ECEFF3 border; icon flipped −180°.
 .back-btn {
   --p-button-icon-only-width: 48px;

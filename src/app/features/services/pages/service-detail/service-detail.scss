@@ -263,13 +263,8 @@ app-service-detail {
   width: 100%;
 }
 
-.service-detail__add-project.p-button {
+.service-detail__panel-head .app-add-btn {
   margin-inline-start: auto;
-  height: 40px;
-  padding-inline: 14px;
-  border-radius: 12px;
-  font-size: 13px;
-  font-weight: 700;
 }
 
 .service-detail__projects {

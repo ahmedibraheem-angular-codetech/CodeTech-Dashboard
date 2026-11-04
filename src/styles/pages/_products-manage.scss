@@ -45,35 +45,6 @@
   font-weight: 700;
 }
 
-.products-manage .products-manage__add.p-button {
-  --p-button-border-radius: 16px;
-  --p-button-padding-y: 12px;
-  --p-button-padding-x: 16px;
-  --p-button-gap: 8px;
-  --p-button-outlined-secondary-background: #fff;
-  --p-button-outlined-secondary-hover-background: #f8fbff;
-  --p-button-outlined-secondary-active-background: #f1f7fe;
-  --p-button-outlined-secondary-border-color: #cae3fd;
-  --p-button-outlined-secondary-hover-border-color: #cae3fd;
-  --p-button-outlined-secondary-active-border-color: #cae3fd;
-  --p-button-outlined-secondary-color: #12324f;
-  --p-button-outlined-secondary-hover-color: #12324f;
-  --p-button-outlined-secondary-active-color: #12324f;
-
-  box-sizing: border-box;
-  width: 156px;
-  height: 48px;
-  padding: 12px 16px;
-  gap: 8px;
-  border: 1px solid #cae3fd;
-  border-radius: 16px;
-  background: #fff;
-  color: #12324f;
-  font-size: 14px;
-  font-weight: 500;
-  white-space: nowrap;
-}
-
 .manage-feature-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));

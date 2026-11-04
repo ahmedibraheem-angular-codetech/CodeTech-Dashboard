@@ -18,25 +18,6 @@ app-services-page {
   line-height: 1.4;
 }
 
-// The design's add button uses the brand blue (#1b81d3), not the PrimeNG default primary.
-.services-add.p-button {
-  --p-button-primary-background: #1b81d3;
-  --p-button-primary-border-color: #1b81d3;
-  --p-button-primary-hover-background: #1672bd;
-  --p-button-primary-hover-border-color: #1672bd;
-  --p-button-primary-active-background: #1266a9;
-  --p-button-primary-active-border-color: #1266a9;
-  height: 40px;
-  padding-inline: 14px;
-  border-radius: 12px;
-  font-size: 12px;
-  font-weight: 700;
-}
-
-.services-add.p-button .p-button-icon {
-  font-size: 11px;
-}
-
 .services-board__body {
   display: flex;
   flex-direction: column;

@@ -520,7 +520,7 @@ describe('ServiceDetailPage', () => {
       const ids = seed('web-development').projectIds;
       const cards = [...root.querySelectorAll<HTMLAnchorElement>('.service-detail__project')];
       expect(cards).toHaveLength(ids.length);
-      expect(root.querySelector('.service-detail__add-project')).not.toBeNull();
+      expect(root.querySelector('.app-add-btn')).not.toBeNull();
       ids.forEach((id, index) => {
         const project = PROJECTS_SEED.find((item) => item.id === id);
         expect(cards[index]?.textContent).toContain(project?.name.ar);
