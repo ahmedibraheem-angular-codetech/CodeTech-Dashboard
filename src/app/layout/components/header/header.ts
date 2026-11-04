@@ -9,7 +9,6 @@ import {
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { Button, ButtonDirective, ButtonIcon } from 'primeng/button';
-import { InputText } from 'primeng/inputtext';
 import { Popover } from 'primeng/popover';
 import { Tooltip } from 'primeng/tooltip';
 
@@ -34,7 +33,6 @@ interface Notice {
     AppButton,
     ButtonDirective,
     ButtonIcon,
-    InputText,
     Popover,
     Tooltip,
     RouterLink,
