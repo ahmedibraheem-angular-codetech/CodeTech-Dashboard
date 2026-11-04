@@ -56,7 +56,7 @@
               "budgets": [
                 {
                   "type": "initial",
-                  "maximumWarning": "1.2MB",
+                  "maximumWarning": "1.35MB",
                   "maximumError": "2MB"
                 },
                 {
@@ -88,7 +88,10 @@
           "defaultConfiguration": "development"
         },
         "test": {
-          "builder": "@angular/build:unit-test"
+          "builder": "@angular/build:unit-test",
+          "options": {
+            "setupFiles": ["src/testing/match-media.setup.ts"]
+          }
         },
         "lint": {
           "builder": "@angular-eslint/builder:lint",

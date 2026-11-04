@@ -6,6 +6,7 @@ import { firstValueFrom, map, NEVER, of, Subject, throwError, timer } from 'rxjs
 
 import { API_LATENCY_MS } from '../../../../core/config/latency';
 import { ApiError } from '../../../../core/http/api-error';
+import { flushUi } from '../../../../../testing/flush-ui';
 import { blankProduct, localeText, type Product } from '../../models/product.model';
 import { ProductsMemoryService } from '../../products.spec-helpers';
 import { ProductsService } from '../../services/products.service';
@@ -56,9 +57,7 @@ describe('ProductEditor', () => {
     const fixture = TestBed.createComponent(ProductEditor);
     fixture.componentRef.setInput('id', id);
     fixture.detectChanges();
-    await new Promise((resolve) => setTimeout(resolve, 20));
-    await fixture.whenStable();
-    fixture.detectChanges();
+    await flushUi(fixture);
     return fixture;
   }
 
@@ -1095,9 +1094,7 @@ function clickButton(root: HTMLElement, label: string): void {
 }
 
 async function settle(fixture: { whenStable: () => Promise<unknown>; detectChanges: () => void }) {
-  await new Promise((resolve) => setTimeout(resolve, 20));
-  await fixture.whenStable();
-  fixture.detectChanges();
+  await flushUi(fixture);
 }
 
 function named(id: string, arabic: string): Product {

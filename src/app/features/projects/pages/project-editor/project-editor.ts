@@ -28,7 +28,7 @@ import {
   PROJECT_SEO_DESCRIPTION_MAX,
   PROJECT_SUMMARY_MAX,
 } from '../../constants/project-limits';
-import { PROJECT_STEPS, SEO_STEP_INDEX } from '../../constants/project-steps';
+import { PROJECT_STEPS } from '../../constants/project-steps';
 import {
   blankProject,
   readLocale,
@@ -73,10 +73,8 @@ import {
   identityBodyErrorMessage,
   identityTitleErrorMessage,
   keywordsErrorMessage,
-  localeFromServerPath,
   nameErrorMessage,
   pointTitleBodyErrorMessage,
-  projectStepIndexForServerPath,
   slugErrorMessage,
   summaryErrorMessage,
 } from '../../utils/project-errors';
@@ -85,12 +83,23 @@ import {
   isValidProjectSlug,
   isValidProjectSummary,
   longestProjectKeywordLength,
-  projectNamesValid,
 } from '../../utils/project-field-rules';
 import {
-  firstRepeaterValidationIssue,
-  projectRepeatersValid,
-} from '../../utils/project-repeater-validation';
+  createModeEditorState,
+  editLoadSuccessState,
+  type ProjectEditorLoadState,
+} from '../../utils/project-editor-load';
+import {
+  decideNextStep,
+  decidePreviousStep,
+  decideSelectStep,
+  type ProjectEditorNavDecision,
+  type ProjectEditorNavInput,
+} from '../../utils/project-editor-navigation';
+import {
+  evaluateProjectPersist,
+  resolveServerErrorFocus,
+} from '../../utils/project-editor-persist';
 import {
   ChallengesStep,
   FeaturesStep,
@@ -194,12 +203,7 @@ export class ProjectEditor {
         if (editing) {
           return;
         }
-        this.status.set('ready');
-        this.draft.set(blankProject());
-        this.step.set(0);
-        this.passed.set(-1);
-        this.nameError.set(false);
-        this.serverErrors.set({});
+        this.applyLoadState(createModeEditorState());
       });
     });
 
@@ -229,12 +233,7 @@ export class ProjectEditor {
           this.status.set('missing');
           return;
         }
-        this.draft.set(result.project);
-        this.step.set(0);
-        this.passed.set(-1);
-        this.nameError.set(false);
-        this.serverErrors.set({});
-        this.status.set('ready');
+        this.applyLoadState(editLoadSuccessState(result.project));
       });
   }
 
@@ -257,43 +256,15 @@ export class ProjectEditor {
   }
 
   select(index: number | undefined): void {
-    if (this.saving() || index === undefined || (this.mode() === 'create' && index > this.step())) {
-      return;
-    }
-    if (!this.canLeaveEditorStep(index)) {
-      return;
-    }
-    this.step.set(index);
+    this.applyNavDecision(decideSelectStep(this.navInput(), index));
   }
 
   next(): void {
-    if (this.saving() || this.lastStep()) {
-      return;
-    }
-    if (this.mode() === 'create' && this.step() === 0 && !projectNamesValid(this.draft())) {
-      this.nameError.set(true);
-      return;
-    }
-    if (!this.canLeaveEditorStep(this.step() + 1)) {
-      return;
-    }
-    const leaving = this.step();
-    this.passed.update((current) => Math.max(current, leaving));
-    this.step.set(leaving + 1);
+    this.applyNavDecision(decideNextStep(this.navInput()));
   }
 
   previous(): void {
-    if (this.saving()) {
-      return;
-    }
-    if (this.step() === 0) {
-      void this.router.navigate(['/projects']);
-      return;
-    }
-    if (!this.canLeaveEditorStep(this.step() - 1)) {
-      return;
-    }
-    this.step.update((current) => current - 1);
+    this.applyNavDecision(decidePreviousStep(this.navInput()));
   }
 
   saveDraft(): void {
@@ -624,30 +595,41 @@ export class ProjectEditor {
     message: 'project.saved' | 'project.draftSaved',
     leave: boolean,
   ): void {
-    if (this.saving() || this.status() !== 'ready') {
-      return;
+    const evaluation = evaluateProjectPersist(this.draft(), published, {
+      saving: this.saving(),
+      status: this.status(),
+    });
+    switch (evaluation.kind) {
+      case 'busy':
+        return;
+      case 'nameError':
+        this.nameError.set(true);
+        this.step.set(evaluation.step);
+        return;
+      case 'summaryInvalid':
+        if (evaluation.locale) {
+          this.useLocale(evaluation.locale);
+        }
+        this.step.set(evaluation.step);
+        return;
+      case 'repeaterInvalid':
+        if (evaluation.preferAr) {
+          this.useLocale('ar');
+        }
+        this.step.set(evaluation.step);
+        return;
+      case 'seoInvalid':
+        if (evaluation.locale) {
+          this.useLocale(evaluation.locale);
+        }
+        this.step.set(evaluation.step);
+        return;
+      case 'ready':
+        break;
     }
+
     const previous = this.draft();
-    const current = { ...previous, published };
-    if (published && !projectNamesValid(current)) {
-      this.nameError.set(true);
-      this.step.set(0);
-      return;
-    }
-    if (!this.summaryLocalesValid()) {
-      this.focusInvalidSummaryLocale();
-      this.step.set(0);
-      return;
-    }
-    if (!projectRepeatersValid(current)) {
-      this.focusRepeaterValidation();
-      return;
-    }
-    if (!this.seoStepValid()) {
-      this.focusInvalidSeoLocale();
-      this.step.set(SEO_STEP_INDEX);
-      return;
-    }
+    const current = evaluation.project;
     this.saving.set(true);
     this.api
       .save(current)
@@ -691,17 +673,12 @@ export class ProjectEditor {
 
   private applyServerErrors(fieldErrors: FieldErrors): void {
     this.serverErrors.set(fieldErrors);
-    const firstPath = Object.keys(fieldErrors)[0];
-    if (!firstPath) {
-      return;
+    const focus = resolveServerErrorFocus(fieldErrors);
+    if (focus.language) {
+      this.useLocale(focus.language);
     }
-    const language = localeFromServerPath(firstPath);
-    if (language) {
-      this.useLocale(language);
-    }
-    const stepIndex = projectStepIndexForServerPath(firstPath);
-    if (stepIndex >= 0) {
-      this.step.set(stepIndex);
+    if (focus.stepIndex >= 0) {
+      this.step.set(focus.stepIndex);
     }
   }
 
@@ -719,79 +696,47 @@ export class ProjectEditor {
     this.serverErrors.update((current) => clearServerErrorPrefix(current, prefix));
   }
 
-  private summaryLocalesValid(): boolean {
-    const { summary } = this.draft();
-    return isValidProjectSummary(summary.ar) && isValidProjectSummary(summary.en);
+  private navInput(): ProjectEditorNavInput {
+    return {
+      mode: this.mode() === 'edit' ? 'edit' : 'create',
+      saving: this.saving(),
+      step: this.step(),
+      draft: this.draft(),
+    };
   }
 
-  private focusInvalidSummaryLocale(): void {
-    const { summary } = this.draft();
-    if (!isValidProjectSummary(summary.ar)) {
-      this.useLocale('ar');
-      return;
-    }
-    if (!isValidProjectSummary(summary.en)) {
-      this.useLocale('en');
+  private applyNavDecision(decision: ProjectEditorNavDecision): void {
+    switch (decision.kind) {
+      case 'noop':
+        return;
+      case 'nameError':
+        this.nameError.set(true);
+        return;
+      case 'blocked':
+        if (decision.locale) {
+          this.useLocale(decision.locale);
+        }
+        return;
+      case 'navigateList':
+        void this.router.navigate(['/projects']);
+        return;
+      case 'setStep':
+        this.step.set(decision.step);
+        return;
+      case 'advance':
+        this.passed.update((current) => Math.max(current, decision.from));
+        this.step.set(decision.from + 1);
+        return;
     }
   }
 
-  private focusRepeaterValidation(): void {
-    const issue = firstRepeaterValidationIssue(this.draft());
-    if (!issue) {
-      return;
-    }
-    if (issue.preferAr) {
-      this.useLocale('ar');
-    }
-    this.step.set(issue.step);
-  }
-
-  private canLeaveEditorStep(target: number): boolean {
-    return this.canLeaveSeoStep(target);
-  }
-
-  private canLeaveSeoStep(target: number): boolean {
-    if (this.step() !== SEO_STEP_INDEX || target === SEO_STEP_INDEX) {
-      return true;
-    }
-    if (this.seoStepValid()) {
-      return true;
-    }
-    this.focusInvalidSeoLocale();
-    return false;
-  }
-
-  private seoStepValid(): boolean {
-    return this.slugLocalesValid() && this.metaKeywordsLocalesValid();
-  }
-
-  private slugLocalesValid(): boolean {
-    const { slug } = this.draft().seo;
-    return isValidProjectSlug(slug.ar) && isValidProjectSlug(slug.en);
-  }
-
-  private metaKeywordsLocalesValid(): boolean {
-    const { keywords } = this.draft().seo;
-    return isValidMetaKeywords(keywords.ar) && isValidMetaKeywords(keywords.en);
-  }
-
-  private focusInvalidSeoLocale(): void {
-    const { slug, keywords } = this.draft().seo;
-    if (!isValidProjectSlug(slug.ar)) {
-      this.useLocale('ar');
-      return;
-    }
-    if (!isValidProjectSlug(slug.en)) {
-      this.useLocale('en');
-      return;
-    }
-    if (!isValidMetaKeywords(keywords.ar)) {
-      this.useLocale('ar');
-      return;
-    }
-    if (!isValidMetaKeywords(keywords.en)) {
-      this.useLocale('en');
-    }
+  private applyLoadState(state: ProjectEditorLoadState): void {
+    this.draft.set(state.draft);
+    this.step.set(state.step);
+    this.passed.set(state.passed);
+    this.nameError.set(state.nameError);
+    this.serverErrors.set(state.serverErrors);
+    this.status.set(state.status);
   }
 
   private read(event: Event): string | undefined {

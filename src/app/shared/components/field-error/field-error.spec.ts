@@ -10,6 +10,10 @@ import { FieldError } from './field-error';
 class Host {}
 
 describe('FieldError', () => {
+  beforeEach(() => {
+    TestBed.configureTestingModule({ imports: [Host] });
+  });
+
   it('is announced as an alert, keeps its id for aria-describedby and renders the message', () => {
     const fixture = TestBed.createComponent(Host);
     fixture.detectChanges();

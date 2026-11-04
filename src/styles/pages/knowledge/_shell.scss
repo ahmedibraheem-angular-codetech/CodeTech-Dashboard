@@ -1,0 +1,204 @@
+@use 'tokens' as *;
+
+.knowledge-board,
+.kb-editor,
+.kb-detail {
+  gap: 16px;
+
+  app-page-header .page-header {
+    @include kb-header-card;
+  }
+
+  app-page-header .page-header h1 {
+    color: $kb-navy;
+    font-size: 22px;
+    font-weight: 700;
+    line-height: 1.35;
+  }
+
+  app-page-header .page-header p,
+  app-page-header .page-header .mt-3 {
+    margin-top: 4px !important;
+    color: $kb-muted;
+    font-size: 13px;
+    line-height: 1.4;
+  }
+
+  .page-header__actions {
+    flex: none;
+    align-items: center;
+    gap: 10px;
+  }
+}
+
+.knowledge-board__add.p-button,
+.kb-editor__primary.p-button {
+  --p-button-primary-background: #{$kb-blue};
+  --p-button-primary-hover-background: #1874be;
+  --p-button-primary-active-background: #1669ab;
+  --p-button-primary-border-color: #eceff3;
+  --p-button-primary-hover-border-color: #eceff3;
+  --p-button-primary-active-border-color: #eceff3;
+  --p-button-gap: 10px;
+
+  box-sizing: border-box;
+  width: auto;
+  min-width: 150px;
+  height: 48px;
+  padding: 12px 16px;
+  border: 1px solid #eceff3;
+  border-radius: 16px;
+  background: $kb-blue;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.knowledge-board__secondary.p-button {
+  --p-button-icon-only-width: 48px;
+  --p-button-outlined-secondary-border-color: #eceff3;
+  --p-button-outlined-secondary-color: #{$kb-muted};
+
+  width: 48px;
+  height: 48px;
+  border-radius: 16px;
+  background: #fff;
+}
+
+// Header date filter: keep the 48px calendar trigger; hide the text field visually.
+.knowledge-board__datepicker.p-datepicker {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  width: 48px;
+  height: 48px;
+}
+
+.knowledge-board__datepicker .p-datepicker-input,
+.knowledge-board__datepicker-input {
+  position: absolute;
+  inset: 0;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  border: 0;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+}
+
+.knowledge-board__datepicker .p-datepicker-dropdown {
+  width: 48px;
+  height: 48px;
+  margin: 0;
+  border: 1px solid #eceff3;
+  border-radius: 16px;
+  background: #fff;
+  color: $kb-muted;
+}
+
+.knowledge-board__datepicker .p-datepicker-clear-icon {
+  inset-inline-end: 52px;
+}
+
+.kb-editor__action.p-button {
+  --p-button-gap: 10px;
+  --p-button-outlined-secondary-border-color: #eceff3;
+  --p-button-outlined-secondary-color: #{$kb-muted};
+
+  box-sizing: border-box;
+  height: 48px;
+  padding: 12px 16px;
+  border-radius: 16px;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+// Tabs: same strip as the FAQ board.
+.knowledge-board app-page-tabs {
+  box-sizing: border-box;
+  width: 100%;
+  height: 64px;
+  padding: 8px;
+  border: 1px solid #f0f1f3;
+  border-radius: 16px;
+  background: #fff;
+  --p-tabs-tab-background: transparent;
+  --p-tabs-tab-hover-background: transparent;
+  --p-tabs-tab-active-background: #f6f8f9;
+  --p-tabs-tab-color: #8b95a5;
+  --p-tabs-tab-hover-color: #16324f;
+  --p-tabs-tab-active-color: #16324f;
+  --p-tabs-tab-border-width: 1px;
+  --p-tabs-tab-border-color: transparent;
+  --p-tabs-tab-hover-border-color: transparent;
+  --p-tabs-tab-active-border-color: #f6f8f9;
+  --p-tabs-tab-font-weight: 500;
+  --p-tabs-tab-padding: 4px 16px;
+
+  .p-tablist-tab-list {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: center;
+    gap: 6px;
+    min-width: 0;
+    height: 100%;
+  }
+
+  .p-tab {
+    flex: unset;
+    width: 100%;
+    height: 48px;
+    gap: 6px;
+    border: 1px solid transparent;
+    border-radius: 16px;
+    background: transparent;
+    color: #8b95a5;
+    font-size: 14px;
+    font-weight: 500;
+    box-shadow: none;
+  }
+
+  .p-tab:hover {
+    background: transparent;
+    color: #16324f;
+  }
+
+  .p-tab .pi {
+    width: auto;
+    height: auto;
+    border-radius: 0;
+    background: transparent;
+    color: inherit;
+    font-size: 14px;
+  }
+
+  .p-tab-active {
+    border-color: #f6f8f9;
+    background: #f6f8f9;
+    color: #16324f;
+  }
+}
+
+// The tab wrappers use [hidden], so only the panel hosts (not the wrappers) set `display`.
+.knowledge-board app-knowledge-articles-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.knowledge-table .app-data-table__head h2 {
+  margin: 0;
+  color: $kb-navy;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+// Status labels are longer than the shared 92px pill ("في المسودة"); let the pill grow.
+.knowledge-table .app-data-table .dt-badge {
+  width: auto;
+  min-width: 104px;
+  padding-inline: 12px;
+  white-space: nowrap;
+}
+

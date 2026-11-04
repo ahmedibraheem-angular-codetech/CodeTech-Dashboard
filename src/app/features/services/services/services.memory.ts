@@ -61,7 +61,11 @@ export class ServicesMemoryService {
         return saved;
       }),
     );
-    return of(structuredClone(saved ?? this.state().find((item) => item.id === id)!));
+    const next = saved ?? this.state().find((item) => item.id === id);
+    if (!next) {
+      throw new Error(`Service not found: ${id}`);
+    }
+    return of(structuredClone(next));
   }
 
   remove(id: string): Observable<void> {

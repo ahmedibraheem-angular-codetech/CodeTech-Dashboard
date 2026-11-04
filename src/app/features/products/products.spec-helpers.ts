@@ -543,7 +543,13 @@ export class ProductsMemoryService {
       }),
     );
     return timer(this.latency).pipe(
-      map(() => structuredClone(saved ?? this.state().find((item) => item.id === id)!)),
+      map(() => {
+        const next = saved ?? this.state().find((item) => item.id === id);
+        if (!next) {
+          throw new Error(`Product not found: ${id}`);
+        }
+        return structuredClone(next);
+      }),
     );
   }
 

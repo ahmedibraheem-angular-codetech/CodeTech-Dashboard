@@ -131,7 +131,16 @@ describe('ProductUpload', () => {
   }
 
   function pick(fixture: ReturnType<typeof create>, name = 'a.png', type = 'image/png'): void {
+    // Library mode hides the file input; switch back to upload when actions are on.
+    const uploadTab = [
+      ...fixture.nativeElement.querySelectorAll('.uploader__action'),
+    ] as HTMLButtonElement[];
+    if (uploadTab[0] && fixture.nativeElement.querySelector('input[type="file"]') === null) {
+      uploadTab[0].click();
+      fixture.detectChanges();
+    }
     const input = fileInput(fixture);
+    expect(input).toBeTruthy();
     Object.defineProperty(input, 'files', {
       value: [new File([new Uint8Array([1])], name, { type })],
       configurable: true,

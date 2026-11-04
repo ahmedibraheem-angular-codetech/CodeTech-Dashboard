@@ -21,6 +21,12 @@ describe('AdminLayout route enter', () => {
   let router: Router;
 
   beforeEach(async () => {
+    // matchMedia (+ add/removeEventListener) is provided by src/testing/match-media.setup.ts
+    expect(typeof window.matchMedia).toBe('function');
+    const probe = window.matchMedia('(max-width: 991px)');
+    expect(typeof probe.addEventListener).toBe('function');
+    expect(typeof probe.removeEventListener).toBe('function');
+
     await TestBed.configureTestingModule({
       imports: [AdminLayout],
       providers: [

@@ -48,41 +48,42 @@ import { formatIsoDate } from '../../../../shared/utils/date';
 import { formatFileSize } from '../../../../shared/utils/file-size';
 import { IMAGE_UPLOAD_ACCEPT, parseUploadedImage } from '../../../../shared/utils/image-upload';
 import {
-  blankArticle,
   type Article,
   type ArticleCategory,
   type ArticleDraft,
-  type ArticleMediaDraft,
   type ArticleStatus,
-  type KnowledgeMediaIntent,
 } from '../../models/knowledge.model';
 import { KnowledgeActions } from '../../services/knowledge-actions.service';
 import { KnowledgeService } from '../../services/knowledge.service';
-import { categoryName, joinKeywords, nowStamp, splitKeywords } from '../../utils/knowledge-format';
+import {
+  EMPTY_ARTICLE_IMAGES,
+  articleImagesFromArticle,
+  existingArticleImageUrl,
+  mediaDraftFromImages,
+  type ArticleImageSlot,
+  type ArticleSlotImage,
+} from '../../utils/article-editor-images';
+import {
+  collectArticleValidationIssues,
+  type ArticleValidationStrictness,
+} from '../../utils/article-editor-validation';
+import {
+  articleFormValueFromArticle,
+  fieldsFromArticleForm,
+} from '../../utils/article-form-map';
+import { categoryName, joinKeywords, splitKeywords } from '../../utils/knowledge-format';
 
 type LoadStatus = 'loading' | 'ready' | 'missing' | 'error' | 'offline';
-type ImageSlot = 'avatar' | 'thumbnail' | 'cover';
-type Strictness = 'strict' | 'lenient';
-
-interface SlotImage {
-  url: string;
-  name: string;
-  size: number;
-  date: string;
-  file?: File;
-  cleared?: boolean;
-}
+type ImageSlot = ArticleImageSlot;
+type Strictness = ArticleValidationStrictness;
+type SlotImage = ArticleSlotImage;
 
 type FormKey = Exclude<
   keyof ArticleDraft,
   'status' | 'featured' | 'publishedAt' | 'authorAvatarUrl' | 'thumbnailUrl' | 'coverUrl'
 >;
 
-const EMPTY_IMAGES: Record<ImageSlot, SlotImage | null> = {
-  avatar: null,
-  thumbnail: null,
-  cover: null,
-};
+const EMPTY_IMAGES = EMPTY_ARTICLE_IMAGES;
 
 @Component({
   selector: 'app-article-editor',
@@ -442,108 +443,36 @@ export class ArticleEditor {
     this.article.set(article);
     this.flagged.set(new Set());
     this.imageErrors.set({});
-    this.form.reset({
-      titleAr: article.titleAr,
-      titleEn: article.titleEn,
-      excerptAr: article.excerptAr,
-      excerptEn: article.excerptEn,
-      categoryId: article.categoryId,
-      readingMinutes: article.readingMinutes,
-      publishedDate: (article.publishedAt || '').slice(0, 10),
-      authorNameAr: article.authorNameAr,
-      authorNameEn: article.authorNameEn,
-      slug: article.slug,
-      seoTitleAr: article.seoTitleAr,
-      seoTitleEn: article.seoTitleEn,
-      seoDescriptionAr: article.seoDescriptionAr,
-      seoDescriptionEn: article.seoDescriptionEn,
-      seoKeywordsAr: article.seoKeywordsAr,
-      seoKeywordsEn: article.seoKeywordsEn,
-      thumbnailTitleAr: article.thumbnailTitleAr,
-      thumbnailTitleEn: article.thumbnailTitleEn,
-      thumbnailAltAr: article.thumbnailAltAr,
-      thumbnailAltEn: article.thumbnailAltEn,
-      coverTitleAr: article.coverTitleAr,
-      coverTitleEn: article.coverTitleEn,
-      coverAltAr: article.coverAltAr,
-      coverAltEn: article.coverAltEn,
-      contentAr: article.contentAr,
-      contentEn: article.contentEn,
-    });
-    this.images.set({
-      avatar: this.slotFrom(article.authorAvatarUrl, article.createdAt, article.authorPhoto?.size),
-      thumbnail: this.slotFrom(article.thumbnailUrl, article.createdAt, article.thumbnail?.size),
-      cover: this.slotFrom(article.coverUrl, article.createdAt, article.cover?.size),
-    });
+    this.form.reset(articleFormValueFromArticle(article));
+    this.images.set(articleImagesFromArticle(article));
     this.keywordDraft.set('');
     this.keywordRevision.update((n) => n + 1);
   }
 
-  private slotFrom(url: string, date: string, size = 0): SlotImage | null {
-    return url ? { url, name: url.split('/').pop() ?? url, size, date } : null;
-  }
-
   private existingUrl(slot: ImageSlot): string {
-    const article = this.article();
-    if (!article) {
-      return '';
-    }
-    if (slot === 'avatar') {
-      return article.authorAvatarUrl;
-    }
-    if (slot === 'thumbnail') {
-      return article.thumbnailUrl;
-    }
-    return article.coverUrl;
-  }
-
-  private mediaIntent(slot: ImageSlot): KnowledgeMediaIntent {
-    const image = this.images()[slot];
-    if (image?.file) {
-      return { kind: 'replace', file: image.file };
-    }
-    if (image?.cleared) {
-      return { kind: 'clear' };
-    }
-    return { kind: 'omit' };
-  }
-
-  private mediaDraft(): ArticleMediaDraft {
-    return {
-      cover: this.mediaIntent('cover'),
-      thumbnail: this.mediaIntent('thumbnail'),
-      authorPhoto: this.mediaIntent('avatar'),
-    };
+    return existingArticleImageUrl(this.article(), slot);
   }
 
   private validate(strictness: Strictness): boolean {
-    const missing = new Set<string>();
     const value = this.form.getRawValue();
-
-    if (strictness === 'strict') {
-      for (const suffix of ['Ar', 'En'] as const) {
-        if (!value[`title${suffix}`].trim()) {
-          missing.add(`title${suffix}`);
-        }
-        if (!hasVisibleHtml(value[`content${suffix}`])) {
-          missing.add(`content${suffix}`);
-        }
-      }
-      if (!value.categoryId) {
-        missing.add('categoryId');
-      }
-    } else if (!value.titleAr.trim() && !value.titleEn.trim()) {
-      missing.add(this.key('title'));
-    }
-
-    this.flagged.set(missing);
-    if (missing.size === 0) {
+    const result = collectArticleValidationIssues(
+      {
+        titleAr: value.titleAr,
+        titleEn: value.titleEn,
+        contentAr: value.contentAr,
+        contentEn: value.contentEn,
+        categoryId: value.categoryId,
+      },
+      strictness,
+      this.suffix(),
+      hasVisibleHtml,
+    );
+    this.flagged.set(result.missing);
+    if (result.missing.size === 0) {
       return true;
     }
-    const here = this.suffix();
-    const hereHasIssue = [...missing].some((name) => name.endsWith(here) || name === 'categoryId');
-    if (!hereHasIssue) {
-      this.locale.set(here === 'Ar' ? 'en' : 'ar');
+    if (result.switchTo) {
+      this.locale.set(result.switchTo);
     }
     this.messages.add({ severity: 'warn', summary: this.lang.t('knowledge.required') });
     return false;
@@ -554,7 +483,7 @@ export class ArticleEditor {
       return;
     }
     const fields = this.fieldsFromForm(status);
-    const media = this.mediaDraft();
+    const media = mediaDraftFromImages(this.images());
     const current = this.article();
     this.saving.set(true);
     const request =
@@ -585,45 +514,10 @@ export class ArticleEditor {
   }
 
   private fieldsFromForm(status: ArticleStatus): ArticleDraft {
-    const raw = this.form.getRawValue();
-    const now = nowStamp();
-    const previous = this.article()?.publishedAt ?? '';
-    const time = previous.slice(11, 16) || now.slice(11, 16);
-    const { publishedDate, ...text } = raw;
-    return {
-      ...blankArticle(),
-      titleAr: text.titleAr.trim(),
-      titleEn: text.titleEn.trim(),
-      excerptAr: text.excerptAr.trim(),
-      excerptEn: text.excerptEn.trim(),
-      categoryId: text.categoryId,
-      readingMinutes: Math.max(1, Math.round(Number(text.readingMinutes) || 1)),
-      status,
+    return fieldsFromArticleForm(this.form.getRawValue(), status, {
+      previousPublishedAt: this.article()?.publishedAt ?? '',
       featured: this.article()?.featured ?? false,
-      publishedAt: `${publishedDate || now.slice(0, 10)}T${time}`,
-      authorNameAr: text.authorNameAr.trim(),
-      authorNameEn: text.authorNameEn.trim(),
-      authorAvatarUrl: '',
-      thumbnailUrl: '',
-      thumbnailTitleAr: text.thumbnailTitleAr.trim(),
-      thumbnailTitleEn: text.thumbnailTitleEn.trim(),
-      thumbnailAltAr: text.thumbnailAltAr.trim(),
-      thumbnailAltEn: text.thumbnailAltEn.trim(),
-      coverUrl: '',
-      coverTitleAr: text.coverTitleAr.trim(),
-      coverTitleEn: text.coverTitleEn.trim(),
-      coverAltAr: text.coverAltAr.trim(),
-      coverAltEn: text.coverAltEn.trim(),
-      contentAr: text.contentAr,
-      contentEn: text.contentEn,
-      slug: text.slug.trim(),
-      seoTitleAr: text.seoTitleAr.trim(),
-      seoTitleEn: text.seoTitleEn.trim(),
-      seoDescriptionAr: text.seoDescriptionAr.trim(),
-      seoDescriptionEn: text.seoDescriptionEn.trim(),
-      seoKeywordsAr: text.seoKeywordsAr,
-      seoKeywordsEn: text.seoKeywordsEn,
-    };
+    });
   }
 
   private blank(name: FormKey): boolean {

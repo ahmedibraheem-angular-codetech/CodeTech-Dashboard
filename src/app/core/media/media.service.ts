@@ -61,7 +61,10 @@ export class MediaService {
       return { type: 'progress', progress };
     }
     if (event.type === HttpEventType.Response) {
-      return { type: 'response', file: this.requireFile(event.body!) };
+      if (!event.body) {
+        throw new Error('Invalid media upload response');
+      }
+      return { type: 'response', file: this.requireFile(event.body) };
     }
     return null;
   }

@@ -24,7 +24,7 @@ const LOGIN_BODY = {
       code: 'USE-00007',
       name: 'يوسف احمد',
       username: null,
-      email: 'admin@codetech-sa.com',
+      email: 'admin@example.test',
       phone: null,
       status: 'active',
       role: { id: 1, name: 'المدير العام', is_protected: true },
@@ -80,7 +80,7 @@ describe('Login', () => {
       rendered.http.expectOne(LOGIN).flush(LOGIN_BODY);
       const forgot = rendered.http.expectOne(FORGOT);
       expect(forgot.request.method).toBe('POST');
-      expect(forgot.request.body).toEqual({ email: 'admin@codetech-sa.com' });
+      expect(forgot.request.body).toEqual({ email: 'admin@example.test' });
       forgot.flush({ message: 'ok' });
     } else if (flush === '422') {
       rendered.http
@@ -114,7 +114,7 @@ describe('Login', () => {
 
   it('shows an inline credential error for a wrong password', async () => {
     const rendered = await render();
-    fill(rendered.root, '#email', 'admin@codetech-sa.com');
+    fill(rendered.root, '#email', 'admin@example.test');
     fill(rendered.root, '#password', 'not-the-password');
     await submit(rendered, '422');
 
@@ -127,7 +127,7 @@ describe('Login', () => {
 
   it('moves to the verification step after a correct password without opening a session', async () => {
     const rendered = await render();
-    fill(rendered.root, '#email', 'admin@codetech-sa.com');
+    fill(rendered.root, '#email', 'admin@example.test');
     fill(rendered.root, '#password', 'Password@123');
     await submit(rendered, 'ok');
 
@@ -148,11 +148,11 @@ describe('Login', () => {
     rendered.fixture.detectChanges();
     await rendered.fixture.whenStable();
 
-    fill(rendered.root, '#forgot-email', 'anas.elsadany20@gmail.com');
+    fill(rendered.root, '#forgot-email', 'user@example.test');
     rendered.root.querySelector('form')?.dispatchEvent(new Event('submit'));
     const request = rendered.http.expectOne(FORGOT);
     expect(request.request.method).toBe('POST');
-    expect(request.request.body).toEqual({ email: 'anas.elsadany20@gmail.com' });
+    expect(request.request.body).toEqual({ email: 'user@example.test' });
     request.flush({ message: 'ok' });
     await new Promise((resolve) => setTimeout(resolve, 10));
     await rendered.fixture.whenStable();
@@ -169,7 +169,7 @@ describe('Login', () => {
     );
     forgot?.click();
     rendered.fixture.detectChanges();
-    fill(rendered.root, '#forgot-email', 'admin@codetech.test');
+    fill(rendered.root, '#forgot-email', 'admin@example.test');
     rendered.root.querySelector('form')?.dispatchEvent(new Event('submit'));
     rendered.http.expectOne(FORGOT).flush({ message: 'ok' });
     await new Promise((resolve) => setTimeout(resolve, 10));
@@ -180,7 +180,7 @@ describe('Login', () => {
     rendered.root.querySelector('form')?.dispatchEvent(new Event('submit'));
     const request = rendered.http.expectOne(VERIFY_CODE);
     expect(request.request.method).toBe('POST');
-    expect(request.request.body).toEqual({ email: 'admin@codetech.test', code: '0427' });
+    expect(request.request.body).toEqual({ email: 'admin@example.test', code: '0427' });
     request.flush({ data: { reset_token: RESET_TOKEN } });
     await new Promise((resolve) => setTimeout(resolve, 10));
     await rendered.fixture.whenStable();
@@ -198,7 +198,7 @@ describe('Login', () => {
     );
     forgot?.click();
     rendered.fixture.detectChanges();
-    fill(rendered.root, '#forgot-email', 'admin@codetech.test');
+    fill(rendered.root, '#forgot-email', 'admin@example.test');
     rendered.root.querySelector('form')?.dispatchEvent(new Event('submit'));
     rendered.http.expectOne(FORGOT).flush({ message: 'ok' });
     await new Promise((resolve) => setTimeout(resolve, 10));
@@ -220,7 +220,7 @@ describe('Login', () => {
     const request = rendered.http.expectOne(RESET_PASSWORD);
     expect(request.request.method).toBe('POST');
     expect(request.request.body).toEqual({
-      email: 'admin@codetech.test',
+      email: 'admin@example.test',
       reset_token: RESET_TOKEN,
       password: 'NewPassw0rd',
       password_confirmation: 'NewPassw0rd',
@@ -245,7 +245,7 @@ describe('Login', () => {
     );
     forgot?.click();
     rendered.fixture.detectChanges();
-    fill(rendered.root, '#forgot-email', 'admin@codetech.test');
+    fill(rendered.root, '#forgot-email', 'admin@example.test');
     rendered.root.querySelector('form')?.dispatchEvent(new Event('submit'));
     rendered.http.expectOne(FORGOT).flush({ message: 'ok' });
     await new Promise((resolve) => setTimeout(resolve, 10));
@@ -290,7 +290,7 @@ describe('Login', () => {
     );
     forgot?.click();
     rendered.fixture.detectChanges();
-    fill(rendered.root, '#forgot-email', 'admin@codetech.test');
+    fill(rendered.root, '#forgot-email', 'admin@example.test');
     rendered.root.querySelector('form')?.dispatchEvent(new Event('submit'));
     rendered.http.expectOne(FORGOT).flush({ message: 'ok' });
     await new Promise((resolve) => setTimeout(resolve, 10));
@@ -331,18 +331,18 @@ describe('Login', () => {
     rendered.fixture.detectChanges();
     expect(checkbox.checked).toBe(true);
 
-    fill(rendered.root, '#email', 'admin@codetech-sa.com');
+    fill(rendered.root, '#email', 'admin@example.test');
     fill(rendered.root, '#password', 'Password@123');
     rendered.root.querySelector('form')?.dispatchEvent(new Event('submit'));
     const request = rendered.http.expectOne(LOGIN);
     expect(request.request.body).toEqual({
-      email: 'admin@codetech-sa.com',
+      email: 'admin@example.test',
       password: 'Password@123',
       remember: true,
     });
     request.flush(LOGIN_BODY);
     const forgot = rendered.http.expectOne(FORGOT);
-    expect(forgot.request.body).toEqual({ email: 'admin@codetech-sa.com' });
+    expect(forgot.request.body).toEqual({ email: 'admin@example.test' });
     forgot.flush({ message: 'ok' });
     await new Promise((resolve) => setTimeout(resolve, 10));
     await rendered.fixture.whenStable();

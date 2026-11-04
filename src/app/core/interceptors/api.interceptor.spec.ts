@@ -38,6 +38,14 @@ describe('apiInterceptor', () => {
     request.flush({});
   });
 
+  it('does not treat lookalike paths as API requests', () => {
+    http.get(`${environment.apiUrl}-other/data`).subscribe();
+    const request = backend.expectOne(`${environment.apiUrl}-other/data`);
+    expect(request.request.headers.has('Accept-Language')).toBe(false);
+    expect(request.request.headers.has('Accept')).toBe(false);
+    request.flush({});
+  });
+
   it('normalizes HTTP failures into ApiError', async () => {
     const result = firstValueFrom(http.get(`${environment.apiUrl}/admin/profile`)).catch(
       (error: unknown) => error,

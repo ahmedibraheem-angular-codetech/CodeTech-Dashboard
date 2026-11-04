@@ -1,10 +1,7 @@
+import type { FileObject } from '../../../core/http/api.model';
 import type { AboutPageDto, AboutPartnerDto } from '../models/about.api';
 
-const file = (
-  uuid: string,
-  fileName: string,
-  url: string,
-): AboutPageDto['about']['image'] => ({
+const file = (uuid: string, fileName: string, url: string): FileObject => ({
   uuid,
   name: fileName.replace(/\.[^.]+$/, ''),
   file_name: fileName,
@@ -89,14 +86,14 @@ export const ABOUT_PAGE_DTO: AboutPageDto = {
 export const ABOUT_PARTNERS_DTO: AboutPartnerDto[] = [
   {
     id: 10,
-    logo: file('logo-1', 'partner-one.png', 'https://webdash.codetech-sa-dev.com/storage/p1.png')!,
+    logo: file('logo-1', 'partner-one.png', 'https://webdash.codetech-sa-dev.com/storage/p1.png'),
     sort_order: 1,
     created_at: '2026-10-29T10:00:00.000000Z',
     updated_at: '2026-10-29T10:00:00.000000Z',
   },
   {
     id: 11,
-    logo: file('logo-2', 'partner-two.png', 'https://webdash.codetech-sa-dev.com/storage/p2.png')!,
+    logo: file('logo-2', 'partner-two.png', 'https://webdash.codetech-sa-dev.com/storage/p2.png'),
     sort_order: 2,
     created_at: '2026-10-29T10:00:00.000000Z',
     updated_at: '2026-10-29T10:00:00.000000Z',

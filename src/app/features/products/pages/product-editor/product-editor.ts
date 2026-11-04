@@ -31,7 +31,7 @@ import {
   ToolsStep,
   UnitsStep,
 } from './steps/product-steps';
-import { IDENTITY_STEP_INDEX, PRODUCT_STEPS, SEO_STEP_INDEX } from '../../constants/product-steps';
+import { PRODUCT_STEPS } from '../../constants/product-steps';
 import {
   PRODUCT_META_KEYWORD_MAX,
   PRODUCT_SEO_DESCRIPTION_MAX,
@@ -97,10 +97,8 @@ import {
   integrationImageErrorMessage,
   isSectorArabicImageInvalid,
   keywordsErrorMessage,
-  localeFromServerPath,
   nameErrorMessage,
   pointTitleBodyErrorMessage,
-  productStepIndexForServerPath,
   sectorImageErrorMessage,
   serverErrorMessage,
   serverErrorPrefixMessage,
@@ -120,10 +118,21 @@ import {
   longestProductKeywordLength,
 } from '../../utils/product-field-rules';
 import {
-  firstRepeaterValidationIssue,
-  isWorkflowStepArabicValid,
-  productRepeatersValid,
-} from '../../utils/product-repeater-validation';
+  createModeEditorState,
+  editLoadSuccessState,
+  type ProductEditorLoadState,
+} from '../../utils/product-editor-load';
+import {
+  decideNextStep,
+  decidePreviousStep,
+  decideSelectStep,
+  type ProductEditorNavDecision,
+  type ProductEditorNavInput,
+} from '../../utils/product-editor-navigation';
+import {
+  evaluateProductPersist,
+  resolveServerErrorFocus,
+} from '../../utils/product-editor-persist';
 import { isApiError, loadFailureStatus, type FieldErrors } from '../../../../core/http/api-error';
 import { ObjectUrls } from '../../../../shared/components/product-upload/object-urls';
 import { ProductsService } from '../../services/products.service';
@@ -223,11 +232,7 @@ export class ProductEditor {
         if (editing) {
           return;
         }
-        this.status.set('ready');
-        this.draft.set(blankProduct());
-        this.step.set(0);
-        this.passed.set(-1);
-        this.nameError.set(false);
+        this.applyLoadState(createModeEditorState());
       });
     });
 
@@ -257,11 +262,7 @@ export class ProductEditor {
           this.status.set('missing');
           return;
         }
-        this.draft.set(result.product);
-        this.step.set(0);
-        this.passed.set(-1);
-        this.nameError.set(false);
-        this.status.set('ready');
+        this.applyLoadState(editLoadSuccessState(result.product));
       });
   }
 
@@ -296,43 +297,15 @@ export class ProductEditor {
   }
 
   select(index: number | undefined): void {
-    if (this.saving() || index === undefined || (this.mode() === 'create' && index > this.step())) {
-      return;
-    }
-    if (!this.canLeaveEditorStep(index)) {
-      return;
-    }
-    this.step.set(index);
+    this.applyNavDecision(decideSelectStep(this.navInput(), index));
   }
 
   next(): void {
-    if (this.saving() || this.lastStep()) {
-      return;
-    }
-    if (this.mode() === 'create' && this.step() === 0 && !this.namesValid()) {
-      this.nameError.set(true);
-      return;
-    }
-    if (!this.canLeaveEditorStep(this.step() + 1)) {
-      return;
-    }
-    const leaving = this.step();
-    this.passed.update((current) => Math.max(current, leaving));
-    this.step.set(leaving + 1);
+    this.applyNavDecision(decideNextStep(this.navInput()));
   }
 
   previous(): void {
-    if (this.saving()) {
-      return;
-    }
-    if (this.step() === 0) {
-      void this.router.navigate(['/products']);
-      return;
-    }
-    if (!this.canLeaveEditorStep(this.step() - 1)) {
-      return;
-    }
-    this.step.update((current) => current - 1);
+    this.applyNavDecision(decidePreviousStep(this.navInput()));
   }
 
   saveDraft(): void {
@@ -482,99 +455,35 @@ export class ProductEditor {
   }
 
   featureTitleError(index: number): string {
-    return pointTitleBodyErrorMessage(
-      this.draft(),
-      'features',
-      index,
-      'title',
-      this.locale(),
-      this.serverErrors(),
-      (key) => this.copy(key),
-    );
+    return this.pointError('features', index, 'title');
   }
 
   featureBodyError(index: number): string {
-    return pointTitleBodyErrorMessage(
-      this.draft(),
-      'features',
-      index,
-      'body',
-      this.locale(),
-      this.serverErrors(),
-      (key) => this.copy(key),
-    );
+    return this.pointError('features', index, 'body');
   }
 
   challengeTitleError(index: number): string {
-    return pointTitleBodyErrorMessage(
-      this.draft(),
-      'challenges',
-      index,
-      'title',
-      this.locale(),
-      this.serverErrors(),
-      (key) => this.copy(key),
-    );
+    return this.pointError('challenges', index, 'title');
   }
 
   challengeBodyError(index: number): string {
-    return pointTitleBodyErrorMessage(
-      this.draft(),
-      'challenges',
-      index,
-      'body',
-      this.locale(),
-      this.serverErrors(),
-      (key) => this.copy(key),
-    );
+    return this.pointError('challenges', index, 'body');
   }
 
   offerTitleError(index: number): string {
-    return pointTitleBodyErrorMessage(
-      this.draft(),
-      'offer',
-      index,
-      'title',
-      this.locale(),
-      this.serverErrors(),
-      (key) => this.copy(key),
-    );
+    return this.pointError('offer', index, 'title');
   }
 
   offerBodyError(index: number): string {
-    return pointTitleBodyErrorMessage(
-      this.draft(),
-      'offer',
-      index,
-      'body',
-      this.locale(),
-      this.serverErrors(),
-      (key) => this.copy(key),
-    );
+    return this.pointError('offer', index, 'body');
   }
 
   resultTitleError(index: number): string {
-    return pointTitleBodyErrorMessage(
-      this.draft(),
-      'results',
-      index,
-      'title',
-      this.locale(),
-      this.serverErrors(),
-      (key) => this.copy(key),
-    );
+    return this.pointError('results', index, 'title');
   }
 
   resultBodyError(index: number): string {
-    return pointTitleBodyErrorMessage(
-      this.draft(),
-      'results',
-      index,
-      'body',
-      this.locale(),
-      this.serverErrors(),
-      (key) => this.copy(key),
-    );
+    return this.pointError('results', index, 'body');
   }
 
   toolTitleError(index: number): string {
@@ -674,6 +583,22 @@ export class ProductEditor {
   nameErrorText(): string {
     return nameErrorMessage(this.nameError(), this.locale(), this.serverErrors(), (key) =>
       this.copy(key),
+    );
+  }
+
+  private pointError(
+    list: 'features' | 'challenges' | 'offer' | 'results',
+    index: number,
+    field: 'title' | 'body',
+  ): string {
+    return pointTitleBodyErrorMessage(
+      this.draft(),
+      list,
+      index,
+      field,
+      this.locale(),
+      this.serverErrors(),
+      (key) => this.copy(key),
     );
   }
 
@@ -859,30 +784,41 @@ export class ProductEditor {
     message: 'product.saved' | 'product.draftSaved',
     leave: boolean,
   ): void {
-    if (this.saving() || this.status() !== 'ready') {
-      return;
+    const evaluation = evaluateProductPersist(this.draft(), published, {
+      saving: this.saving(),
+      status: this.status(),
+    });
+    switch (evaluation.kind) {
+      case 'busy':
+        return;
+      case 'nameError':
+        this.nameError.set(true);
+        this.step.set(evaluation.step);
+        return;
+      case 'summaryInvalid':
+        if (evaluation.locale) {
+          this.useLocale(evaluation.locale);
+        }
+        this.step.set(evaluation.step);
+        return;
+      case 'repeaterInvalid':
+        if (evaluation.preferAr) {
+          this.useLocale('ar');
+        }
+        this.step.set(evaluation.step);
+        return;
+      case 'seoInvalid':
+        if (evaluation.locale) {
+          this.useLocale(evaluation.locale);
+        }
+        this.step.set(evaluation.step);
+        return;
+      case 'ready':
+        break;
     }
+
     const previous = this.draft();
-    const current = { ...previous, published };
-    if (published && !this.namesValid()) {
-      this.nameError.set(true);
-      this.step.set(0);
-      return;
-    }
-    if (!this.summaryLocalesValid()) {
-      this.focusInvalidSummaryLocale();
-      this.step.set(0);
-      return;
-    }
-    if (!this.productRepeatersValid()) {
-      this.focusRepeaterValidation();
-      return;
-    }
-    if (!this.seoStepValid()) {
-      this.focusInvalidSeoLocale();
-      this.step.set(SEO_STEP_INDEX);
-      return;
-    }
+    const current = evaluation.product;
     this.saving.set(true);
     this.api
       .save(current)
@@ -925,17 +861,12 @@ export class ProductEditor {
 
   private applyServerErrors(fieldErrors: FieldErrors): void {
     this.serverErrors.set(fieldErrors);
-    const firstPath = Object.keys(fieldErrors)[0];
-    if (!firstPath) {
-      return;
+    const focus = resolveServerErrorFocus(fieldErrors);
+    if (focus.language) {
+      this.useLocale(focus.language);
     }
-    const language = localeFromServerPath(firstPath);
-    if (language) {
-      this.useLocale(language);
-    }
-    const stepIndex = productStepIndexForServerPath(firstPath);
-    if (stepIndex >= 0) {
-      this.step.set(stepIndex);
+    if (focus.stepIndex >= 0) {
+      this.step.set(focus.stepIndex);
     }
   }
 
@@ -953,103 +884,46 @@ export class ProductEditor {
     this.serverErrors.update((current) => clearServerErrorPrefix(current, prefix));
   }
 
-  private namesValid(): boolean {
-    const { name } = this.draft();
-    return name.ar.trim().length > 0 && name.en.trim().length > 0;
+  private navInput(): ProductEditorNavInput {
+    return {
+      mode: this.mode() === 'edit' ? 'edit' : 'create',
+      saving: this.saving(),
+      step: this.step(),
+      draft: this.draft(),
+    };
   }
 
-  private summaryLocalesValid(): boolean {
-    const { summary } = this.draft();
-    return isValidShortDescription(summary.ar) && isValidShortDescription(summary.en);
+  private applyNavDecision(decision: ProductEditorNavDecision): void {
+    switch (decision.kind) {
+      case 'noop':
+        return;
+      case 'nameError':
+        this.nameError.set(true);
+        return;
+      case 'blocked':
+        if (decision.locale) {
+          this.useLocale(decision.locale);
+        }
+        return;
+      case 'navigateList':
+        void this.router.navigate(['/products']);
+        return;
+      case 'setStep':
+        this.step.set(decision.step);
+        return;
+      case 'advance':
+        this.passed.update((current) => Math.max(current, decision.from));
+        this.step.set(decision.from + 1);
+        return;
+    }
   }
 
-  private focusInvalidSummaryLocale(): void {
-    const { summary } = this.draft();
-    if (!isValidShortDescription(summary.ar)) {
-      this.useLocale('ar');
-      return;
-    }
-    if (!isValidShortDescription(summary.en)) {
-      this.useLocale('en');
-    }
-  }
-
-  private productRepeatersValid(): boolean {
-    return productRepeatersValid(this.draft());
-  }
-
-  private workflowStepsValid(): boolean {
-    return this.draft().steps.every((step) => isWorkflowStepArabicValid(step));
-  }
-
-  private focusRepeaterValidation(): void {
-    const issue = firstRepeaterValidationIssue(this.draft());
-    if (!issue) {
-      return;
-    }
-    if (issue.preferAr) {
-      this.useLocale('ar');
-    }
-    this.step.set(issue.step);
-  }
-
-  private canLeaveEditorStep(target: number): boolean {
-    return this.canLeaveWorkflowSteps(target) && this.canLeaveSeoStep(target);
-  }
-
-  private canLeaveWorkflowSteps(target: number): boolean {
-    if (this.step() !== IDENTITY_STEP_INDEX || target === IDENTITY_STEP_INDEX) {
-      return true;
-    }
-    if (this.workflowStepsValid()) {
-      return true;
-    }
-    this.useLocale('ar');
-    return false;
-  }
-
-  private canLeaveSeoStep(target: number): boolean {
-    if (this.step() !== SEO_STEP_INDEX || target === SEO_STEP_INDEX) {
-      return true;
-    }
-    if (this.seoStepValid()) {
-      return true;
-    }
-    this.focusInvalidSeoLocale();
-    return false;
-  }
-
-  private seoStepValid(): boolean {
-    return this.slugLocalesValid() && this.metaKeywordsLocalesValid();
-  }
-
-  private slugLocalesValid(): boolean {
-    const { slug } = this.draft().seo;
-    return isValidProductSlug(slug.ar) && isValidProductSlug(slug.en);
-  }
-
-  private metaKeywordsLocalesValid(): boolean {
-    const { keywords } = this.draft().seo;
-    return isValidMetaKeywords(keywords.ar) && isValidMetaKeywords(keywords.en);
-  }
-
-  private focusInvalidSeoLocale(): void {
-    const { slug, keywords } = this.draft().seo;
-    if (!isValidProductSlug(slug.ar)) {
-      this.useLocale('ar');
-      return;
-    }
-    if (!isValidProductSlug(slug.en)) {
-      this.useLocale('en');
-      return;
-    }
-    if (!isValidMetaKeywords(keywords.ar)) {
-      this.useLocale('ar');
-      return;
-    }
-    if (!isValidMetaKeywords(keywords.en)) {
-      this.useLocale('en');
-    }
+  private applyLoadState(state: ProductEditorLoadState): void {
+    this.draft.set(state.draft);
+    this.step.set(state.step);
+    this.passed.set(state.passed);
+    this.nameError.set(state.nameError);
+    this.status.set(state.status);
   }
 
   private read(event: Event): string | undefined {

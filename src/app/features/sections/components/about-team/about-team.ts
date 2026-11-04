@@ -3,7 +3,6 @@ import {
   ChangeDetectionStrategy,
   Component,
   DestroyRef,
-  ElementRef,
   afterRenderEffect,
   computed,
   inject,
@@ -12,6 +11,7 @@ import {
   signal,
   viewChild,
 } from '@angular/core';
+import type { ElementRef } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MessageService } from 'primeng/api';
@@ -22,7 +22,7 @@ import type { SwiperOptions } from 'swiper/types';
 
 registerSwiperElements();
 
-type TeamSwiperInstance = {
+interface TeamSwiperInstance {
   isBeginning: boolean;
   isEnd: boolean;
   update: () => void;
@@ -31,12 +31,12 @@ type TeamSwiperInstance = {
   changeLanguageDirection: (direction: 'rtl' | 'ltr') => void;
   on: (event: string, handler: () => void) => void;
   off: (event: string, handler: () => void) => void;
-};
+}
 
-type TeamSwiperHost = HTMLElement & {
+interface TeamSwiperHost extends HTMLElement {
   initialize: () => void;
   swiper?: TeamSwiperInstance;
-};
+}
 
 import { isApiError } from '../../../../core/http/api-error';
 import type { AppLanguage } from '../../../../core/i18n/language';

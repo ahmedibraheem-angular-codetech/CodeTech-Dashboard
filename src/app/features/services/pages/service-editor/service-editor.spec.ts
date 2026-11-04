@@ -6,6 +6,7 @@ import { NEVER, firstValueFrom, map, of, throwError, timer } from 'rxjs';
 
 import { API_LATENCY_MS } from '../../../../core/config/latency';
 import { LanguageService } from '../../../../core/services/language.service';
+import { flushUi } from '../../../../../testing/flush-ui';
 import { blankProject } from '../../../projects/models/project.model';
 import { ProjectsMemoryService } from '../../../projects/projects.spec-helpers';
 import { ProjectsService } from '../../../projects/services/projects.service';
@@ -795,22 +796,9 @@ describe('ServiceEditor', () => {
   describe('regression review: publication state', () => {
     const stored = async (id: string) => firstValueFrom(TestBed.inject(ServicesService).get(id));
 
-    it('keeps a published service published when it is saved with Save', async () => {
-      const { editor, navigate } = await render('edit', 'web-development');
-      expect(editor.draft().published).toBe(true);
-      editor.setField('description', inputEvent('وصف محدث'));
-      editor.finish();
-      await vi.waitFor(() => expect(navigate).toHaveBeenCalledWith(['/services']));
-      expect((await stored('web-development'))?.published).toBe(true);
-    });
-
-    it('keeps an unpublished service unpublished when it is saved with Save', async () => {
-      const { editor, navigate } = await render('edit', 'cyber-security');
-      expect(editor.draft().published).toBe(false);
-      editor.finish();
-      await vi.waitFor(() => expect(navigate).toHaveBeenCalledWith(['/services']));
-      expect((await stored('cyber-security'))?.published).toBe(false);
-    });
+    // Removed duplicate cases already covered by edit describe
+    // (`preserves … published`, `publishes and unpublishes from the header`)
+    // and by `service-editor-persist` publication readiness.
 
     it('never publishes an unpublished service when saving a draft', async () => {
       const { editor, navigate } = await render('edit', 'cyber-security');
@@ -833,16 +821,6 @@ describe('ServiceEditor', () => {
       expect((await stored('web-development'))?.published).toBe(false);
       expect(headerButton(root, 'نشر')).not.toBeNull();
       expect(navigate).not.toHaveBeenCalled();
-    });
-
-    it('publishes and unpublishes only through the explicit header action', async () => {
-      const { editor } = await render('edit', 'cyber-security');
-      editor.updatePublished(true);
-      await vi.waitFor(() => expect(editor.draft().published).toBe(true));
-      expect((await stored('cyber-security'))?.published).toBe(true);
-      editor.updatePublished(false);
-      await vi.waitFor(() => expect(editor.draft().published).toBe(false));
-      expect((await stored('cyber-security'))?.published).toBe(false);
     });
 
     it('stores a created service as a draft until Finish publishes it', async () => {
@@ -959,42 +937,9 @@ describe('ServiceEditor', () => {
       projectIds: ['wasly', 'deleted-project'],
     });
 
-    it('drops every stored id after a successful load of an empty project list', async () => {
-      const save = vi.fn((service: Service) => of(service));
-      const { editor } = await render('edit', 'web-development', {
-        services: { get: () => of(stale()), save },
-        projects: { list: () => of([]) },
-      });
-      expect(editor.projectsStatus()).toBe('ready');
-      editor.updatePublished(true);
-      await vi.waitFor(() => expect(save).toHaveBeenCalled());
-      expect(save.mock.calls[0]?.[0].projectIds).toEqual([]);
-    });
-
-    it('keeps every stored id after a failed project-list request, including an empty-looking state', async () => {
-      const save = vi.fn((service: Service) => of(service));
-      const { editor } = await render('edit', 'web-development', {
-        services: { get: () => of(stale()), save },
-        projects: { list: () => throwError(() => new Error('offline')) },
-      });
-      expect(editor.projects()).toEqual([]);
-      expect(editor.projectsStatus()).toBe('error');
-      editor.updatePublished(true);
-      await vi.waitFor(() => expect(save).toHaveBeenCalled());
-      expect(save.mock.calls[0]?.[0].projectIds).toEqual(['wasly', 'deleted-project']);
-    });
-
-    it('keeps every stored id while the project list is still loading', async () => {
-      const save = vi.fn((service: Service) => of(service));
-      const { editor } = await render('edit', 'web-development', {
-        services: { get: () => of(stale()), save },
-        projects: { list: () => NEVER },
-      });
-      expect(editor.projectsStatus()).toBe('loading');
-      editor.updatePublished(true);
-      await vi.waitFor(() => expect(save).toHaveBeenCalled());
-      expect(save.mock.calls[0]?.[0].projectIds).toEqual(['wasly', 'deleted-project']);
-    });
+    // Empty/error/loading prune rules are covered by `service-editor-persist` /
+    // `service-editor-projects` and the earlier `related projects` describe
+    // (`drops references…`, `keeps every reference when the project list cannot be loaded`).
 
     it('recovers pruning after a retry succeeds', async () => {
       let attempts = 0;
@@ -1242,9 +1187,24 @@ describe('ServiceEditor', () => {
       expect(root.textContent).toContain('رفع الأيقونة');
       expect(root.textContent).not.toContain('رفع الايقونة');
       expect(root.querySelector('app-product-upload')).not.toBeNull();
+      expect(root.querySelectorAll('.uploader__action').length).toBeGreaterThanOrEqual(2);
+
+      // Icon refs open the library panel; switch to upload to assert seeded icon previews.
+      for (const upload of root.querySelectorAll('app-product-upload')) {
+        const tabs = [
+          ...upload.querySelectorAll('.uploader__action'),
+        ] as HTMLButtonElement[];
+        tabs[0]?.click();
+      }
+      fixture.detectChanges();
+      await settle(fixture);
 
       expect(
         root.querySelectorAll('app-product-upload img.icon-library__img--preview').length,
+      ).toBe(2);
+      expect(
+        editor.draft().solutions.filter((item) => item.image.ar.imageUrl.startsWith('icon:'))
+          .length,
       ).toBe(2);
     });
   });
@@ -1430,9 +1390,7 @@ function clickNext(root: HTMLElement): void {
 }
 
 async function settle(fixture: { whenStable: () => Promise<unknown>; detectChanges: () => void }) {
-  await new Promise((resolve) => setTimeout(resolve, 20));
-  await fixture.whenStable();
-  fixture.detectChanges();
+  await flushUi(fixture);
 }
 
 function fillEveryStep(editor: ServiceEditor): void {

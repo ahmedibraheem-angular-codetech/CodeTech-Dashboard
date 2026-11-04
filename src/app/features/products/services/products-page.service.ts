@@ -77,7 +77,11 @@ export class ProductsPageService {
           features: [this.requireFeature(envelope)],
           sectors: [],
         });
-        return mapped.features[0]!;
+        const feature = mapped.features[0];
+        if (!feature) {
+          throw new Error('Missing feature in products-page response');
+        }
+        return feature;
       }),
     );
   }
@@ -109,7 +113,11 @@ export class ProductsPageService {
           features: [],
           sectors: [this.requireSector(envelope)],
         });
-        return mapped.sectors[0]!;
+        const sector = mapped.sectors[0];
+        if (!sector) {
+          throw new Error('Missing sector in products-page response');
+        }
+        return sector;
       }),
     );
   }

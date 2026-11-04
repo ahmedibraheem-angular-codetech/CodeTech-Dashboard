@@ -4,10 +4,7 @@
       <img [src]="coverUrl()" alt="" />
     }
     @if (showToggle()) {
-      <span
-        class="service-project__toggle"
-        (click)="$event.preventDefault(); $event.stopPropagation()"
-      >
+      <span class="service-project__toggle">
         <p-toggleswitch
           [ngModel]="selected()"
           (ngModelChange)="selectedChange.emit($event)"

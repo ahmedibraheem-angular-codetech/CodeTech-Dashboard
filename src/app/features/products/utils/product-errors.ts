@@ -23,8 +23,9 @@ export function serverErrorMessage(errors: FieldErrors, path: string): string {
 
 /** First message whose key equals `prefix` or starts with `prefix.`. */
 export function serverErrorPrefixMessage(errors: FieldErrors, prefix: string): string {
-  if (errors[prefix]?.[0]) {
-    return errors[prefix][0]!;
+  const exact = errors[prefix]?.[0];
+  if (exact) {
+    return exact;
   }
   const nested = `${prefix}.`;
   for (const [key, messages] of Object.entries(errors)) {

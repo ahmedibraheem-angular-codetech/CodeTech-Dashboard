@@ -1,0 +1,460 @@
+.editor-section {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-width: 0;
+  padding: 18px;
+  border: 1px solid var(--app-border);
+  border-radius: 20px;
+  background: var(--app-surface);
+}
+
+.editor-section--cover,
+.editor-section--thumb,
+.editor-section--stats {
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  border: 1px solid var(--Foundation-grey-scale-Light, #f0f1f3);
+  border-radius: 16px;
+}
+
+.editor-section--cover > .editor-section__head,
+.editor-section--cover > .editor-section__body,
+.editor-section--thumb > .editor-section__head,
+.editor-section--thumb > .editor-section__body,
+.editor-section--stats > .editor-section__head,
+.editor-section--stats > .editor-section__body {
+  align-self: stretch;
+  width: 100%;
+}
+
+.editor-section--units > .editor-section__head {
+  justify-content: flex-start;
+  gap: 8px;
+}
+
+.editor-section--units > .editor-section__body {
+  gap: 16px;
+  padding: 0;
+  background: transparent;
+}
+
+.unit-block {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 14px;
+  width: 100%;
+}
+
+.unit-block > .feature-card__tab {
+  align-self: flex-start;
+}
+
+.unit-block > .feature-card__tab .feature-card__remove {
+  border-radius: 8px;
+  background: #fff1f2;
+  color: var(--app-danger);
+}
+
+.unit-block .p-inputtext,
+.unit-block .p-textarea,
+.unit-feature-wrap .p-inputtext,
+.unit-feature-wrap .p-textarea {
+  min-height: 52px;
+  border: 1px solid var(--app-border);
+  border-radius: 16px;
+  background: var(--app-surface);
+}
+
+.unit-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px 12px;
+}
+
+.unit-feature-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+
+.editor-section__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.editor-section.editor-section--soft {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  align-self: stretch;
+  gap: 12px;
+  padding: 16px;
+  border: 1px solid #edeeee;
+  border-radius: 16px;
+  background: var(--app-surface);
+}
+
+.editor-section.editor-section--soft > .editor-section__head,
+.editor-section.editor-section--soft > .editor-section__body {
+  align-self: stretch;
+  width: 100%;
+}
+
+.editor-section.editor-section--soft > .add-row {
+  align-self: stretch;
+  width: 100%;
+  max-width: 100%;
+}
+
+.editor-section.editor-section--soft > .editor-section__head {
+  justify-content: flex-start;
+  gap: 8px;
+}
+
+.editor-section.editor-section--soft > .editor-section__head .icon-badge {
+  display: grid;
+  flex: none;
+  order: -1;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  background: var(--app-canvas);
+  color: var(--app-text);
+  font-size: 14px;
+}
+
+.editor-section.editor-section--soft > .editor-section__body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  padding: 12px;
+  border: 1px solid #edeeee;
+  border-radius: 16px;
+  background: #f9fafb;
+}
+
+.editor-section.editor-section--soft > .editor-section__body > .field,
+.editor-section--soft .soft-item {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-self: stretch;
+  gap: 12px;
+  width: 100%;
+  padding: 12px 12px 12px 44px;
+  border: 1px solid #edeeee;
+  border-radius: 16px;
+  background: var(--app-surface);
+}
+
+.editor-section--soft .feature-card__remove {
+  display: grid;
+  width: 28px;
+  height: 28px;
+  place-items: center;
+  border-radius: 50%;
+  background: #f4f6f8;
+  color: var(--app-muted);
+  font-size: 12px;
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease;
+}
+
+.editor-section--soft .feature-card__remove:hover:not(:disabled) {
+  background: #fff1f2;
+  color: var(--app-danger);
+}
+
+.editor-section.editor-section--soft > .editor-section__body > .field > .feature-card__remove {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+}
+
+.editor-section--soft > .editor-section__body > .feature-card__tab {
+  display: none;
+}
+
+.editor-section--soft .feature-card__tab {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  display: flex;
+  width: auto;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+
+.editor-section--soft .feature-card__tab > span {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+}
+
+.editor-section--soft .feature-card__body {
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+}
+
+.editor-section--soft > .add-row {
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease;
+}
+
+.editor-section--info > .editor-section__head,
+.editor-section--cover > .editor-section__head,
+.editor-section--thumb > .editor-section__head,
+.editor-section--features > .editor-section__head,
+.editor-section--stats > .editor-section__head,
+.editor-section--offer > .editor-section__head,
+.editor-section--tools > .editor-section__head,
+.editor-section--identity > .editor-section__head {
+  justify-content: flex-start;
+  gap: 8px;
+}
+
+.editor-section--info > .editor-section__head .icon-badge,
+.editor-section--cover > .editor-section__head .icon-badge,
+.editor-section--thumb > .editor-section__head .icon-badge,
+.editor-section--features > .editor-section__head .icon-badge,
+.editor-section--stats > .editor-section__head .icon-badge {
+  display: grid;
+  flex: none;
+  order: -1;
+  place-items: center;
+}
+
+.editor-section--offer > .editor-section__head .icon-badge,
+.editor-section--tools > .editor-section__head .icon-badge,
+.editor-section--units > .editor-section__head .icon-badge,
+.editor-section--identity > .editor-section__head .icon-badge {
+  display: grid;
+  flex: none;
+  place-items: center;
+}
+
+.editor-section h2 {
+  margin: 0;
+  color: var(--app-secondary);
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.editor-section__head .icon-badge {
+  width: 40px;
+  height: 40px;
+  border: 0;
+  border-radius: 50%;
+  background: var(--app-canvas);
+  color: var(--app-muted);
+}
+
+.editor-section__body {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  border-radius: 16px;
+}
+
+.editor-section--info > .editor-section__body,
+.editor-section--cover > .editor-section__body,
+.editor-section--thumb > .editor-section__body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  align-self: stretch;
+  gap: 14px;
+  padding: 12px;
+  border: 1px solid #edeeee;
+  border-radius: 16px;
+  background: #f9fafb;
+}
+
+.editor-section--info > .editor-section__body > .field,
+.editor-section--info > .editor-section__body .p-iconfield,
+.editor-section--cover > .editor-section__body > .field,
+.editor-section--cover > .editor-section__body .p-iconfield,
+.editor-section--thumb > .editor-section__body > .field,
+.editor-section--thumb > .editor-section__body .p-iconfield {
+  align-self: stretch;
+  width: 100%;
+}
+
+.editor-card input:focus-visible,
+.editor-card textarea:focus-visible {
+  border-color: var(--app-primary);
+  outline: 2px solid color-mix(in srgb, var(--app-primary) 28%, transparent);
+}
+
+.editor-section--faq > .editor-section__head,
+.editor-section--seo > .editor-section__head {
+  justify-content: flex-start;
+  gap: 8px;
+}
+
+.editor-section--faq > .editor-section__head .icon-badge,
+.editor-section--seo > .editor-section__head .icon-badge {
+  display: grid;
+  flex: none;
+  order: -1;
+  place-items: center;
+}
+
+.editor-section--seo > .editor-section__body {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 16px;
+  border: 1px solid #edeeee;
+  border-radius: 16px;
+  background: #f9fafb;
+}
+
+.seo-field {
+  position: relative;
+  display: block;
+}
+
+.seo-field__icon,
+.seo-field__mark {
+  position: absolute;
+  z-index: 1;
+  inset-inline-end: 14px;
+  top: 50%;
+  color: #94a3b8;
+  font-size: 14px;
+  pointer-events: none;
+  transform: translateY(-50%);
+}
+
+.seo-field__mark {
+  font-weight: 700;
+}
+
+.seo-field .p-inputtext {
+  padding-inline-end: 42px;
+}
+
+.seo-description,
+.field--counted {
+  position: relative;
+  display: block;
+}
+
+.seo-description .p-textarea,
+.field--counted .p-textarea {
+  padding-bottom: 28px;
+}
+
+.seo-description .counter,
+.field--counted .counter {
+  position: absolute;
+  inset-inline-end: 14px;
+  bottom: 10px;
+}
+
+.editor-section--faq > .editor-section__body {
+  gap: 14px;
+  padding: 0;
+  background: transparent;
+}
+
+.editor-section--faq .feature-card__body > .field:has(.field__mark) .p-inputtext {
+  padding-inline-start: 40px;
+}
+
+.field__mark {
+  position: absolute;
+  inset-inline-start: 14px;
+  bottom: 16px;
+  color: var(--app-muted);
+  font-size: 14px;
+  pointer-events: none;
+}
+
+.feature-card__body > .field:has(.field__mark) {
+  position: relative;
+}
+
+// Figma: outer circle 20×20 (7.5 + 5 + 7.5), border 1.02px #1C81D3.
+.add-row__mark {
+  position: relative;
+  box-sizing: border-box;
+  display: block;
+  order: 1; // icon after label text
+  width: 20px;
+  height: 20px;
+  border: 1.02px solid #1c81d3;
+  border-radius: 50%;
+  color: #1c81d3;
+  font-size: 0;
+}
+
+// Figma inner plus: 5×5 @ top/left 7.5, stroke 1.02px #1C81D3, opacity 1.
+.add-row__mark::before {
+  content: '';
+  position: absolute;
+  top: 7.5px;
+  left: 7.5px;
+  width: 5px;
+  height: 5px;
+  opacity: 1;
+  background:
+    linear-gradient(#1c81d3, #1c81d3) center / 5px 1.02px no-repeat,
+    linear-gradient(#1c81d3, #1c81d3) center / 1.02px 5px no-repeat;
+}
+
+.add-row__mark .pi {
+  display: none;
+}
+
+// Figma (global): 629×48, r16, gap 8, pad 16, bg #F4F9FD, mt-2.
+.editor-section .add-row {
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  align-self: stretch;
+  justify-content: center;
+  // width: 629px;
+  max-width: 100%;
+  height: 48px;
+  margin-top: 0.5rem;
+  gap: 8px;
+  padding: 16px;
+  border: 0;
+  border-radius: 16px;
+  opacity: 1;
+  background: #f4f9fd;
+  color: #1c81d3;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.editor-section .add-row:focus-visible {
+  outline: 2px solid #1c81d3;
+  outline-offset: 2px;
+}
+
+.editor-section .add-row:hover {
+  background: #e7f3fc;
+  color: #1570b8;
+}
+

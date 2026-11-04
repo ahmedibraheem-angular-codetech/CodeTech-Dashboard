@@ -1,5 +1,12 @@
 <article class="feature-card" [class.is-active]="active()">
-  <header class="feature-card__tab" (click)="selected.emit()">
+  <header
+    class="feature-card__tab"
+    role="button"
+    tabindex="0"
+    (click)="selected.emit()"
+    (keydown.enter)="selected.emit()"
+    (keydown.space)="$event.preventDefault(); selected.emit()"
+  >
     <span>{{ label() }}</span>
     <button
       type="button"

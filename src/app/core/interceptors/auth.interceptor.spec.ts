@@ -90,6 +90,20 @@ describe('authInterceptor', () => {
     request.flush('');
   });
 
+  it('does not clear the session or navigate on 403', async () => {
+    const navigate = vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
+    const result = firstValueFrom(http.get(`${environment.apiUrl}/users`)).catch(
+      (error: unknown) => error,
+    );
+    backend
+      .expectOne(`${environment.apiUrl}/users`)
+      .flush({ message: 'forbidden' }, { status: 403, statusText: 'Forbidden' });
+    await result;
+    expect(auth.isAuthenticated()).toBe(true);
+    expect(auth.token()).toBe('secret-token');
+    expect(navigate).not.toHaveBeenCalled();
+  });
+
   it('signs the user out and redirects to /login on 401', async () => {
     sessionStorage.setItem(
       'codetech.pending',

@@ -1,0 +1,27 @@
+$kb-navy: #0f2744;
+$kb-muted: #64748b;
+$kb-border: #edeeee;
+$kb-blue: #1c81d3;
+$kb-card-border: #f0f1f3;
+$kb-inner-bg: #f9fafb;
+$kb-inner-border: #edeeee;
+
+@mixin kb-header-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  min-height: 0;
+  gap: 16px;
+  padding: 16px;
+  border: 1px solid $kb-border;
+  border-radius: 16px;
+  background: #fff;
+}
+
+@mixin kb-popover {
+  border: 1px solid $kb-border;
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: 0 12px 32px rgb(15 23 42 / 8%);
+}

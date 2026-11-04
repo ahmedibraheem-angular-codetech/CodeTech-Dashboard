@@ -4,6 +4,7 @@ import { ActivatedRoute, provideRouter, Router } from '@angular/router';
 import { MessageService } from 'primeng/api';
 import { firstValueFrom, map, NEVER, of, throwError, timer } from 'rxjs';
 
+import { flushUi } from '../../../../../testing/flush-ui';
 import { PROJECT_STEPS } from '../../constants/project-steps';
 import { blankProject, localeText, type Project } from '../../models/project.model';
 import { ProjectsMemoryService } from '../../projects.spec-helpers';
@@ -711,9 +712,7 @@ function clickButton(root: HTMLElement, label: string): void {
 }
 
 async function settle(fixture: { whenStable: () => Promise<unknown>; detectChanges: () => void }) {
-  await new Promise((resolve) => setTimeout(resolve, 20));
-  await fixture.whenStable();
-  fixture.detectChanges();
+  await flushUi(fixture);
 }
 
 function named(id: string, arabic: string): Project {

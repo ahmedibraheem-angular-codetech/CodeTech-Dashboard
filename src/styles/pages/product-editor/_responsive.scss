@@ -1,0 +1,13 @@
+@media (max-width: 900px) {
+  .editor-layout,
+  .unit-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .editor-layout {
+    grid-template-areas:
+      'main'
+      'side'
+      'stats';
+  }
+}

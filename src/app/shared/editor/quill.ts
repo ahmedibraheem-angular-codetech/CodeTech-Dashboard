@@ -105,9 +105,10 @@ export function wireQuillToolbarHandlers(
   toolbar.addHandler('redo', redo);
   toolbar.addHandler('hr', insertHr);
 
-  if (options.uploadImage) {
+  const uploadImage = options.uploadImage;
+  if (uploadImage) {
     toolbar.addHandler('image', () => {
-      pickAndUploadImage(quill, options.uploadImage!, options.onImageUploadError);
+      pickAndUploadImage(quill, uploadImage, options.onImageUploadError);
     });
   }
 

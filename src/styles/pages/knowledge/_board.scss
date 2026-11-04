@@ -1,0 +1,210 @@
+@use 'tokens' as *;
+
+.kb-article {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+  max-width: 420px;
+}
+
+.kb-article__thumb {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  width: 40px;
+  height: 40px;
+  border: 1px solid #edeeee;
+  border-radius: 50%;
+  background: #f1f5f9;
+  color: #94a3b8;
+  object-fit: cover;
+}
+
+.kb-article__thumb--empty {
+  font-size: 14px;
+}
+
+.kb-article__text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.kb-article__title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  overflow: hidden;
+  color: $kb-navy;
+  font-size: 14px;
+  font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.kb-article__star {
+  flex: none;
+  color: #f59e0b;
+  font-size: 12px;
+}
+
+.kb-article__excerpt {
+  overflow: hidden;
+  color: #94a3b8;
+  font-size: 12px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.kb-reading {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: $kb-muted;
+  font-size: 13px;
+  font-weight: 500;
+  white-space: nowrap;
+
+  .pi {
+    color: #94a3b8;
+    font-size: 13px;
+  }
+}
+
+.knowledge-table .app-data-table__grid td:first-child {
+  color: $kb-navy;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+}
+
+/* Higher specificity than the encapsulated `.stats { auto-fit }` rule. */
+.page.knowledge-board app-statistics-cards .stats {
+  gap: 12px;
+  /* Figma list frame: four equal cards in one row (not auto-fit wrapping to 2×2). */
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.page.knowledge-board app-statistics-cards .stat-card {
+  min-height: 132px;
+  padding: 16px;
+  border-color: #f2f2f2;
+  border-radius: 16px;
+}
+
+@media (max-width: 900px) {
+  .page.knowledge-board app-statistics-cards .stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 520px) {
+  .page.knowledge-board app-statistics-cards .stats {
+    grid-template-columns: 1fr;
+  }
+}
+
+.knowledge-table .app-data-table {
+  border-color: #f2f2f2;
+}
+
+.knowledge-table .app-data-table__grid th,
+.knowledge-table .app-data-table__grid td {
+  padding-block: 14px;
+}
+
+.kb-more.p-button {
+  --p-button-icon-only-width: 36px;
+  --p-button-outlined-secondary-border-color: transparent;
+  --p-button-outlined-secondary-color: #94a3b8;
+
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+}
+
+.kb-menu.p-popover {
+  @include kb-popover;
+}
+
+.kb-menu .p-popover-content {
+  padding: 8px;
+}
+
+.kb-menu__list {
+  display: flex;
+  flex-direction: column;
+  min-width: 176px;
+}
+
+.kb-menu__list button {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--app-text);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  text-align: start;
+  cursor: pointer;
+}
+
+.kb-menu__list button .pi {
+  color: #94a3b8;
+  font-size: 13px;
+}
+
+.kb-menu__list button:hover {
+  background: #f8fafc;
+}
+
+.kb-menu__list .kb-menu__danger,
+.kb-menu__list .kb-menu__danger .pi {
+  color: #e11d48;
+}
+
+// White check for the categories status filter only. Article table filters use
+// `app-data-table-menu` styles from the shared data-table stylesheet — do not
+// restyle that class here or Inquiries/FAQ filters pick up Knowledge colors.
+.kb-filter-menu {
+  --p-checkbox-width: 18px;
+  --p-checkbox-height: 18px;
+  --p-checkbox-border-radius: 4px;
+  --p-checkbox-checked-background: #{$kb-blue};
+  --p-checkbox-checked-border-color: #{$kb-blue};
+  --p-checkbox-checked-hover-background: #1670b8;
+  --p-checkbox-checked-hover-border-color: #1670b8;
+  --p-checkbox-icon-checked-color: #fff;
+
+  .p-checkbox-box {
+    position: relative;
+    color: #fff;
+  }
+
+  .p-checkbox-checked .p-checkbox-box .p-checkbox-icon {
+    opacity: 0;
+  }
+
+  .p-checkbox-checked .p-checkbox-box::after {
+    content: '';
+    position: absolute;
+    inset-inline-start: 5px;
+    inset-block-start: 1.5px;
+    box-sizing: border-box;
+    width: 5px;
+    height: 9px;
+    border: solid #fff;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+    pointer-events: none;
+  }
+}
+

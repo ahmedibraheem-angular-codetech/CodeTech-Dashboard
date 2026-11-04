@@ -22,6 +22,10 @@ import { FeatureCard } from './feature-card';
 class Host {}
 
 describe('FeatureCard', () => {
+  beforeEach(() => {
+    TestBed.configureTestingModule({ imports: [Host] });
+  });
+
   it('keeps three description rows and the upload by default', () => {
     const fixture = TestBed.createComponent(Host);
     fixture.detectChanges();

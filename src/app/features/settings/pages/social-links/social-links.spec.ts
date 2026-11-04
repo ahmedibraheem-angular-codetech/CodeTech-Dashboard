@@ -51,6 +51,9 @@ describe('SocialLinksPage', () => {
     expect(root.querySelector('h1')?.textContent).toContain('روابط التواصل الاجتماعي');
     expect(root.textContent).toContain('تفاصيل الموقع');
     expect(root.textContent).toContain('الموقع');
+    expect(root.querySelector('.social-page__notice')?.textContent).toContain(
+      'التعديلات تبقى في هذه الجلسة فقط',
+    );
     expect(root.querySelectorAll('app-social-link-card').length).toBeGreaterThanOrEqual(6);
     expect(root.textContent).toContain('LinkedIn');
     expect(root.textContent).toContain('واتساب');

@@ -11,9 +11,9 @@ Angular 22 requires Node `^24.15.0`. This machine is on Node `24.12.0`, so the a
 - PrimeIcons 7.0.0 and Angular CDK 21.2.14
 - Bootstrap 5.3.8 grid and utilities only
 - SCSS design tokens in `src/styles`
-- Zoneless standalone components, signals, RxJS, and reactive forms
+- Standalone components, signals, OnPush, RxJS, and reactive forms (article editor)
 
-Angular 22 is not used because it requires Node `^22.22.3 || ^24.15.0 || >=26`. This environment is Node 24.12.0.
+Angular 22 is not used because it requires a newer Node line than this environment pins for local development.
 
 ## Run
 
@@ -27,12 +27,14 @@ Open `http://localhost:4200`.
 
 ```bash
 npm run build          # production bundle
-npm test               # Vitest suite (single run)
+npm test               # Vitest suite via `ng test` (single run)
+npm run lint           # ESLint via angular-eslint
+npm run lint:fix      # ESLint autofix where possible
 npm run format         # Prettier --write
 npm run format:check   # Prettier --check (use this in CI)
 ```
 
-There is no ESLint target yet; formatting is Prettier (`.prettierrc`, `.editorconfig`). Node must satisfy `engines` in `package.json` (Angular 21: `^20.19.0 || ^22.12.0 || >=24.0.0`).
+Lint uses `ng lint` (angular-eslint). Formatting is Prettier (`.prettierrc`, `.editorconfig`). Node must satisfy `engines` in `package.json` (Angular 21: `^20.19.0 || ^22.12.0 || >=24.0.0`).
 
 ## Demo access
 
@@ -80,11 +82,14 @@ Rules of thumb:
 
 ## Layout
 
-- `src/app/core` — auth, guards, interceptor, preferences, navigation
+- `src/app/core` — auth, guards, interceptor, preferences, navigation, i18n
 - `src/app/layout` — admin shell, sidebar, header, auth split screen
-- `src/app/features/dashboard` — homepage management from the reference screen
-- `src/app/features/users` — searchable, sortable user table with mock CRUD
-- `src/app/features/settings` — language, density, and sidebar preference
-- `src/styles` — tokens, light theme, shared components, and layout/page partials (`layout/*`, `pages/home`)
+- `src/app/features/dashboard` — homepage management
+- `src/app/features/products` · `projects` · `services` — catalog editors (wizard + `EditorShell`)
+- `src/app/features/knowledge` — articles board and article editor (reactive forms + Quill)
+- `src/app/features/users` — searchable, sortable user table (API-backed)
+- `src/app/features/settings` — language, density, sidebar preference; social links UI (in-memory until BE)
+- `src/app/features/sections` — about, inquiries, FAQ, reviews, legal, and related boards
+- `src/styles` — tokens, light theme, shared components, and page partials (`pages/*`, including split `knowledge/` and `product-editor/`)
 
-The sidebar also opens the remaining CodeTech sections as routed placeholders so navigation matches the reference without inventing unfinished CRUD modules.
+Sidebar items are permission-filtered from `NAV_ITEMS`. Some deep links remain placeholder section pages where product modules are not finished yet.
