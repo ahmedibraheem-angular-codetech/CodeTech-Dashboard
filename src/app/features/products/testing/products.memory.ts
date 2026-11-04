@@ -1,10 +1,10 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { type Observable, map, timer } from 'rxjs';
 
-import { API_LATENCY_MS } from '../../core/config/latency';
-import type { PaginatedEnvelope } from '../../core/http/api.model';
-import { ObjectUrls } from '../../shared/components/product-upload/object-urls';
-import type { ProductListDto, ProductListQuery } from './models/product.api';
+import { API_LATENCY_MS } from '../../../core/config/latency';
+import type { PaginatedEnvelope } from '../../../core/http/api.model';
+import { ObjectUrls } from '../../../shared/components/product-upload/object-urls';
+import type { ProductListDto, ProductListQuery } from '../models/product.api';
 import {
   emptyProductImage,
   localeText,
@@ -17,14 +17,14 @@ import {
   type LocalizedMedia,
   type Product,
   type ProductSector,
-} from './models/product.model';
+} from '../models/product.model';
 import {
   productsPageFeature,
   productsPageSector,
   type ProductsPageContent,
   type ProductsPageFeature,
   type ProductsPageSector,
-} from './models/products-page.model';
+} from '../models/products-page.model';
 
 const DESK = '/images/product-cover-desk.jpg';
 const WOOD = '/images/product-cover-wood.jpg';

@@ -8,7 +8,7 @@ import { routes } from '../../app.routes';
 import { authSession } from '../../core/auth/auth-session.fixture';
 import { AuthService } from '../../core/auth/auth.service';
 import { API_LATENCY_MS } from '../../core/config/latency';
-import { ServicesMemoryService } from './services/services.memory';
+import { ServicesMemoryService } from './testing/services.memory';
 import { ServicesService } from './services/services.service';
 import { BreadcrumbService } from '../../core/services/breadcrumb.service';
 import { LanguageService } from '../../core/services/language.service';

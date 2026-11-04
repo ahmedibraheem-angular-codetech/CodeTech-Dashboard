@@ -19,7 +19,7 @@ import {
   projectDetailDto,
   projectListDto,
   projectsPageDto,
-} from '../../projects.spec-helpers';
+} from '../../testing/projects.memory';
 import { ProjectsList } from './projects-list';
 
 const LIST = apiUrl(environment.apiUrl, 'admin/projects');

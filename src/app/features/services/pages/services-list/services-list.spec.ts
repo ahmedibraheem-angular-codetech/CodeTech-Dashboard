@@ -8,8 +8,8 @@ import { AuthService } from '../../../../core/auth/auth.service';
 import { API_LATENCY_MS } from '../../../../core/config/latency';
 import { LanguageService } from '../../../../core/services/language.service';
 import type { Service } from '../../models/service.model';
-import { SERVICES_SEED } from '../../services/services.mock';
-import { ServicesMemoryService } from '../../services/services.memory';
+import { SERVICES_SEED } from '../../testing/services.mock';
+import { ServicesMemoryService } from '../../testing/services.memory';
 import { ServicesService } from '../../services/services.service';
 import { ServicesPage } from './services-list';
 

@@ -8,7 +8,7 @@ import { AuthService } from '../../../../core/auth/auth.service';
 import { LanguageService } from '../../../../core/services/language.service';
 import { blankProject, localeText, projectMedia, projectPoint } from '../../models/project.model';
 import { ProjectsService } from '../../services/projects.service';
-import { ProjectsMemoryService } from '../../projects.spec-helpers';
+import { ProjectsMemoryService } from '../../testing/projects.memory';
 import { ProjectDetailPage } from './project-detail';
 
 const PROJECT_GRANTS = [

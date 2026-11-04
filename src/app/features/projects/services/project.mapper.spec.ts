@@ -5,7 +5,7 @@ import {
   projectIdentityButton,
   projectPoint,
 } from '../models/project.model';
-import { fileDto, projectDetailDto, projectListDto } from '../projects.spec-helpers';
+import { fileDto, projectDetailDto, projectListDto } from '../testing/projects.memory';
 import {
   isUploadUrl,
   mapProjectDetail,

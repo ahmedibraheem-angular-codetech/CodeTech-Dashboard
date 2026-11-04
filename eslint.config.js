@@ -100,7 +100,7 @@ module.exports = defineConfig([
   },
   // Vitest / unit-test overrides (do not change app behavior)
   {
-    files: ['**/*.spec.ts'],
+    files: ['**/*.spec.ts', '**/testing/**/*.ts', 'src/testing/**/*.ts'],
     rules: {
       '@angular-eslint/prefer-on-push-component-change-detection': 'off',
       '@typescript-eslint/no-explicit-any': 'off',

@@ -12,7 +12,7 @@ import {
   projectDetailDto,
   projectListDto,
   projectsPageDto,
-} from '../projects.spec-helpers';
+} from '../testing/projects.memory';
 import { ProjectsService } from './projects.service';
 
 const LIST = apiUrl(environment.apiUrl, 'admin/projects');

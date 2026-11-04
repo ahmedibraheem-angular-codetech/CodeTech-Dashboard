@@ -8,7 +8,7 @@ import { authSession } from '../../../../core/auth/auth-session.fixture';
 import { AuthService } from '../../../../core/auth/auth.service';
 import { apiUrl } from '../../../../core/config/api';
 import { LanguageService } from '../../../../core/services/language.service';
-import { projectsPageDto } from '../../projects.spec-helpers';
+import { projectsPageDto } from '../../testing/projects.memory';
 import { ProjectsPageManage } from './projects-page';
 
 const PAGE = apiUrl(environment.apiUrl, 'admin/pages/projects');

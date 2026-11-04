@@ -1,9 +1,9 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { type Observable, of } from 'rxjs';
 
-import type { FileObject } from '../../core/http/api.model';
-import { ObjectUrls } from '../../shared/components/product-upload/object-urls';
-import type { ProjectDetailDto, ProjectListDto, ProjectsPageDto } from './models/project.api';
+import type { FileObject } from '../../../core/http/api.model';
+import { ObjectUrls } from '../../../shared/components/product-upload/object-urls';
+import type { ProjectDetailDto, ProjectListDto, ProjectsPageDto } from '../models/project.api';
 import {
   blankProject,
   emptyProjectImage,
@@ -15,7 +15,7 @@ import {
   type LocalizedMedia,
   type Project,
   type ProjectImage,
-} from './models/project.model';
+} from '../models/project.model';
 
 /** UI/test fixtures — not used by the HTTP ProjectsService. */
 

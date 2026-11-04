@@ -1,9 +1,9 @@
 import { describe, expect, it } from 'vitest';
 
-import { ar } from '../../../../../public/in18/services/ar';
-import { en } from '../../../../../public/in18/services/en';
-import { TRANSLATIONS } from '../../../core/i18n/translations';
-import { SERVICE_STEPS } from '../models/service.model';
+import { ar } from '../../../../public/in18/services/ar';
+import { en } from '../../../../public/in18/services/en';
+import { TRANSLATIONS } from '../../core/i18n/translations';
+import { SERVICE_STEPS } from './models/service.model';
 
 describe('service translations', () => {
   const keys = Object.keys(en);

@@ -10,8 +10,8 @@ import { AuthService } from '../../../../core/auth/auth.service';
 import { API_LATENCY_MS } from '../../../../core/config/latency';
 import { BreadcrumbService } from '../../../../core/services/breadcrumb.service';
 import { LanguageService } from '../../../../core/services/language.service';
-import { PROJECTS_SEED } from '../../../projects/projects.spec-helpers';
-import { ProjectsMemoryService } from '../../../projects/projects.spec-helpers';
+import { PROJECTS_SEED } from '../../../projects/testing/projects.memory';
+import { ProjectsMemoryService } from '../../../projects/testing/projects.memory';
 import { ProjectsService } from '../../../projects/services/projects.service';
 import {
   blankService,
@@ -22,8 +22,8 @@ import {
   serviceWhyItem,
   type Service,
 } from '../../models/service.model';
-import { SERVICES_SEED } from '../../services/services.mock';
-import { ServicesMemoryService } from '../../services/services.memory';
+import { SERVICES_SEED } from '../../testing/services.mock';
+import { ServicesMemoryService } from '../../testing/services.memory';
 import { ServicesService } from '../../services/services.service';
 import { ServiceDetailPage } from './service-detail';
 

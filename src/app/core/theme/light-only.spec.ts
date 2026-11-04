@@ -4,9 +4,9 @@ import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { PrimeNG } from 'primeng/config';
 
-import { appConfig } from './app.config';
-import { API_LATENCY_MS } from './core/config/latency';
-import { Header } from './layout/components/header/header';
+import { appConfig } from '../../app.config';
+import { API_LATENCY_MS } from '../config/latency';
+import { Header } from '../../layout/components/header/header';
 
 describe('Light mode only', () => {
   beforeEach(() => {

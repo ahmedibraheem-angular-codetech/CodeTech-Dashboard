@@ -8,7 +8,7 @@ import { AuthService } from '../../../../core/auth/auth.service';
 import { API_LATENCY_MS } from '../../../../core/config/latency';
 import { LanguageService } from '../../../../core/services/language.service';
 import { localeText, type Product } from '../../models/product.model';
-import { PRODUCTS_SEED, ProductsMemoryService } from '../../products.spec-helpers';
+import { PRODUCTS_SEED, ProductsMemoryService } from '../../testing/products.memory';
 import { ProductsService } from '../../services/products.service';
 import { ProductsListPage } from './products-list';
 

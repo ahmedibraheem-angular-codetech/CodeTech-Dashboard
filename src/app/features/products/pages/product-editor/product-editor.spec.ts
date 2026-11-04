@@ -8,7 +8,7 @@ import { API_LATENCY_MS } from '../../../../core/config/latency';
 import { ApiError } from '../../../../core/http/api-error';
 import { flushUi } from '../../../../../testing/flush-ui';
 import { blankProduct, localeText, type Product } from '../../models/product.model';
-import { ProductsMemoryService } from '../../products.spec-helpers';
+import { ProductsMemoryService } from '../../testing/products.memory';
 import { ProductsService } from '../../services/products.service';
 import { ProductEditor } from './product-editor';
 

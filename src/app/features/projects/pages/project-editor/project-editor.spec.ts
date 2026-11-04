@@ -7,7 +7,7 @@ import { firstValueFrom, map, NEVER, of, throwError, timer } from 'rxjs';
 import { flushUi } from '../../../../../testing/flush-ui';
 import { PROJECT_STEPS } from '../../constants/project-steps';
 import { blankProject, localeText, type Project } from '../../models/project.model';
-import { ProjectsMemoryService } from '../../projects.spec-helpers';
+import { ProjectsMemoryService } from '../../testing/projects.memory';
 import { ProjectsService } from '../../services/projects.service';
 import { ProjectEditor } from './project-editor';
 
