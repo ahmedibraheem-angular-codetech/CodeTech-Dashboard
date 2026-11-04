@@ -1,19 +1,18 @@
 <section class="page projects-board">
-  <app-page-header [title]="lang.t('project.manage')" [subtitle]="lang.t('project.subtitle')">
-    <ng-container *appHasPermission="'projects.update'">
-      <label class="projects-board__catalog">
-        <span>{{ lang.t('project.catalog') }}</span>
-        <p-toggleswitch
-          [ngModel]="api.catalogVisible()"
-          (ngModelChange)="api.toggleCatalog()"
-          [ariaLabel]="lang.t('project.catalog')"
-        />
-      </label>
-    </ng-container>
-  </app-page-header>
+  <app-page-header [title]="lang.t('project.manage')" [subtitle]="lang.t('project.subtitle')" />
 
   <div class="project-grid">
     <div class="project-grid__toolbar">
+      <ng-container *appHasPermission="'projects.update'">
+        <label class="projects-board__catalog">
+          <span>{{ lang.t('project.catalog') }}</span>
+          <p-toggleswitch
+            [ngModel]="api.catalogVisible()"
+            (ngModelChange)="api.toggleCatalog()"
+            [ariaLabel]="lang.t('project.catalog')"
+          />
+        </label>
+      </ng-container>
       <a *appHasPermission="'projects.create'" class="projects-board__add" routerLink="/projects/new">
         <i class="pi pi-plus" aria-hidden="true"></i>
         {{ lang.t('project.add') }}
