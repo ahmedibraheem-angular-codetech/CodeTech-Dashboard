@@ -28,9 +28,27 @@
           <p class="about-ceo__body">{{ view().body }}</p>
           @if (view().quote) {
             <blockquote class="about-quote">
-              <span class="about-quote__mark" aria-hidden="true">“</span>
-              <span>{{ view().quote }}</span>
-              <span class="about-quote__mark" aria-hidden="true">”</span>
+              <span class="about-quote__mark about-quote__mark--open" aria-hidden="true">
+                <svg viewBox="0 0 20 15" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                  <path
+                    fill="currentColor"
+                    d="M4.2 15C1.9 15 0 13.1 0 10.7 0 6.2 2.8 2.3 7.3 0.4l1.1 1.9C5.4 3.7 3.8 6.3 3.8 9.1c0 .7.2 1.3.5 1.8.5-.3 1.1-.5 1.8-.5 1.7 0 3.1 1.4 3.1 3.1S7.8 15 6.1 15H4.2Zm9.8 0c-2.3 0-4.2-1.9-4.2-4.3 0-4.5 2.8-8.4 7.3-10.3l1.1 1.9c-3 1.4-4.6 4-4.6 6.8 0 .7.2 1.3.5 1.8.5-.3 1.1-.5 1.8-.5 1.7 0 3.1 1.4 3.1 3.1S17.6 15 15.9 15H14Z"
+                  />
+                </svg>
+              </span>
+              <span class="about-quote__text">
+                {{ view().quote }}<span
+                  class="about-quote__mark about-quote__mark--close"
+                  aria-hidden="true"
+                >
+                  <svg viewBox="0 0 20 15" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                    <path
+                      fill="currentColor"
+                      d="M4.2 15C1.9 15 0 13.1 0 10.7 0 6.2 2.8 2.3 7.3 0.4l1.1 1.9C5.4 3.7 3.8 6.3 3.8 9.1c0 .7.2 1.3.5 1.8.5-.3 1.1-.5 1.8-.5 1.7 0 3.1 1.4 3.1 3.1S7.8 15 6.1 15H4.2Zm9.8 0c-2.3 0-4.2-1.9-4.2-4.3 0-4.5 2.8-8.4 7.3-10.3l1.1 1.9c-3 1.4-4.6 4-4.6 6.8 0 .7.2 1.3.5 1.8.5-.3 1.1-.5 1.8-.5 1.7 0 3.1 1.4 3.1 3.1S17.6 15 15.9 15H14Z"
+                    />
+                  </svg>
+                </span>
+              </span>
             </blockquote>
           }
         </div>

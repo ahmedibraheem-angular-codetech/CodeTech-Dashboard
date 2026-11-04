@@ -51,13 +51,30 @@
 }
 
 .about-highlight {
+  display: flex;
+  box-sizing: border-box;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  min-height: 52px;
   margin: 12px 0 0;
-  padding: 12px 16px;
-  border-radius: 12px;
-  background: #e8f3fc;
-  color: #1e4b7a;
-  font-size: var(--app-font-sm);
-  line-height: 1.7;
+  padding: 12px 20px;
+  opacity: 1;
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px;
+  border-bottom-right-radius: 20px;
+  border-bottom-left-radius: 0;
+  background: #edf5fb;
+  color: var(--B-Lochmara-600-700, #1467ac);
+  font-family: 'Thmanyah Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  font-style: normal;
+  line-height: 28px;
+  letter-spacing: 0;
+  text-align: right;
+  text-transform: capitalize;
+  vertical-align: middle;
 }
 
 .about-ceo {
@@ -89,48 +106,93 @@
   background: #fff;
 }
 
-.about-ceo__role,
-.about-ceo__body {
+.about-ceo__role {
   margin: 0;
   color: var(--app-muted);
+  font-size: var(--app-font-sm);
   line-height: 1.8;
 }
 
-.about-ceo__role {
-  font-size: var(--app-font-sm);
+.about-ceo__body {
+  margin: 0;
+  color: var(--Text-Geyser-600, #576e8a);
+  font-family: 'Thmanyah Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  font-style: normal;
+  line-height: 24px;
+  letter-spacing: 0;
+  text-transform: capitalize;
+  vertical-align: middle;
 }
 
 .about-ceo__copy h3 {
   margin: 0;
-  color: var(--app-text);
-  font-size: 1.35rem;
-  font-weight: 700;
-  line-height: 1.3;
+  color: #002951;
+  font-family: 'Thmanyah Sans', sans-serif;
+  font-size: 28px;
+  font-weight: 900;
+  font-style: normal;
+  line-height: 120%;
+  letter-spacing: 0;
+  text-transform: capitalize;
+  vertical-align: middle;
 }
 
 .about-quote {
   display: flex;
+  box-sizing: border-box;
   align-items: center;
-  gap: 12px;
+  align-self: stretch;
+  justify-content: space-between;
+  gap: 16px;
   width: 100%;
+  min-height: 71px;
   margin: auto 0 0;
-  padding: 12px 16px;
-  border-radius: 12px;
-  background: #e8f3fc;
-  color: #2f6fed;
-  font-size: var(--app-font-sm);
-  font-weight: 700;
-  line-height: 1.7;
+  padding: 16px;
+  opacity: 1;
+  border: 0;
+  border-radius: 16px;
+  background: #edf5fb;
 }
 
-.about-quote span:not(.about-quote__mark) {
+.about-quote__text {
   flex: 1;
+  min-width: 0;
+  color: var(--B-Lochmara-600-700, #1467ac);
+  font-family: 'Thmanyah Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  font-style: normal;
+  line-height: 28px;
+  letter-spacing: 0;
+  text-align: right;
+  text-transform: capitalize;
+  vertical-align: middle;
 }
 
 .about-quote__mark {
+  display: inline-flex;
   flex: none;
-  font-size: 1.75rem;
-  line-height: 1;
+  align-items: center;
+  justify-content: center;
+  width: 20.06px;
+  height: 14.97px;
+  color: var(--B-Lochmara-600-300, #a4d0fb);
+  line-height: 0;
+  vertical-align: middle;
+}
+
+.about-quote__mark svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.about-quote__mark--close {
+  display: inline-flex;
+  margin-inline-start: 6px;
+  transform: rotate(180deg);
 }
 
 .about-team-toolbar {

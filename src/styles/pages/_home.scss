@@ -347,15 +347,33 @@ background:#fff;
   }
 }
 
-// Filled edit action on a story block: blue, white label, pencil-in-square icon.
+// Filled edit action on homepage / about story blocks: blue, white label + icon.
+.block-edit.p-button,
 .block-edit {
-  --p-button-border-radius: 16px;
-  --p-button-padding-x: 22px;
-  --p-button-padding-y: 0;
-  --p-button-gap: 10px;
-
+  box-sizing: border-box;
+  width: max-content;
+  min-width: 99px;
   height: 48px;
-  font-weight: 700;
+  padding: 12px 16px;
+  gap: 10px;
+  border: 1px solid var(--Text-100, #eceff3);
+  border-radius: 16px;
+  background: #1c81d3;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.block-edit.p-button:not(:disabled):hover,
+.block-edit.p-button:not(:disabled):active {
+  background: #1774be;
+  border-color: var(--Text-100, #eceff3);
+  color: #fff;
+}
+
+.block-edit .p-button-icon {
+  color: #fff;
+  font-size: 16px;
 }
 
 // Image beside a white text card. The surrounding container is `app-content-panel`.
