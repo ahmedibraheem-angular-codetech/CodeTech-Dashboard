@@ -6,7 +6,7 @@
   <div class="editor-section__body">
     @for (sector of editor.draft().sectors; track sector.id; let index = $index) {
       <article class="feature-card is-active">
-        <header class="feature-card__tab">
+        <header class="feature-card__tab mt-2">
           <span>{{ editor.copy('service.sectorItem') }} {{ index + 1 }}</span>
           <button
             type="button"

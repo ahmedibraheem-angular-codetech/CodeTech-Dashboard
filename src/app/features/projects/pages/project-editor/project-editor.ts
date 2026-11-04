@@ -645,7 +645,7 @@ export class ProjectEditor {
           this.serverErrors.set({});
           this.messages.add({ severity: 'success', summary: this.lang.t(message) });
           if (leave) {
-            void this.router.navigate(['/projects', saved.id]);
+            void this.router.navigate(['/projects']);
           }
         },
         error: (error: unknown) => {

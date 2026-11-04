@@ -38,7 +38,10 @@ describe('ProjectEditor', () => {
       providers: [
         MessageService,
         { provide: ProjectsService, useClass: ProjectsMemoryService },
-        provideRouter([{ path: 'projects/:id', component: ProjectRouteStub }]),
+        provideRouter([
+          { path: 'projects', component: ProjectRouteStub },
+          { path: 'projects/:id', component: ProjectRouteStub },
+        ]),
         {
           provide: ActivatedRoute,
           useValue: { data: of({ mode }), snapshot: { data: { mode } } },
@@ -401,7 +404,7 @@ describe('ProjectEditor', () => {
     expect(reloaded?.identityButtons[1]?.images).toHaveLength(4);
   });
 
-  it('creates a published project and navigates to details', async () => {
+  it('creates a published project and navigates to the projects list', async () => {
     const fixture = await render('create');
     const root: HTMLElement = fixture.nativeElement;
     const api = TestBed.inject(ProjectsService);
@@ -427,7 +430,7 @@ describe('ProjectEditor', () => {
     expect(projects).toHaveLength(before + 1);
     expect(created?.published).toBe(true);
     expect(created?.name.en).toBe('New project');
-    expect(router.url).toBe(`/projects/${created?.id}`);
+    expect(router.url).toBe('/projects');
   });
 
   it('shows an error and retries a failed edit load', async () => {
