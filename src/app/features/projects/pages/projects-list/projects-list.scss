@@ -27,33 +27,57 @@
 }
 
 .project-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  padding: 16px;
+  border: 1px solid #f0f1f3;
+  border-radius: 16px;
+  background: #fff;
+}
+
+.project-grid__toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.project-grid__cards {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 16px;
+  gap: 12px;
 }
 
 .project-tile {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 8px;
+  width: 100%;
   padding: 12px;
   border: 1px solid #edeeee;
-  border-radius: 20px;
-  background: #fff;
+  border-radius: 16px;
+  background: #f9fafb;
 }
 
 .project-tile__media {
   position: relative;
   display: block;
+  box-sizing: border-box;
+  width: 100%;
+  aspect-ratio: 489 / 267;
   overflow: hidden;
-  border-radius: 16px;
-  aspect-ratio: 16 / 9;
+  padding: 24px;
+  border: 2px solid #f7f7f7;
+  border-radius: 20px;
   background: #1b1b1b;
 }
 
 .project-tile__media img {
-  width: 100%;
-  height: 100%;
+  position: absolute;
+  inset: 24px;
+  display: block;
+  border-radius: 12px;
   object-fit: cover;
 }
 
@@ -84,6 +108,17 @@
   color: #e11d48;
 }
 
+.project-tile__body {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  padding: 20px;
+  border: 1px solid #edeeee;
+  border-radius: 16px;
+  background: #fff;
+}
+
 .project-tile__head {
   display: flex;
   align-items: center;
@@ -104,7 +139,7 @@
   text-decoration: none;
 }
 
-.project-tile p {
+.project-tile__body > p {
   margin: 0;
   color: #64748b;
   font-size: 13px;
@@ -113,8 +148,10 @@
 
 .project-tile__tags {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
+  align-items: stretch;
   gap: 8px;
+  width: 100%;
   margin: 0;
   padding: 0;
   list-style: none;
@@ -122,19 +159,26 @@
 
 .project-tile__tags li {
   display: inline-flex;
+  flex: 1 1 0;
   align-items: center;
-  gap: 6px;
-  height: 32px;
-  padding: 0 10px;
-  border-radius: 10px;
-  background: #f4f7fb;
+  justify-content: center;
+  gap: 8px;
+  min-width: 0;
+  height: 40px;
+  padding: 8px 12px;
+  border-radius: 12px;
+  background: #f7f7f7;
+  backdrop-filter: blur(17.6px);
   color: #64748b;
   font-size: 13px;
   font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 @media (max-width: 800px) {
-  .project-grid {
+  .project-grid__cards {
     grid-template-columns: 1fr;
   }
 }
