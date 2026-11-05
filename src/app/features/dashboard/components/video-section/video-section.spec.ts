@@ -129,14 +129,14 @@ describe('VideoSection', () => {
     expect(fixture.componentInstance.name()).toBeNull();
   });
 
-  it('rejects a video larger than 20 MB', async () => {
+  it('rejects a video larger than 35 MB', async () => {
     const fixture = setup();
     const save = vi.spyOn(TestBed.inject(HomepageService), 'setVideo');
     const messages = TestBed.inject(MessageService);
     const add = vi.spyOn(messages, 'add');
     fixture.componentInstance.onSelected(
       selectEvent(
-        new File([new Uint8Array(20 * 1024 * 1024 + 1)], 'big.mp4', { type: 'video/mp4' }),
+        new File([new Uint8Array(35 * 1024 * 1024 + 1)], 'big.mp4', { type: 'video/mp4' }),
       ),
     );
     await fixture.whenStable();

@@ -23,7 +23,7 @@ export const en = {
   'home.videoUpload': 'Upload intro video',
   'home.videoUploading': 'Uploading video…',
   'home.videoSaving': 'Saving video…',
-  'home.videoSize': 'The video is larger than 20 MB.',
+  'home.videoSize': 'The video is larger than 35 MB.',
   'home.aboutEmpty': 'No CodeTech summary yet',
   'home.aboutEmptyHint': 'Add a CodeTech summary and upload the images',
   'home.aboutAdd': 'Add a CodeTech summary',

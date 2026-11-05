@@ -64,7 +64,12 @@
     </div>
   }
   @if (name(); as videoName) {
-    <div class="video-frame" [class.is-off]="!enabled()" [class.is-uploading]="saving()">
+    <div
+      class="video-frame"
+      [class.is-off]="!enabled()"
+      [class.is-uploading]="saving()"
+      [class.is-playing]="playing()"
+    >
       @if (playing() && url(); as src) {
         <video
           class="video-frame__player"
@@ -74,11 +79,21 @@
           autoplay
           playsinline
         ></video>
-      } @else {
+      } @else if (url(); as src) {
+        <video
+          class="video-frame__player"
+          [src]="src"
+          [attr.title]="videoName"
+          preload="auto"
+          muted
+          playsinline
+          (loadedmetadata)="showPreviewFrame($event)"
+          (loadeddata)="showPreviewFrame($event)"
+        ></video>
         <button
           type="button"
           class="video-play"
-          [disabled]="!enabled() || !url() || saving()"
+          [disabled]="!enabled() || saving()"
           [attr.aria-label]="videoName"
           (click)="play()"
         >

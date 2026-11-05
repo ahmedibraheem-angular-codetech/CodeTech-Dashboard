@@ -65,6 +65,21 @@ export class VideoSection {
     }
   }
 
+  /** Seek preview to the 1st second so the linear overlay shows a real frame. */
+  showPreviewFrame(event: Event): void {
+    const video = event.target;
+    if (!(video instanceof HTMLVideoElement)) {
+      return;
+    }
+    if (video.readyState < HTMLMediaElement.HAVE_METADATA) {
+      return;
+    }
+    const at = Number.isFinite(video.duration) && video.duration > 0 ? Math.min(1, video.duration) : 1;
+    if (video.currentTime !== at) {
+      video.currentTime = at;
+    }
+  }
+
   toggle(enabled: boolean): void {
     if (this.saving()) {
       return;

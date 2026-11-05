@@ -25,7 +25,7 @@ export const ar: { [K in keyof typeof en]: string } = {
   'home.videoUpload': 'رفع الفيديو التعريفي',
   'home.videoUploading': 'جاري رفع الفيديو…',
   'home.videoSaving': 'جاري حفظ الفيديو…',
-  'home.videoSize': 'حجم الفيديو أكبر من 20 ميجابايت.',
+  'home.videoSize': 'حجم الفيديو أكبر من 35 ميجابايت.',
   'home.aboutEmpty': 'لا يوجد نبذة عن كود التقنية بعد',
   'home.aboutEmptyHint': 'أبدأ بإضافة نبذة تعريفية عن كود التقنية وارفع الصور',
   'home.aboutAdd': 'إضافة نبذة عن كود التقنية',
