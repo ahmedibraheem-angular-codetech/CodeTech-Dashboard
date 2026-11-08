@@ -39,9 +39,36 @@ describe('project-request.mapper', () => {
     expect(item.reference).toBe('REQ-00057');
     expect(item.status).toBe('progress');
     expect(item.product).toBe('تصميم UI/UX');
+    expect(item.products).toEqual(['تصميم UI/UX']);
     expect(item.notes).toEqual([]);
     expect(item.reply).toBeNull();
     expect(item.timeline).toEqual([]);
+  });
+
+  it('loops services[] for project requests', () => {
+    const dto: ProjectRequestListDto = {
+      id: 10,
+      reference: 'REQ-00010',
+      type: 'project_request',
+      status: 'new',
+      name: 'عميل',
+      organization: 'جهة',
+      phone: '+966',
+      email: null,
+      service: { id: 1, name: 'أتمتة الأعمال' },
+      services: [
+        { id: 1, name: 'أتمتة الأعمال' },
+        { id: 2, name: 'تطوير ويب' },
+      ],
+      message: null,
+      close_note: null,
+      closed_at: null,
+      created_at: '2026-10-29T08:00:00.000000Z',
+      updated_at: '2026-10-29T08:00:00.000000Z',
+    };
+    const item = mapProjectRequestListItem(dto);
+    expect(item.product).toBe('أتمتة الأعمال');
+    expect(item.products).toEqual(['أتمتة الأعمال', 'تطوير ويب']);
   });
 
   it('does not invent a product when service is missing', () => {
@@ -61,7 +88,9 @@ describe('project-request.mapper', () => {
       created_at: '2026-10-29T08:00:00.000000Z',
       updated_at: '2026-10-29T08:00:00.000000Z',
     };
-    expect(mapProjectRequestListItem(dto).product).toBe('');
+    const item = mapProjectRequestListItem(dto);
+    expect(item.product).toBe('');
+    expect(item.products).toEqual([]);
   });
 
   it('maps detail notes, replies and timeline', () => {

@@ -23,8 +23,22 @@ export function toUiProjectRequestStatus(status: ProjectRequestApiStatus): Inqui
   return toUiInquiryStatus(status);
 }
 
-function serviceLabel(dto: ProjectRequestListDto): string {
-  return dto.service?.name?.trim() || '';
+function serviceLabels(dto: ProjectRequestListDto): string[] {
+  const fromList = (dto.services ?? [])
+    .map((item) => item.name?.trim() ?? '')
+    .filter(Boolean);
+  if (fromList.length) {
+    const seen = new Set<string>();
+    return fromList.filter((label) => {
+      if (seen.has(label)) {
+        return false;
+      }
+      seen.add(label);
+      return true;
+    });
+  }
+  const single = dto.service?.name?.trim() || '';
+  return single ? [single] : [];
 }
 
 function mapNote(dto: ProjectRequestNoteDto): InquiryNote {
@@ -61,6 +75,7 @@ function mapCore(
   dto: ProjectRequestListDto,
 ): Omit<Inquiry, 'notes' | 'replies' | 'reply' | 'timeline'> {
   const stamp = stampFromIso(dto.created_at);
+  const products = serviceLabels(dto);
   return {
     id: String(dto.id),
     reference: dto.reference,
@@ -68,8 +83,9 @@ function mapCore(
     org: dto.organization,
     phone: dto.phone,
     email: dto.email ?? '',
-    /** Shared inbox UI field — filled from `service.name` only. */
-    product: serviceLabel(dto),
+    /** Shared inbox UI field — filled from `services[]` / `service.name`. */
+    product: products[0] ?? '',
+    products,
     status: toUiProjectRequestStatus(dto.status),
     date: stamp.date,
     time: stamp.time,

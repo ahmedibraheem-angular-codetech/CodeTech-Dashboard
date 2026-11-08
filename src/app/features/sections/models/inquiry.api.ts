@@ -40,7 +40,7 @@ export interface InquiryTimelineStepDto {
   by: string | null;
 }
 
-/** List row — inquiries include `product`; project requests include `service`. */
+/** List row — inquiries include `product`/`products`; project requests include `service`/`services`. */
 export interface InquiryListDto {
   id: number;
   reference: string;
@@ -51,7 +51,9 @@ export interface InquiryListDto {
   phone: string;
   email: string | null;
   product?: InquiryRelatedProductDto | null;
+  products?: InquiryRelatedProductDto[] | null;
   service?: InquiryRelatedServiceDto | null;
+  services?: InquiryRelatedServiceDto[] | null;
   message: string | null;
   close_note: string | null;
   closed_at: string | null;

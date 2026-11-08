@@ -2,6 +2,42 @@
   width: 100%;
 }
 
+.inquiry-products {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  max-width: 100%;
+  font: inherit;
+  font-weight: inherit;
+  color: inherit;
+}
+
+.inquiry-products__label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.inquiry-products__more {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  min-width: 28px;
+  height: 24px;
+  padding: 0 8px;
+  border-radius: 999px;
+  background: #edf5fb;
+  color: #1467ac;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1;
+  white-space: nowrap;
+  cursor: default;
+}
+
 .inquiry__head {
   align-items: flex-start;
 }

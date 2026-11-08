@@ -42,14 +42,40 @@ export function stampFromIso(iso: string | null | undefined): { date: string; ti
   return { date: toIsoDate(value), time: `${hour}:${minutes} ${suffix}` };
 }
 
-function relatedLabel(dto: InquiryListDto): string {
-  if (dto.product?.title) {
-    return dto.product.title;
+function uniqueLabels(labels: string[]): string[] {
+  const seen = new Set<string>();
+  const out: string[] = [];
+  for (const label of labels) {
+    if (!label || seen.has(label)) {
+      continue;
+    }
+    seen.add(label);
+    out.push(label);
   }
-  if (dto.service?.name) {
-    return dto.service.name;
+  return out;
+}
+
+/** Prefer `products[]` / `services[]`, fall back to singular `product` / `service`. */
+function relatedLabels(dto: InquiryListDto): string[] {
+  const fromProducts = (dto.products ?? [])
+    .map((item) => item.title?.trim() ?? '')
+    .filter(Boolean);
+  if (fromProducts.length) {
+    return uniqueLabels(fromProducts);
   }
-  return '';
+  const fromServices = (dto.services ?? [])
+    .map((item) => item.name?.trim() ?? '')
+    .filter(Boolean);
+  if (fromServices.length) {
+    return uniqueLabels(fromServices);
+  }
+  if (dto.product?.title?.trim()) {
+    return [dto.product.title.trim()];
+  }
+  if (dto.service?.name?.trim()) {
+    return [dto.service.name.trim()];
+  }
+  return [];
 }
 
 function mapNote(dto: InquiryNoteDto): InquiryNote {
@@ -84,6 +110,7 @@ function mapTimelineStep(dto: InquiryTimelineStepDto): InquiryTimelineStep {
 
 function mapCore(dto: InquiryListDto): Omit<Inquiry, 'notes' | 'replies' | 'reply' | 'timeline'> {
   const stamp = stampFromIso(dto.created_at);
+  const products = relatedLabels(dto);
   return {
     id: String(dto.id),
     reference: dto.reference,
@@ -91,7 +118,8 @@ function mapCore(dto: InquiryListDto): Omit<Inquiry, 'notes' | 'replies' | 'repl
     org: dto.organization,
     phone: dto.phone,
     email: dto.email ?? '',
-    product: relatedLabel(dto),
+    product: products[0] ?? '',
+    products,
     status: toUiInquiryStatus(dto.status),
     date: stamp.date,
     time: stamp.time,

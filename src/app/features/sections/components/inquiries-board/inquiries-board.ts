@@ -20,7 +20,10 @@ import { forkJoin } from 'rxjs';
 import { loadFailureStatus } from '../../../../core/http/api-error';
 import { LanguageService } from '../../../../core/services/language.service';
 import { NetworkStatusService } from '../../../../core/services/network-status.service';
-import { DataTable } from '../../../../shared/components/data-table/data-table';
+import {
+  DataTable,
+  DataTableCellTemplate,
+} from '../../../../shared/components/data-table/data-table';
 import { StateView } from '../../../../shared/components/state-view/state-view';
 import {
   type DataTableBadgeValue,
@@ -50,6 +53,9 @@ interface InquiryRow {
   org: DataTableIconValue;
   phone: string;
   product: string;
+  products: string[];
+  moreCount: number;
+  moreTooltip: string;
   status: DataTableBadgeValue & { value: InquiryStatus };
   when: DataTableDateValue;
 }
@@ -64,6 +70,7 @@ interface InquiryRow {
     StateView,
     StatisticsCards,
     DataTable,
+    DataTableCellTemplate,
     Tooltip,
   ],
   templateUrl: './inquiries-board.html',
@@ -236,7 +243,8 @@ export class InquiriesBoard {
       .filter((row) => {
         const statusOk = selected.length === 0 || selected.includes(row.status);
         const dateOk = !day || row.date.slice(0, 10) === day;
-        const haystack = `${row.reference} ${row.customer} ${row.org} ${row.phone} ${row.product} ${row.email}`;
+        const related = row.products.join(' ');
+        const haystack = `${row.reference} ${row.customer} ${row.org} ${row.phone} ${related} ${row.email}`;
         return statusOk && dateOk && (!query || haystack.includes(query));
       })
       .map((row) => this.toRow(row));
@@ -326,13 +334,18 @@ export class InquiriesBoard {
   }
 
   private toRow(row: Inquiry): InquiryRow {
+    const products = row.products.length ? row.products : row.product ? [row.product] : [];
+    const moreProducts = products.slice(1);
     return {
       id: row.id,
       reference: row.reference,
       name: { icon: 'pi pi-user', label: row.customer },
       org: { icon: 'pi pi-building', label: row.org },
       phone: row.phone,
-      product: row.product,
+      product: products[0] ?? '',
+      products,
+      moreCount: moreProducts.length,
+      moreTooltip: moreProducts.join('\n'),
       status: {
         value: row.status,
         label: this.lang.t(this.statusKey(row.status)),

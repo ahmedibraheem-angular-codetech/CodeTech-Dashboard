@@ -35,7 +35,7 @@ export interface ProjectRequestTimelineStepDto {
   by: string | null;
 }
 
-/** List row — project requests expose `service`, never invent a product. */
+/** List row — project requests expose `service`/`services`, never invent a product. */
 export interface ProjectRequestListDto {
   id: number;
   reference: string;
@@ -46,6 +46,7 @@ export interface ProjectRequestListDto {
   phone: string;
   email: string | null;
   service?: ProjectRequestRelatedServiceDto | null;
+  services?: ProjectRequestRelatedServiceDto[] | null;
   message: string | null;
   close_note: string | null;
   closed_at: string | null;

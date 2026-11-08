@@ -51,8 +51,10 @@ export interface Inquiry {
   org: string;
   phone: string;
   email: string;
-  /** Product title (inquiries) or service name (project requests). */
+  /** First product title (inquiries) or service name (project requests). */
   product: string;
+  /** All related product/service titles (first matches `product`). */
+  products: string[];
   status: InquiryStatus;
   date: string;
   time: string;

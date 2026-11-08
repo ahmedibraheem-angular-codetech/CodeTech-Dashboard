@@ -37,9 +37,37 @@ describe('inquiry.mapper', () => {
     expect(item.reference).toBe('REQ-00042');
     expect(item.status).toBe('progress');
     expect(item.product).toBe('ألما');
+    expect(item.products).toEqual(['ألما']);
     expect(item.notes).toEqual([]);
     expect(item.reply).toBeNull();
     expect(item.timeline).toEqual([]);
+  });
+
+  it('loops products[] and keeps unique titles', () => {
+    const dto: InquiryListDto = {
+      id: 34,
+      reference: 'REQ-00034',
+      type: 'inquiry',
+      status: 'new',
+      name: 'محمد',
+      organization: 'كود',
+      phone: '+966',
+      email: null,
+      product: { id: 1, title: 'ITSM' },
+      products: [
+        { id: 1, title: 'ITSM' },
+        { id: 2, title: 'نظام السفر' },
+        { id: 1, title: 'ITSM' },
+      ],
+      message: 'نص',
+      close_note: null,
+      closed_at: null,
+      created_at: '2026-10-29T08:00:00.000000Z',
+      updated_at: '2026-10-29T08:00:00.000000Z',
+    };
+    const item = mapInquiryListItem(dto);
+    expect(item.product).toBe('ITSM');
+    expect(item.products).toEqual(['ITSM', 'نظام السفر']);
   });
 
   it('maps detail notes, replies, timeline and service label for project requests', () => {
@@ -96,6 +124,7 @@ describe('inquiry.mapper', () => {
     };
     const item = mapInquiryDetail(dto);
     expect(item.product).toBe('تصميم UI/UX');
+    expect(item.products).toEqual(['تصميم UI/UX']);
     expect(item.notes).toHaveLength(1);
     expect(item.notes[0]?.author).toBe('زياد');
     expect(item.replies).toHaveLength(1);
