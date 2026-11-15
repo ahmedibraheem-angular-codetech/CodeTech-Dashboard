@@ -1,4 +1,9 @@
-<form class="verify-form" [formGroup]="form()" (ngSubmit)="onSubmit()">
+<form
+  class="verify-form"
+  [formGroup]="form()"
+  [attr.dir]="lang.language() === 'ar' ? 'rtl' : 'ltr'"
+  (ngSubmit)="onSubmit()"
+>
   <app-button
     styleClass="back-btn"
     type="button"

@@ -1,7 +1,6 @@
 // Auth screens: split layout, brand panel, form card, OTP helpers.
 
 .auth-shell {
-  direction: ltr;
   display: grid;
   box-sizing: border-box;
   width: 100%;
@@ -16,6 +15,7 @@
 // Fluid layout: the design sizes (brand 810×870, panel 586×806, gap/padding 52)
 // are the upper bounds of the clamps below, the columns keep the 810:586 ratio
 // and both cards stretch to the full height of the viewport.
+// Direction comes from `[dir]` on `.auth-shell` so brand/panel swap with the language.
 .auth-frame {
   display: grid;
   grid-template-columns: minmax(0, 810fr) minmax(0, 586fr);
@@ -36,10 +36,37 @@
   border-radius: clamp(20px, 2.2vw, 32px);
 }
 
+// Named view-transition targets — swapped sides animate when language toggles.
+.auth-brand {
+  view-transition-name: auth-brand;
+}
+
+.auth-panel {
+  view-transition-name: auth-panel;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  ::view-transition-group(auth-brand),
+  ::view-transition-group(auth-panel) {
+    animation-duration: 0.55s;
+    animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  ::view-transition-old(auth-brand),
+  ::view-transition-new(auth-brand),
+  ::view-transition-old(auth-panel),
+  ::view-transition-new(auth-panel) {
+    height: 100%;
+    overflow: clip;
+    border-radius: inherit;
+  }
+}
+
 .auth-brand {
   gap: 10px;
-  padding: clamp(20px, 2.4vw, 35px) clamp(8px, 0.85vw, 12px) clamp(20px, 2.2vw, 32px)
-    clamp(20px, 2.4vw, 35px);
+  // Logical padding so insets stay correct after the brand/panel side swap.
+  padding-block: clamp(20px, 2.4vw, 35px) clamp(20px, 2.2vw, 32px);
+  padding-inline: clamp(20px, 2.4vw, 35px) clamp(8px, 0.85vw, 12px);
 }
 
 .auth-panel {
@@ -138,6 +165,46 @@
 // inline-end padding stays the spec's 20px. Same selector plus `.auth-card` to win on specificity.
 .auth-card .p-iconfield .p-inputtext:not(:last-child) {
   padding-inline-end: var(--p-inputtext-padding-x);
+}
+
+// Arabic auth inputs: typing starts from the left; icons stay on the left and are mirrored.
+.auth-card[dir='rtl'] .p-iconfield .p-inputtext,
+.auth-card[dir='rtl'] .p-inputtext {
+  direction: ltr;
+  text-align: left;
+  unicode-bidi: plaintext;
+}
+
+.auth-card[dir='ltr'] .p-iconfield .p-inputtext,
+.auth-card[dir='ltr'] .p-inputtext {
+  direction: ltr;
+  text-align: left;
+}
+
+// Icon is last-child → inline-end. In RTL that is the physical left (Figma).
+.auth-card[dir='rtl'] .p-iconfield .p-inputtext:not(:last-child) {
+  padding-inline-end: calc((var(--p-form-field-padding-x, 20px) * 2) + 1rem);
+  padding-inline-start: var(--p-inputtext-padding-x, 20px);
+}
+
+.auth-card[dir='rtl'] .p-inputicon {
+  transform: scaleX(-1);
+}
+
+.auth-card[dir='rtl'] .field__toggle {
+  transform: translateY(-50%) scaleX(-1);
+}
+
+.auth-card[dir='rtl'] .field__label,
+.auth-card[dir='rtl'] .field__error,
+.auth-card[dir='rtl'] .field__hint {
+  text-align: right;
+}
+
+.auth-card[dir='ltr'] .field__label,
+.auth-card[dir='ltr'] .field__error,
+.auth-card[dir='ltr'] .field__hint {
+  text-align: left;
 }
 
 // Brand panel, matched to the design: the dark-blue streaked artwork (a diagonal gradient plus a

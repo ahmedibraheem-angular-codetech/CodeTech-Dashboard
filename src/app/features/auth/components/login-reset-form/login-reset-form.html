@@ -1,4 +1,10 @@
-<form class="reset-form" [formGroup]="form()" (ngSubmit)="onSubmit()" novalidate>
+<form
+  class="reset-form"
+  [formGroup]="form()"
+  [attr.dir]="lang.language() === 'ar' ? 'rtl' : 'ltr'"
+  (ngSubmit)="onSubmit()"
+  novalidate
+>
   <h1>{{ lang.t('auth.resetTitle') }}</h1>
 
   <label class="field">

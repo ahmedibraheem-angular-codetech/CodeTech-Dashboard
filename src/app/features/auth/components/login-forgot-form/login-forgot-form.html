@@ -1,4 +1,10 @@
-<form class="forgot-form" [formGroup]="form()" (ngSubmit)="onSubmit()" novalidate>
+<form
+  class="forgot-form"
+  [formGroup]="form()"
+  [attr.dir]="lang.language() === 'ar' ? 'rtl' : 'ltr'"
+  (ngSubmit)="onSubmit()"
+  novalidate
+>
   <app-button
     styleClass="back-btn"
     type="button"

@@ -72,14 +72,13 @@
     align-items: center;
     // Keep equal insets on all sides (scaled down from the desktop 52px).
     padding: 24px;
-  }
-
-  .auth-brand {
-    padding: 24px 16px;
+    view-transition-name: none;
   }
 
   .auth-brand {
     display: none;
+    padding: 24px 16px;
+    view-transition-name: none;
   }
 }
 

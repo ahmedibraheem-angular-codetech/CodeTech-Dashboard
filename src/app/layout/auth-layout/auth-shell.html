@@ -1,8 +1,13 @@
-<div class="auth-shell">
+<div
+  class="auth-shell"
+  [attr.dir]="lang.language() === 'ar' ? 'rtl' : 'ltr'"
+  [class.auth-shell--ar]="lang.language() === 'ar'"
+  [class.auth-shell--en]="lang.language() === 'en'"
+>
   <div class="auth-frame">
     <section class="auth-brand">
       <div class="auth-brand__top">
-        <button type="button" class="lang-pill" (click)="lang.toggle()">
+        <button type="button" class="lang-pill" (click)="swapLanguage()">
           <span>{{ lang.language() === 'ar' ? 'العربية' : 'English' }}</span>
           @if (lang.language() === 'ar') {
             <img class="lang-pill__flag" src="images/flag-sa.svg" alt="" aria-hidden="true" />

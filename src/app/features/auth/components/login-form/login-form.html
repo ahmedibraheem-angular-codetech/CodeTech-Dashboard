@@ -1,4 +1,9 @@
-<form [formGroup]="form()" (ngSubmit)="onSubmit()" novalidate>
+<form
+  [formGroup]="form()"
+  [attr.dir]="lang.language() === 'ar' ? 'rtl' : 'ltr'"
+  (ngSubmit)="onSubmit()"
+  novalidate
+>
   <h1>{{ lang.t('auth.loginTitle') }}</h1>
 
   <label class="field">

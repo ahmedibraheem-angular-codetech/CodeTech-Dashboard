@@ -30,4 +30,20 @@ describe('AuthShell brand panel', () => {
     expect(root.querySelector('.lang-pill__badge')?.textContent?.trim()).toBe('EN');
     expect(root.querySelector('.lang-pill__flag')).toBeNull();
   });
+
+  it('sets the shell and card dir to rtl for Arabic and ltr after toggle', () => {
+    const { fixture, root } = render();
+    const shell = root.querySelector('.auth-shell');
+    const card = root.querySelector('.auth-card');
+
+    expect(TestBed.inject(LanguageService).language()).toBe('ar');
+    expect(shell?.getAttribute('dir')).toBe('rtl');
+    expect(card?.getAttribute('dir')).toBe('rtl');
+
+    root.querySelector<HTMLButtonElement>('.lang-pill')?.click();
+    fixture.detectChanges();
+
+    expect(shell?.getAttribute('dir')).toBe('ltr');
+    expect(card?.getAttribute('dir')).toBe('ltr');
+  });
 });
