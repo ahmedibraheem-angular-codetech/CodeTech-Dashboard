@@ -167,11 +167,23 @@
   padding-inline-end: var(--p-inputtext-padding-x);
 }
 
-// Arabic auth inputs: typing starts from the left; icons stay on the left and are mirrored.
+// Arabic inputs: typing from the left; icons pinned to the physical right.
 .auth-card[dir='rtl'] .p-iconfield .p-inputtext,
 .auth-card[dir='rtl'] .p-inputtext {
   direction: ltr;
   text-align: left;
+  unicode-bidi: plaintext;
+}
+
+// Empty field: show the placeholder from the right; filled field keeps left typing.
+.auth-card[dir='rtl'] .p-inputtext:placeholder-shown {
+  direction: rtl;
+  text-align: right;
+}
+
+.auth-card[dir='rtl'] .p-inputtext::placeholder {
+  direction: rtl;
+  text-align: right;
   unicode-bidi: plaintext;
 }
 
@@ -181,18 +193,25 @@
   text-align: left;
 }
 
-// Icon is last-child → inline-end. In RTL that is the physical left (Figma).
-.auth-card[dir='rtl'] .p-iconfield .p-inputtext:not(:last-child) {
-  padding-inline-end: calc((var(--p-form-field-padding-x, 20px) * 2) + 1rem);
-  padding-inline-start: var(--p-inputtext-padding-x, 20px);
+.auth-card[dir='ltr'] .p-inputtext::placeholder {
+  direction: ltr;
+  text-align: left;
 }
 
-.auth-card[dir='rtl'] .p-inputicon {
-  transform: scaleX(-1);
+// In RTL, inline-start = right — put the trailing icon there.
+.auth-card[dir='rtl'] .p-iconfield .p-inputicon:last-child {
+  inset-inline-end: auto;
+  inset-inline-start: var(--p-form-field-padding-x, 20px);
+}
+
+.auth-card[dir='rtl'] .p-iconfield .p-inputtext:not(:last-child) {
+  padding-inline-end: var(--p-inputtext-padding-x, 20px);
 }
 
 .auth-card[dir='rtl'] .field__toggle {
-  transform: translateY(-50%) scaleX(-1);
+  inset-inline-end: auto;
+  inset-inline-start: 6px;
+  transform: translateY(-50%);
 }
 
 .auth-card[dir='rtl'] .field__label,

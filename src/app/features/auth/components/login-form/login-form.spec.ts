@@ -22,12 +22,15 @@ import { LoginForm, type LoginFormGroup } from './login-form';
         text-align: left;
       }
 
-      .auth-card[dir='rtl'] .p-inputicon {
-        transform: scaleX(-1);
+      .auth-card[dir='rtl'] .p-iconfield .p-inputicon:last-child {
+        inset-inline-end: auto;
+        inset-inline-start: 20px;
       }
 
       .auth-card[dir='rtl'] .field__toggle {
-        transform: translateY(-50%) scaleX(-1);
+        inset-inline-end: auto;
+        inset-inline-start: 6px;
+        transform: translateY(-50%);
       }
 
       .auth-card[dir='ltr'] .p-iconfield .p-inputtext,
@@ -36,8 +39,9 @@ import { LoginForm, type LoginFormGroup } from './login-form';
         text-align: left;
       }
 
-      .auth-card[dir='ltr'] .p-inputicon {
-        transform: none;
+      .auth-card[dir='ltr'] .p-iconfield .p-inputicon:last-child {
+        inset-inline-start: auto;
+        inset-inline-end: 20px;
       }
     `,
   ],
@@ -63,33 +67,33 @@ describe('LoginForm Arabic input direction', () => {
     };
   }
 
-  it('keeps Arabic form dir=rtl while input typing starts from the left', () => {
+  it('starts typing from the left and pins icons to the right in Arabic', () => {
     const { root, lang } = render();
     expect(lang.language()).toBe('ar');
 
     const form = root.querySelector('form');
+    const card = root.querySelector('.auth-card');
     const email = root.querySelector<HTMLInputElement>('#email');
     const password = root.querySelector<HTMLInputElement>('#password');
     const icon = root.querySelector<HTMLElement>('.p-inputicon');
 
     expect(form?.getAttribute('dir')).toBe('rtl');
-    expect(root.querySelector('.auth-card')?.getAttribute('dir')).toBe('rtl');
-
+    expect(card?.getAttribute('dir')).toBe('rtl');
     expect(email).not.toBeNull();
     expect(password).not.toBeNull();
+    expect(icon).not.toBeNull();
+
     expect(getComputedStyle(email!).direction).toBe('ltr');
     expect(getComputedStyle(email!).textAlign).toBe('left');
     expect(getComputedStyle(password!).direction).toBe('ltr');
     expect(getComputedStyle(password!).textAlign).toBe('left');
 
-    expect(icon).not.toBeNull();
-    const iconTransform = getComputedStyle(icon!).transform;
-    expect(
-      iconTransform.includes('matrix(-1') || iconTransform.includes('scaleX(-1)'),
-    ).toBe(true);
+    // In RTL, inline-start is the physical right.
+    expect(getComputedStyle(icon!).insetInlineStart).toBe('20px');
+    expect(getComputedStyle(icon!).insetInlineEnd).toBe('auto');
   });
 
-  it('does not flip icons in English and keeps left-start typing', () => {
+  it('keeps left-start typing and end-side icons for English', () => {
     const { fixture, root, lang } = render();
     lang.set('en');
     fixture.detectChanges();
@@ -102,8 +106,7 @@ describe('LoginForm Arabic input direction', () => {
     expect(root.querySelector('.auth-card')?.getAttribute('dir')).toBe('ltr');
     expect(getComputedStyle(email!).direction).toBe('ltr');
     expect(getComputedStyle(email!).textAlign).toBe('left');
-
-    const transform = getComputedStyle(icon!).transform;
-    expect(transform === 'none' || transform === 'matrix(1, 0, 0, 1, 0, 0)').toBe(true);
+    expect(getComputedStyle(icon!).insetInlineEnd).toBe('20px');
+    expect(getComputedStyle(icon!).insetInlineStart).toBe('auto');
   });
 });
