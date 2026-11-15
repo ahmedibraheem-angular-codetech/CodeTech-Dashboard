@@ -45,9 +45,11 @@
 .auth-panel {
   display: flex;
   flex-direction: column;
-  align-items: end;
+  // Center the form so left/right inset matches Figma’s equal 52px padding.
+  align-items: center;
   justify-content: center;
   gap: clamp(24px, 3.6vw, 52px);
+  // Figma: 52px top / right / bottom / left — clamp only shrinks on small viewports.
   padding: clamp(24px, 3.6vw, 52px);
   overflow-y: auto;
   border: 1px solid #e3e8f2;
@@ -56,6 +58,7 @@
 
 .auth-card,
 .auth-card form {
+  // 586 panel − 52×2 padding = 482 content width at the design size.
   width: min(482px, 100%);
   display: flex;
   flex-direction: column;
