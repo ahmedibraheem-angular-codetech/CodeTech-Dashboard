@@ -25,11 +25,17 @@
             "browser": "src/main.ts",
             "tsConfig": "tsconfig.app.json",
             "inlineStyleLanguage": "scss",
+            "allowedCommonJsDependencies": ["quill-delta"],
             "assets": [
               {
                 "glob": "**/*",
                 "input": "public",
                 "ignore": ["in18/**"]
+              },
+              {
+                "glob": ".htaccess",
+                "input": "public",
+                "output": "/"
               }
             ],
             "stylePreprocessorOptions": {
@@ -47,6 +53,7 @@
           },
           "configurations": {
             "production": {
+              "baseHref": "/dashboard/",
               "fileReplacements": [
                 {
                   "replace": "src/environments/environment.ts",

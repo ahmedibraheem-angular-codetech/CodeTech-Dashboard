@@ -29,5 +29,5 @@ export const ICON_LIBRARY_IDS = [
 export type IconLibraryId = (typeof ICON_LIBRARY_IDS)[number];
 
 export function iconLibrarySrc(id: string): string {
-  return `/iconLibrary/${id}.svg`;
+  return `iconLibrary/${id}.svg`;
 }
