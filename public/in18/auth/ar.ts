@@ -3,6 +3,7 @@ import type { en } from './en';
 export const ar: { [K in keyof typeof en]: string } = {
   'auth.loginTitle': 'تسجيل الدخول',
   'auth.email': 'البريد الإلكتروني',
+  'auth.emailPlaceholder': 'ادخل البريد الإلكتروني',
   'auth.password': 'كلمة المرور',
   'auth.passwordPlaceholder': 'ادخل كلمة المرور',
   'auth.remember': 'تذكرني',

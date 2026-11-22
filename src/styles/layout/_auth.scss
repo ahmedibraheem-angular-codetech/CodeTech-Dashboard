@@ -167,7 +167,7 @@
   padding-inline-end: var(--p-inputtext-padding-x);
 }
 
-// Arabic inputs: typing from the left; icons pinned to the physical right.
+// Arabic inputs: typing from the left (same for email + password); icons on the right.
 .auth-card[dir='rtl'] .p-iconfield .p-inputtext,
 .auth-card[dir='rtl'] .p-inputtext {
   direction: ltr;
@@ -175,16 +175,29 @@
   unicode-bidi: plaintext;
 }
 
-// Empty field: show the placeholder from the right; filled field keeps left typing.
-.auth-card[dir='rtl'] .p-inputtext:placeholder-shown {
+// Placeholder on the right only while empty and unfocused — focus keeps caret on the left.
+.auth-card[dir='rtl'] .p-inputtext:placeholder-shown:not(:focus) {
   direction: rtl;
   text-align: right;
+}
+
+.auth-card[dir='rtl'] .p-inputtext:focus,
+.auth-card[dir='rtl'] .p-inputtext:not(:placeholder-shown) {
+  direction: ltr;
+  text-align: left;
 }
 
 .auth-card[dir='rtl'] .p-inputtext::placeholder {
   direction: rtl;
   text-align: right;
   unicode-bidi: plaintext;
+}
+
+// Drop the placeholder as soon as the user focuses or types.
+.auth-card .p-inputtext:focus::placeholder,
+.auth-card .p-inputtext:not(:placeholder-shown)::placeholder {
+  color: transparent;
+  opacity: 0;
 }
 
 .auth-card[dir='ltr'] .p-iconfield .p-inputtext,
@@ -198,19 +211,52 @@
   text-align: left;
 }
 
-// In RTL, inline-start = right — put the trailing icon there.
+// Icons on the physical right. Use physical inset/padding — inputs are direction:ltr,
+// so padding-inline-* / inset-inline-* resolve against LTR and break the caret/icons.
+.auth-card[dir='rtl'] .p-iconfield {
+  position: relative;
+  overflow: visible;
+}
+
 .auth-card[dir='rtl'] .p-iconfield .p-inputicon:last-child {
-  inset-inline-end: auto;
-  inset-inline-start: var(--p-form-field-padding-x, 20px);
+  inset: auto;
+  top: 50%;
+  left: auto;
+  right: var(--p-form-field-padding-x, 20px);
+  margin-top: calc(-1 * (var(--p-icon-size, 1rem) / 2));
 }
 
 .auth-card[dir='rtl'] .p-iconfield .p-inputtext:not(:last-child) {
-  padding-inline-end: var(--p-inputtext-padding-x, 20px);
+  padding-left: var(--p-inputtext-padding-x, 20px);
+  // Extra room on the right so placeholder/text clear the trailing icon (envelope / eye).
+  padding-right: 44px;
 }
 
-.auth-card[dir='rtl'] .field__toggle {
-  inset-inline-end: auto;
-  inset-inline-start: 6px;
+// Pin the eye toggle inside the field on the physical right.
+// Base `.field__toggle { inset-inline-end }` resolves to the LEFT in RTL and can leave
+// the control outside the input — reset all insets, then set physical `right` only.
+.auth-card[dir='rtl'] .p-iconfield .field__toggle,
+.auth-card[dir='rtl'] .p-iconfield app-button.field__toggle,
+.auth-card form[dir='rtl'] .p-iconfield .field__toggle,
+.auth-card form[dir='rtl'] .p-iconfield app-button.field__toggle {
+  position: absolute;
+  inset: auto;
+  top: 50%;
+  right: 8px;
+  left: auto;
+  width: auto;
+  height: auto;
+  margin: 0;
+  z-index: 2;
+  transform: translateY(-50%);
+}
+
+.auth-card[dir='ltr'] .p-iconfield .field__toggle,
+.auth-card[dir='ltr'] .p-iconfield app-button.field__toggle {
+  inset: auto;
+  top: 50%;
+  right: 8px;
+  left: auto;
   transform: translateY(-50%);
 }
 

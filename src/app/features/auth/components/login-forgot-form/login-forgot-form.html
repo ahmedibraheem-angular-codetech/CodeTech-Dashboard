@@ -26,6 +26,7 @@
         type="email"
         formControlName="email"
         autocomplete="username"
+        [placeholder]="lang.t('auth.emailPlaceholder')"
         [invalid]="emailShowError()"
         [attr.aria-invalid]="form().controls.email.invalid"
         [attr.aria-describedby]="emailShowError() ? 'forgot-email-error' : null"

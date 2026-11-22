@@ -1,6 +1,7 @@
 export const en = {
   'auth.loginTitle': 'Sign in',
   'auth.email': 'Email',
+  'auth.emailPlaceholder': 'Enter your email',
   'auth.password': 'Password',
   'auth.passwordPlaceholder': 'Enter your password',
   'auth.remember': 'Remember me',

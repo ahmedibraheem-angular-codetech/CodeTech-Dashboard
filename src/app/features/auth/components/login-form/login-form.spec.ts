@@ -23,13 +23,16 @@ import { LoginForm, type LoginFormGroup } from './login-form';
       }
 
       .auth-card[dir='rtl'] .p-iconfield .p-inputicon:last-child {
-        inset-inline-end: auto;
-        inset-inline-start: 20px;
+        inset: auto;
+        right: 20px;
+        left: auto;
       }
 
       .auth-card[dir='rtl'] .field__toggle {
-        inset-inline-end: auto;
-        inset-inline-start: 6px;
+        inset: auto;
+        top: 50%;
+        right: 8px;
+        left: auto;
         transform: translateY(-50%);
       }
 
@@ -40,8 +43,9 @@ import { LoginForm, type LoginFormGroup } from './login-form';
       }
 
       .auth-card[dir='ltr'] .p-iconfield .p-inputicon:last-child {
-        inset-inline-start: auto;
-        inset-inline-end: 20px;
+        inset: auto;
+        right: 20px;
+        left: auto;
       }
     `,
   ],
@@ -88,9 +92,14 @@ describe('LoginForm Arabic input direction', () => {
     expect(getComputedStyle(password!).direction).toBe('ltr');
     expect(getComputedStyle(password!).textAlign).toBe('left');
 
-    // In RTL, inline-start is the physical right.
-    expect(getComputedStyle(icon!).insetInlineStart).toBe('20px');
-    expect(getComputedStyle(icon!).insetInlineEnd).toBe('auto');
+    // Physical right — same side as the email envelope (avoids RTL inset-inline flipping the eye out).
+    expect(getComputedStyle(icon!).right).toBe('20px');
+    expect(getComputedStyle(icon!).left).toBe('auto');
+
+    const toggle = root.querySelector<HTMLElement>('.field__toggle');
+    expect(toggle).not.toBeNull();
+    expect(getComputedStyle(toggle!).right).toBe('8px');
+    expect(getComputedStyle(toggle!).left).toBe('auto');
   });
 
   it('keeps left-start typing and end-side icons for English', () => {
@@ -106,7 +115,7 @@ describe('LoginForm Arabic input direction', () => {
     expect(root.querySelector('.auth-card')?.getAttribute('dir')).toBe('ltr');
     expect(getComputedStyle(email!).direction).toBe('ltr');
     expect(getComputedStyle(email!).textAlign).toBe('left');
-    expect(getComputedStyle(icon!).insetInlineEnd).toBe('20px');
-    expect(getComputedStyle(icon!).insetInlineStart).toBe('auto');
+    expect(getComputedStyle(icon!).right).toBe('20px');
+    expect(getComputedStyle(icon!).left).toBe('auto');
   });
 });
