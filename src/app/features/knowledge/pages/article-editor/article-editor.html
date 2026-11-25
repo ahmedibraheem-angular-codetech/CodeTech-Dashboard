@@ -1,5 +1,5 @@
 <section class="page kb-editor">
-  <app-page-header [title]="title()" [subtitle]="lang.t('knowledge.editorSubtitle')">
+  <app-page-header [title]="title()" [subtitle]="ct('knowledge.editorSubtitle')">
     @if (mode === 'edit') {
       <app-button
         *appHasPermission="'knowledge_center.delete'"
@@ -8,7 +8,7 @@
         [outlined]="true"
         icon="pi pi-trash"
         iconPos="end"
-        [label]="lang.t('knowledge.delete')"
+        [label]="ct('knowledge.delete')"
         [disabled]="saving() || status() !== 'ready'"
         (clicked)="remove()"
       />
@@ -18,7 +18,7 @@
         variant="outlined"
         [icon]="article()?.featured ? 'pi pi-star-fill' : 'pi pi-star'"
         iconPos="end"
-        [label]="lang.t(article()?.featured ? 'knowledge.unfeature' : 'knowledge.feature')"
+        [label]="ct(article()?.featured ? 'knowledge.unfeature' : 'knowledge.feature')"
         [disabled]="saving() || status() !== 'ready'"
         (clicked)="toggleFeatured()"
       />
@@ -27,7 +27,7 @@
         variant="outlined"
         icon="pi pi-undo"
         iconPos="end"
-        [label]="lang.t('knowledge.undo')"
+        [label]="ct('knowledge.undo')"
         [disabled]="saving() || status() !== 'ready'"
         (clicked)="undo()"
       />
@@ -35,7 +35,7 @@
         styleClass="kb-editor__primary"
         icon="pi pi-save"
         iconPos="end"
-        [label]="lang.t('common.saveChanges')"
+        [label]="ct('common.saveChanges')"
         [loading]="saving()"
         [disabled]="status() !== 'ready'"
         (clicked)="save()"
@@ -46,7 +46,7 @@
         variant="outlined"
         icon="pi pi-file"
         iconPos="end"
-        [label]="lang.t('knowledge.saveDraft')"
+        [label]="ct('knowledge.saveDraft')"
         [disabled]="saving()"
         (clicked)="saveDraft()"
       />
@@ -54,7 +54,7 @@
         styleClass="kb-editor__primary"
         icon="pi pi-send"
         iconPos="end"
-        [label]="lang.t('knowledge.publish')"
+        [label]="ct('knowledge.publish')"
         [loading]="saving()"
         (clicked)="publish()"
       />
@@ -118,6 +118,7 @@
                 <label class="field">
                   <span class="field__label">{{ ct('knowledge.fieldCategory') }}</span>
                   <p-select
+                    [ariaLabel]="ct('knowledge.fieldCategory')"
                     [fluid]="true"
                     formControlName="categoryId"
                     [options]="categoryOptions()"
@@ -150,6 +151,7 @@
                 <label class="field">
                   <span class="field__label">{{ ct('knowledge.fieldReading') }}</span>
                   <p-select
+                    [ariaLabel]="ct('knowledge.fieldReading')"
                     [fluid]="true"
                     formControlName="readingMinutes"
                     [options]="readingOptions()"
@@ -247,6 +249,9 @@
                     <input pInputText dir="ltr" [fluid]="true" formControlName="slug" />
                     <p-inputicon class="pi pi-link" />
                   </p-iconfield>
+                  @if (slugInvalid()) {
+                    <app-field-error>{{ ct('knowledge.slugError') }}</app-field-error>
+                  }
                 </label>
 
                 <div class="field kb-editor__wide">
@@ -258,7 +263,7 @@
                         <button
                           type="button"
                           class="kb-keyword__remove"
-                          [attr.aria-label]="lang.t('common.close')"
+                          [attr.aria-label]="ct('common.close')"
                           (click)="removeKeyword(tag)"
                         >
                           <i class="pi pi-times" aria-hidden="true"></i>
@@ -386,7 +391,7 @@
                 styleClass="kb-editor__quill-root"
                 [placeholder]="ct('knowledge.fieldContentPh')"
                 [style]="{ minHeight: '420px' }"
-                (onInit)="onEditorInit($event)"
+                (onInit)="onEditorInit($event, 'contentAr')"
               >
                 <p-header>
                   <ng-container [ngTemplateOutlet]="toolbar" />
@@ -398,7 +403,7 @@
                 styleClass="kb-editor__quill-root"
                 [placeholder]="ct('knowledge.fieldContentPh')"
                 [style]="{ minHeight: '420px' }"
-                (onInit)="onEditorInit($event)"
+                (onInit)="onEditorInit($event, 'contentEn')"
               >
                 <p-header>
                   <ng-container [ngTemplateOutlet]="toolbar" />
@@ -431,7 +436,7 @@
       <small>{{ ct('knowledge.uploadFormats') }}</small>
     </label>
     @if (errorOf(slot); as error) {
-      <p class="field__error" role="alert">{{ lang.t(error) }}</p>
+      <p class="field__error" role="alert">{{ ct(error) }}</p>
     }
     @if (imageOf(slot); as file) {
       <div class="image-file">
@@ -449,7 +454,7 @@
           variant="secondary"
           icon="pi pi-trash"
           size="small"
-          [ariaLabel]="lang.t('knowledge.removeImage')"
+          [ariaLabel]="ct('knowledge.removeImage')"
           (clicked)="removeImage(slot)"
         />
       </div>

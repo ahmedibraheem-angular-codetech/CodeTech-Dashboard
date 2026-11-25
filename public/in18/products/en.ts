@@ -157,6 +157,7 @@ export const en = {
   'product.uploadHint': 'Click To Upload An Image Or Drag And Drop It Here',
   'product.uploadTypes': 'PNG,JPG. Maximum Size 5 MB',
   'product.uploadTooLarge': 'This Image Exceeds The 5 MB Limit.',
+  'product.uploadInvalidType': 'Only PNG Or JPG Images Are Supported.',
   'product.clearImage': 'Remove Image',
   'product.chooseLibrary': 'Choose From The Library',
   'product.viewIcon': 'View The Icon',

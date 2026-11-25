@@ -92,7 +92,6 @@ describe('LoginForm Arabic input direction', () => {
     expect(getComputedStyle(password!).direction).toBe('ltr');
     expect(getComputedStyle(password!).textAlign).toBe('left');
 
-    // Physical right — same side as the email envelope (avoids RTL inset-inline flipping the eye out).
     expect(getComputedStyle(icon!).right).toBe('20px');
     expect(getComputedStyle(icon!).left).toBe('auto');
 

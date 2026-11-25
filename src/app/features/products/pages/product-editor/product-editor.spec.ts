@@ -107,10 +107,10 @@ describe('ProductEditor', () => {
 
     expect(document.documentElement.dir).toBe('rtl');
     expect(root.querySelector('.editor-card')?.getAttribute('dir')).toBe('ltr');
-    expect(root.textContent).toContain('إضافة منتج جديد');
-    expect(root.textContent).toContain('Product title');
-    expect(root.textContent).toContain('Product features');
-    expect(root.textContent).toContain('Add a feature');
+    expect(root.textContent).toContain('Add A New Product');
+    expect(root.textContent).toContain('Product Title');
+    expect(root.textContent).toContain('Product Features');
+    expect(root.textContent).toContain('Add A Feature');
   });
 
   it('uses tabs on the edit flow and keeps the product name', async () => {
@@ -661,7 +661,7 @@ describe('ProductEditor', () => {
     expect(editor.locale()).toBe('en');
     expect(editor.step()).toBe(0);
     expect(editor.summaryInvalid()).toBe(true);
-    expect(root.textContent).toContain('Short description must not exceed 300 characters.');
+    expect(root.textContent).toContain('Short Description Must Not Exceed 300 Characters.');
   });
 
   it('maps 422 field errors to nested UI fields, navigates to the step, and clears them on edit', async () => {
@@ -714,6 +714,36 @@ describe('ProductEditor', () => {
     editor.setSectorImage(0, { name: 'b.png', url: 'blob:sector/1' }, 'ar');
     fixture.detectChanges();
     expect(editor.serverErrors()['sectors.0.image.ar']).toBeUndefined();
+  });
+
+  it('shows a message and keeps the entered values when an image upload is rejected with 422', async () => {
+    const fixture = await render('edit', 'info-system');
+    const root: HTMLElement = fixture.nativeElement;
+    const editor = fixture.componentInstance;
+    const api = TestBed.inject(ProductsService);
+    const add = vi.spyOn(TestBed.inject(MessageService), 'add');
+    const nameBefore = editor.draft().name.ar;
+    const stepBefore = editor.step();
+    vi.spyOn(api, 'save').mockReturnValue(
+      throwError(
+        () =>
+          new ApiError(422, 'The file field must be a file of type: png, jpg, jpeg.', {
+            file: ['The file field must be a file of type: png, jpg, jpeg.'],
+          }),
+      ),
+    );
+
+    clickButton(root, 'حفظ كمسودة');
+    await settle(fixture);
+
+    expect(add).toHaveBeenCalledWith(
+      expect.objectContaining({
+        severity: 'error',
+        summary: 'The file field must be a file of type: png, jpg, jpeg.',
+      }),
+    );
+    expect(editor.draft().name.ar).toBe(nameBefore);
+    expect(editor.step()).toBe(stepBefore);
   });
 
   it('blocks leaving the SEO step and publishing when slug or keywords are invalid', async () => {
@@ -806,7 +836,7 @@ describe('ProductEditor', () => {
     expect(editor.step()).toBe(7);
     expect(editor.locale()).toBe('en');
     expect(editor.keywordsInvalid()).toBe(true);
-    expect(root.textContent).toContain('Each keyword must not exceed 50 characters.');
+    expect(root.textContent).toContain('Each Keyword Must Not Exceed 50 Characters.');
   });
 
   it('blocks navigation and save for incomplete workflow steps without discarding partial input', async () => {

@@ -12,7 +12,6 @@ import { BrandLogo } from '../../shared/components/brand-logo/brand-logo';
 export class AuthShell {
   readonly lang = inject(LanguageService);
 
-  /** Swap brand ↔ panel sides with a view transition when the language flips. */
   protected swapLanguage(): void {
     const reduceMotion =
       typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches;

@@ -13,7 +13,6 @@ export function serverErrorMessage(errors: FieldErrors, path: string): string {
   return errors[path]?.[0] ?? '';
 }
 
-/** First message whose key equals `prefix` or starts with `prefix.`. */
 export function serverErrorPrefixMessage(errors: FieldErrors, prefix: string): string {
   const exact = errors[prefix]?.[0];
   if (exact) {
@@ -58,7 +57,6 @@ export function localeFromServerPath(path: string): AppLanguage | null {
   return match?.[1] === 'ar' || match?.[1] === 'en' ? match[1] : null;
 }
 
-/** Wizard step index for a Laravel-style dotted project write error key. */
 export function projectStepIndexForServerPath(path: string): number {
   const root = path.split('.')[0] ?? '';
   const id = (() => {
@@ -199,7 +197,6 @@ export function identityBodyErrorMessage(
   );
 }
 
-/** First human-readable message from a Laravel-style fieldErrors map. */
 export function firstFieldErrorMessage(errors: FieldErrors): string {
   for (const messages of Object.values(errors)) {
     if (messages[0]) {

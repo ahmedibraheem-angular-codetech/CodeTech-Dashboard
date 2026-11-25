@@ -92,6 +92,7 @@ import {
   clearServerErrorPrefix,
   faqAnswerErrorMessage,
   faqQuestionErrorMessage,
+  firstFieldErrorMessage,
   highlightTitleErrorMessage,
   identityTitleErrorMessage,
   integrationImageErrorMessage,
@@ -201,21 +202,21 @@ export class ProductEditor {
   readonly wizardSteps = computed(() =>
     this.steps.map((item) => ({
       id: item.id,
-      label: this.lang.t(item.labelKey),
+      label: this.copy(item.labelKey),
       labelKey: item.labelKey,
     })),
   );
   readonly shellLabels = computed<EditorShellLabels>(() => ({
-    saveDraft: this.lang.t('product.saveDraft'),
-    publish: this.lang.t('product.publish'),
-    unpublish: this.lang.t('product.unpublish'),
-    save: this.lang.t('common.save'),
-    next: this.lang.t('product.next'),
-    previous: this.lang.t('product.previous'),
-    finish: this.lang.t('product.finish'),
-    loading: this.lang.t('common.loading'),
-    missing: this.lang.t('product.notFound'),
-    error: this.lang.t('common.error'),
+    saveDraft: this.copy('product.saveDraft'),
+    publish: this.copy('product.publish'),
+    unpublish: this.copy('product.unpublish'),
+    save: this.copy('common.save'),
+    next: this.copy('product.next'),
+    previous: this.copy('product.previous'),
+    finish: this.copy('product.finish'),
+    loading: this.copy('common.loading'),
+    missing: this.copy('product.notFound'),
+    error: this.copy('common.error'),
   }));
   readonly lastStep = computed(() => this.step() === PRODUCT_STEPS.length - 1);
 
@@ -840,10 +841,14 @@ export class ProductEditor {
         error: (error: unknown) => {
           if (isApiError(error) && error.kind === 'validation') {
             this.applyServerErrors(error.fieldErrors);
-            if (Object.keys(error.fieldErrors).length === 0) {
+            const uploadFailed = 'file' in error.fieldErrors || 'type' in error.fieldErrors;
+            if (uploadFailed || Object.keys(error.fieldErrors).length === 0) {
               this.messages.add({
                 severity: 'error',
-                summary: error.serverMessage ?? this.lang.t('common.error'),
+                summary:
+                  error.serverMessage ||
+                  firstFieldErrorMessage(error.fieldErrors) ||
+                  this.lang.t('common.error'),
               });
             }
             return;

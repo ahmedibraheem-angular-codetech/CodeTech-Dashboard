@@ -276,17 +276,17 @@ describe('ProjectDetailPage', () => {
     fixture.detectChanges();
     const root: HTMLElement = fixture.nativeElement;
 
-    expect(root.textContent).toContain('About the project');
+    expect(root.textContent).toContain('About The Project');
     expect(root.textContent).toContain('Why this project');
 
-    openTab(fixture, 'Key challenges');
-    expect(root.textContent).toContain('Key project challenges');
+    openTab(fixture, 'Key Challenges');
+    expect(root.textContent).toContain('Key Project Challenges');
     expect(root.textContent).toContain('Integration complexity');
-    expect(root.textContent).toContain('Digital integration');
+    expect(root.textContent).toContain('Digital Integration');
     expect(root.textContent).toContain('Integration tool');
 
-    openTab(fixture, 'Solutions and gallery');
-    expect(root.textContent).toContain('Provided solutions');
+    openTab(fixture, 'Solutions And Gallery');
+    expect(root.textContent).toContain('Provided Solutions');
     expect(root.textContent).toContain('Unified platform');
   });
 

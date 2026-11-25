@@ -42,13 +42,6 @@ const CATEGORIES_PATH = 'admin/article-categories';
 const ARTICLES_PATH = 'admin/articles';
 const PAGE_SIZE = 100;
 
-/**
- * Knowledge Center articles & categories.
- * Article list is fetched across pages so the board can keep client-side
- * search/status/date filtering. Category reorder is unused — the UI has no handle.
- * Media uses coat-check: omit to keep, null to remove, UUID to set.
- * Rich-text images use MediaService.uploadEditorImage (URL into HTML, not UUID).
- */
 @Injectable({ providedIn: 'root' })
 export class KnowledgeService {
   private readonly http = inject(HttpClient);

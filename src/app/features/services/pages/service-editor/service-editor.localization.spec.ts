@@ -19,8 +19,8 @@ describe('ServiceEditor', () => {
       fixture.detectChanges();
       expect(editor.locale()).toBe('en');
       expect(panel()?.getAttribute('dir')).toBe('ltr');
-      expect(root.textContent).toContain('Service details');
-      expect(root.textContent).toContain('Why we need the service');
+      expect(root.textContent).toContain('Service Details');
+      expect(root.textContent).toContain('Why We Need The Service');
       expect(root.textContent).not.toContain('بيانات الخدمة');
     });
 
@@ -28,12 +28,12 @@ describe('ServiceEditor', () => {
       const { fixture, editor, root } = await render('edit', 'web-development');
       editor.useLocale('en');
       const expected: [number, string][] = [
-        [1, 'Solution title'],
-        [2, 'Stage title'],
-        [3, 'Feature title'],
-        [4, 'Choose the projects that belong to this service'],
-        [5, 'Upload sector image'],
-        [6, 'Add a new question'],
+        [1, 'Solution Title'],
+        [2, 'Stage Title'],
+        [3, 'Feature Title'],
+        [4, 'Choose The Projects That Belong To This Service'],
+        [5, 'Upload Sector Image'],
+        [6, 'Add A New Question'],
       ];
       for (const [step, text] of expected) {
         editor.select(step);
@@ -55,7 +55,6 @@ describe('ServiceEditor', () => {
       expect(root.querySelector('app-product-upload')).not.toBeNull();
       expect(root.querySelectorAll('.uploader__action').length).toBeGreaterThanOrEqual(2);
 
-      // Icon refs open the library panel; switch to upload to assert seeded icon previews.
       for (const upload of root.querySelectorAll('app-product-upload')) {
         const tabs = [...upload.querySelectorAll('.uploader__action')] as HTMLButtonElement[];
         tabs[0]?.click();

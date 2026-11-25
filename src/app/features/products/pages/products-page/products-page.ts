@@ -2,6 +2,7 @@ import {
   ChangeDetectionStrategy,
   Component,
   DestroyRef,
+  computed,
   effect,
   inject,
   signal,
@@ -57,7 +58,13 @@ export class ProductsPageManage {
   readonly editorOpen = signal(false);
   readonly editorKind = signal<EditorKind>('feature');
   readonly editorMode = signal<'create' | 'edit'>('create');
-  readonly editorTitle = signal('');
+  protected readonly editorTitle = computed(() => {
+    const edit = this.editorMode() === 'edit';
+    if (this.editorKind() === 'feature') {
+      return this.ct(edit ? 'product.page.editFeature' : 'product.page.addFeature');
+    }
+    return this.ct(edit ? 'product.page.editSector' : 'product.page.addSector');
+  });
   readonly locale = signal<AppLanguage>(this.lang.language());
   readonly draftFeature = signal<ProductsPageFeature>(productsPageFeature());
   readonly draftSector = signal<ProductsPageSector>(productsPageSector());
@@ -73,14 +80,15 @@ export class ProductsPageManage {
     return readLocale(value, this.locale());
   }
 
+  protected ct(key: string): string {
+    return this.lang.lookup(key, this.locale()) ?? this.lang.t(key);
+  }
+
   protected openFeature(feature?: ProductsPageFeature): void {
     this.editorKind.set('feature');
     this.editorMode.set(feature ? 'edit' : 'create');
     this.locale.set(this.lang.language());
     this.draftFeature.set(feature ? structuredClone(feature) : productsPageFeature());
-    this.editorTitle.set(
-      feature ? this.lang.t('product.page.editFeature') : this.lang.t('product.page.addFeature'),
-    );
     this.editorOpen.set(true);
   }
 
@@ -89,17 +97,14 @@ export class ProductsPageManage {
     this.editorMode.set(sector ? 'edit' : 'create');
     this.locale.set(this.lang.language());
     this.draftSector.set(sector ? structuredClone(sector) : productsPageSector());
-    this.editorTitle.set(
-      sector ? this.lang.t('product.page.editSector') : this.lang.t('product.page.addSector'),
-    );
     this.editorOpen.set(true);
   }
 
   protected saveLabel(): string {
     if (this.editorKind() === 'feature' && this.editorMode() === 'create') {
-      return this.lang.t('product.page.addFeatureAction');
+      return this.ct('product.page.addFeatureAction');
     }
-    return this.lang.t('common.saveChanges');
+    return this.ct('common.saveChanges');
   }
 
   protected saveEditor(): void {

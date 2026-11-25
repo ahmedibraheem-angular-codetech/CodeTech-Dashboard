@@ -90,7 +90,7 @@
         "test": {
           "builder": "@angular/build:unit-test",
           "options": {
-            "setupFiles": ["src/testing/match-media.setup.ts"]
+            "setupFiles": ["src/testing/match-media.setup.ts", "src/testing/language-reset.setup.ts"]
           }
         },
         "lint": {

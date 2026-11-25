@@ -23,7 +23,6 @@ export function isUserStatus(value: string): value is UserStatus {
   return (USER_STATUSES as readonly string[]).includes(value);
 }
 
-/** Existing copy whose meaning matches the backend status. Unknown statuses have no label key. */
 export function userStatusLabelKey(status: UserStatus | null): string | null {
   if (status === 'active') {
     return 'status.active';
@@ -105,7 +104,6 @@ export function mapUserStats(dto: UserStatsDto): UserStats {
   };
 }
 
-/** Writable body. Avatar is included only when the caller resolved a new UUID or a removal. */
 export function toUserWriteDto(draft: UserDraft, avatar: string | null | undefined): UserWriteDto {
   if (!isUserStatus(draft.status)) {
     throw new Error('invalid-user-status');

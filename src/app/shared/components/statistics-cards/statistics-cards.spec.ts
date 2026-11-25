@@ -105,7 +105,6 @@ describe('StatisticsCards', () => {
 
   function settle(fixture: { detectChanges(): void }): void {
     fixture.detectChanges();
-    // afterNextRender + observer microtasks
     flushFrames(0);
     fixture.detectChanges();
   }

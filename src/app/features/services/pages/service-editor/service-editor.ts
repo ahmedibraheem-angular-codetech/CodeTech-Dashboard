@@ -141,21 +141,21 @@ export class ServiceEditor {
   readonly wizardSteps = computed(() =>
     this.steps.map((item) => ({
       id: item.id,
-      label: this.lang.t(item.labelKey),
+      label: this.copy(item.labelKey),
       labelKey: item.labelKey,
     })),
   );
   readonly shellLabels = computed<EditorShellLabels>(() => ({
-    saveDraft: this.lang.t('service.saveDraft'),
-    publish: this.lang.t('service.publish'),
-    unpublish: this.lang.t('service.unpublish'),
-    save: this.lang.t('common.save'),
-    next: this.lang.t('service.next'),
-    previous: this.lang.t('service.previous'),
-    finish: this.lang.t('service.finish'),
-    loading: this.lang.t('common.loading'),
-    missing: this.lang.t('service.notFound'),
-    error: this.lang.t('common.error'),
+    saveDraft: this.copy('service.saveDraft'),
+    publish: this.copy('service.publish'),
+    unpublish: this.copy('service.unpublish'),
+    save: this.copy('common.save'),
+    next: this.copy('service.next'),
+    previous: this.copy('service.previous'),
+    finish: this.copy('service.finish'),
+    loading: this.copy('common.loading'),
+    missing: this.copy('service.notFound'),
+    error: this.copy('common.error'),
   }));
   readonly lastStep = computed(() => this.step() === SERVICE_STEPS.length - 1);
 

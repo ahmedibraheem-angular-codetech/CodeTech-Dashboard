@@ -12,11 +12,9 @@ export function readLocale(value: LocaleText, language: AppLanguage): string {
 export interface ProductImage {
   imageName: string;
   imageUrl: string;
-  /** Media coat-check UUID when known from the API or a fresh upload. */
   imageUuid?: string | null;
 }
 
-/** Per-locale media slots used in the product editor (AR/EN tabs). */
 export type LocalizedMedia = Record<AppLanguage, ProductImage>;
 
 export function emptyProductImage(): ProductImage {
@@ -27,9 +25,6 @@ export function emptyLocalizedMedia(): LocalizedMedia {
   return { ar: emptyProductImage(), en: emptyProductImage() };
 }
 
-/**
- * Active-locale media with Arabic fallback (matches website behavior when EN is empty).
- */
 export function readMedia(image: LocalizedMedia, language: AppLanguage): ProductImage {
   const current = image[language];
   if (current.imageUrl) {
@@ -47,7 +42,6 @@ export interface ProductPoint {
 
 export interface ProductStat {
   id: string;
-  /** Bilingual figure text (API `value.{ar,en}`). */
   value: LocaleText;
   label: LocaleText;
   body: LocaleText;
@@ -61,7 +55,6 @@ export interface ProductMedia {
   image: LocalizedMedia;
 }
 
-/** Product-owned sector tiles: bilingual images (API `sectors.*.image`). */
 export interface ProductSector {
   id: string;
   image: LocalizedMedia;
@@ -82,7 +75,6 @@ export interface ProductFaq {
 }
 
 export interface ProductSeo {
-  /** Latin URL slug shared by both languages (API `slug`). Stored in `en`; `ar` kept for UI tabs. */
   slug: LocaleText;
   title: LocaleText;
   keywords: LocaleText;
@@ -95,11 +87,9 @@ export interface Product {
   published: boolean;
   name: LocaleText;
   summary: LocaleText;
-  /** Cover image per editor locale. API still stores one shared cover file. */
   cover: LocalizedMedia;
   coverTitle: LocaleText;
   coverAlt: LocaleText;
-  /** Thumbnail per editor locale. API still stores one shared thumbnail file. */
   thumb: LocalizedMedia;
   thumbTitle: LocaleText;
   thumbAlt: LocaleText;

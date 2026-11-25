@@ -7,6 +7,7 @@ export const en = {
   'status.active': 'Active',
   'status.suspended': 'Suspended',
   'common.loading': 'Loading',
+  'common.pageReport': 'Showing {currentPage} Of {totalPages}',
   'common.empty': 'Nothing Here Yet',
   'common.error': 'Something Went Wrong',
   'common.offlineTitle': 'No Internet Connection',

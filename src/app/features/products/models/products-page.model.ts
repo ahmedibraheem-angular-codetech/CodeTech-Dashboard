@@ -6,7 +6,6 @@ export interface ProductsPageFeature {
   id: string;
   title: LocaleText;
   body: LocaleText;
-  /** Legacy PrimeIcon class; prefer uploaded `imageUrl` / `imageUuid`. */
   icon: string;
   imageName: string;
   imageUrl: string;
@@ -15,7 +14,6 @@ export interface ProductsPageFeature {
 
 export interface ProductsPageSector {
   id: string;
-  /** Optional label for UI; API sectors are image-only. */
   title: LocaleText;
   image: Record<AppLanguage, ProductImage>;
 }

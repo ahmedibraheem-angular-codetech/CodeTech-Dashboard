@@ -9,77 +9,77 @@
   <div class="review-editor-form__row">
     @if (locale() === 'ar') {
       <label class="field">
-        <span class="field__label">{{ lang.t('review.clientName') }}</span>
+        <span class="field__label">{{ ct('review.clientName') }}</span>
         <p-iconfield>
           <input
             pInputText
             [fluid]="true"
             formControlName="nameAr"
-            [placeholder]="lang.t('review.clientNamePlaceholder')"
+            [placeholder]="ct('review.clientNamePlaceholder')"
             [invalid]="form().controls.nameAr.touched && form().controls.nameAr.invalid"
           />
           <p-inputicon class="pi pi-user" />
         </p-iconfield>
         @if (form().controls.nameAr.touched && form().controls.nameAr.invalid) {
-          <app-field-error>{{ lang.t('review.required') }}</app-field-error>
+          <app-field-error>{{ ct('review.required') }}</app-field-error>
         }
       </label>
 
       <label class="field">
-        <span class="field__label">{{ lang.t('review.jobTitle') }}</span>
+        <span class="field__label">{{ ct('review.jobTitle') }}</span>
         <p-iconfield>
           <input
             pInputText
             [fluid]="true"
             formControlName="roleAr"
-            [placeholder]="lang.t('review.jobTitlePlaceholder')"
+            [placeholder]="ct('review.jobTitlePlaceholder')"
             [invalid]="form().controls.roleAr.touched && form().controls.roleAr.invalid"
           />
           <p-inputicon class="pi pi-briefcase" />
         </p-iconfield>
         @if (form().controls.roleAr.touched && form().controls.roleAr.invalid) {
-          <app-field-error>{{ lang.t('review.required') }}</app-field-error>
+          <app-field-error>{{ ct('review.required') }}</app-field-error>
         }
       </label>
     } @else {
       <label class="field">
-        <span class="field__label">{{ lang.t('review.clientName') }}</span>
+        <span class="field__label">{{ ct('review.clientName') }}</span>
         <p-iconfield>
           <input
             pInputText
             [fluid]="true"
             formControlName="nameEn"
-            [placeholder]="lang.t('review.clientNamePlaceholder')"
+            [placeholder]="ct('review.clientNamePlaceholder')"
             [invalid]="form().controls.nameEn.touched && form().controls.nameEn.invalid"
           />
           <p-inputicon class="pi pi-user" />
         </p-iconfield>
         @if (form().controls.nameEn.touched && form().controls.nameEn.invalid) {
-          <app-field-error>{{ lang.t('review.required') }}</app-field-error>
+          <app-field-error>{{ ct('review.required') }}</app-field-error>
         }
       </label>
 
       <label class="field">
-        <span class="field__label">{{ lang.t('review.jobTitle') }}</span>
+        <span class="field__label">{{ ct('review.jobTitle') }}</span>
         <p-iconfield>
           <input
             pInputText
             [fluid]="true"
             formControlName="roleEn"
-            [placeholder]="lang.t('review.jobTitlePlaceholder')"
+            [placeholder]="ct('review.jobTitlePlaceholder')"
             [invalid]="form().controls.roleEn.touched && form().controls.roleEn.invalid"
           />
           <p-inputicon class="pi pi-briefcase" />
         </p-iconfield>
         @if (form().controls.roleEn.touched && form().controls.roleEn.invalid) {
-          <app-field-error>{{ lang.t('review.required') }}</app-field-error>
+          <app-field-error>{{ ct('review.required') }}</app-field-error>
         }
       </label>
     }
   </div>
 
   <label class="field">
-    <span class="field__label">{{ lang.t('review.rating') }}</span>
+    <span class="field__label">{{ ct('review.rating') }}</span>
     <p-select
       styleClass="review-rating-select"
       [fluid]="true"
@@ -87,7 +87,7 @@
       [options]="ratingOptions"
       optionLabel="label"
       optionValue="value"
-      [placeholder]="lang.t('review.ratingPlaceholder')"
+      [placeholder]="ct('review.ratingPlaceholder')"
       [invalid]="form().controls.rating.touched && form().controls.rating.invalid"
     >
       <ng-template #selectedItem let-selected>
@@ -118,44 +118,44 @@
       </ng-template>
     </p-select>
     @if (form().controls.rating.touched && form().controls.rating.invalid) {
-      <app-field-error>{{ lang.t('review.required') }}</app-field-error>
+      <app-field-error>{{ ct('review.required') }}</app-field-error>
     }
   </label>
 
   @if (locale() === 'ar') {
     <label class="field">
-      <span class="field__label">{{ lang.t('review.quote') }}</span>
+      <span class="field__label">{{ ct('review.quote') }}</span>
       <textarea
         pTextarea
         [fluid]="true"
         rows="4"
         formControlName="quoteAr"
-        [placeholder]="lang.t('review.quotePlaceholder')"
+        [placeholder]="ct('review.quotePlaceholder')"
         [invalid]="form().controls.quoteAr.touched && form().controls.quoteAr.invalid"
       ></textarea>
       @if (form().controls.quoteAr.touched && form().controls.quoteAr.invalid) {
-        <app-field-error>{{ lang.t('review.required') }}</app-field-error>
+        <app-field-error>{{ ct('review.required') }}</app-field-error>
       }
     </label>
   } @else {
     <label class="field">
-      <span class="field__label">{{ lang.t('review.quote') }}</span>
+      <span class="field__label">{{ ct('review.quote') }}</span>
       <textarea
         pTextarea
         [fluid]="true"
         rows="4"
         formControlName="quoteEn"
-        [placeholder]="lang.t('review.quotePlaceholder')"
+        [placeholder]="ct('review.quotePlaceholder')"
         [invalid]="form().controls.quoteEn.touched && form().controls.quoteEn.invalid"
       ></textarea>
       @if (form().controls.quoteEn.touched && form().controls.quoteEn.invalid) {
-        <app-field-error>{{ lang.t('review.required') }}</app-field-error>
+        <app-field-error>{{ ct('review.required') }}</app-field-error>
       }
     </label>
   }
 
   <div class="field">
-    <span class="field__label" id="review-avatar-label">{{ lang.t('review.avatarUpload') }}</span>
+    <span class="field__label" id="review-avatar-label">{{ ct('review.avatarUpload') }}</span>
     <label class="image-drop" (dragover)="$event.preventDefault()" (drop)="onAvatarDrop($event)">
       <input
         type="file"
@@ -165,11 +165,11 @@
         (change)="onAvatarPick($event)"
       />
       <span class="image-drop__icon"><i class="pi pi-cloud-upload" aria-hidden="true"></i></span>
-      <strong>{{ lang.t('review.avatarHint') }}</strong>
-      <small>{{ lang.t('review.avatarFormats') }}</small>
+      <strong>{{ ct('review.avatarHint') }}</strong>
+      <small>{{ ct('review.avatarFormats') }}</small>
     </label>
     @if (avatarError()) {
-      <p class="field__error" role="alert">{{ lang.t(avatarError()) }}</p>
+      <p class="field__error" role="alert">{{ ct(avatarError()) }}</p>
     }
     @if (avatar(); as file) {
       <div class="image-file">
@@ -190,7 +190,7 @@
           icon="pi pi-trash"
           size="small"
           styleClass="review-editor-form__remove"
-          [ariaLabel]="lang.t('review.delete')"
+          [ariaLabel]="ct('review.delete')"
           (clicked)="removeAvatar()"
         />
       </div>
@@ -199,7 +199,7 @@
 
   @if (showVideoUpload()) {
     <div class="field">
-      <span class="field__label" id="review-video-label">{{ lang.t('review.videoUpload') }}</span>
+      <span class="field__label" id="review-video-label">{{ ct('review.videoUpload') }}</span>
       <label class="image-drop" (dragover)="$event.preventDefault()" (drop)="onVideoDrop($event)">
         <input
           type="file"
@@ -209,11 +209,11 @@
           (change)="onVideoPick($event)"
         />
         <span class="image-drop__icon"><i class="pi pi-video" aria-hidden="true"></i></span>
-        <strong>{{ lang.t('review.videoHint') }}</strong>
-        <small>{{ lang.t('review.videoFormats') }}</small>
+        <strong>{{ ct('review.videoHint') }}</strong>
+        <small>{{ ct('review.videoFormats') }}</small>
       </label>
       @if (videoError()) {
-        <p class="field__error" role="alert">{{ lang.t(videoError()) }}</p>
+        <p class="field__error" role="alert">{{ ct(videoError()) }}</p>
       }
       @if (video(); as file) {
         <div class="image-file">
@@ -230,7 +230,7 @@
             icon="pi pi-trash"
             size="small"
             styleClass="review-editor-form__remove"
-            [ariaLabel]="lang.t('review.delete')"
+            [ariaLabel]="ct('review.delete')"
             (clicked)="removeVideo()"
           />
         </div>
@@ -239,7 +239,7 @@
   }
 
   <label class="review-editor-form__publish">
-    <span>{{ lang.t('review.publishStatus') }}</span>
-    <p-toggleswitch formControlName="published" [ariaLabel]="lang.t('review.publishStatus')" />
+    <span>{{ ct('review.publishStatus') }}</span>
+    <p-toggleswitch formControlName="published" [ariaLabel]="ct('review.publishStatus')" />
   </label>
 </form>

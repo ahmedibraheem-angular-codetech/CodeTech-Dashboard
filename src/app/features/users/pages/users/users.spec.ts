@@ -72,7 +72,6 @@ describe('UsersPage', () => {
     localStorage.setItem('codetech.language', 'ar');
     const fixture = TestBed.createComponent(UsersPage);
     fixture.detectChanges();
-    // listQuery is debounced 200ms in UsersPage before the HTTP call.
     await flushDelay(220);
     await flushUi(fixture);
     return fixture;
@@ -87,6 +86,17 @@ describe('UsersPage', () => {
     expect(page.roles()).toHaveLength(1);
     expect(page.stats()?.total.value).toBe(1);
     expect(fixture.nativeElement.textContent).toContain('نورة القحطاني');
+  });
+
+  it('shows the comparison caption only for cards whose stat has a change percentage', async () => {
+    const fixture = await render({
+      stats: () => of({ ...STATS, total: { value: 4, previous: 2, changePct: 100 } }),
+    });
+    const cards = fixture.componentInstance.cards();
+    expect(cards[0]).toMatchObject({ trend: 100, trendDirection: 'up' });
+    expect(cards[0].caption).not.toBe('');
+    expect(cards[1].trend).toBeUndefined();
+    expect(cards[1].caption).toBe('');
   });
 
   it('maps a list failure to the error state while online', async () => {

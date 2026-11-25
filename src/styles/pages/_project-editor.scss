@@ -41,7 +41,6 @@ app-project-editor .locale-switch__option.is-active {
   grid-template-areas: none;
 }
 
-// Step 6 — identity buttons: shared feature-card tab/body plus a 2×2 image grid.
 .editor-section--identity > .editor-section__head {
   justify-content: flex-start;
   gap: 8px;
@@ -101,7 +100,6 @@ app-project-editor .locale-switch__option.is-active {
   color: #c8ccd3;
 }
 
-// Match Figma: compact category tab chip on the inline-start edge.
 app-project-editor .editor-section--features .feature-card__tab {
   flex: 0 1 auto;
   width: auto;

@@ -39,6 +39,7 @@
         : !text(draftSector().title).trim() || !draftSector().image[locale()].imageUrl
     "
     [saveLabel]="saveLabel()"
+    [cancelLabel]="ct('common.cancel')"
     saveIcon=""
     (save)="saveEditor()"
   >

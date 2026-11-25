@@ -14,10 +14,6 @@ import { assertLegalKind, mapLegalPage, toLegalWriteBody } from './legal-documen
 
 const LEGAL_PATH = 'admin/legal-pages';
 
-/**
- * Terms and Privacy pages. Each `kind` hits its own `/admin/legal-pages/{key}`
- * URL so one document cannot overwrite the other in memory.
- */
 @Injectable({ providedIn: 'root' })
 export class LegalDocumentService {
   private readonly http = inject(HttpClient);

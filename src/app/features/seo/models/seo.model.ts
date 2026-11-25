@@ -12,7 +12,6 @@ export interface SeoPageDef {
 
 export interface SeoContent {
   metaTitle: string;
-  /** Shared across locales in the UI; API stores a single slug. */
   slug: string;
 
   keywords: string;
@@ -23,10 +22,6 @@ export interface SeoContent {
   thumbUrl: string;
 }
 
-/**
- * In-editor page draft. Thumbnail is one file for both languages
- * (coat-check: File on replace, uuid for display, omit/null on write).
- */
 export interface SeoPageDraft {
   ar: SeoContent;
   en: SeoContent;

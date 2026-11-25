@@ -159,6 +159,7 @@ export const ar: { [K in keyof typeof en]: string } = {
   'product.uploadHint': 'اضغط لرفع صورة أو اسحبها وأفلتها هنا',
   'product.uploadTypes': 'صيغة PNG,JPG. الحجم الأقصى 5 ميجابايت',
   'product.uploadTooLarge': 'هذه الصورة تتجاوز الحد الأقصى 5 ميجابايت.',
+  'product.uploadInvalidType': 'الصيغة غير مدعومة. ارفع صورة بصيغة PNG أو JPG فقط.',
   'product.clearImage': 'إزالة الصورة',
   'product.chooseLibrary': 'اختيار من المكتبة',
   'product.viewIcon': 'عرض الأيقونة',

@@ -19,11 +19,6 @@ import {
 const PAGE_PATH = 'admin/pages/projects';
 const STATS_PATH = 'admin/projects-page/stats';
 
-/**
- * Projects marketing page manager.
- * Section switches: PATCH /admin/pages/projects/sections.
- * Stats: CRUD under /admin/projects-page/stats (+ reorder).
- */
 @Injectable({ providedIn: 'root' })
 export class ProjectsPageService {
   private readonly http = inject(HttpClient);

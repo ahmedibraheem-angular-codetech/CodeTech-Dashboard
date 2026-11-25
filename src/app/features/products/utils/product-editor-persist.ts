@@ -31,7 +31,6 @@ export function productSummaryLocalesValid(product: Product): boolean {
   return isValidShortDescription(summary.ar) && isValidShortDescription(summary.en);
 }
 
-/** Locale to switch to when summary validation fails; undefined when both locales are valid. */
 export function invalidSummaryLocale(product: Product): AppLanguage | undefined {
   const { summary } = product;
   if (!isValidShortDescription(summary.ar)) {
@@ -43,10 +42,6 @@ export function invalidSummaryLocale(product: Product): AppLanguage | undefined 
   return undefined;
 }
 
-/**
- * Pre-save gate evaluation in the same order as the previous private `persist` method.
- * HTTP, toasts, ObjectUrls, and signal writes stay in the component.
- */
 export function evaluateProductPersist(
   draft: Product,
   published: boolean,

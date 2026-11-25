@@ -1,6 +1,5 @@
 import type { FileObject } from '../../../core/http/api.model';
 
-/** Backend user statuses. `suspended` is not one of them. */
 export type UserApiStatus = 'active' | 'inactive' | 'blocked';
 
 export interface UserRoleDto {
@@ -9,7 +8,6 @@ export interface UserRoleDto {
   is_protected: boolean;
 }
 
-/** List and detail share this user resource. */
 export interface UserDto {
   id: number;
   code: string;
@@ -47,7 +45,6 @@ export interface UserWriteDto {
   phone: string | null;
   status: UserApiStatus;
   role_id: number;
-  /** Media UUID. Omit to keep the current photo; `null` removes it. */
   avatar?: string | null;
 }
 
@@ -56,7 +53,6 @@ export interface UserStatusWriteDto {
   reason?: string;
 }
 
-/** `GET /admin/roles` row used by the user role dropdown. */
 export interface RoleListDto {
   id: number;
   name: string;

@@ -1,10 +1,13 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  computed,
+  inject,
   ViewEncapsulation,
   input,
   output,
 } from '@angular/core';
+import { LanguageService } from '../../../core/services/language.service';
 import { Paginator, type PaginatorState } from 'primeng/paginator';
 
 export type { PaginatorState as AppPaginatorState } from 'primeng/paginator';
@@ -29,7 +32,12 @@ export class AppPaginator {
   readonly showPageLinks = input(true);
   readonly showFirstLastIcon = input(false);
   readonly alwaysShow = input(true);
-  readonly currentPageReportTemplate = input('عرض {currentPage} من {rows}');
+  readonly currentPageReportTemplate = input<string>();
+
+  private readonly lang = inject(LanguageService);
+  protected readonly reportTemplate = computed(
+    () => this.currentPageReportTemplate() ?? this.lang.t('common.pageReport'),
+  );
   readonly styleClass = input<string>();
 
   readonly pageChange = output<PaginatorState>();

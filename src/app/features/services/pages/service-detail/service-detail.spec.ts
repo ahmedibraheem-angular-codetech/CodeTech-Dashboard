@@ -660,23 +660,23 @@ describe('ServiceDetailPage', () => {
       expect(root.querySelector('h1')?.textContent).toBe(service.name.en);
       expect(text(root)).toContain(service.description.en);
       expect(text(root)).toContain('Published');
-      expect(text(root)).toContain('Edit service');
-      expect(text(root)).toContain('Back to services');
+      expect(text(root)).toContain('Edit Service');
+      expect(text(root)).toContain('Back To Services');
       expect(root.querySelector('.service-detail__back i')?.className).toContain('pi-arrow-left');
       expect(text(root)).toContain(service.whyItems[0]?.title.en);
 
       const expected: [string, string][] = [
-        ['Service solutions', service.solutions[0]?.title.en ?? ''],
-        ['Service stages', service.stages[0]?.title.en ?? ''],
-        ['Service features', service.features[0]?.title.en ?? ''],
-        ['Service projects', PROJECTS_SEED[0]?.name.en ?? ''],
-        ['Sectors and FAQ', 'Sector 1'],
+        ['Service Solutions', service.solutions[0]?.title.en ?? ''],
+        ['Service Stages', service.stages[0]?.title.en ?? ''],
+        ['Service Features', service.features[0]?.title.en ?? ''],
+        ['Service Projects', PROJECTS_SEED[0]?.name.en ?? ''],
+        ['Sectors And FAQ', 'Sector 1'],
       ];
       for (const [tab, content] of expected) {
         await showTab(harness, root, tab);
         expect(text(root), tab).toContain(content);
       }
-      expect(text(root)).toContain('Targeted sectors');
+      expect(text(root)).toContain('Targeted Sectors');
       expect(text(root)).toContain(service.faqs[0]?.question.en ?? '');
     });
 
@@ -684,8 +684,8 @@ describe('ServiceDetailPage', () => {
       const { harness, root } = await open('/services/does-not-exist');
       TestBed.inject(LanguageService).set('en');
       await settle(harness);
-      expect(text(root)).toContain('This service could not be found.');
-      expect(text(root)).toContain('Back to services');
+      expect(text(root)).toContain('This Service Could Not Be Found.');
+      expect(text(root)).toContain('Back To Services');
     });
   });
 });

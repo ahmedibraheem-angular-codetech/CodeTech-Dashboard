@@ -1,4 +1,3 @@
-/** Backend project-request statuses (OpenAPI `/admin/project-requests`). */
 export type ProjectRequestApiStatus = 'new' | 'in_progress' | 'closed';
 
 export interface ProjectRequestRelatedServiceDto {
@@ -35,7 +34,6 @@ export interface ProjectRequestTimelineStepDto {
   by: string | null;
 }
 
-/** List row — project requests expose `service`/`services`, never invent a product. */
 export interface ProjectRequestListDto {
   id: number;
   reference: string;
@@ -54,7 +52,6 @@ export interface ProjectRequestListDto {
   updated_at: string;
 }
 
-/** Detail payload — notes, replies, timeline. */
 export interface ProjectRequestDetailDto extends ProjectRequestListDto {
   closed_by?: ProjectRequestAuthorDto | null;
   notes: ProjectRequestNoteDto[];

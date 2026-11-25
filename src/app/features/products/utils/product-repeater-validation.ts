@@ -19,7 +19,6 @@ function arFilled(value: LocaleText): boolean {
   return value.ar.trim().length > 0;
 }
 
-/** Server-persisted nested row ids are numeric strings. Client placeholders are not. */
 export function isServerItemId(id: string): boolean {
   return /^\d+$/.test(id);
 }
@@ -28,7 +27,6 @@ function isNewRepeaterItem(id: string): boolean {
   return !isServerItemId(id);
 }
 
-/** Any non-empty image URL (remote, blob) or known UUID counts as present. Cleared slots do not. */
 export function slotHasImage(image: ProductImage): boolean {
   const url = image.imageUrl?.trim() ?? '';
   if (url.length > 0) {
@@ -61,30 +59,22 @@ function unitHasContent(item: ProductUnit): boolean {
   return localeFilled(item.title) || localeFilled(item.body) || hasSharedMedia(item.image);
 }
 
-/** Matches `toProductWrite` inclusion: any locale with an image URL. */
 export function sectorHasAnyMedia(sector: ProductSector): boolean {
   return !!(sector.image.ar.imageUrl || sector.image.en.imageUrl);
 }
 
-/** Arabic image available (remote UUID URL or local blob preview). */
 export function sectorHasArabicImage(sector: ProductSector): boolean {
   return !!sector.image.ar.imageUrl;
 }
 
-/**
- * Empty sectors (excluded from payload) are valid.
- * Payload-included sectors require an Arabic image; English alone is not enough.
- */
 export function isSectorArabicImageValid(sector: ProductSector): boolean {
   return !sectorHasAnyMedia(sector) || sectorHasArabicImage(sector);
 }
 
-/** Matches `toProductWrite` inclusion for `workflow_steps` (title or body in any locale). */
 export function workflowStepHasContent(step: ProductPoint): boolean {
   return localeFilled(step.title) || localeFilled(step.body);
 }
 
-/** Empty rows are optional; any content requires Arabic title and short description. */
 export function isWorkflowStepArabicValid(step: ProductPoint): boolean {
   if (!workflowStepHasContent(step)) {
     return true;
@@ -206,14 +196,9 @@ export type ProductRepeaterStepIndex = 0 | 1 | 2 | 3 | 4 | 5 | 6;
 
 export interface ProductRepeaterIssue {
   step: ProductRepeaterStepIndex;
-  /** Prefer Arabic when the missing field is `.ar`. */
   preferAr: boolean;
 }
 
-/**
- * First failing repeater rule, in wizard order.
- * Workflow keeps its existing Arabic title+body rule for all contentful rows.
- */
 export function firstRepeaterValidationIssue(product: Product): ProductRepeaterIssue | null {
   if (
     product.features.some((item) => !isNewPointTitleBodyValid(item)) ||

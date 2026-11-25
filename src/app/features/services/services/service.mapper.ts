@@ -50,10 +50,6 @@ export function mapServiceMedia(file: FileObject | null | undefined): ServiceIma
   };
 }
 
-/**
- * Shared API file → editor slots. Only Arabic is seeded so the English tab
- * starts empty and can hold an independent preview while editing.
- */
 function sharedMedia(file: FileObject | null | undefined): LocalizedMedia {
   return { ar: mapServiceMedia(file), en: emptyServiceImage() };
 }
@@ -177,12 +173,6 @@ function withOptionalId<T extends object>(id: string, body: T): T & { id?: numbe
   return numeric === undefined ? body : { ...body, id: numeric };
 }
 
-/**
- * Media write ticket after blobs have been uploaded onto the domain model:
- * - no url → null (clear) when `clear` else omit
- * - icon:pi-* → omit
- * - uuid present → send uuid
- */
 function ticket(image: ServiceImage, clearEmpty: boolean): string | null | undefined {
   const url = image.imageUrl ?? '';
   if (!url) {
@@ -197,7 +187,6 @@ function ticket(image: ServiceImage, clearEmpty: boolean): string | null | undef
   return undefined;
 }
 
-/** API still accepts one UUID for shared media — prefer Arabic, then English. */
 function sharedTicket(image: LocalizedMedia, clearEmpty: boolean): string | null | undefined {
   if (image.ar.imageUrl) {
     return ticket(image.ar, clearEmpty);

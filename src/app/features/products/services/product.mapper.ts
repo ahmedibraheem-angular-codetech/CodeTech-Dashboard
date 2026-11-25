@@ -54,10 +54,6 @@ export function mapProductMedia(file: FileObject | null | undefined): ProductIma
   };
 }
 
-/**
- * Shared API file → editor slots. Only Arabic is seeded so the English tab
- * starts empty and can hold an independent preview while editing.
- */
 function sharedMedia(file: FileObject | null | undefined): LocalizedMedia {
   return { ar: mapProductMedia(file), en: emptyProductImage() };
 }
@@ -290,7 +286,6 @@ function ticket(image: ProductImage, clearEmpty: boolean): string | null | undef
   return undefined;
 }
 
-/** API still accepts one UUID for shared media — prefer Arabic, then English. */
 function sharedTicket(image: LocalizedMedia, clearEmpty: boolean): string | null | undefined {
   if (image.ar.imageUrl) {
     return ticket(image.ar, clearEmpty);

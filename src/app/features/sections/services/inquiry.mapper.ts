@@ -55,7 +55,6 @@ function uniqueLabels(labels: string[]): string[] {
   return out;
 }
 
-/** Prefer `products[]` / `services[]`, fall back to singular `product` / `service`. */
 function relatedLabels(dto: InquiryListDto): string[] {
   const fromProducts = (dto.products ?? [])
     .map((item) => item.title?.trim() ?? '')
@@ -127,7 +126,6 @@ function mapCore(dto: InquiryListDto): Omit<Inquiry, 'notes' | 'replies' | 'repl
   };
 }
 
-/** List rows have no nested notes/replies/timeline. */
 export function mapInquiryListItem(dto: InquiryListDto): Inquiry {
   return {
     ...mapCore(dto),

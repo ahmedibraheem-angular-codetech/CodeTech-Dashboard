@@ -13,19 +13,6 @@ import { Dialog } from 'primeng/dialog';
 import { LanguageService } from '../../../core/services/language.service';
 import { AppButton, type AppButtonIconPos } from '../app-button/app-button';
 
-/**
- * The application's one modal: a PrimeNG dialog with a designed header, a projected body and
- * the default Save / Cancel footer.
- *
- * It owns no form data and makes no API calls. The parent projects the content, validates it,
- * performs the save and decides what happens on cancel.
- *
- * Text inputs (`title`, `saveLabel`, `cancelLabel`) take already translated strings, like the
- * other shared components. Only the defaults are translated here.
- *
- * Dismissing (Cancel, the close icon, Escape) emits `cancel` and then closes through the
- * two-way `visible` state. A backdrop click never dismisses, so a stray click cannot lose input.
- */
 @Component({
   selector: 'app-modal',
   imports: [Dialog, AppButton],
@@ -69,12 +56,6 @@ export class Modal {
     const extra = this.styleClass().trim();
     return ['app-modal', dir ? `app-modal--${dir}` : '', extra].filter(Boolean).join(' ');
   });
-  /**
-   * Set to false when the feature must confirm before closing (unsaved changes). Cancel then
-   * only emits `cancel` and the parent closes by setting `visible` itself. The close icon and
-   * Escape are turned off in that mode: PrimeNG hides its dialog on its own for them, which
-   * the parent could not veto.
-   */
   readonly closeOnCancel = input(true);
 
   readonly save = output<void>();

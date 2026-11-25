@@ -17,11 +17,6 @@ import { mapTestimonial, toTestimonialWrite } from './review.mapper';
 const PATH = 'admin/testimonials';
 const PAGE_SIZE = 100;
 
-/**
- * Client testimonials. List is fetched across pages so the board can keep
- * client-side status filtering. Reorder is unused — the UI has no drag handle.
- * Media uses coat-check: omit to keep, null to remove, UUID to set.
- */
 @Injectable({ providedIn: 'root' })
 export class ReviewsService {
   private readonly http = inject(HttpClient);

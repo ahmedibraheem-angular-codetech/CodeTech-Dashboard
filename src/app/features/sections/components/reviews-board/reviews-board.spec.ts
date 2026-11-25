@@ -43,7 +43,6 @@ const GRANTS = [
   'testimonials.delete',
 ] as const;
 
-/** Template methods are protected; tests exercise them through this harness. */
 interface BoardHarness {
   form: ReviewsBoard['form'];
   loadFailed: ReviewsBoard['loadFailed'];

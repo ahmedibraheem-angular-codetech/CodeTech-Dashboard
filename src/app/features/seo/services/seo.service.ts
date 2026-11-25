@@ -18,11 +18,6 @@ import { draftFingerprint, emptyCatalog, mapSeoPage, toApiPageKey, toSeoWrite } 
 
 const PATH = 'admin/seo';
 
-/**
- * Site SEO pages. Overview loads once; each tab saves to its own API page key
- * (`seo` → `global`, `knowledge` → `knowledge_center`, others match 1:1).
- * Thumbnail uses coat-check: omit to keep, UUID to replace (UI has no clear).
- */
 @Injectable({ providedIn: 'root' })
 export class SeoService {
   private readonly http = inject(HttpClient);
@@ -72,7 +67,6 @@ export class SeoService {
       let ar = locale === 'ar' ? nextLocale : current.ar;
       let en = locale === 'en' ? nextLocale : current.en;
 
-      // Single slug in the API — keep both form languages in sync.
       if (partial.slug !== undefined) {
         ar = { ...ar, slug: partial.slug };
         en = { ...en, slug: partial.slug };
@@ -82,10 +76,6 @@ export class SeoService {
     });
   }
 
-  /**
-   * Shared thumbnail for both languages. Stores the File for coat-check upload;
-   * preview URL is for display only and is never sent as a UUID.
-   */
   setThumbnail(pageId: string, file: File, previewUrl: string): void {
     if (!isSeoTabId(pageId)) {
       return;
@@ -134,7 +124,6 @@ export class SeoService {
     }
     const current = this.pages()[pageId];
     const restored = structuredClone(this.baseline()[pageId]) as SeoPageDraft;
-    // File cannot survive structuredClone meaningfully for identity — baseline never holds a pending File.
     restored.thumbFile = null;
     this.releaseDraftBlobs(current, restored);
     this.pages.update((all) => ({ ...all, [pageId]: restored }));

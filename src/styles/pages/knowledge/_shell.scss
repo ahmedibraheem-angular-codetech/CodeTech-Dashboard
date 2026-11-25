@@ -63,7 +63,6 @@
   background: #fff;
 }
 
-// Header date filter: keep the 48px calendar trigger; hide the text field visually.
 .knowledge-board__datepicker.p-datepicker {
   position: relative;
   display: inline-flex;
@@ -113,7 +112,6 @@
   font-weight: 700;
 }
 
-// Tabs: same strip as the FAQ board.
 .knowledge-board app-page-tabs {
   box-sizing: border-box;
   width: 100%;
@@ -179,7 +177,6 @@
   }
 }
 
-// The tab wrappers use [hidden], so only the panel hosts (not the wrappers) set `display`.
 .knowledge-board app-knowledge-articles-panel {
   display: flex;
   flex-direction: column;
@@ -193,7 +190,6 @@
   font-weight: 700;
 }
 
-// Status labels are longer than the shared 92px pill ("في المسودة"); let the pill grow.
 .knowledge-table .app-data-table .dt-badge {
   width: auto;
   min-width: 104px;

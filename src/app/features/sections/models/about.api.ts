@@ -53,7 +53,6 @@ export interface AboutPageDto {
 export interface AboutBlockWriteDto {
   philosophy_points?: AboutLocaleStringList | null;
   target_market_points?: AboutLocaleStringList | null;
-  /** Omit to keep, uuid to replace, null to remove. */
   image?: string | null;
 }
 
@@ -75,7 +74,6 @@ export interface AboutCeoWriteDto {
 export interface AboutTeamMemberWriteDto {
   name: AboutLocaleString;
   job_title?: AboutLocaleString | null;
-  /** Omit to keep, uuid to replace, null to remove. */
   photo?: string | null;
 }
 

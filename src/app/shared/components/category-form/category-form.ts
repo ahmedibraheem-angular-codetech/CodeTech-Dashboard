@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, input, output, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, input, model, output } from '@angular/core';
 import { type FormControl, type FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { IconField } from 'primeng/iconfield';
 import { InputIcon } from 'primeng/inputicon';
@@ -44,7 +44,11 @@ export class CategoryForm {
   readonly publishedKey = input.required<string>();
   readonly submitted = output<void>();
 
-  readonly locale = signal<AppLanguage>(this.lang.language());
+  readonly locale = model<AppLanguage>(this.lang.language());
+  protected ct(key: string): string {
+    return this.lang.lookup(key, this.locale()) ?? this.lang.t(key);
+  }
+
 
   protected onSubmit(): void {
     this.submitted.emit();

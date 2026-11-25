@@ -39,6 +39,10 @@ describe('faq.mapper', () => {
     });
   });
 
+  it('keeps a null updated_at on a question as null instead of failing', () => {
+    expect(mapFaq(faqDto({ updated_at: null })).updatedAt).toBeNull();
+  });
+
   it('maps null locale strings to empty editor strings', () => {
     const category = mapFaqCategory(categoryDto({ name: { ar: 'عام', en: null } }));
     expect(category.name).toEqual({ ar: 'عام', en: '' });

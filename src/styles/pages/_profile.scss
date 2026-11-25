@@ -1,6 +1,5 @@
 @use 'abstracts/functions' as *;
 
-// Shared 48px control look for the page's buttons (class sits on the inner <button>).
 .profile-btn {
   --p-button-border-radius: 14px;
   --p-button-padding-y: 0;
@@ -28,7 +27,6 @@
   color: var(--app-muted);
 }
 
-// Header card: avatar, name, role, last sign in and logout.
 .profile-head {
   display: flex;
   align-items: center;
@@ -97,7 +95,6 @@
   gap: 6px;
 }
 
-// The host carries the soft red fill so the PrimeNG text button keeps its own hover states.
 .profile-head__logout,
 .profile-trash {
   border-radius: 14px;
@@ -108,7 +105,6 @@
   border-radius: 12px;
 }
 
-// Cards.
 .profile-fields {
   display: flex;
   flex-direction: column;
@@ -129,14 +125,10 @@
   text-align: right;
 }
 
-// Cancels PrimeNG's `.p-iconfield .p-inputtext:not(:last-child)` icon-room end padding for the
-// left-to-right fields: with `dir="ltr"` its "end" is the right edge, which pushed the text away
-// from it. Same selector plus `.profile-field--ltr` to win on specificity.
 .p-iconfield .p-inputtext.profile-field--ltr:not(:last-child) {
   padding-inline-end: var(--p-inputtext-padding-x);
 }
 
-// Half of the form width, anchored to the inline start (right in RTL).
 .profile-actions {
   display: flex;
   gap: 8px;
@@ -149,7 +141,6 @@
   flex: 1;
 }
 
-// Primary action in the design's blue, same tokens in every state.
 .profile-actions__save {
   --p-button-primary-background: #1c81d3;
   --p-button-primary-border-color: #1c81d3;
@@ -159,7 +150,6 @@
   --p-button-primary-active-border-color: #1767a9;
 }
 
-// The host carries the fill and outline so the PrimeNG text button keeps its hover state.
 .profile-actions__cancel {
   border: 1px solid var(--app-border);
   border-radius: 14px;
@@ -171,7 +161,6 @@
   color: var(--app-muted);
 }
 
-// Picture card.
 .profile-card:has(.profile-photo) {
   height: 100%;
 }

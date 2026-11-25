@@ -1,6 +1,3 @@
-// Shared catalog paginator. Rules stay under `.app-paginator` so they do not
-// restyle PrimeNG table paginators (users, data-table).
-
 .app-paginator {
   display: block;
   width: 100%;
@@ -21,8 +18,6 @@
   --p-paginator-nav-button-selected-color: var(--app-primary-contrast);
 
   display: flex;
-  // Keep LTR flex so nav stays on the visual left and the report on the right,
-  // matching the Figma footer (page links left, "عرض …" + rpp right).
   direction: ltr;
   align-items: center;
   justify-content: flex-start;
@@ -42,9 +37,21 @@
 
 .app-paginator .p-paginator-pages {
   display: inline-flex;
-  direction: rtl;
+  direction: ltr;
   gap: 8px;
   order: 2;
+}
+
+[dir='rtl'] .app-paginator .p-paginator-pages {
+  direction: rtl;
+}
+
+[dir='rtl'] .app-paginator .p-paginator-prev {
+  order: 3;
+}
+
+[dir='rtl'] .app-paginator .p-paginator-next {
+  order: 1;
 }
 
 .app-paginator .p-paginator-next {

@@ -7,7 +7,6 @@ export interface WizardStepItem {
   labelKey?: string;
 }
 
-/** Horizontal PrimeNG stepper. A step shows a check only after it has been left. */
 @Component({
   selector: 'app-wizard-stepper',
   imports: [Stepper, StepList, Step],

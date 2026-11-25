@@ -15,7 +15,6 @@ export interface UserProfile {
 
 export type ProfileDraft = Pick<UserProfile, 'name' | 'username' | 'email' | 'phone'>;
 
-/** PUT /admin/profile — omit `avatar` to keep the current file; send `null` to clear it. */
 export interface UpdateProfileRequest {
   name: string;
   email: string;
@@ -24,7 +23,6 @@ export interface UpdateProfileRequest {
   avatar?: string | null;
 }
 
-/** PUT /admin/profile/password */
 export interface ChangePasswordRequest {
   current_password: string;
   password: string;

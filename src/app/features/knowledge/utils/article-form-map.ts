@@ -6,7 +6,6 @@ import {
 } from '../models/knowledge.model';
 import { nowStamp } from './knowledge-format';
 
-/** Raw bilingual form values used by the article editor (excluding media URLs). */
 export interface ArticleEditorFormValue {
   titleAr: string;
   titleEn: string;

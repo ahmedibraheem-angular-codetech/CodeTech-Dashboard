@@ -111,7 +111,7 @@ describe('ProductUpload', () => {
     fixture.detectChanges();
 
     expect(fixture.componentInstance.picked).toBeNull();
-    expect(fixture.nativeElement.textContent).toContain('exceeds the 5 MB limit');
+    expect(fixture.nativeElement.textContent).toContain('Exceeds The 5 MB Limit');
     expect(fixture.componentInstance.url).toBe('https://example.com/keep.jpg');
   });
 
@@ -131,7 +131,6 @@ describe('ProductUpload', () => {
   }
 
   function pick(fixture: ReturnType<typeof create>, name = 'a.png', type = 'image/png'): void {
-    // Library mode hides the file input; switch back to upload when actions are on.
     const uploadTab = [
       ...fixture.nativeElement.querySelectorAll('.uploader__action'),
     ] as HTMLButtonElement[];
@@ -200,7 +199,6 @@ describe('ProductUpload', () => {
       pick(fixture, 'ar.png');
       expect(fixture.componentInstance.url).toBe('blob:test/1');
 
-      // Simulate locale / list reuse: same control instance, different media slot.
       fixture.componentInstance.url = '';
       fixture.componentInstance.name = '';
       refresh(fixture);
@@ -328,6 +326,27 @@ describe('ProductUpload', () => {
       pick(fixture, 'notes.txt', 'text/plain');
       expect(fixture.componentInstance.picked).toBeNull();
       expect(created).toBe(0);
+    });
+
+    it('tells the user when a file is not a PNG or JPG instead of failing silently', () => {
+      const fixture = create();
+      pick(fixture, 'notes.txt', 'text/plain');
+      fixture.detectChanges();
+      expect(fixture.nativeElement.textContent).toContain('Only PNG Or JPG Images Are Supported');
+      pick(fixture, 'anim.gif', 'image/gif');
+      fixture.detectChanges();
+      expect(fixture.componentInstance.picked).toBeNull();
+      expect(created).toBe(0);
+      expect(fixture.nativeElement.textContent).toContain('Only PNG Or JPG Images Are Supported');
+    });
+
+    it('clears the type error after a valid image is picked', () => {
+      const fixture = create();
+      pick(fixture, 'notes.txt', 'text/plain');
+      fixture.detectChanges();
+      pick(fixture, 'ok.png', 'image/png');
+      fixture.detectChanges();
+      expect(fixture.nativeElement.textContent).not.toContain('Only PNG Or JPG');
     });
 
     it('does not create or revoke anything for an oversized image', () => {

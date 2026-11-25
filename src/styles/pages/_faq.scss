@@ -219,7 +219,7 @@
 
 .faq-board__chips {
   display: flex;
-  flex-wrap: nowrap;
+  flex-wrap: wrap;
   align-items: stretch;
   box-sizing: border-box;
   width: 100%;
@@ -233,7 +233,8 @@
 
 .faq-board__chip {
   display: inline-flex;
-  flex: 1 1 0;
+  flex: 1 1 auto;
+  max-width: 100%;
   align-items: flex-end;
   justify-content: center;
   box-sizing: border-box;

@@ -5,7 +5,7 @@
         *appHasPermission="'help_support.update'"
         variant="outlined"
         styleClass="legal-doc__cancel"
-        [label]="lang.t('common.cancel')"
+        [label]="ct('common.cancel')"
         [disabled]="saving()"
         (clicked)="cancelEdit()"
       />
@@ -14,7 +14,7 @@
         icon="pi pi-save"
         iconPos="end"
         styleClass="legal-doc__primary"
-        [label]="lang.t('common.saveChanges')"
+        [label]="ct('common.saveChanges')"
         [loading]="saving()"
         (clicked)="save()"
       />
@@ -24,7 +24,7 @@
         icon="pi pi-pencil"
         iconPos="end"
         styleClass="legal-doc__primary"
-        [label]="lang.t('legal.edit')"
+        [label]="ct('legal.edit')"
         (clicked)="startEdit()"
       />
     }
@@ -107,7 +107,6 @@
         </div>
       } @else if (viewingHtml(); as html) {
         <div class="legal-doc__shell">
-          <!-- SafeHtml after sanitizeRichTextHtml (keeps Quill color styles). -->
           <div
             class="legal-doc__text"
             [attr.dir]="locale() === 'ar' ? 'rtl' : 'ltr'"

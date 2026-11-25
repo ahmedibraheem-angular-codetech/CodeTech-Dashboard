@@ -57,13 +57,14 @@
 
   <app-modal
     [(visible)]="editorOpen"
-    [title]="lang.t('project.page.editStat')"
+    [title]="ct('project.page.editStat')"
     icon="pi pi-pencil"
     styleClass="app-modal--wide"
     [dir]="editorDir()"
     [saving]="saving()"
     [saveDisabled]="!canSave()"
-    [saveLabel]="lang.t('common.saveChanges')"
+    [saveLabel]="ct('common.saveChanges')"
+    [cancelLabel]="ct('common.cancel')"
     (save)="saveNumbers()"
   >
     <div class="projects-numbers-editor">
@@ -78,7 +79,7 @@
                 <button
                   type="button"
                   class="projects-numbers-editor__delete"
-                  [attr.aria-label]="lang.t('about.delete')"
+                  [attr.aria-label]="ct('about.delete')"
                   (click)="removeDraft(index)"
                 >
                   <i class="pi pi-trash" aria-hidden="true"></i>

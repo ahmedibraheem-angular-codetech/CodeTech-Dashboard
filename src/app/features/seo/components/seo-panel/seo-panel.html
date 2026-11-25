@@ -4,7 +4,6 @@
     <span class="icon-badge" aria-hidden="true"><i [class]="icon()"></i></span>
   </header>
   <app-locale-switch [value]="locale()" (picked)="picked.emit($event)" />
-  <!-- Content direction follows the card locale tabs, not the app chrome language. -->
   <div class="seo-panel__body" [attr.dir]="locale() === 'ar' ? 'rtl' : 'ltr'">
     <ng-content />
   </div>

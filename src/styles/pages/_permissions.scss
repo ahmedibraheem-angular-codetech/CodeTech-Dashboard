@@ -1,5 +1,3 @@
-// Roles and permissions matrix. Tokens follow the RTL reference screen.
-
 .permissions-page {
   gap: 16px;
 }
@@ -249,7 +247,6 @@
   }
 }
 
-// Add-role dialog body (projected into shared `app-modal`).
 .p-dialog.app-modal:has(.permissions-role-form) {
   width: min(760px, calc(100vw - 32px));
 }

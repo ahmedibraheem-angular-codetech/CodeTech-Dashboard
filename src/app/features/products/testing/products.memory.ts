@@ -73,10 +73,6 @@ export const PRODUCTS_PAGE_SEED: ProductsPageContent = {
   ],
 };
 
-/**
- * In-memory products page backend for UI/integration specs only.
- * Production uses {@link ProductsPageService} (HTTP).
- */
 @Injectable()
 export class ProductsPageMemoryService {
   private readonly latency = inject(API_LATENCY_MS, { optional: true }) ?? 0;
@@ -456,17 +452,12 @@ export const PRODUCTS_SEED: Product[] = [
   card('info-system-6', DESK),
 ];
 
-/**
- * In-memory products backend for UI/integration specs only.
- * Production uses {@link ProductsService} (HTTP).
- */
 @Injectable()
 export class ProductsMemoryService {
   private readonly latency = inject(API_LATENCY_MS, { optional: true }) ?? 0;
   private readonly objectUrls = inject(ObjectUrls);
   private readonly state = signal<Product[]>(structuredClone(PRODUCTS_SEED));
 
-  /** Whether product cards show on the public products page. */
   private catalogVisibleState = PRODUCTS_PAGE_SEED.productsVisible;
   readonly catalogVisible = signal(this.catalogVisibleState);
 

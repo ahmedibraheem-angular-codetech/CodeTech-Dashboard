@@ -26,7 +26,6 @@ export const appConfig: ApplicationConfig = {
       theme: {
         preset: AppTheme,
         options: {
-          // PrimeNG defaults to following the OS dark preference; the app is light only.
           darkModeSelector: false,
         },
       },

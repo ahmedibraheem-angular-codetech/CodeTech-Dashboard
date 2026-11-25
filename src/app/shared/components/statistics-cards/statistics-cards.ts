@@ -17,17 +17,13 @@ import { type StatisticsCard, type TrendDirection } from './statistics-card.mode
 
 const ANIMATION_MS = 1100;
 
-/** Ease-in-out cubic — soft acceleration and deceleration. */
 function easeInOutCubic(t: number): number {
   return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
 }
 
 interface ParsedStatValue {
-  /** Numeric target when the value can be animated; otherwise null. */
   readonly numeric: number | null;
-  /** Formats an interpolated number to match the source style. */
   readonly format: (value: number) => string;
-  /** Literal fallback when the value is non-numeric. */
   readonly literal: string;
 }
 
@@ -36,7 +32,6 @@ interface CardMotion {
   target: number;
   format: (value: number) => string;
   frame: number | null;
-  /** True after the card has completed (or skipped) its first viewport reveal. */
   revealed: boolean;
 }
 
@@ -53,10 +48,6 @@ function countFractionDigits(value: number): number {
   return dot === -1 ? 0 : text.length - dot - 1;
 }
 
-/**
- * Parses a card value into a numeric target + formatter that preserves
- * grouping separators / decimal precision from the original input.
- */
 export function parseStatValue(value: string | number): ParsedStatValue {
   if (typeof value === 'number') {
     if (!Number.isFinite(value)) {
@@ -79,7 +70,6 @@ export function parseStatValue(value: string | number): ParsedStatValue {
     return { numeric: 0, format: () => '0', literal: '0' };
   }
 
-  // Support en-style "1,284" / "1,284.5" and plain "20" / "12.5".
   const compact = trimmed.replace(/,/g, '');
   if (!/^-?\d+(\.\d+)?$/.test(compact)) {
     return { numeric: null, format: () => trimmed, literal: trimmed };
@@ -121,7 +111,6 @@ export class StatisticsCards {
   readonly cards = input.required<readonly StatisticsCard[]>();
   readonly cardSelect = output<StatisticsCard>();
 
-  /** Independent display strings keyed by card id — not derived live from inputs. */
   private readonly displayed = signal<ReadonlyMap<string, string>>(new Map());
   private readonly motion = new Map<string, CardMotion>();
   private readonly inView = signal(false);
@@ -248,7 +237,6 @@ export class StatisticsCards {
       state.target = parsed.numeric;
 
       if (!visible) {
-        // Hold at the current visual value (0 for new cards) until first paint in view.
         patches.set(card.id, state.format(state.displayed));
         continue;
       }
@@ -262,18 +250,15 @@ export class StatisticsCards {
       }
 
       if (!state.revealed) {
-        // First viewport appearance: always count up from the current visual (0).
         this.startTransition(card.id, state, state.displayed, state.target);
         continue;
       }
 
       if (targetChanged) {
-        // Live update: continue from the currently displayed / interpolated value.
         this.startTransition(card.id, state, state.displayed, state.target);
         continue;
       }
 
-      // Same target — never restart. Leave in-flight frames untouched.
       if (!state.frame) {
         patches.set(card.id, state.format(state.displayed));
       }
@@ -294,7 +279,6 @@ export class StatisticsCards {
         }
       }
       for (const [id, label] of patches) {
-        // Do not clobber values owned by an active rAF tick.
         if (this.motion.get(id)?.frame != null) {
           continue;
         }

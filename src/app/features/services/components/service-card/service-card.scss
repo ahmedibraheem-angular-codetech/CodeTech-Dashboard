@@ -1,5 +1,3 @@
-// Services list card. Encapsulation is off so the PrimeNG buttons and switch inside can be
-// sized; every selector is namespaced under `.service-card`.
 app-service-card {
   display: block;
 }
@@ -76,7 +74,6 @@ app-service-card {
   color: #e5001e;
 }
 
-// Pushes the title block to the bottom so every card in a row aligns, as in the design.
 .service-card__head {
   display: flex;
   align-items: center;
@@ -97,7 +94,6 @@ app-service-card {
   text-transform: capitalize;
 }
 
-// The title is a real button so keyboard users can open the details; it looks like plain text.
 .service-card__open {
   padding: 0;
   border: 0;

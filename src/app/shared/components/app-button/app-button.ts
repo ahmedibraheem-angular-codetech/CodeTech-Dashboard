@@ -14,13 +14,6 @@ type PrimeVariant = 'outlined' | 'text' | undefined;
 type PrimeSize = 'small' | 'large' | undefined;
 type PrimeIconPos = 'left' | 'right';
 
-/**
- * Project-wide button. A thin mapped wrapper around PrimeNG Button so features
- * share one variant/size API without owning PrimeNG severity flags.
- *
- * Visual tokens stay in `app-theme.ts` and the existing scoped page overrides.
- * This component does not route, call APIs, or translate.
- */
 @Component({
   selector: 'app-button',
   imports: [Button],
@@ -45,9 +38,7 @@ export class AppButton {
   readonly loading = input(false);
   readonly fluid = input(false);
   readonly rounded = input(false);
-  /** Applies PrimeNG outlined on top of a colour variant (`danger` + outlined, etc.). */
   readonly outlined = input(false);
-  /** Applies PrimeNG text on top of a colour variant (`danger` + text logout). */
   readonly text = input(false);
   readonly ariaLabel = input<string>();
   readonly styleClass = input<string>();

@@ -3,6 +3,7 @@ import { TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { Paginator, type PaginatorState } from 'primeng/paginator';
 
+import { LanguageService } from '../../../core/services/language.service';
 import { AppPaginator } from './app-paginator';
 
 @Component({
@@ -84,6 +85,16 @@ describe('AppPaginator', () => {
     expect(prime().alwaysShow).toBe(true);
     expect(host.querySelector('.p-paginator-first')).toBeNull();
     expect(host.querySelector('.p-paginator-last')).toBeNull();
+  });
+
+  it('uses the page count (not the page size) and follows the language in the default report', () => {
+    const { fixture, host } = render({ totalRecords: 12, rows: 10 });
+    expect(host.textContent).toContain('عرض 1 من 2');
+    const lang = TestBed.inject(LanguageService);
+    lang.set('en');
+    fixture.detectChanges();
+    expect(host.textContent).toContain('Showing 1 Of 2');
+    lang.set('ar');
   });
 
   it('emits pageChange with first, rows and page when the next page is opened', () => {

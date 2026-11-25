@@ -48,6 +48,7 @@ export const ar: { [K in keyof typeof en]: string } = {
   'service.uploadHint': 'اضغط لرفع صورة أو اسحبها وأفلتها هنا',
   'service.uploadTypes': 'صيغة PNG,JPG. الحجم الأقصى 5 ميجابايت',
   'service.uploadTooLarge': 'هذه الصورة تتجاوز الحد الأقصى 5 ميجابايت.',
+  'service.uploadInvalidType': 'الصيغة غير مدعومة. ارفع صورة بصيغة PNG أو JPG فقط.',
   'service.clearImage': 'إزالة الصورة',
   'service.chooseLibrary': 'اختيار من المكتبة',
   'service.whyImage': 'رفع صورة',

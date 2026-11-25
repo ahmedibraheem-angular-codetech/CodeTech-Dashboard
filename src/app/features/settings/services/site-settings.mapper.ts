@@ -64,7 +64,6 @@ export function toSiteSettingsWrite(
     website_url: draft.websiteUrl.trim() || null,
     google_maps_url: draft.mapUrl.trim() || null,
   };
-  // Coat-check: omit keeps current logo; null clears; UUID replaces.
   if (logoUuid !== undefined) {
     body.logo = logoUuid;
   }

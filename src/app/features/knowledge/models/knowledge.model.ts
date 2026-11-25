@@ -78,12 +78,6 @@ export interface ArticleCategory {
 
 export type ArticleCategoryDraft = Pick<ArticleCategory, 'nameAr' | 'nameEn' | 'published'>;
 
-/**
- * Media coat-check intents for article writes:
- * - `omit` → keep existing media (field not sent)
- * - `clear` → send `null` (remove)
- * - `replace` → upload File then send UUID
- */
 export type KnowledgeMediaIntent =
   { kind: 'omit' } | { kind: 'clear' } | { kind: 'replace'; file: File };
 

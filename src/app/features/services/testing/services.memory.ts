@@ -6,10 +6,6 @@ import { ObjectUrls } from '../../../shared/components/product-upload/object-url
 import type { Service } from '../models/service.model';
 import { SERVICES_SEED } from './services.mock';
 
-/**
- * In-memory Services backend for UI/integration specs only.
- * Production uses {@link ServicesService} (HTTP).
- */
 @Injectable()
 export class ServicesMemoryService {
   private readonly latency = inject(API_LATENCY_MS, { optional: true }) ?? 0;

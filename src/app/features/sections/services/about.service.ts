@@ -36,10 +36,6 @@ const ABOUT_PATH = 'admin/pages/about';
 const PARTNERS_PATH = 'admin/partners';
 const TEAM_PATH = 'admin/team-members';
 
-/**
- * About page façade. Page blocks come from `/admin/pages/about`; partners and
- * team mutations use their own admin resources. Media uses the shared coat-check.
- */
 @Injectable({ providedIn: 'root' })
 export class AboutService {
   private readonly http = inject(HttpClient);

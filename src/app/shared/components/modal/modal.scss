@@ -1,6 +1,3 @@
-// PrimeNG renders `.p-dialog` itself, outside this component's view, so these rules are
-// global and namespaced under `.app-modal` (set through `styleClass`). Sizes and colours go
-// through the dialog's own design tokens; the rest are scoped layout rules.
 .p-dialog.app-modal {
   --p-dialog-background: #fff;
   --p-dialog-border-radius: 20px;
@@ -29,7 +26,6 @@
   direction: ltr;
 }
 
-// The header is a full-bleed band; it follows the dialog's rounded top corners.
 .app-modal .p-dialog-header {
   border-bottom: 1px solid #edeeee;
   border-start-start-radius: inherit;
@@ -96,7 +92,6 @@
   overflow-wrap: anywhere;
 }
 
-// Save and Cancel share the row equally and wrap on very narrow screens.
 .app-modal__action {
   flex: 1 1 10rem;
   min-width: 0;

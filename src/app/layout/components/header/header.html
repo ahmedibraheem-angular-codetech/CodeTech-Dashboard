@@ -12,7 +12,6 @@
     <app-breadcrumbs />
   </div>
   <div class="topbar__tools">
-    <!-- Directive form: aria-expanded has to sit on the native <button>, not on <p-button>. -->
     <button
       pButton
       type="button"
@@ -60,21 +59,6 @@
     </a>
   </div>
 </header>
-
-<!-- @if (searchOpen()) {
-  <form class="search-pop" (ngSubmit)="search()">
-    <label class="visually-hidden" for="global-search">{{ lang.t('header.search') }}</label>
-    <input
-      pInputText
-      id="global-search"
-      [placeholder]="lang.t('header.searchPlaceholder')"
-      [ngModel]="query()"
-      (ngModelChange)="query.set($event)"
-      name="q"
-    />
-    <app-button type="submit" [label]="lang.t('header.search')" />
-  </form>
-} -->
 
 <p-popover #notifications>
   <div class="note-list">

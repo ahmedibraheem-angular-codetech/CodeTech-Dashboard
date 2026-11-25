@@ -97,7 +97,6 @@ export class InquiriesBoard {
     transform: (value: string | undefined) => value ?? '/contact/inquiries',
   });
 
-  /** Routes pick the inbox; each uses its own admin API base path. */
   readonly inbox = input<InquiryInbox>('inquiries');
 
   readonly heading = computed(() => {

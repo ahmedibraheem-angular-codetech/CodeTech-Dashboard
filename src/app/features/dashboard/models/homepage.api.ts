@@ -44,7 +44,6 @@ export interface HomeBlockWriteDto {
   title: LocaleString;
   description?: LocaleString | null;
   points?: LocaleStringList | null;
-  /** Omit to keep, uuid to replace, null to remove. */
   image?: string | null;
 }
 

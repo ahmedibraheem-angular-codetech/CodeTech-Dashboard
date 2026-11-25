@@ -16,10 +16,6 @@ export interface PageTab {
   icon?: string;
 }
 
-/**
- * The application's only tab strip: PrimeNG tabs, scrolled when they overflow,
- * styled once so every page looks the same.
- */
 @Component({
   selector: 'app-page-tabs',
   imports: [Tabs, TabList, Tab],

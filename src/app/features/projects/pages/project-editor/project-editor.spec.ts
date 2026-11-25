@@ -390,7 +390,7 @@ describe('ProjectEditor', () => {
       clickNext(root);
       fixture.detectChanges();
     }
-    clickButton(root, 'إنهاء');
+    clickButton(root, 'Finish');
     await settle(fixture);
 
     const savedId = editor.draft().id;
@@ -422,7 +422,7 @@ describe('ProjectEditor', () => {
       fixture.detectChanges();
     }
 
-    clickButton(root, 'إنهاء');
+    clickButton(root, 'Finish');
     await settle(fixture);
 
     const projects = await firstValueFrom(api.list());

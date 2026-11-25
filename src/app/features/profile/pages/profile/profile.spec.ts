@@ -19,7 +19,6 @@ const SESSION = {
 };
 
 describe('ProfilePage', () => {
-  // jsdom has no ResizeObserver, which PrimeNG's tab list uses to size its scroll buttons.
   beforeEach(() => {
     vi.stubGlobal(
       'ResizeObserver',

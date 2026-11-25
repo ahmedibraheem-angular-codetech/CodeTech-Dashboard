@@ -393,12 +393,11 @@
   position: relative;
 }
 
-// Figma: outer circle 20×20 (7.5 + 5 + 7.5), border 1.02px #1C81D3.
 .add-row__mark {
   position: relative;
   box-sizing: border-box;
   display: block;
-  order: 1; // icon after label text
+  order: 1;
   width: 20px;
   height: 20px;
   border: 1.02px solid #1c81d3;
@@ -407,7 +406,6 @@
   font-size: 0;
 }
 
-// Figma inner plus: 5×5 @ top/left 7.5, stroke 1.02px #1C81D3, opacity 1.
 .add-row__mark::before {
   content: '';
   position: absolute;
@@ -425,14 +423,12 @@
   display: none;
 }
 
-// Figma (global): 629×48, r16, gap 8, pad 16, bg #F4F9FD, mt-2.
 .editor-section .add-row {
   box-sizing: border-box;
   display: inline-flex;
   align-items: center;
   align-self: stretch;
   justify-content: center;
-  // width: 629px;
   max-width: 100%;
   height: 48px;
   margin-top: 0.5rem;

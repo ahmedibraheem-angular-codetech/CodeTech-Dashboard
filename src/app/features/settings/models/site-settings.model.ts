@@ -1,6 +1,5 @@
 import type { LocaleText } from './social-links.model';
 
-/** Domain model for site details (loaded/saved independently of social channels). */
 export interface SiteLogo {
   uuid: string | null;
   name: string | null;
@@ -9,9 +8,7 @@ export interface SiteLogo {
 
 export interface SiteSettings {
   description: LocaleText;
-  /** Preserved on save even when the current layout has no company field. */
   companyName: LocaleText;
-  /** Preserved on save even when the current layout has no website field. */
   websiteUrl: string;
   phone: string;
   email: string;
@@ -21,7 +18,6 @@ export interface SiteSettings {
   updatedAt: string;
 }
 
-/** Coat-check logo intent for PUT `/admin/site-settings`. */
 export type SiteLogoIntent = { kind: 'omit' } | { kind: 'clear' } | { kind: 'replace'; file: File };
 
 export interface SiteSettingsDraft {

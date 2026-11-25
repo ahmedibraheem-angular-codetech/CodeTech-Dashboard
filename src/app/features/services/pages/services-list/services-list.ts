@@ -67,7 +67,6 @@ export class ServicesPage {
     const session = this.auth.session();
     return !!session?.profileLoaded && this.auth.hasPermission('services.delete');
   });
-  /** Bumps on every load so a slower, older response cannot overwrite a newer one. */
   private loadSeq = 0;
 
   constructor() {
@@ -113,7 +112,6 @@ export class ServicesPage {
         },
         error: () => {
           this.messages.add({ severity: 'error', summary: this.lang.t('common.error') });
-          // Reload to restore the switch to the server value.
           this.load();
         },
       });

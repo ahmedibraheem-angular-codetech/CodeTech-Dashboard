@@ -34,6 +34,14 @@
       </svg>
     </section>
     <section class="auth-panel">
+      <button type="button" class="lang-pill lang-pill--compact" (click)="swapLanguage()">
+        <span>{{ lang.language() === 'ar' ? 'العربية' : 'English' }}</span>
+        @if (lang.language() === 'ar') {
+          <img class="lang-pill__flag" src="images/flag-sa.svg" alt="" aria-hidden="true" />
+        } @else {
+          <span class="lang-pill__badge">EN</span>
+        }
+      </button>
       <div class="auth-card" [attr.dir]="lang.language() === 'ar' ? 'rtl' : 'ltr'">
         <ng-content />
       </div>

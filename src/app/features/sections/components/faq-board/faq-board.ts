@@ -12,6 +12,7 @@ import { FormBuilder, Validators } from '@angular/forms';
 import { MessageService } from 'primeng/api';
 import { forkJoin } from 'rxjs';
 
+import type { AppLanguage } from '../../../../core/i18n/language';
 import { AuthService } from '../../../../core/auth/auth.service';
 import { loadFailureStatus } from '../../../../core/http/api-error';
 import { NetworkStatusService } from '../../../../core/services/network-status.service';
@@ -130,21 +131,26 @@ export class FaqBoard {
     }));
   });
 
+  readonly editorLocale = signal<AppLanguage>(this.lang.language());
+
   readonly editorTitle = computed(() => {
-    this.lang.language();
     switch (this.editor()) {
       case 'create':
-        return this.lang.t('faq.createTitle');
+        return this.ct('faq.createTitle');
       case 'edit':
-        return this.lang.t('faq.editTitle');
+        return this.ct('faq.editTitle');
       case 'create-category':
-        return this.lang.t('faq.createCategoryTitle');
+        return this.ct('faq.createCategoryTitle');
       case 'edit-category':
-        return this.lang.t('faq.editCategoryTitle');
+        return this.ct('faq.editCategoryTitle');
       default:
         return '';
     }
   });
+
+  protected ct(key: string): string {
+    return this.lang.lookup(key, this.editorLocale()) ?? this.lang.t(key);
+  }
 
   readonly editorIcon = computed(() => {
     const mode = this.editor();
@@ -158,18 +164,17 @@ export class FaqBoard {
   });
 
   readonly editorSaveLabel = computed(() => {
-    this.lang.language();
     const mode = this.editor();
     if (mode === 'create') {
-      return this.lang.t('faq.addQuestion');
+      return this.ct('faq.addQuestion');
     }
     if (mode === 'create-category') {
-      return this.lang.t('faq.addCategoryAction');
+      return this.ct('faq.addCategoryAction');
     }
     if (mode === 'edit-category') {
-      return this.lang.t('faq.saveCategory');
+      return this.ct('faq.saveCategory');
     }
-    return this.lang.t('common.saveChanges');
+    return this.ct('common.saveChanges');
   });
 
   readonly editorSaveIcon = computed(() =>
@@ -191,6 +196,7 @@ export class FaqBoard {
   }
 
   protected openCreate(): void {
+    this.editorLocale.set(this.lang.language());
     if (this.tab() === 'categories') {
       this.openCreateCategory();
       return;
@@ -210,6 +216,7 @@ export class FaqBoard {
   }
 
   protected openEdit(item: FaqItem): void {
+    this.editorLocale.set(this.lang.language());
     this.selected.set(item);
     this.selectedCategory.set(null);
     this.form.reset({
@@ -225,6 +232,7 @@ export class FaqBoard {
   }
 
   protected openCreateCategory(): void {
+    this.editorLocale.set(this.lang.language());
     this.selected.set(null);
     this.selectedCategory.set(null);
     this.categoryForm.reset({
@@ -236,6 +244,7 @@ export class FaqBoard {
   }
 
   protected openEditCategory(category: FaqCategory): void {
+    this.editorLocale.set(this.lang.language());
     this.selected.set(null);
     this.selectedCategory.set(category);
     this.categoryForm.reset({

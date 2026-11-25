@@ -11,7 +11,7 @@ import {
   untracked,
   viewChild,
 } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MessageService, SharedModule } from 'primeng/api';
@@ -27,7 +27,7 @@ import { firstValueFrom } from 'rxjs';
 
 import type { AppLanguage } from '../../../../core/i18n/language';
 import { MediaService } from '../../../../core/media/media.service';
-import { loadFailureStatus } from '../../../../core/http/api-error';
+import { isApiError, loadFailureStatus } from '../../../../core/http/api-error';
 import { LanguageService } from '../../../../core/services/language.service';
 import { NetworkStatusService } from '../../../../core/services/network-status.service';
 import { AppButton } from '../../../../shared/components/app-button/app-button';
@@ -41,6 +41,7 @@ import {
   QUILL_FONT_REGISTRAR,
   applyQuillDirection,
   hasVisibleHtml,
+  readQuillHtml,
   wireQuillToolbarHandlers,
   type AppQuill,
 } from '../../../../shared/editor/quill';
@@ -65,6 +66,7 @@ import {
 } from '../../utils/article-editor-images';
 import {
   collectArticleValidationIssues,
+  isValidArticleSlug,
   type ArticleValidationStrictness,
 } from '../../utils/article-editor-validation';
 import { articleFormValueFromArticle, fieldsFromArticleForm } from '../../utils/article-form-map';
@@ -169,13 +171,18 @@ export class ArticleEditor {
     contentEn: '',
   });
 
+  private readonly slugText = toSignal(this.form.controls.slug.valueChanges, { initialValue: '' });
+  private readonly slugChecked = signal(false);
+  protected readonly slugInvalid = computed(
+    () => this.slugChecked() && !isValidArticleSlug(this.slugText()),
+  );
+
   readonly suffix = computed(() => (this.locale() === 'ar' ? 'Ar' : 'En'));
   readonly dir = computed(() => (this.locale() === 'ar' ? 'rtl' : 'ltr'));
 
-  readonly title = computed(() => {
-    this.lang.language();
-    return this.lang.t(this.mode === 'edit' ? 'knowledge.edit' : 'knowledge.add');
-  });
+  readonly title = computed(() =>
+    this.ct(this.mode === 'edit' ? 'knowledge.edit' : 'knowledge.add'),
+  );
 
   readonly categoryOptions = computed(() => {
     const locale = this.lang.language();
@@ -288,8 +295,17 @@ export class ArticleEditor {
     this.keywordRevision.update((n) => n + 1);
   }
 
-  protected onEditorInit(event: EditorInitEvent): void {
+  protected onEditorInit(event: EditorInitEvent, field: 'contentAr' | 'contentEn'): void {
     const quill = event.editor as AppQuill;
+    quill.on?.('text-change', (_delta, _old, source) => {
+      if (source !== 'user') {
+        return;
+      }
+      const html = readQuillHtml(quill);
+      this.form.controls[field].setValue(html === '<p><br></p>' ? '' : html, {
+        emitModelToViewChange: false,
+      });
+    });
     wireQuillToolbarHandlers(quill, {
       uploadImage: (file) =>
         firstValueFrom(this.media.uploadEditorImage(file)).then((uploaded) => uploaded.url),
@@ -469,6 +485,11 @@ export class ArticleEditor {
     );
     this.flagged.set(result.missing);
     if (result.missing.size === 0) {
+      this.slugChecked.set(true);
+      if (!isValidArticleSlug(value.slug)) {
+        this.messages.add({ severity: 'warn', summary: this.lang.t('knowledge.slugError') });
+        return false;
+      }
       return true;
     }
     if (result.switchTo) {
@@ -506,9 +527,11 @@ export class ArticleEditor {
         });
         void this.router.navigate(['/knowledge']);
       },
-      error: () => {
+      error: (error: unknown) => {
         this.saving.set(false);
-        this.messages.add({ severity: 'error', summary: this.lang.t('common.error') });
+        const reason =
+          isApiError(error) && error.kind === 'validation' ? error.serverMessage : null;
+        this.messages.add({ severity: 'error', summary: reason || this.lang.t('common.error') });
       },
     });
   }

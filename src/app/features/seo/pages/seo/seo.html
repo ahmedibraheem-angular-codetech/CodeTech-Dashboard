@@ -34,7 +34,6 @@
   } @else {
     <app-page-tabs [tabs]="pages" [value]="active()" (valueChange)="select($event)" />
 
-    <!-- First card sits on the right in RTL, matching the design: SEO beside the sidebar. -->
     <div class="seo-grid">
       <app-meta-card [pageId]="active()" [editable]="canUpdate()" />
       <app-thumbnail-card [pageId]="active()" [editable]="canUpdate()" />

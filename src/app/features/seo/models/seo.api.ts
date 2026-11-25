@@ -16,7 +16,6 @@ export interface SeoKeywordsDto {
 export interface SeoPageDto {
   page: SeoApiPageKey;
   meta_title: SeoLocaleDto | null;
-  /** Single slug for both languages. */
   slug: string | null;
   meta_keywords: SeoKeywordsDto | null;
   meta_description: SeoLocaleDto | null;

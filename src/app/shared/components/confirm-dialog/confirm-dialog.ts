@@ -1,4 +1,10 @@
-import { ChangeDetectionStrategy, Component, ViewEncapsulation, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  HostListener,
+  ViewEncapsulation,
+  signal,
+} from '@angular/core';
 import { Dialog } from 'primeng/dialog';
 
 import { AppButton } from '../app-button/app-button';
@@ -51,6 +57,13 @@ export class ConfirmDialog {
 
   cancel(): void {
     this.finish(false);
+  }
+
+  @HostListener('document:keydown.escape')
+  onEscape(): void {
+    if (this.visible()) {
+      this.cancel();
+    }
   }
 
   onVisible(open: boolean): void {

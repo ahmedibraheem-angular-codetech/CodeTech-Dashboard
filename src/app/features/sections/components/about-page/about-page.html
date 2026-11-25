@@ -14,7 +14,7 @@
         [emptyTitle]="lang.t('about.storyEmpty')"
         [emptyHint]="lang.t('about.storyEmptyHint')"
         [emptyAction]="lang.t('about.storyAdd')"
-        [modalTitle]="lang.t('about.story')"
+        [modalTitle]="'about.story'"
         (saved)="story.set($event)"
       />
     }
@@ -26,7 +26,7 @@
         [emptyTitle]="lang.t('about.visionEmpty')"
         [emptyHint]="lang.t('about.visionEmptyHint')"
         [emptyAction]="lang.t('about.visionAdd')"
-        [modalTitle]="lang.t('about.vision')"
+        [modalTitle]="'about.vision'"
         (saved)="vision.set($event)"
       />
     }

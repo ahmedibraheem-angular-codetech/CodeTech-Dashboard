@@ -6,7 +6,6 @@
   box-shadow: none;
 }
 
-// Shared homepage CTA: Add partner + Re-upload (Figma 136×48, r16, pad 12/16, gap 10).
 .home-cta {
   --p-button-primary-background: #1c81d3;
   --p-button-primary-hover-background: #1670b8;
@@ -45,8 +44,6 @@ p-fileupload.home-cta .p-button,
   color: #fff;
 }
 
-// Empty-state CTAs on homepage (video upload, add partner, about, vision).
-// Figma: 176×48, r16, pad 12/16, gap 10, border #DFE3E9.
 .home-empty-cta {
   --p-button-primary-background: #fff;
   --p-button-primary-hover-background: #f8fafc;
@@ -89,7 +86,6 @@ p-fileupload.home-empty-cta .p-button,
   color: #16324f;
 }
 
-// Homepage delete (video): 48×48, r16, pad 12/16, gap 10, bg #FCEEEE.
 .home-delete {
   --p-button-primary-background: #fceeee;
   --p-button-primary-hover-background: #f8e0e0;
@@ -130,7 +126,6 @@ p-fileupload.home-empty-cta .p-button,
   color: #e11d48;
 }
 
-// Trash icon inside homepage delete (Figma 21×21, r150), centered in the 48×48 button.
 .home-delete .p-button-icon {
   display: inline-flex;
   align-items: center;
@@ -186,7 +181,6 @@ p-fileupload.home-empty-cta .p-button,
   pointer-events: none;
 }
 
-// Both partner actions are 28px rounded squares. Only the colour differs.
 .partner-card__tools .partner-card__tool {
   --p-button-sm-icon-only-width: 28px;
   --p-button-icon-only-width: 28px;
@@ -278,7 +272,6 @@ p-fileupload.home-empty-cta .p-button,
   overflow: hidden;
 }
 
-// Intro video frame: real video fill + dim linear overlay (no poster image).
 .video-frame {
   position: relative;
   display: flex;
@@ -362,7 +355,6 @@ p-fileupload.home-empty-cta .p-button,
   }
 }
 
-// Filled edit action on homepage / about story blocks: blue, white label + icon.
 .block-edit.p-button,
 .block-edit {
   box-sizing: border-box;
@@ -391,7 +383,6 @@ p-fileupload.home-empty-cta .p-button,
   font-size: 16px;
 }
 
-// Image beside a white text card. The surrounding container is `app-content-panel`.
 .story {
   display: grid;
   grid-template-columns: 377px minmax(0, 1fr);
@@ -469,7 +460,6 @@ p-fileupload.home-empty-cta .p-button,
   background: url('/images/dashboardcodetech.svg') lightgray 50% / cover no-repeat;
 }
 
-// Story-block modal: content of `app-modal`. Fields reuse the global `.field` styles.
 .block-form {
   display: flex;
   flex-direction: column;
@@ -508,7 +498,6 @@ p-fileupload.home-empty-cta .p-button,
   font-weight: 700;
 }
 
-// The delete button sits inside the field, at its end.
 .point-row {
   position: relative;
 }
@@ -568,7 +557,6 @@ p-fileupload.home-empty-cta .p-button,
   opacity: 1;
 }
 
-// Partner modal drop zone (Figma 684×127, r16, pad 16, gap 12, dashed #1C81D366).
 .image-drop--partner {
   width: 100%;
   max-width: 684px;

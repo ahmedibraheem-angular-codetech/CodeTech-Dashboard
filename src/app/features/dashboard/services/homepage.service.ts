@@ -91,12 +91,6 @@ export class HomepageService {
       .pipe(map((envelope) => mapHomePage(this.requireHome(envelope))));
   }
 
-  /**
-   * Saves about or Vision 2030. Image coat-check:
-   * - new File → upload then send uuid
-   * - null → send null (remove)
-   * - existing uuid → omit the field (keep)
-   */
   saveBlock(
     kind: 'about' | 'vision',
     block: ContentBlock,

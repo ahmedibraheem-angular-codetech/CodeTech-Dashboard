@@ -95,13 +95,11 @@
 
 .social-top {
   display: grid;
-  // Details (wide) then image (Figma 405). In RTL the wide card sits near the sidebar.
   grid-template-columns: minmax(0, 1fr) minmax(280px, 405px);
   gap: 16px;
   align-items: stretch;
 }
 
-// EN Figma: upload on the left, details on the right (LTR).
 [dir='ltr'] .social-top {
   grid-template-columns: minmax(280px, 405px) minmax(0, 1fr);
 }
@@ -261,8 +259,6 @@
   font-weight: 500;
 }
 
-// LTR values (phone/email/url) keep Latin alignment, but icon sits at
-// inline-start of the RTL field — clear the physical right edge in RTL.
 [dir='rtl'] .social-panel .p-iconfield input[dir='ltr'] {
   padding-left: 16px;
   padding-right: 44px;
@@ -334,7 +330,6 @@
 
 .social-location {
   display: grid;
-  // Fields first (inline-start / right in RTL), map second — matches Figma.
   grid-template-columns: minmax(0, 1fr) minmax(280px, 502px);
   gap: 14px;
   align-items: stretch;
@@ -388,7 +383,6 @@
   align-content: start;
 }
 
-// Let the card article be the grid item (host would otherwise break span/sizing).
 app-social-link-card {
   display: contents;
 }

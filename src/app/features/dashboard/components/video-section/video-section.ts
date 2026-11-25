@@ -65,7 +65,6 @@ export class VideoSection {
     }
   }
 
-  /** Seek preview to the 1st second so the linear overlay shows a real frame. */
   showPreviewFrame(event: Event): void {
     const video = event.target;
     if (!(video instanceof HTMLVideoElement)) {

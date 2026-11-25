@@ -1,13 +1,5 @@
 import type { Translation } from 'primeng/api';
 
-/**
- * Arabic strings for PrimeNG widgets (date picker, empty table/select states and their
- * accessibility labels). English is not listed here: `LanguageService` snapshots PrimeNG's
- * built-in English defaults and restores them when the language switches back.
- *
- * `firstDayOfWeek` is 6 (Saturday) to match the Egyptian calendar week; the day-name arrays
- * still start with Sunday because PrimeNG indexes them with `Date#getDay()`.
- */
 export const PRIMENG_AR: Translation = {
   dayNames: ['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'],
   dayNamesShort: ['أحد', 'اثنين', 'ثلاثاء', 'أربعاء', 'خميس', 'جمعة', 'سبت'],
@@ -55,4 +47,18 @@ export const PRIMENG_AR: Translation = {
   nextYear: 'السنة التالية',
   prevMonth: 'الشهر السابق',
   nextMonth: 'الشهر التالي',
+  aria: {
+    close: 'إغلاق',
+    previous: 'السابق',
+    next: 'التالي',
+    navigation: 'التنقل',
+    firstPageLabel: 'الصفحة الأولى',
+    lastPageLabel: 'الصفحة الأخيرة',
+    nextPageLabel: 'الصفحة التالية',
+    prevPageLabel: 'الصفحة السابقة',
+    previousPageLabel: 'الصفحة السابقة',
+    rowsPerPageLabel: 'عدد الصفوف في الصفحة',
+    jumpToPageDropdownLabel: 'الانتقال إلى صفحة',
+    jumpToPageInputLabel: 'إدخال رقم الصفحة',
+  },
 };

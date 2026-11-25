@@ -56,6 +56,10 @@ export class ProjectsPageManage {
   readonly content = signal<ProjectsPageContent | null>(null);
   readonly editorOpen = signal(false);
   readonly locale = signal<AppLanguage>(this.lang.language());
+
+  protected ct(key: string): string {
+    return this.lang.lookup(key, this.locale()) ?? this.lang.t(key);
+  }
   readonly drafts = signal<ProjectsPageStat[]>([]);
   readonly saving = signal(false);
 

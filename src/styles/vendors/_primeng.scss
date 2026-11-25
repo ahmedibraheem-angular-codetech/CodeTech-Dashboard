@@ -1,6 +1,3 @@
-// Remaining PrimeNG hooks. Visual tokens (palette, radius, paddings) live in the preset
-// (`app/core/theme/app-theme.ts`); components are made full-width with their `[fluid]` input.
-
 .p-toast {
   z-index: var(--app-z-toast);
 }
@@ -113,7 +110,6 @@
   border-color: #32934f59;
 }
 
-// Success icon — green rings; white check comes from app.html template (Figma 13.33×9.56).
 .p-toast.app-toast .p-toast-message-success .p-toast-message-icon,
 .p-toast.app-toast .p-toast-message-success .app-toast-icon {
   box-sizing: border-box;

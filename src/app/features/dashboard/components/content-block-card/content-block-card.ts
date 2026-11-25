@@ -109,6 +109,15 @@ export class ContentBlockCard {
   readonly saving = signal(false);
 
   readonly locale = signal<AppLanguage>('ar');
+
+  protected ct(key: string): string {
+    return this.lang.lookup(key, this.locale()) ?? this.lang.t(key);
+  }
+
+  protected readonly editorTitle = computed(() => {
+    const title = this.block().texts[this.locale()].title.trim();
+    return title || this.ct('home.edit');
+  });
   readonly image = signal<BlockImage | null>(null);
 
   readonly preview = signal<string | null>(null);

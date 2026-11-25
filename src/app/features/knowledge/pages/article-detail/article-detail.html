@@ -217,7 +217,6 @@
         <h2>{{ lang.t('knowledge.contentCard') }}</h2>
       </header>
       @if (content(); as html) {
-        <!-- Angular sanitizes [innerHTML]; do not bypassSecurityTrustHtml. -->
         <div class="kb-detail__content" [innerHTML]="html"></div>
       } @else {
         <app-state-view mode="empty" [message]="lang.t('knowledge.detailNoContent')" />

@@ -74,7 +74,7 @@
   [saveLabel]="editorSaveLabel()"
   [saveIcon]="editor() === 'edit' ? 'pi pi-save' : 'pi pi-plus'"
   [saveIconPos]="editor() === 'edit' ? 'start' : 'end'"
-  [cancelLabel]="lang.t('common.cancel')"
+  [cancelLabel]="ct('common.cancel')"
   [saving]="saving()"
   (save)="saveCategory()"
   (cancel)="closeEditor()"
@@ -82,6 +82,7 @@
   @if (editor() !== null) {
     <app-category-form
       [form]="categoryForm"
+      [(locale)]="editorLocale"
       labelKey="knowledge.categoryName"
       placeholderKey="knowledge.categoryNamePlaceholder"
       requiredKey="knowledge.required"

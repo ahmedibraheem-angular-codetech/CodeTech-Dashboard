@@ -1,4 +1,3 @@
-// Encapsulation is off so the PrimeNG switch can be sized; selectors are namespaced.
 app-service-project-card {
   display: block;
 }
@@ -33,8 +32,6 @@ app-service-project-card {
   object-fit: cover;
 }
 
-// A wrapper carries the positioning: PrimeNG forces `position: relative` on the switch itself.
-// Logical offsets keep the switch in the same corner in RTL and LTR.
 .service-project__toggle {
   position: absolute;
   display: inline-flex;

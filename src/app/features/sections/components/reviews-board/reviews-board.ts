@@ -13,6 +13,7 @@ import { MessageService } from 'primeng/api';
 import { Checkbox } from 'primeng/checkbox';
 import { Popover } from 'primeng/popover';
 
+import type { AppLanguage } from '../../../../core/i18n/language';
 import { AuthService } from '../../../../core/auth/auth.service';
 import { loadFailureStatus } from '../../../../core/http/api-error';
 import { NetworkStatusService } from '../../../../core/services/network-status.service';
@@ -134,19 +135,19 @@ export class ReviewsBoard {
     this.lang.t('review.count').replace('{count}', String(this.visible().length)),
   );
 
-  readonly editorTitle = computed(() => {
-    this.lang.language();
-    return this.editor() === 'edit'
-      ? this.lang.t('review.editTitle')
-      : this.lang.t('review.createTitle');
-  });
+  readonly editorLocale = signal<AppLanguage>(this.lang.language());
 
-  readonly editorSaveLabel = computed(() => {
-    this.lang.language();
-    return this.editor() === 'edit'
-      ? this.lang.t('common.saveChanges')
-      : this.lang.t('review.addSubmit');
-  });
+  readonly editorTitle = computed(() =>
+    this.editor() === 'edit' ? this.ct('review.editTitle') : this.ct('review.createTitle'),
+  );
+
+  readonly editorSaveLabel = computed(() =>
+    this.editor() === 'edit' ? this.ct('common.saveChanges') : this.ct('review.addSubmit'),
+  );
+
+  protected ct(key: string): string {
+    return this.lang.lookup(key, this.editorLocale()) ?? this.lang.t(key);
+  }
 
   readonly editorSaveIcon = computed(() =>
     this.editor() === 'edit' ? 'pi pi-save' : 'pi pi-plus',
@@ -266,6 +267,7 @@ export class ReviewsBoard {
   }
 
   protected addReview(): void {
+    this.editorLocale.set(this.lang.language());
     this.selected.set(null);
     this.form.reset({
       nameAr: '',
@@ -282,6 +284,7 @@ export class ReviewsBoard {
   }
 
   protected editReview(review: Review): void {
+    this.editorLocale.set(this.lang.language());
     this.selected.set(review);
     this.form.reset({
       nameAr: review.texts.ar.name,

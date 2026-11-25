@@ -4,6 +4,7 @@ import { ActivatedRoute, provideRouter, Router } from '@angular/router';
 import { MessageService } from 'primeng/api';
 import { of, throwError } from 'rxjs';
 
+import { ApiError } from '../../../../core/http/api-error';
 import { MediaService } from '../../../../core/media/media.service';
 import { LanguageService } from '../../../../core/services/language.service';
 import { NetworkStatusService } from '../../../../core/services/network-status.service';
@@ -111,5 +112,58 @@ describe('ArticleEditor', () => {
       get: () => throwError(() => new Error('boom')),
     });
     expect(fixture.componentInstance.status()).toBe('error');
+  });
+
+  it('blocks save and shows a field error for an invalid slug, then saves once it is fixed', async () => {
+    const update = vi.fn((_id: string, draft: unknown) =>
+      of({ ...article('9'), ...(draft as object) }),
+    );
+    const fixture = await render('edit', '9', { update });
+    const editor = fixture.componentInstance as unknown as {
+      form: { controls: { slug: { setValue(value: string): void } } };
+      save(): void;
+    };
+
+    editor.form.controls.slug.setValue('QA Test_slug');
+    editor.save();
+    fixture.detectChanges();
+    expect(update).not.toHaveBeenCalled();
+    expect(fixture.nativeElement.textContent).toContain('الرابط المختصر يقبل الأحرف الإنجليزية');
+
+    editor.form.controls.slug.setValue('qa-test-slug');
+    fixture.detectChanges();
+    expect(fixture.nativeElement.textContent).not.toContain(
+      'الرابط المختصر يقبل الأحرف الإنجليزية',
+    );
+    editor.save();
+    expect(update).toHaveBeenCalledTimes(1);
+  });
+
+  it('allows an empty slug', async () => {
+    const update = vi.fn((_id: string, draft: unknown) =>
+      of({ ...article('9'), ...(draft as object) }),
+    );
+    const fixture = await render('edit', '9', { update });
+    (fixture.componentInstance as unknown as { save(): void }).save();
+    expect(update).toHaveBeenCalledTimes(1);
+  });
+
+  it('shows the server validation message when saving is rejected with 422', async () => {
+    const update = vi.fn(() =>
+      throwError(
+        () =>
+          new ApiError(422, 'The title (English) field must not be greater than 200 characters.'),
+      ),
+    );
+    const fixture = await render('edit', '9', { update });
+    const add = vi.spyOn(TestBed.inject(MessageService), 'add');
+    (fixture.componentInstance as unknown as { save(): void }).save();
+    expect(add).toHaveBeenCalledWith(
+      expect.objectContaining({
+        severity: 'error',
+        summary: 'The title (English) field must not be greater than 200 characters.',
+      }),
+    );
+    expect(fixture.componentInstance.form.controls.titleEn.value).toBe('Title');
   });
 });

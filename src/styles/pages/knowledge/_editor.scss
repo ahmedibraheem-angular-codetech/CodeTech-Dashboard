@@ -96,7 +96,6 @@
   }
 }
 
-/* Figma ratio ~661:405, full content width (no artificial max-width cap). */
 .kb-editor__layout {
   display: grid;
   grid-template-columns: minmax(0, 1.63fr) minmax(280px, 1fr);
@@ -188,7 +187,6 @@
   font-size: 14px;
 }
 
-/* Figma inner panel: #F9FAFB / #EDEEEE / 12px pad / 14px gap / 16px radius. */
 .kb-card__body {
   display: flex;
   flex: 1;
@@ -211,7 +209,6 @@
   grid-column: 1 / -1;
 }
 
-/* Figma create/edit: meta description character counter `0/160`. */
 .kb-seo-count {
   display: block;
   margin-block-start: 6px;
@@ -222,7 +219,6 @@
   text-align: end;
 }
 
-/* SEO keyword chips (editor input + detail read-only). */
 .kb-keywords {
   display: flex;
   flex-wrap: wrap;
@@ -300,7 +296,6 @@
   align-items: start;
 }
 
-// Quill reuses the legal board toolbar styles through `.legal-doc__editor`.
 .kb-editor__quill {
   .p-editor {
     display: flex;

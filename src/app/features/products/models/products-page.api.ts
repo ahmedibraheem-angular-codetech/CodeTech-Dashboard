@@ -1,7 +1,6 @@
 import type { FileObject } from '../../../core/http/api.model';
 import type { ProductLocaleDto } from './product.api';
 
-/** Products marketing page (GET /admin/pages/products). */
 export interface ProductsPageSectionsDto {
   why_visible: boolean;
   sectors_visible: boolean;

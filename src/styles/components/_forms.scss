@@ -10,7 +10,6 @@
   color: var(--app-muted);
 }
 
-// Password visibility button, positioned over the end of the PrimeNG icon field.
 .field__toggle {
   position: absolute;
   top: 50%;
@@ -85,4 +84,9 @@
 .form-grid {
   display: grid;
   gap: 14px;
+}
+
+html[dir='rtl'] .p-datepicker-prev-button .p-icon,
+html[dir='rtl'] .p-datepicker-next-button .p-icon {
+  transform: scaleX(-1);
 }

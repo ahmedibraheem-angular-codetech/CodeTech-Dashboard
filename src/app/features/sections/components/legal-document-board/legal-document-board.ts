@@ -82,6 +82,10 @@ export class LegalDocumentBoard {
   readonly saving = signal(false);
   readonly document = signal<LegalDocument | null>(null);
   readonly locale = signal<AppLanguage>('ar');
+
+  protected ct(key: string): string {
+    return this.lang.lookup(key, this.locale()) ?? this.lang.t(key);
+  }
   readonly draftAr = signal('');
   readonly draftEn = signal('');
 
@@ -100,28 +104,28 @@ export class LegalDocumentBoard {
   });
 
   readonly contentTitle = computed(() => {
-    this.lang.language();
-    return this.lang.t(this.contentTitleKey());
+    this.locale();
+    return this.ct(this.contentTitleKey());
   });
 
   readonly emptyTitle = computed(() => {
-    this.lang.language();
-    return this.lang.t(this.emptyTitleKey());
+    this.locale();
+    return this.ct(this.emptyTitleKey());
   });
 
   readonly emptyHint = computed(() => {
-    this.lang.language();
-    return this.lang.t(this.emptyHintKey());
+    this.locale();
+    return this.ct(this.emptyHintKey());
   });
 
   readonly writeLabel = computed(() => {
-    this.lang.language();
-    return this.lang.t(this.writeLabelKey());
+    this.locale();
+    return this.ct(this.writeLabelKey());
   });
 
   readonly placeholder = computed(() => {
-    this.lang.language();
-    return this.lang.t(this.placeholderKey());
+    this.locale();
+    return this.ct(this.placeholderKey());
   });
 
   readonly hasContent = computed(() => {
@@ -132,13 +136,6 @@ export class LegalDocumentBoard {
     return hasVisibleHtml(doc.content.ar) || hasVisibleHtml(doc.content.en);
   });
 
-  /**
-   * View-mode HTML. Quill stores text color as inline `style`; Angular's default
-   * sanitizer would strip that and show black text. We allowlist-sanitize first
-   * (scripts / handlers / unsafe CSS out, color styles kept), then mark SafeHtml.
-   * View falls back to the other locale only when the selected one is empty.
-   * Edit mode never uses this fallback — drafts stay independent.
-   */
   readonly viewingHtml = computed<SafeHtml | null>(() => {
     const doc = this.document();
     if (!doc) {
@@ -160,8 +157,6 @@ export class LegalDocumentBoard {
 
   constructor() {
     this.locale.set(this.lang.language());
-
-    // switchMap cancels the previous get() so a slow response cannot overwrite
 
     toObservable(this.kind)
       .pipe(

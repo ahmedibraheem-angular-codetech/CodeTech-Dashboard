@@ -320,7 +320,7 @@ describe('ServicesService', () => {
     const blobUrl = 'blob:https://local/test-image';
     vi.stubGlobal(
       'fetch',
-      vi.fn(async () => new Response(new Blob(['x'], { type: 'image/png' }), { status: 200 })),
+      vi.fn(async () => ({ ok: true, blob: async () => new Blob(['x'], { type: 'image/png' }) })),
     );
     const draft = {
       ...blankService(),

@@ -34,7 +34,6 @@ import { ProductsService } from '../../services/products.service';
 
 type LoadState = 'loading' | 'ready' | 'error' | 'offline';
 
-/** Cards per page; the paginator stays hidden until the list exceeds this. */
 export const PRODUCT_LIST_PAGE_SIZE = 6;
 
 @Component({
@@ -69,7 +68,6 @@ export class ProductsListPage {
   readonly menuProduct = signal<Product | null>(null);
   readonly first = signal(0);
   readonly rows = signal(PRODUCT_LIST_PAGE_SIZE);
-  /** Bumps on every load so a slower, older response cannot overwrite a newer one. */
   private loadSeq = 0;
 
   constructor() {

@@ -1,4 +1,3 @@
-/** Backend statuses. Labels come from existing copy that matches each value. */
 export type UserStatus = 'active' | 'inactive' | 'blocked';
 
 export interface UserRoleRef {
@@ -33,11 +32,8 @@ export interface User {
   username: string | null;
   email: string;
   phone: string;
-  /** Null when the role was deleted. The account stays, with no access. */
   role: UserRoleRef | null;
-  /** Null when the API status is not `active`, `inactive`, or `blocked`. */
   status: UserStatus | null;
-  /** Raw status string, used when `status` is null. */
   statusRaw: string;
   avatarUrl: string | null;
   avatarUuid: string | null;
@@ -60,11 +56,6 @@ export interface UserListPage {
   total: number;
 }
 
-/**
- * Editable user fields.
- * `avatar` omitted keeps the current photo, `null` removes it, a `File` replaces it.
- * Username and join date are not writable here.
- */
 export interface UserDraft {
   name: string;
   email: string;

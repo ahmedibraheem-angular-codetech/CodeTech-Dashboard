@@ -35,12 +35,6 @@ export interface ReviewContentDraft {
   texts: Record<AppLanguage, ReviewText>;
 }
 
-/**
- * Media write intent per coat-check rules:
- * - `omit` → do not send the field (keep existing)
- * - `clear` → send `null` (remove)
- * - `replace` → upload File then send UUID
- */
 export type ReviewMediaIntent =
   { kind: 'omit' } | { kind: 'clear' } | { kind: 'replace'; file: File };
 
