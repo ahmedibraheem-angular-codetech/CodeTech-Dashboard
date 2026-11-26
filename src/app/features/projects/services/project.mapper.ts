@@ -51,7 +51,8 @@ export function mapProjectMedia(file: FileObject | null | undefined): ProjectIma
 }
 
 function sharedMedia(file: FileObject | null | undefined): LocalizedMedia {
-  return { ar: mapProjectMedia(file), en: emptyProjectImage() };
+  const media = mapProjectMedia(file);
+  return { ar: media, en: { ...media } };
 }
 
 type LocalizedFileInput = { ar?: FileObject | null; en?: FileObject | null };

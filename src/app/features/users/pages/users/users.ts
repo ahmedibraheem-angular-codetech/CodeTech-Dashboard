@@ -231,7 +231,7 @@ export class UsersPage {
         kind: 'datetime',
         width: '220px',
       },
-      { key: 'actions', header: '', width: '64px' },
+      { key: 'actions', header: '', width: '64px', sticky: 'end' },
     ];
   });
 

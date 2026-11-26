@@ -520,7 +520,11 @@ export const routes: Routes = [
           titleKey: 'nav.seo',
         },
       },
+      {
+        path: '**',
+        loadComponent: () => import('./features/not-found/not-found').then((m) => m.NotFoundPage),
+        data: { breadcrumb: 'notFound.title', titleKey: 'notFound.title' },
+      },
     ],
   },
-  { path: '**', redirectTo: '' },
 ];

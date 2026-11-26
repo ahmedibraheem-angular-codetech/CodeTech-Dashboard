@@ -50,7 +50,7 @@ export class BreadcrumbService {
     const next = segment ? `${url}/${segment}` : url;
     const key =
       route.data['breadcrumb'] === ':id'
-        ? (this.labels()[next] ?? route.paramMap.get('id') ?? '')
+        ? (this.labels()[next] ?? 'breadcrumb.details')
         : route.data['breadcrumb'];
     if (typeof key === 'string' && key) {
       const crumb = { key, url: next || '/' };

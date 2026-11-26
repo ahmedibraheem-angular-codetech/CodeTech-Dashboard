@@ -47,10 +47,14 @@
                 pInputText
                 [fluid]="true"
                 formControlName="phone"
+                [invalid]="fieldErrorKey('phone') !== null"
                 [placeholder]="t('social.phonePh')"
                 dir="ltr"
               />
             </p-iconfield>
+            @if (fieldErrorKey('phone'); as errorKey) {
+              <app-field-error>{{ t(errorKey) }}</app-field-error>
+            }
           </label>
           <label class="field">
             <span class="field__label">{{ t('social.email') }}</span>
@@ -61,10 +65,14 @@
                 type="email"
                 [fluid]="true"
                 formControlName="email"
+                [invalid]="fieldErrorKey('email') !== null"
                 [placeholder]="t('social.emailPh')"
                 dir="ltr"
               />
             </p-iconfield>
+            @if (fieldErrorKey('email'); as errorKey) {
+              <app-field-error>{{ t(errorKey) }}</app-field-error>
+            }
           </label>
         </form>
       </article>
@@ -123,10 +131,14 @@
                   pInputText
                   [fluid]="true"
                   formControlName="mapUrl"
+                  [invalid]="fieldErrorKey('mapUrl') !== null"
                   [placeholder]="t('social.mapLinkPh')"
                   dir="ltr"
                 />
               </p-iconfield>
+              @if (fieldErrorKey('mapUrl'); as errorKey) {
+                <app-field-error>{{ t(errorKey) }}</app-field-error>
+              }
             </label>
           </form>
           <div class="social-map">

@@ -40,8 +40,8 @@ describe('product.mapper', () => {
     expect(item.published).toBe(false);
     expect(item.cover.ar.imageUuid).toBe('cover-1');
     expect(item.cover.en.imageUrl).toBe('');
+    expect(item.features[0]?.image.en.imageUuid).toBe('feat-1');
     expect(item.features[0]?.image.ar.imageUuid).toBe('feat-1');
-    expect(item.features[0]?.image.en.imageUrl).toBe('');
     expect(item.units).toEqual([]);
     expect(item.faqs).toEqual([]);
   });

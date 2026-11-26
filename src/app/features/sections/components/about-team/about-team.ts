@@ -12,6 +12,7 @@ import {
   viewChild,
 } from '@angular/core';
 import type { ElementRef } from '@angular/core';
+import { revealInvalid, watchBilingualErrors } from '../../../../shared/utils/bilingual-errors';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MessageService } from 'primeng/api';
@@ -126,6 +127,11 @@ export class AboutTeamSection {
   readonly saving = signal(false);
   readonly editingId = signal<string | null>(null);
   readonly locale = signal<AppLanguage>('ar');
+  protected readonly invalidLocales = watchBilingualErrors(
+    () => this.form,
+    this.locale,
+    (form, l) => Object.values((form as typeof this.form).controls[l].controls),
+  );
 
   protected ct(key: string): string {
     return this.lang.lookup(key, this.locale()) ?? this.lang.t(key);
@@ -226,8 +232,11 @@ export class AboutTeamSection {
   }
 
   save(): void {
-    if (this.form.controls.ar.invalid || this.saving()) {
-      this.form.controls.ar.markAllAsTouched();
+    if (this.saving()) {
+      return;
+    }
+    if (this.form.controls.ar.invalid) {
+      revealInvalid(this.form);
       return;
     }
     const editingId = this.editingId();

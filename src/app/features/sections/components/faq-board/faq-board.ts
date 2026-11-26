@@ -7,6 +7,7 @@ import {
   signal,
   viewChild,
 } from '@angular/core';
+import { revealInvalid } from '../../../../shared/utils/bilingual-errors';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, Validators } from '@angular/forms';
 import { MessageService } from 'primeng/api';
@@ -274,7 +275,7 @@ export class FaqBoard {
       return;
     }
     if (this.form.invalid) {
-      this.form.markAllAsTouched();
+      revealInvalid(this.form);
       return;
     }
     if (this.saving()) {
@@ -396,7 +397,7 @@ export class FaqBoard {
 
   private saveCategory(): void {
     if (this.categoryForm.invalid) {
-      this.categoryForm.markAllAsTouched();
+      revealInvalid(this.categoryForm);
       return;
     }
     if (this.saving()) {

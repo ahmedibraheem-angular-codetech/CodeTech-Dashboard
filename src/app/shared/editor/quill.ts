@@ -36,7 +36,8 @@ export interface QuillToolbarModule {
 }
 
 interface QuillConstructor {
-  import: (path: string) => { whitelist?: string[] };
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Quill blots are untyped classes
+  import: (path: string) => any;
   register: (target: unknown, overwrite?: boolean) => void;
 }
 
@@ -51,11 +52,45 @@ export function ensureQuillFontRegistered(): Promise<QuillFontRegistration> {
         const Font = Quill.import('attributors/class/font');
         Font.whitelist = [QUILL_FONT];
         Quill.register(Font, true);
+        registerDividerBlot(Quill);
+        registerPlainLinkBlot(Quill);
         return { status: 'ready' as const };
       })
       .catch((error: unknown): QuillFontRegistration => ({ status: 'failed', error }));
   }
   return fontRegistration;
+}
+
+/**
+ * Quill drops unknown block elements on load. Without a blot for <hr> every
+ * stored divider disappeared the first time a document was edited and saved.
+ */
+function registerDividerBlot(Quill: QuillConstructor): void {
+  const BlockEmbed = Quill.import('blots/block/embed');
+  class Divider extends BlockEmbed {
+    static blotName = 'divider';
+    static tagName = 'hr';
+  }
+  Quill.register(Divider, true);
+}
+
+/**
+ * Quill adds target="_blank" and rel to every link. For mailto: and tel:
+ * links that rewrites the stored content on save, so keep them untouched.
+ */
+function registerPlainLinkBlot(Quill: QuillConstructor): void {
+  const Link = Quill.import('formats/link');
+  class AppLink extends Link {
+    static create(value: string): HTMLElement {
+      const node = super.create(value) as HTMLElement;
+      if (/^(mailto|tel):/i.test(String(value).trim())) {
+        node.removeAttribute('target');
+        node.removeAttribute('rel');
+      }
+      return node;
+    }
+  }
+  Quill.register(AppLink, true);
 }
 
 export function resetQuillFontRegistrationForTests(): void {

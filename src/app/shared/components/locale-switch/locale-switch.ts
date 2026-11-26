@@ -9,5 +9,7 @@ import type { AppLanguage } from '../../../core/i18n/language';
 })
 export class LocaleSwitch {
   readonly value = input.required<AppLanguage>();
+  /** Languages whose tab holds a field with an error. */
+  readonly invalid = input<readonly AppLanguage[]>([]);
   readonly picked = output<AppLanguage>();
 }

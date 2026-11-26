@@ -291,7 +291,7 @@ describe('PersonalData', () => {
       await submit(rendered, 'error');
       expect(rendered.toast).toHaveBeenCalledWith({
         severity: 'error',
-        summary: 'حقل البريد الإلكتروني مطلوب.',
+        summary: 'راجع الحقول المحددة',
       });
       rendered.http.verify();
     });

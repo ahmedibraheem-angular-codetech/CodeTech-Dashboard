@@ -1,3 +1,4 @@
+import { revealInvalid } from '../../../../shared/utils/bilingual-errors';
 import { emptyMediaDraft, pickMedia } from '../../../../core/media/localized-media';
 import {
   ChangeDetectionStrategy,
@@ -320,7 +321,7 @@ export class ReviewsBoard {
 
   protected save(): void {
     if (this.form.invalid) {
-      this.form.markAllAsTouched();
+      revealInvalid(this.form);
       return;
     }
     if (this.saving()) {

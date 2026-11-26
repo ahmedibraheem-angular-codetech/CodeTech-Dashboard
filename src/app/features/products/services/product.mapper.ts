@@ -55,7 +55,8 @@ export function mapProductMedia(file: FileObject | null | undefined): ProductIma
 }
 
 function sharedMedia(file: FileObject | null | undefined): LocalizedMedia {
-  return { ar: mapProductMedia(file), en: emptyProductImage() };
+  const media = mapProductMedia(file);
+  return { ar: media, en: { ...media } };
 }
 
 function mapPoint(dto: ProductPointDto, mediaKey: 'icon' | 'image' = 'icon'): ProductPoint {

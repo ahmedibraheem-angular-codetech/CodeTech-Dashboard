@@ -1,5 +1,10 @@
 import { ChangeDetectionStrategy, Component, inject, input, model, output } from '@angular/core';
-import { type FormControl, type FormGroup, ReactiveFormsModule } from '@angular/forms';
+import {
+  type AbstractControl,
+  type FormControl,
+  type FormGroup,
+  ReactiveFormsModule,
+} from '@angular/forms';
 import { IconField } from 'primeng/iconfield';
 import { InputIcon } from 'primeng/inputicon';
 import { InputText } from 'primeng/inputtext';
@@ -7,6 +12,7 @@ import { ToggleSwitch } from 'primeng/toggleswitch';
 
 import type { AppLanguage } from '../../../core/i18n/language';
 import { LanguageService } from '../../../core/services/language.service';
+import { watchBilingualErrors } from '../../../shared/utils/bilingual-errors';
 import { FieldError } from '../field-error/field-error';
 import { LocaleSwitch } from '../locale-switch/locale-switch';
 
@@ -45,10 +51,19 @@ export class CategoryForm {
   readonly submitted = output<void>();
 
   readonly locale = model<AppLanguage>(this.lang.language());
+  protected readonly invalidLocales = watchBilingualErrors(
+    () => this.form(),
+    this.locale,
+    (form, l) => {
+      const c = (form as unknown as { controls: Record<string, AbstractControl> }).controls;
+      return Object.keys(c)
+        .filter((k) => k.endsWith(l === 'ar' ? 'Ar' : 'En'))
+        .map((k) => c[k]);
+    },
+  );
   protected ct(key: string): string {
     return this.lang.lookup(key, this.locale()) ?? this.lang.t(key);
   }
-
 
   protected onSubmit(): void {
     this.submitted.emit();

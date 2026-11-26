@@ -28,6 +28,8 @@ export interface DataTableColumn<T = unknown> {
   field?: keyof T & string;
   width?: string;
   sortable?: boolean;
+  /** Keeps the column visible at the end edge while the table scrolls sideways. */
+  sticky?: 'end';
 
   dir?: 'ltr' | 'rtl';
   kind?: 'text' | 'badge' | 'icon-text' | 'datetime';

@@ -614,14 +614,14 @@ describe('ServiceDetailPage', () => {
       expect(lastCrumb()).toBe(service.name.en);
     });
 
-    it('keeps the id for a missing service and never reuses a previous name', async () => {
+    it('shows a generic label for a missing service and never reuses a previous name', async () => {
       const { harness } = await open('/services/web-development');
       await harness.navigateByUrl('/services/does-not-exist');
       await settle(harness);
-      expect(lastCrumb()).toBe('does-not-exist');
+      expect(lastCrumb()).toBe('breadcrumb.details');
     });
 
-    it('drops the name when the page is left, so a later load starts from the id', async () => {
+    it('drops the name when the page is left, so a later load starts from the generic label', async () => {
       const get = vi.fn<(id: string) => Observable<Service | null>>();
       get.mockReturnValueOnce(of(seed('web-development')));
       get.mockReturnValue(NEVER);
@@ -631,7 +631,7 @@ describe('ServiceDetailPage', () => {
       await settle(harness);
       await harness.navigateByUrl('/services/web-development');
       await settle(harness);
-      expect(lastCrumb()).toBe('web-development');
+      expect(lastCrumb()).toBe('breadcrumb.details');
     });
 
     it('switches to the new name when the route id changes', async () => {

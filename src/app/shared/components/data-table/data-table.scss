@@ -300,3 +300,15 @@
 .app-data-table-menu .p-checkbox-box svg path {
   fill: #ffffff !important;
 }
+
+.app-data-table__grid th.app-data-table__sticky-end,
+.app-data-table__grid td.app-data-table__sticky-end {
+  position: sticky;
+  inset-inline-end: 0;
+  z-index: 1;
+  box-shadow: inset 1px 0 0 #f1f5f9;
+}
+
+.app-data-table__grid .p-datatable-thead > tr > th.app-data-table__sticky-end {
+  background: var(--Ken-Border-Porcelain-50, #f6f8f9);
+}
