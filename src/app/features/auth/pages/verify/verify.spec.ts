@@ -168,8 +168,22 @@ describe('Verify', () => {
     rendered.fixture.componentInstance.remaining.set(0);
     rendered.fixture.detectChanges();
 
+    rendered.fixture.componentInstance.form.controls.code.setValue('0427');
+    rendered.fixture.componentInstance.invalid.set(true);
+    rendered.fixture.detectChanges();
+
     const resend = rendered.root.querySelector<HTMLButtonElement>('.otp-footer button');
     resend?.click();
+    rendered.fixture.detectChanges();
+
+    expect(rendered.fixture.componentInstance.form.controls.code.value).toBe('');
+    expect(rendered.fixture.componentInstance.invalid()).toBe(false);
+    expect(rendered.root.querySelector('#otp-error')).toBeNull();
+    const digits = [...rendered.root.querySelectorAll('input')].filter((input) =>
+      input.closest('p-inputotp, p-inputOtp, .p-inputotp'),
+    );
+    expect(digits.length).toBe(4);
+    expect(digits.every((input) => input.value === '')).toBe(true);
     const request = rendered.http.expectOne(FORGOT);
     expect(request.request.method).toBe('POST');
     expect(request.request.body).toEqual({ email: 'admin@codetech-sa.com' });

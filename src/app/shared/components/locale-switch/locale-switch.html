@@ -8,6 +8,9 @@
   >
     <span>English</span>
     <img src="images/flag-gb.svg" alt="" />
+    @if (invalid().includes('en')) {
+      <i class="pi pi-exclamation-circle locale-switch__error" role="img" aria-label="Error"></i>
+    }
   </button>
   <button
     type="button"
@@ -18,5 +21,8 @@
   >
     <span>عربي</span>
     <img src="images/flag-sa.png" alt="" />
+    @if (invalid().includes('ar')) {
+      <i class="pi pi-exclamation-circle locale-switch__error" role="img" aria-label="خطأ"></i>
+    }
   </button>
 </div>

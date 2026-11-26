@@ -10,7 +10,12 @@ import {
   output,
   signal,
 } from '@angular/core';
-import { type FormControl, type FormGroup, ReactiveFormsModule } from '@angular/forms';
+import {
+  type AbstractControl,
+  type FormControl,
+  type FormGroup,
+  ReactiveFormsModule,
+} from '@angular/forms';
 import { IconField } from 'primeng/iconfield';
 import { InputIcon } from 'primeng/inputicon';
 import { InputText } from 'primeng/inputtext';
@@ -23,6 +28,7 @@ import { LanguageService } from '../../../../../../core/services/language.servic
 import { AppButton } from '../../../../../../shared/components/app-button/app-button';
 import { FieldError } from '../../../../../../shared/components/field-error/field-error';
 import { LocaleSwitch } from '../../../../../../shared/components/locale-switch/locale-switch';
+import { watchBilingualErrors } from '../../../../../../shared/utils/bilingual-errors';
 import { formatIsoDate, toIsoDate } from '../../../../../../shared/utils/date';
 import { formatFileSize } from '../../../../../../shared/utils/file-size';
 import {
@@ -112,6 +118,16 @@ export class ReviewEditorForm implements OnInit {
   readonly submitted = output<void>();
 
   readonly locale = model<AppLanguage>(this.lang.language());
+  protected readonly invalidLocales = watchBilingualErrors(
+    () => this.form(),
+    this.locale,
+    (form, l) => {
+      const c = (form as unknown as { controls: Record<string, AbstractControl> }).controls;
+      return Object.keys(c)
+        .filter((k) => k.endsWith(l === 'ar' ? 'Ar' : 'En'))
+        .map((k) => c[k]);
+    },
+  );
   protected ct(key: string): string {
     return this.lang.lookup(key, this.locale()) ?? this.lang.t(key);
   }

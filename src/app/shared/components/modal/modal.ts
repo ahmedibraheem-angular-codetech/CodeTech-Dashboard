@@ -3,6 +3,7 @@ import {
   Component,
   ViewEncapsulation,
   computed,
+  effect,
   inject,
   input,
   model,
@@ -57,6 +58,31 @@ export class Modal {
     return ['app-modal', dir ? `app-modal--${dir}` : '', extra].filter(Boolean).join(' ');
   });
   readonly closeOnCancel = input(true);
+
+  /** Element that had focus when the dialog opened, so focus can go back to it. */
+  private opener: HTMLElement | null = null;
+  private wasVisible = false;
+
+  constructor() {
+    effect(() => {
+      const open = this.visible();
+      if (open && !this.wasVisible) {
+        const active = document.activeElement;
+        this.opener = active instanceof HTMLElement && active !== document.body ? active : null;
+      } else if (!open && this.wasVisible) {
+        const target = this.opener;
+        this.opener = null;
+        if (target) {
+          setTimeout(() => {
+            if (target.isConnected) {
+              target.focus();
+            }
+          });
+        }
+      }
+      this.wasVisible = open;
+    });
+  }
 
   readonly save = output<void>();
 

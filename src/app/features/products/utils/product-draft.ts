@@ -59,6 +59,22 @@ export function removeKeepingMinOne<T>(items: readonly T[], index: number): T[] 
   return items.length > 1 ? items.filter((_, item) => item !== index) : [...items];
 }
 
+/**
+ * A file loaded for both languages stays linked: changing or clearing one tab
+ * also changes the other while both still hold the same saved file.
+ */
+function linkedSlots(
+  media: LocalizedMedia,
+  language: AppLanguage,
+  next: LocalizedMedia[AppLanguage],
+): LocalizedMedia {
+  const other: AppLanguage = language === 'ar' ? 'en' : 'ar';
+  const current = media[language];
+  const sameFile =
+    !!current.imageUuid && !!media[other].imageUuid && current.imageUuid === media[other].imageUuid;
+  return sameFile ? { ar: next, en: next } : { ...media, [language]: next };
+}
+
 export function setLocalizedSlotImage<T extends { image: LocalizedMedia }>(
   items: readonly T[],
   index: number,
@@ -67,7 +83,7 @@ export function setLocalizedSlotImage<T extends { image: LocalizedMedia }>(
 ): T[] {
   return mapAtIndex(items, index, (item) => ({
     ...item,
-    image: { ...item.image, [language]: withProductImage(item.image[language], file) },
+    image: linkedSlots(item.image, language, withProductImage(item.image[language], file)),
   }));
 }
 
@@ -78,7 +94,7 @@ export function clearLocalizedSlotImage<T extends { image: LocalizedMedia }>(
 ): T[] {
   return mapAtIndex(items, index, (item) => ({
     ...item,
-    image: { ...item.image, [language]: withoutProductImage(item.image[language]) },
+    image: linkedSlots(item.image, language, withoutProductImage(item.image[language])),
   }));
 }
 

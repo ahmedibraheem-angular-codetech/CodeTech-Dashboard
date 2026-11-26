@@ -100,14 +100,21 @@
         <tr>
           @for (column of columns(); track column.key) {
             @if (column.sortable && column.field) {
-              <th [pSortableColumn]="column.field" [style.width]="column.width ?? null">
+              <th
+                [pSortableColumn]="column.field"
+                [style.width]="column.width ?? null"
+                [class.app-data-table__sticky-end]="column.sticky === 'end'"
+              >
                 <ng-container
                   [ngTemplateOutlet]="heading"
                   [ngTemplateOutletContext]="{ $implicit: column }"
                 />
               </th>
             } @else {
-              <th [style.width]="column.width ?? null">
+              <th
+                [style.width]="column.width ?? null"
+                [class.app-data-table__sticky-end]="column.sticky === 'end'"
+              >
                 <ng-container
                   [ngTemplateOutlet]="heading"
                   [ngTemplateOutletContext]="{ $implicit: column }"
@@ -125,7 +132,7 @@
           (keydown.enter)="onRowClick($event, row)"
         >
           @for (column of columns(); track column.key) {
-            <td>
+            <td [class.app-data-table__sticky-end]="column.sticky === 'end'">
               @if (templateFor(column.key); as template) {
                 <ng-container
                   [ngTemplateOutlet]="template"

@@ -210,7 +210,12 @@ export class ArticlesPanel {
         kind: 'datetime',
         width: '240px',
       },
-      { key: 'actions', header: this.lang.t('knowledge.col.actions'), width: '72px' },
+      {
+        key: 'actions',
+        header: this.lang.t('knowledge.col.actions'),
+        width: '72px',
+        sticky: 'end',
+      },
     ];
   });
 

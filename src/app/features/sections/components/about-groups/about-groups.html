@@ -125,13 +125,16 @@
   [title]="ct(modalTitle())"
   [icon]="icon()"
   [saving]="saving()"
-  [saveDisabled]="form.controls.ar.invalid"
   [saveLabel]="ct('common.saveChanges')"
   [cancelLabel]="ct('common.cancel')"
   (save)="save()"
 >
   <div class="block-form">
-    <app-locale-switch [value]="locale()" (picked)="locale.set($event)" />
+    <app-locale-switch
+      [value]="locale()"
+      [invalid]="invalidLocales()"
+      (picked)="locale.set($event)"
+    />
 
     @for (code of locales; track code) {
       @if (locale() === code) {

@@ -74,7 +74,8 @@ export function mapServiceMedia(file: FileObject | null | undefined): ServiceIma
 }
 
 function sharedMedia(file: FileObject | null | undefined): LocalizedMedia {
-  return { ar: mapServiceMedia(file), en: emptyServiceImage() };
+  const media = mapServiceMedia(file);
+  return { ar: media, en: { ...media } };
 }
 
 function mapWhyItem(dto: ServiceDetailDto['needs'][number]): ServiceWhyItem {

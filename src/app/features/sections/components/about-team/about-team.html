@@ -118,14 +118,17 @@
   [title]="ct(editingId() ? 'about.editMember' : 'about.memberAdd')"
   icon="pi pi-users"
   [saving]="saving()"
-  [saveDisabled]="form.controls.ar.invalid"
   [saveLabel]="ct(editingId() ? 'common.saveChanges' : 'about.memberAdd')"
   [cancelLabel]="ct('common.cancel')"
   [saveIcon]="editingId() ? 'pi pi-save' : ''"
   (save)="save()"
 >
   <div class="block-form">
-    <app-locale-switch [value]="locale()" (picked)="locale.set($event)" />
+    <app-locale-switch
+      [value]="locale()"
+      [invalid]="invalidLocales()"
+      (picked)="locale.set($event)"
+    />
     @for (code of locales; track code) {
       @if (locale() === code) {
         @let group = form.controls[code];

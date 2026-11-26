@@ -1,5 +1,10 @@
 import { ChangeDetectionStrategy, Component, inject, input, model, output } from '@angular/core';
-import { type FormControl, type FormGroup, ReactiveFormsModule } from '@angular/forms';
+import {
+  type AbstractControl,
+  type FormControl,
+  type FormGroup,
+  ReactiveFormsModule,
+} from '@angular/forms';
 import { IconField } from 'primeng/iconfield';
 import { InputIcon } from 'primeng/inputicon';
 import { InputText } from 'primeng/inputtext';
@@ -11,6 +16,7 @@ import type { AppLanguage } from '../../../../../../core/i18n/language';
 import { LanguageService } from '../../../../../../core/services/language.service';
 import { FieldError } from '../../../../../../shared/components/field-error/field-error';
 import { LocaleSwitch } from '../../../../../../shared/components/locale-switch/locale-switch';
+import { watchBilingualErrors } from '../../../../../../shared/utils/bilingual-errors';
 import type { FaqCategoryId } from '../../../../models/faq.model';
 
 export type FaqEditorFormGroup = FormGroup<{
@@ -51,6 +57,16 @@ export class FaqEditorForm {
 
   readonly lang = inject(LanguageService);
   readonly locale = model<AppLanguage>(this.lang.language());
+  protected readonly invalidLocales = watchBilingualErrors(
+    () => this.form(),
+    this.locale,
+    (form, l) => {
+      const c = (form as unknown as { controls: Record<string, AbstractControl> }).controls;
+      return Object.keys(c)
+        .filter((k) => k.endsWith(l === 'ar' ? 'Ar' : 'En'))
+        .map((k) => c[k]);
+    },
+  );
   protected ct(key: string): string {
     return this.lang.lookup(key, this.locale()) ?? this.lang.t(key);
   }

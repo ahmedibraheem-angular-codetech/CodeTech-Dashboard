@@ -60,7 +60,7 @@
       styleClass="otp-footer__resend"
       [label]="lang.t('auth.resend')"
       [disabled]="remaining() > 0"
-      (onClick)="resend.emit()"
+      (onClick)="onResend()"
     />
   </div>
 </form>

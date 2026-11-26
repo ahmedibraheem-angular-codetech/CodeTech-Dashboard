@@ -1,3 +1,4 @@
+import { applyServerFieldErrors } from '../../../../core/http/server-field-errors';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -80,22 +81,36 @@ const FIELDS: readonly FieldDef[] = [
 ];
 
 const ERRORS: Record<FieldName, Record<string, string>> = {
-  name: { required: 'profile.nameRequired', whitespace: 'profile.nameRequired' },
+  name: {
+    required: 'profile.nameRequired',
+    whitespace: 'profile.nameRequired',
+    server: 'profile.nameRequired',
+  },
   username: {
     required: 'profile.usernameRequired',
     whitespace: 'profile.usernameRequired',
     pattern: 'profile.usernameInvalid',
+    server: 'profile.usernameInvalid',
   },
   email: {
     required: 'auth.emailRequired',
     whitespace: 'auth.emailRequired',
     email: 'auth.emailInvalid',
+    server: 'auth.emailInvalid',
   },
   phone: {
     required: 'profile.phoneRequired',
     whitespace: 'profile.phoneRequired',
     pattern: 'profile.phoneInvalid',
+    server: 'profile.phoneInvalid',
   },
+};
+
+const PROFILE_API_FIELDS: Readonly<Record<string, string>> = {
+  name: 'name',
+  username: 'username',
+  email: 'email',
+  phone: 'phone',
 };
 
 const USERNAME_PATTERN = /^@?[A-Za-z0-9_.]{3,30}$/;
@@ -207,14 +222,17 @@ export class PersonalData {
           this.form.markAsPristine();
           this.messages.add({ severity: 'success', summary: this.lang.t('profile.saved') });
         },
-        error: (error: unknown) =>
+        error: (error: unknown) => {
+          const marked = applyServerFieldErrors(this.form, error, PROFILE_API_FIELDS);
+          const validation = isApiError(error) && error.kind === 'validation';
           this.messages.add({
             severity: 'error',
             summary:
-              isApiError(error) && error.serverMessage
+              !validation && isApiError(error) && error.serverMessage
                 ? error.serverMessage
-                : this.lang.t('common.error'),
-          }),
+                : this.lang.t(marked ? 'profile.checkFields' : 'common.error'),
+          });
+        },
       });
   }
 

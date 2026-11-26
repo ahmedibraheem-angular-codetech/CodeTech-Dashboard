@@ -9,7 +9,12 @@ import {
   viewChild,
 } from '@angular/core';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
-import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
+import {
+  type AbstractControl,
+  FormBuilder,
+  ReactiveFormsModule,
+  type ValidationErrors,
+} from '@angular/forms';
 import { DomSanitizer } from '@angular/platform-browser';
 import { MessageService } from 'primeng/api';
 import { IconField } from 'primeng/iconfield';
@@ -20,6 +25,8 @@ import { catchError, forkJoin, of, startWith } from 'rxjs';
 
 import { AuthService } from '../../../../core/auth/auth.service';
 import { loadFailureStatus } from '../../../../core/http/api-error';
+import { applyServerFieldErrors } from '../../../../core/http/server-field-errors';
+import { FieldError } from '../../../../shared/components/field-error/field-error';
 import type { AppLanguage } from '../../../../core/i18n/language';
 import { LanguageService } from '../../../../core/services/language.service';
 import { NetworkStatusService } from '../../../../core/services/network-status.service';
@@ -45,10 +52,43 @@ import { SocialLinksService } from '../../services/social-links.service';
 
 type LoadState = 'loading' | 'ready' | 'error' | 'offline';
 
+const PHONE_PATTERN = /^\+?(?:\d[\s-]?){6,19}\d$/;
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+
+const SITE_API_FIELDS: Readonly<Record<string, string>> = {
+  phone: 'phone',
+  email: 'email',
+  map_url: 'mapUrl',
+  mapUrl: 'mapUrl',
+  google_maps_url: 'mapUrl',
+  location_url: 'mapUrl',
+};
+
+function optionalPattern(pattern: RegExp, code: string) {
+  return (control: AbstractControl): ValidationErrors | null => {
+    const value = String(control.value ?? '').trim();
+    return value === '' || pattern.test(value) ? null : { [code]: true };
+  };
+}
+
+function httpUrlValidator(control: AbstractControl): ValidationErrors | null {
+  const value = String(control.value ?? '').trim();
+  if (value === '') {
+    return null;
+  }
+  try {
+    const url = new URL(value);
+    return url.protocol === 'https:' || url.protocol === 'http:' ? null : { url: true };
+  } catch {
+    return { url: true };
+  }
+}
+
 @Component({
   selector: 'app-social-links-page',
   imports: [
     ReactiveFormsModule,
+    FieldError,
     PageHeader,
     AppButton,
     LocaleSwitch,
@@ -96,10 +136,10 @@ export class SocialLinksPage {
 
   readonly form = this.fb.nonNullable.group({
     description: [''],
-    phone: [''],
-    email: [''],
+    phone: ['', [optionalPattern(PHONE_PATTERN, 'phone')]],
+    email: ['', [optionalPattern(EMAIL_PATTERN, 'email')]],
     locationName: [''],
-    mapUrl: [''],
+    mapUrl: ['', [httpUrlValidator]],
   });
 
   private readonly locationQuery = toSignal(
@@ -373,6 +413,16 @@ export class SocialLinksPage {
       return;
     }
     this.flushLocaleFields();
+    this.form.patchValue({
+      phone: this.form.controls.phone.value.trim(),
+      email: this.form.controls.email.value.trim(),
+      mapUrl: this.form.controls.mapUrl.value.trim(),
+    });
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+      this.messages.add({ severity: 'error', summary: this.lang.t('social.checkFields') });
+      return;
+    }
     const raw = this.form.getRawValue();
     const draft: SiteSettingsDraft = {
       description: { ...this.descriptionDraft() },
@@ -401,11 +451,28 @@ export class SocialLinksPage {
             summary: this.lang.t('common.saveChanges'),
           });
         },
-        error: () => {
+        error: (error: unknown) => {
           this.saving.set(false);
-          this.messages.add({ severity: 'error', summary: this.lang.t('common.error') });
+          const marked = applyServerFieldErrors(this.form, error, SITE_API_FIELDS);
+          this.messages.add({
+            severity: 'error',
+            summary: this.lang.t(marked ? 'social.checkFields' : 'common.error'),
+          });
         },
       });
+  }
+
+  /** Message key for a field that failed validation, or null. */
+  protected fieldErrorKey(name: 'phone' | 'email' | 'mapUrl'): string | null {
+    const control = this.form.controls[name];
+    if (!control.touched || !control.errors) {
+      return null;
+    }
+    return {
+      phone: 'social.phoneInvalid',
+      email: 'social.emailInvalid',
+      mapUrl: 'social.mapLinkInvalid',
+    }[name];
   }
 
   private applySite(site: SiteSettings): void {

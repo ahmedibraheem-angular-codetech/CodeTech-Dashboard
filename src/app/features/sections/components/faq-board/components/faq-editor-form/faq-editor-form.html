@@ -4,7 +4,11 @@
   [formGroup]="form()"
   (ngSubmit)="onSubmit()"
 >
-  <app-locale-switch [value]="locale()" (picked)="locale.set($event)" />
+  <app-locale-switch
+    [value]="locale()"
+    [invalid]="invalidLocales()"
+    (picked)="locale.set($event)"
+  />
 
   @if (locale() === 'ar') {
     <label class="field">

@@ -7,6 +7,7 @@ import {
   signal,
   viewChild,
 } from '@angular/core';
+import { revealInvalid } from '../../../../shared/utils/bilingual-errors';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, FormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -280,7 +281,7 @@ export class KnowledgeBoard {
 
   protected saveCategory(): void {
     if (this.categoryForm.invalid) {
-      this.categoryForm.markAllAsTouched();
+      revealInvalid(this.categoryForm);
       return;
     }
     if (this.saving()) {

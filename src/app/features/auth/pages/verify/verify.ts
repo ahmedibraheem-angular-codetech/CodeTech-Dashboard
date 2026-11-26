@@ -75,6 +75,8 @@ export class Verify {
     if (this.remaining() > 0) {
       return;
     }
+    this.form.reset({ code: '' });
+    this.invalid.set(false);
     this.auth
       .resend()
       .pipe(takeUntilDestroyed(this.destroyRef))
