@@ -35,14 +35,21 @@
         <span class="topbar__dot"></span>
       }
     </p-button>
-    <app-button
-      icon="pi pi-globe"
-      variant="outlined"
-      styleClass="topbar__btn topbar__lang"
-      [label]="lang.t('header.languageName')"
-      [ariaLabel]="lang.t('header.language')"
-      (clicked)="lang.toggle()"
-    />
+    <button
+      type="button"
+      class="topbar__lang"
+      [attr.aria-label]="lang.t('header.language')"
+      (click)="lang.toggle()"
+    >
+      <span class="topbar__lang-frame" aria-hidden="true">
+        <img
+          class="topbar__lang-flag"
+          [src]="lang.language() === 'ar' ? 'images/flag-sa.png' : 'images/flag-gb.svg'"
+          alt=""
+        />
+      </span>
+      <span>{{ lang.t('header.languageName') }}</span>
+    </button>
     <a
       class="user-chip"
       routerLink="/profile"

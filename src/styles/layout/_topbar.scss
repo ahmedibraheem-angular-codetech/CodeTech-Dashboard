@@ -46,9 +46,54 @@
   --p-button-outlined-secondary-hover-background: var(--app-surface-muted);
 }
 
+// Language switch: horizontal flow, hug width, fixed 48px height, 16px radius,
+// 1px inside border, padding 12/16, gap 10 (flag + label).
 .topbar__lang {
-  --p-button-padding-x: 16px;
-  --p-button-outlined-secondary-color: var(--app-text);
+  display: inline-flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  width: fit-content;
+  height: 48px;
+  padding: 12px 16px;
+  gap: 10px;
+  border: 1px solid var(--app-border);
+  border-radius: 16px;
+  background: var(--app-surface);
+  color: #5f7194;
+  font: inherit;
+  font-weight: 500;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.topbar__lang:hover {
+  background: var(--app-surface-muted);
+}
+
+.topbar__lang:focus-visible {
+  outline: 2px solid var(--app-primary);
+  outline-offset: 2px;
+}
+
+// Flag frame: 20px box; the flag image is 18.75px, offset 0.625px from the frame's top/left (Figma).
+.topbar__lang-frame {
+  position: relative;
+  display: block;
+  flex: 0 0 auto;
+  width: 20px;
+  height: 20px;
+}
+
+.topbar__lang-flag {
+  position: absolute;
+  top: 0.625px;
+  left: 0.625px;
+  display: block;
+  width: 18.75px;
+  height: 18.75px;
+  border-radius: 50%;
 }
 
 .topbar__dot {
