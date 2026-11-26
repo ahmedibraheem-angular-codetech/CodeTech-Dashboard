@@ -174,7 +174,7 @@ describe('service.mapper', () => {
     });
 
     expect(body.status).toBe('published');
-    expect(body.why_image).toBe('why-1');
+    expect(body.why_image).toEqual({ ar: 'why-1', en: null });
     expect(body.needs).toEqual([
       expect.objectContaining({ id: 11, title: { ar: 'حاجة', en: 'Need' } }),
     ]);
@@ -276,5 +276,41 @@ describe('service.mapper', () => {
       linkedProjects: [],
     });
     expect(body.needs?.[0].icon).toBeUndefined();
+  });
+});
+
+describe('service.mapper why_image per language', () => {
+  it('reads and writes the Arabic and English why-image separately', () => {
+    const file = (uuid: string) => ({
+      uuid,
+      name: uuid,
+      file_name: `${uuid}.png`,
+      mime_type: 'image/png',
+      size: 1,
+      url: `https://cdn.test/${uuid}.png`,
+    });
+    const service = mapServiceDetail({
+      id: 1,
+      code: '1',
+      name: { ar: 'خ', en: 'S' },
+      description: { ar: '', en: '' },
+      icon: null,
+      status: 'draft',
+      slug: null,
+      sort_order: 1,
+      why_image: { ar: file('why-ar'), en: file('why-en') },
+      why_image_text: { ar: '', en: '' },
+      needs: [],
+      solutions: [],
+      stages: [],
+      features: [],
+      sectors: [],
+      faqs: [],
+      projects: [],
+    } as never);
+    expect(service.whyImage.image.ar.imageUuid).toBe('why-ar');
+    expect(service.whyImage.image.en.imageUuid).toBe('why-en');
+    service.whyImage.image.en = { imageName: '', imageUrl: '', imageUuid: null };
+    expect(toServiceWrite(service).why_image).toEqual({ ar: 'why-ar', en: null });
   });
 });

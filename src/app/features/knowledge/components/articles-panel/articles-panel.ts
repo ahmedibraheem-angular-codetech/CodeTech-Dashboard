@@ -1,3 +1,4 @@
+import { pickMedia } from '../../../../core/media/localized-media';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -254,7 +255,7 @@ export class ArticlesPanel {
         article: {
           title: articleTitle(item, locale),
           excerpt: articleExcerpt(item, locale),
-          thumbnailUrl: item.thumbnailUrl,
+          thumbnailUrl: pickMedia(item.thumbnail, locale)?.url ?? '',
           featured: item.featured,
         },
         category:

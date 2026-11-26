@@ -1,3 +1,7 @@
+import {
+  type LocalizedFileWriteDto,
+  resolveLocalizedMediaMap,
+} from '../../../core/media/localized-media';
 import { HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { type Observable, catchError, forkJoin, map, of, switchMap, throwError } from 'rxjs';
@@ -214,42 +218,12 @@ export class KnowledgeService {
     );
   }
 
-  private resolveMedia(
-    media: ArticleMediaDraft,
-  ): Observable<{ cover?: string | null; thumbnail?: string | null; authorPhoto?: string | null }> {
-    return forkJoin({
-      cover: this.resolveField(media.cover),
-      thumbnail: this.resolveField(media.thumbnail),
-      authorPhoto: this.resolveField(media.authorPhoto),
-    }).pipe(
-      map(({ cover, thumbnail, authorPhoto }) => {
-        const resolved: {
-          cover?: string | null;
-          thumbnail?: string | null;
-          authorPhoto?: string | null;
-        } = {};
-        if (cover !== undefined) {
-          resolved.cover = cover;
-        }
-        if (thumbnail !== undefined) {
-          resolved.thumbnail = thumbnail;
-        }
-        if (authorPhoto !== undefined) {
-          resolved.authorPhoto = authorPhoto;
-        }
-        return resolved;
-      }),
-    );
-  }
-
-  private resolveField(intent: KnowledgeMediaIntent): Observable<string | null | undefined> {
-    if (intent.kind === 'omit') {
-      return of(undefined);
-    }
-    if (intent.kind === 'clear') {
-      return of(null);
-    }
-    return this.media.upload('image', intent.file).pipe(map((file) => file.uuid));
+  private resolveMedia(media: ArticleMediaDraft): Observable<{
+    cover?: LocalizedFileWriteDto;
+    thumbnail?: LocalizedFileWriteDto;
+    authorPhoto?: LocalizedFileWriteDto;
+  }> {
+    return resolveLocalizedMediaMap(this.media, 'image', media);
   }
 
   private articleParams(query: ArticleListQuery): HttpParams {

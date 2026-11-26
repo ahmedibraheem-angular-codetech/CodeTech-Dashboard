@@ -124,9 +124,9 @@ describe('SeoService', () => {
     await all;
 
     const image = new File(['img'], 'og.png', { type: 'image/png' });
-    service.setThumbnail('home', image, 'blob:preview');
+    service.setThumbnail('home', 'en', image, 'blob:preview');
     expect(service.dirty('home')).toBe(true);
-    expect(service.content('home', 'ar').thumbUrl).toBe('blob:preview');
+    expect(service.content('home', 'ar').thumbUrl).not.toBe('blob:preview');
     expect(service.content('home', 'en').thumbUrl).toBe('blob:preview');
 
     const saved = firstValueFrom(service.save('home'));
@@ -137,9 +137,7 @@ describe('SeoService', () => {
     upload.flush({ data: file({ uuid: 'uploaded-thumb' }) });
 
     const put = http.expectOne(`${LIST}/home`);
-    expect(put.request.body.thumbnail).toBe('uploaded-thumb');
-    expect(put.request.body.thumbnail).not.toContain('http');
-    expect(put.request.body.thumbnail).not.toContain('blob:');
+    expect(put.request.body.thumbnail).toEqual({ en: 'uploaded-thumb' });
     put.flush({
       data: page('home', { thumbnail: file({ uuid: 'uploaded-thumb' }) }),
     });
@@ -205,7 +203,7 @@ describe('SeoService', () => {
     http.expectOne(LIST).flush({ data: [page('home')] });
     await all;
 
-    service.setThumbnail('home', new File(['x'], 'x.png', { type: 'image/png' }), 'blob:x');
+    service.setThumbnail('home', 'ar', new File(['x'], 'x.png', { type: 'image/png' }), 'blob:x');
     const result = firstValueFrom(service.save('home')).catch((error: unknown) => error);
     http.expectOne(MEDIA).flush('fail', { status: 422, statusText: 'Unprocessable' });
     expect(await result).toBeTruthy();

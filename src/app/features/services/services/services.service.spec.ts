@@ -307,7 +307,7 @@ describe('ServicesService', () => {
     const req = await expectRequest(`${LIST}/4`);
     expect(req.request.method).toBe('PUT');
     expect(req.request.body.status).toBe('draft');
-    expect(req.request.body.why_image).toBe('why-1');
+    expect(req.request.body.why_image).toEqual({ ar: 'why-1', en: null });
     expect(req.request.body.needs[0]).toEqual(expect.objectContaining({ id: 11, icon: 'need-1' }));
     expect(req.request.body.sectors[0]).toEqual(
       expect.objectContaining({ id: 51, image: { ar: 'sector-1', en: null } }),
@@ -351,7 +351,7 @@ describe('ServicesService', () => {
     expect(upload.request.method).toBe('POST');
     upload.flush({ data: fileDto({ uuid: 'uploaded-why' }) });
     const post = await expectRequest(LIST);
-    expect(post.request.body.why_image).toBe('uploaded-why');
+    expect(post.request.body.why_image).toEqual({ ar: 'uploaded-why', en: null });
     post.flush({ data: detailDto(12) }, { status: 201, statusText: 'Created' });
     expect((await result).id).toBe('12');
     vi.unstubAllGlobals();

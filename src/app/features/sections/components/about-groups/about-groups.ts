@@ -25,7 +25,12 @@ import { HasPermissionDirective } from '../../../../shared/directives/has-permis
 import { formatIsoDate } from '../../../../shared/utils/date';
 import { formatFileSize } from '../../../../shared/utils/file-size';
 import { parseUploadedImage } from '../../../../shared/utils/image-upload';
-import { type AboutGroups, type AboutImage, type AboutPointGroup } from '../../models/about.model';
+import {
+  type AboutGroups,
+  type AboutImage,
+  type AboutImages,
+  type AboutPointGroup,
+} from '../../models/about.model';
 import { AboutService } from '../../services/about.service';
 
 const LOCALES: readonly AppLanguage[] = ['ar', 'en'];
@@ -88,7 +93,8 @@ export class AboutGroupsSection {
   protected ct(key: string): string {
     return this.lang.lookup(key, this.locale()) ?? this.lang.t(key);
   }
-  readonly image = signal<AboutImage | null>(null);
+  readonly images = signal<AboutImages>({ ar: null, en: null });
+  readonly image = computed(() => this.images()[this.locale()]);
   readonly imageError = signal('');
 
   readonly filled = computed(() => LOCALES.some((code) => hasCopy(this.content().texts[code])));
@@ -103,7 +109,9 @@ export class AboutGroupsSection {
     formatIsoDate(this.image()?.uploadedAt ?? '1970-01-01', this.lang.language()),
   );
   readonly icon = computed(() => (this.section() === 'story' ? 'pi pi-building' : 'pi pi-flag'));
-  readonly visualUrl = computed(() => this.content().image?.url ?? null);
+  readonly visualUrl = computed(
+    () => (this.content().image[this.lang.language()] ?? this.content().image.ar)?.url ?? null,
+  );
 
   readonly form = new FormGroup({
     ar: new FormArray<GroupForm>([]),
@@ -120,7 +128,7 @@ export class AboutGroupsSection {
         array.push(this.groupForm(group, code === 'ar'));
       }
     }
-    this.image.set(this.content().image);
+    this.images.set({ ...this.content().image });
     this.imageError.set('');
     this.locale.set(this.lang.language());
     this.editorOpen.set(true);
@@ -150,7 +158,7 @@ export class AboutGroupsSection {
   }
 
   removeImage(): void {
-    this.image.set(null);
+    this.setImage(null);
     this.imageError.set('');
   }
 
@@ -161,7 +169,7 @@ export class AboutGroupsSection {
     }
     const next: AboutGroups = {
       texts: { ar: this.read('ar'), en: this.read('en') },
-      image: this.section() === 'story' ? this.image() : null,
+      image: this.section() === 'story' ? this.images() : { ar: null, en: null },
     };
     const request =
       this.section() === 'story'
@@ -244,6 +252,11 @@ export class AboutGroupsSection {
       return;
     }
     this.imageError.set('');
-    this.image.set({ ...result.image, file, url: undefined, uuid: undefined });
+    this.setImage({ ...result.image, file, url: undefined, uuid: undefined });
+  }
+
+  private setImage(image: AboutImage | null): void {
+    const lang = this.locale();
+    this.images.update((all) => ({ ...all, [lang]: image }));
   }
 }

@@ -1,4 +1,5 @@
 import type { AppLanguage } from '../../../core/i18n/language';
+import type { LocalizedMedia, LocalizedMediaDraft } from '../../../core/media/localized-media';
 
 export type ReviewPublishStatus = 'published' | 'unpublished';
 
@@ -8,22 +9,14 @@ export interface ReviewText {
   quote: string;
 }
 
-export interface ReviewMediaFile {
-  uuid: string;
-  url: string;
-  name: string;
-  fileName: string;
-  size: number;
-}
-
 export interface Review {
   id: string;
 
   externalId: string;
   rating: number;
   published: boolean;
-  photo: ReviewMediaFile | null;
-  video: ReviewMediaFile | null;
+  photo: LocalizedMedia;
+  video: LocalizedMedia;
   createdAt: string;
   sortOrder: number;
   texts: Record<AppLanguage, ReviewText>;
@@ -35,12 +28,9 @@ export interface ReviewContentDraft {
   texts: Record<AppLanguage, ReviewText>;
 }
 
-export type ReviewMediaIntent =
-  { kind: 'omit' } | { kind: 'clear' } | { kind: 'replace'; file: File };
-
 export interface ReviewMediaDraft {
-  photo: ReviewMediaIntent;
-  video: ReviewMediaIntent;
+  photo: LocalizedMediaDraft;
+  video: LocalizedMediaDraft;
 }
 
 export type ReviewStatusFilter = 'all' | ReviewPublishStatus;

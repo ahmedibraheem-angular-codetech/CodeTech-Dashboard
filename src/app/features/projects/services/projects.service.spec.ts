@@ -164,7 +164,7 @@ describe('ProjectsService (HTTP)', () => {
     upload.flush({ data: fileDto({ uuid: 'uploaded-cover' }) });
     const put = await expectRequest(`${LIST}/7`);
     expect(put.request.method).toBe('PUT');
-    expect(put.request.body.cover).toBe('uploaded-cover');
+    expect(put.request.body.cover).toEqual({ ar: 'uploaded-cover', en: null });
     put.flush({ data: projectDetailDto(7) });
     await result;
     vi.unstubAllGlobals();

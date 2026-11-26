@@ -26,7 +26,12 @@ import { HasPermissionDirective } from '../../../../shared/directives/has-permis
 import { formatIsoDate } from '../../../../shared/utils/date';
 import { formatFileSize } from '../../../../shared/utils/file-size';
 import { parseUploadedImage } from '../../../../shared/utils/image-upload';
-import { type AboutCeo, type AboutCeoText, type AboutImage } from '../../models/about.model';
+import {
+  type AboutCeo,
+  type AboutCeoText,
+  type AboutImage,
+  type AboutImages,
+} from '../../models/about.model';
 import { AboutService } from '../../services/about.service';
 
 const LOCALES: readonly AppLanguage[] = ['ar', 'en'];
@@ -89,7 +94,8 @@ export class AboutCeoSection {
   protected ct(key: string): string {
     return this.lang.lookup(key, this.locale()) ?? this.lang.t(key);
   }
-  readonly image = signal<AboutImage | null>(null);
+  readonly images = signal<AboutImages>({ ar: null, en: null });
+  readonly image = computed(() => this.images()[this.locale()]);
   readonly imageError = signal('');
 
   readonly filled = computed(() => LOCALES.some((code) => hasCopy(this.content().texts[code])));
@@ -99,7 +105,9 @@ export class AboutCeoSection {
     const other: AppLanguage = current === 'ar' ? 'en' : 'ar';
     return hasCopy(texts[current]) ? texts[current] : texts[other];
   });
-  readonly photoUrl = computed(() => this.content().image?.url ?? null);
+  readonly photoUrl = computed(
+    () => (this.content().image[this.lang.language()] ?? this.content().image.ar)?.url ?? null,
+  );
   readonly imageSize = computed(() => formatFileSize(this.image()?.size ?? 0));
   readonly imageDate = computed(() =>
     formatIsoDate(this.image()?.uploadedAt ?? '1970-01-01', this.lang.language()),
@@ -117,7 +125,7 @@ export class AboutCeoSection {
         quote: text.quote,
       });
     }
-    this.image.set(this.content().image);
+    this.images.set({ ...this.content().image });
     this.imageError.set('');
     this.locale.set(this.lang.language());
     this.editorOpen.set(true);
@@ -139,7 +147,7 @@ export class AboutCeoSection {
   }
 
   removeImage(): void {
-    this.image.set(null);
+    this.setImage(null);
     this.imageError.set('');
   }
 
@@ -150,7 +158,7 @@ export class AboutCeoSection {
     }
     const next: AboutCeo = {
       texts: { ar: this.read('ar'), en: this.read('en') },
-      image: this.image(),
+      image: this.images(),
     };
     this.saving.set(true);
     this.api
@@ -202,6 +210,11 @@ export class AboutCeoSection {
       return;
     }
     this.imageError.set('');
-    this.image.set({ ...result.image, file, url: undefined, uuid: undefined });
+    this.setImage({ ...result.image, file, url: undefined, uuid: undefined });
+  }
+
+  private setImage(image: AboutImage | null): void {
+    const lang = this.locale();
+    this.images.update((all) => ({ ...all, [lang]: image }));
   }
 }

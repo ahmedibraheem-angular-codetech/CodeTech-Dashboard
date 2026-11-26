@@ -10,10 +10,17 @@ export interface AboutLocaleStringList {
   en: string[];
 }
 
+export interface AboutLocalizedFile {
+  ar: FileObject | null;
+  en: FileObject | null;
+}
+
+export type AboutLocalizedFileWrite = { ar?: string | null; en?: string | null };
+
 export interface AboutBlockDto {
   philosophy_points: AboutLocaleStringList;
   target_market_points: AboutLocaleStringList;
-  image: FileObject | null;
+  image: AboutLocalizedFile | FileObject | null;
 }
 
 export interface AboutVisionMissionDto {
@@ -28,7 +35,7 @@ export interface AboutCeoDto {
   job_title: AboutLocaleString | null;
   description: AboutLocaleString | null;
   quote: AboutLocaleString | null;
-  image: FileObject | null;
+  image: AboutLocalizedFile | FileObject | null;
 }
 
 export interface AboutTeamMemberDto {
@@ -53,7 +60,7 @@ export interface AboutPageDto {
 export interface AboutBlockWriteDto {
   philosophy_points?: AboutLocaleStringList | null;
   target_market_points?: AboutLocaleStringList | null;
-  image?: string | null;
+  image?: AboutLocalizedFileWrite;
 }
 
 export interface AboutVisionMissionWriteDto {
@@ -68,7 +75,7 @@ export interface AboutCeoWriteDto {
   job_title?: AboutLocaleString | null;
   description?: AboutLocaleString | null;
   quote?: AboutLocaleString | null;
-  image?: string | null;
+  image?: AboutLocalizedFileWrite;
 }
 
 export interface AboutTeamMemberWriteDto {

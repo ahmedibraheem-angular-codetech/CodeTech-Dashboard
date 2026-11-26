@@ -8,6 +8,9 @@ export interface AboutImage extends UploadedImageMeta {
   file?: File;
 }
 
+/** One picture per content language. */
+export type AboutImages = Record<AppLanguage, AboutImage | null>;
+
 export interface AboutPointGroup {
   id: string;
   title: string;
@@ -17,7 +20,7 @@ export interface AboutPointGroup {
 
 export interface AboutGroups {
   texts: Record<AppLanguage, AboutPointGroup[]>;
-  image: AboutImage | null;
+  image: AboutImages;
 }
 
 export interface AboutCeoText {
@@ -29,7 +32,7 @@ export interface AboutCeoText {
 
 export interface AboutCeo {
   texts: Record<AppLanguage, AboutCeoText>;
-  image: AboutImage | null;
+  image: AboutImages;
 }
 
 export interface AboutMemberText {

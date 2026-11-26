@@ -1,3 +1,4 @@
+import { emptyMediaDraft } from '../../../core/media/localized-media';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
@@ -105,9 +106,9 @@ const draft = (overrides: Partial<ArticleDraft> = {}): ArticleDraft => ({
 });
 
 const omitMedia = (): ArticleMediaDraft => ({
-  cover: { kind: 'omit' },
-  thumbnail: { kind: 'omit' },
-  authorPhoto: { kind: 'omit' },
+  cover: emptyMediaDraft(),
+  thumbnail: emptyMediaDraft(),
+  authorPhoto: emptyMediaDraft(),
 });
 
 describe('KnowledgeService', () => {
@@ -205,7 +206,6 @@ describe('KnowledgeService', () => {
       titleAr: 'عنوان 1',
       categoryId: '2',
       status: 'published',
-      thumbnailUrl: 'https://cdn.test/t-1.png',
     });
     expect(articles[1]).toMatchObject({ id: '2', status: 'draft', featured: true });
   });
@@ -248,9 +248,8 @@ describe('KnowledgeService', () => {
       seoKeywordsAr: 'معرفة, تقنية',
       seoKeywordsEn: 'knowledge, tech',
       seoDescriptionAr: 'وصف سيو',
-      coverUrl: 'https://cdn.test/cover.png',
-      authorAvatarUrl: 'https://cdn.test/author.png',
-      cover: expect.objectContaining({ uuid: 'cover-1' }),
+      authorPhoto: { ar: expect.objectContaining({ uuid: 'author-1' }), en: null },
+      cover: { ar: expect.objectContaining({ uuid: 'cover-1' }), en: null },
     });
   });
 
@@ -289,9 +288,9 @@ describe('KnowledgeService', () => {
     const file = new File(['x'], 'cover.png', { type: 'image/png' });
     const result = firstValueFrom(
       service.update('15', draft({ status: 'published' }), {
-        cover: { kind: 'replace', file },
-        thumbnail: { kind: 'clear' },
-        authorPhoto: { kind: 'omit' },
+        cover: { ar: { kind: 'replace', file }, en: { kind: 'omit' } },
+        thumbnail: { ar: { kind: 'clear' }, en: { kind: 'omit' } },
+        authorPhoto: emptyMediaDraft(),
       }),
     );
 
@@ -301,8 +300,8 @@ describe('KnowledgeService', () => {
 
     const put = http.expectOne(`${ARTICLES}/15`);
     expect(put.request.method).toBe('PUT');
-    expect(put.request.body.cover).toBe('uploaded-cover');
-    expect(put.request.body.thumbnail).toBeNull();
+    expect(put.request.body.cover).toEqual({ ar: 'uploaded-cover' });
+    expect(put.request.body.thumbnail).toEqual({ ar: null });
     expect(put.request.body.author_photo).toBeUndefined();
     put.flush({ data: detailArticle(15) });
     expect((await result).id).toBe('15');

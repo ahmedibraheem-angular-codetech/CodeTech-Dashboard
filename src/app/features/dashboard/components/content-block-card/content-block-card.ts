@@ -118,19 +118,20 @@ export class ContentBlockCard {
     const title = this.block().texts[this.locale()].title.trim();
     return title || this.ct('home.edit');
   });
-  readonly image = signal<BlockImage | null>(null);
-
-  readonly preview = signal<string | null>(null);
+  /** One picture per content language; the active tab decides which one is shown and edited. */
+  readonly images = signal<Record<AppLanguage, BlockImage | null>>({ ar: null, en: null });
+  readonly image = computed(() => this.images()[this.locale()]);
 
   readonly imageError = signal('');
   readonly imageSize = computed(() => formatFileSize(this.image()?.size ?? 0));
   readonly imageDate = computed(() =>
     formatIsoDate(this.image()?.uploadedAt ?? '1970-01-01', this.lang.language()),
   );
-  readonly thumbUrl = computed(
-    () => this.preview() || this.image()?.url || 'images/dashboardcodetech.svg',
-  );
-  readonly visualUrl = computed(() => this.block().image?.url ?? null);
+  readonly thumbUrl = computed(() => this.image()?.url || 'images/dashboardcodetech.svg');
+  readonly visualUrl = computed(() => {
+    const images = this.block().image;
+    return (images[this.lang.language()] ?? images.ar)?.url ?? null;
+  });
 
   readonly form = new FormGroup({ ar: textGroup(), en: textGroup() });
 
@@ -150,8 +151,8 @@ export class ContentBlockCard {
     }
     this.form.markAsPristine();
     this.form.markAsUntouched();
-    this.clearPreview();
-    this.image.set(block.image);
+    this.clearPreviews();
+    this.images.set({ ...block.image });
     this.imageError.set('');
     this.locale.set(this.lang.language());
     this.editorOpen.set(true);
@@ -181,8 +182,8 @@ export class ContentBlockCard {
   }
 
   removeImage(): void {
-    this.clearPreview();
-    this.image.set(null);
+    this.revoke(this.image());
+    this.setImage(null);
     this.imageError.set('');
   }
 
@@ -192,7 +193,7 @@ export class ContentBlockCard {
     }
     const block: ContentBlock = {
       texts: { ar: this.read('ar'), en: this.read('en') },
-      image: this.image(),
+      image: this.images(),
     };
     this.saving.set(true);
     this.api
@@ -202,7 +203,7 @@ export class ContentBlockCard {
         next: (saved) => {
           this.saving.set(false);
           this.blockSaved.emit(saved);
-          this.clearPreview();
+          this.clearPreviews();
           this.editorOpen.set(false);
           this.messages.add({
             severity: 'success',
@@ -247,17 +248,25 @@ export class ContentBlockCard {
     if (!file) {
       return;
     }
-    this.clearPreview();
+    this.revoke(this.image());
     this.imageError.set('');
-    this.preview.set(URL.createObjectURL(file));
-    this.image.set({ ...result.image, file, url: undefined, uuid: undefined });
+    this.setImage({ ...result.image, file, url: URL.createObjectURL(file), uuid: undefined });
   }
 
-  private clearPreview(): void {
-    const preview = this.preview();
-    if (preview) {
-      URL.revokeObjectURL(preview);
+  private setImage(image: BlockImage | null): void {
+    const lang = this.locale();
+    this.images.update((all) => ({ ...all, [lang]: image }));
+  }
+
+  private revoke(image: BlockImage | null): void {
+    if (image?.file && image.url?.startsWith('blob:')) {
+      URL.revokeObjectURL(image.url);
     }
-    this.preview.set(null);
+  }
+
+  private clearPreviews(): void {
+    for (const image of Object.values(this.images())) {
+      this.revoke(image);
+    }
   }
 }

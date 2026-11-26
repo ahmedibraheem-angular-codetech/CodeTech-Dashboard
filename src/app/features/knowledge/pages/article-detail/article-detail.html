@@ -102,8 +102,8 @@
             </app-info-field>
             <app-info-field [label]="lang.t('knowledge.fieldAuthor')">
               <span class="kb-detail__author">
-                @if (current.authorAvatarUrl) {
-                  <img [src]="current.authorAvatarUrl" alt="" />
+                @if (urlOf(current.authorPhoto)) {
+                  <img [src]="urlOf(current.authorPhoto)" alt="" />
                 }
                 <span>{{ author() || '—' }}</span>
               </span>
@@ -159,10 +159,10 @@
             <h2>{{ lang.t('knowledge.coverCard') }}</h2>
           </header>
           <div class="kb-detail__media">
-            @if (current.coverUrl) {
+            @if (urlOf(current.cover)) {
               <img
                 class="kb-detail__media-img"
-                [src]="current.coverUrl"
+                [src]="urlOf(current.cover)"
                 [alt]="imageText('coverAlt')"
               />
             } @else {
@@ -187,10 +187,10 @@
             <h2>{{ lang.t('knowledge.thumbnailCard') }}</h2>
           </header>
           <div class="kb-detail__media">
-            @if (current.thumbnailUrl) {
+            @if (urlOf(current.thumbnail)) {
               <img
                 class="kb-detail__media-img"
-                [src]="current.thumbnailUrl"
+                [src]="urlOf(current.thumbnail)"
                 [alt]="imageText('thumbnailAlt')"
               />
             } @else {

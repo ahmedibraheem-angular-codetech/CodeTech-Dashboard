@@ -21,17 +21,7 @@
     <div class="inquiry-field">
       <span class="inquiry-field__label">{{ lang.t('inquiry.product') }}</span>
       <strong class="inquiry-products">
-        <span class="inquiry-products__label">{{ inquiry().product }}</span>
-        @if (moreCount() > 0) {
-          <span
-            class="inquiry-products__more"
-            [pTooltip]="moreTooltip()"
-            tooltipPosition="top"
-            [escape]="false"
-          >
-            +{{ moreCount() }}
-          </span>
-        }
+        <span class="inquiry-products__label">{{ productsLabel() }}</span>
       </strong>
     </div>
     <div class="inquiry-pair">

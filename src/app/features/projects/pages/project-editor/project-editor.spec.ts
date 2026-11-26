@@ -144,6 +144,26 @@ describe('ProjectEditor', () => {
     expect(editor.draft().gallery).toHaveLength(1);
   });
 
+  it('keeps gallery and solutions images independent per locale tab', async () => {
+    const fixture = await render('create');
+    const editor = fixture.componentInstance;
+
+    editor.useLocale('ar');
+    editor.setGalleryImage(0, { name: 'ar-gal.png', url: 'blob:gal-ar' });
+    editor.setSolutionsImage({ name: 'ar-sol.png', url: 'blob:sol-ar' });
+
+    editor.useLocale('en');
+    expect(editor.draft().gallery[0]?.image.en.imageUrl).toBe('');
+    expect(editor.draft().solutionsImage.image.en.imageUrl).toBe('');
+    editor.setGalleryImage(0, { name: 'en-gal.png', url: 'blob:gal-en' });
+    editor.setSolutionsImage({ name: 'en-sol.png', url: 'blob:sol-en' });
+
+    expect(editor.draft().gallery[0]?.image.ar.imageUrl).toBe('blob:gal-ar');
+    expect(editor.draft().gallery[0]?.image.en.imageUrl).toBe('blob:gal-en');
+    expect(editor.draft().solutionsImage.image.ar.imageUrl).toBe('blob:sol-ar');
+    expect(editor.draft().solutionsImage.image.en.imageUrl).toBe('blob:sol-en');
+  });
+
   it('keeps cover and feature images independent per locale tab', async () => {
     const fixture = await render('create');
     const editor = fixture.componentInstance;

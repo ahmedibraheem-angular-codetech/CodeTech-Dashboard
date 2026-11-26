@@ -62,7 +62,12 @@
   (cancel)="closeEditor()"
 >
   @if (editor() === 'create' || editor() === 'edit') {
-    <app-faq-editor-form [form]="form" [categoryOptions]="categoryOptions()" [(locale)]="editorLocale" (submitted)="save()" />
+    <app-faq-editor-form
+      [form]="form"
+      [categoryOptions]="categoryOptions()"
+      [(locale)]="editorLocale"
+      (submitted)="save()"
+    />
   } @else if (editor() === 'create-category' || editor() === 'edit-category') {
     <app-category-form
       [form]="categoryForm"

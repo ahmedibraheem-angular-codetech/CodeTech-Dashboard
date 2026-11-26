@@ -32,6 +32,17 @@ describe('ServiceEditor', () => {
       URL.revokeObjectURL = originalRevoke;
     });
 
+    it('keeps the why image independent per locale tab', async () => {
+      const { editor } = await render('edit', 'web-development');
+      editor.useLocale('ar');
+      editor.setWhyImage({ name: 'ar-why.png', url: 'blob:why-ar' });
+      editor.useLocale('en');
+      expect(editor.draft().whyImage.image.en.imageUrl).toBe('');
+      editor.setWhyImage({ name: 'en-why.png', url: 'blob:why-en' });
+      expect(editor.draft().whyImage.image.ar.imageUrl).toBe('blob:why-ar');
+      expect(editor.draft().whyImage.image.en.imageUrl).toBe('blob:why-en');
+    });
+
     it('keeps a picked image previewable after leaving and returning to its step, then clears it', async () => {
       const { fixture, editor, root } = await render('edit', 'web-development');
 

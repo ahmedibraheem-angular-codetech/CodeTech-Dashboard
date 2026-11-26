@@ -34,9 +34,9 @@ function article(id: string): Article {
     categoryId: CATEGORY.id,
     categoryNameAr: CATEGORY.nameAr,
     categoryNameEn: CATEGORY.nameEn,
-    authorPhoto: null,
-    thumbnail: null,
-    cover: null,
+    authorPhoto: { ar: null, en: null },
+    thumbnail: { ar: null, en: null },
+    cover: { ar: null, en: null },
     createdAt: '2026-01-01T00:00:00.000000Z',
     updatedAt: '2026-01-01T00:00:00.000000Z',
   };

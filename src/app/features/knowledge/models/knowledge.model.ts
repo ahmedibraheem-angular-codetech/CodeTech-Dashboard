@@ -1,3 +1,4 @@
+import type { LocalizedMedia, LocalizedMediaDraft } from '../../../core/media/localized-media';
 export type ArticleStatus = 'published' | 'draft' | 'unpublished';
 
 export const ARTICLE_STATUSES: readonly ArticleStatus[] = ['published', 'draft', 'unpublished'];
@@ -26,16 +27,13 @@ export interface Article {
   publishedAt: string;
   authorNameAr: string;
   authorNameEn: string;
-  authorPhoto: KnowledgeMediaFile | null;
-  authorAvatarUrl: string;
-  thumbnail: KnowledgeMediaFile | null;
-  thumbnailUrl: string;
+  authorPhoto: LocalizedMedia;
+  thumbnail: LocalizedMedia;
   thumbnailTitleAr: string;
   thumbnailTitleEn: string;
   thumbnailAltAr: string;
   thumbnailAltEn: string;
-  cover: KnowledgeMediaFile | null;
-  coverUrl: string;
+  cover: LocalizedMedia;
   coverTitleAr: string;
   coverTitleEn: string;
   coverAltAr: string;
@@ -82,9 +80,9 @@ export type KnowledgeMediaIntent =
   { kind: 'omit' } | { kind: 'clear' } | { kind: 'replace'; file: File };
 
 export interface ArticleMediaDraft {
-  cover: KnowledgeMediaIntent;
-  thumbnail: KnowledgeMediaIntent;
-  authorPhoto: KnowledgeMediaIntent;
+  cover: LocalizedMediaDraft;
+  thumbnail: LocalizedMediaDraft;
+  authorPhoto: LocalizedMediaDraft;
 }
 
 export interface ArticleStats {
@@ -122,13 +120,10 @@ export function blankArticle(): ArticleDraft {
     publishedAt: '',
     authorNameAr: '',
     authorNameEn: '',
-    authorAvatarUrl: '',
-    thumbnailUrl: '',
     thumbnailTitleAr: '',
     thumbnailTitleEn: '',
     thumbnailAltAr: '',
     thumbnailAltEn: '',
-    coverUrl: '',
     coverTitleAr: '',
     coverTitleEn: '',
     coverAltAr: '',

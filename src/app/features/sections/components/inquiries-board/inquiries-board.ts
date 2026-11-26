@@ -54,11 +54,11 @@ interface InquiryRow {
   phone: string;
   product: string;
   products: string[];
-  moreCount: number;
-  moreTooltip: string;
   status: DataTableBadgeValue & { value: InquiryStatus };
   when: DataTableDateValue;
 }
+
+const PRODUCT_SEPARATOR = '، ';
 
 @Component({
   selector: 'app-inquiries-board',
@@ -334,17 +334,14 @@ export class InquiriesBoard {
 
   private toRow(row: Inquiry): InquiryRow {
     const products = row.products.length ? row.products : row.product ? [row.product] : [];
-    const moreProducts = products.slice(1);
     return {
       id: row.id,
       reference: row.reference,
       name: { icon: 'pi pi-user', label: row.customer },
       org: { icon: 'pi pi-building', label: row.org },
       phone: row.phone,
-      product: products[0] ?? '',
+      product: products.join(PRODUCT_SEPARATOR),
       products,
-      moreCount: moreProducts.length,
-      moreTooltip: moreProducts.join('\n'),
       status: {
         value: row.status,
         label: this.lang.t(this.statusKey(row.status)),

@@ -1,5 +1,6 @@
 import {
   ChangeDetectionStrategy,
+  type OnInit,
   Component,
   DestroyRef,
   computed,
@@ -34,11 +35,13 @@ import {
   type UploadedVideoMeta,
   parseUploadedVideo,
 } from '../../../../../../shared/utils/video-upload';
-import type {
-  ReviewMediaDraft,
-  ReviewMediaFile,
-  ReviewMediaIntent,
-} from '../../../../models/review.model';
+import {
+  type LocalizedMedia,
+  type LocalizedMediaDraft,
+  type LocalizedMediaIntent,
+  emptyMediaDraft,
+} from '../../../../../../core/media/localized-media';
+import type { ReviewMediaDraft } from '../../../../models/review.model';
 
 export type ReviewEditorFormGroup = FormGroup<{
   nameAr: FormControl<string>;
@@ -50,6 +53,33 @@ export type ReviewEditorFormGroup = FormGroup<{
   rating: FormControl<number>;
   published: FormControl<boolean>;
 }>;
+
+interface VideoSlot {
+  file: File | null;
+  meta: UploadedVideoMeta | null;
+  error: string;
+  cleared: boolean;
+  hadExisting: boolean;
+}
+
+interface PhotoSlot {
+  file: File | null;
+  meta: UploadedImageMeta | null;
+  preview: string | null;
+  error: string;
+  cleared: boolean;
+  hadExisting: boolean;
+}
+
+const LANGS: readonly AppLanguage[] = ['ar', 'en'];
+
+function emptyVideoSlot(): VideoSlot {
+  return { file: null, meta: null, error: '', cleared: false, hadExisting: false };
+}
+
+function emptySlot(): PhotoSlot {
+  return { file: null, meta: null, preview: null, error: '', cleared: false, hadExisting: false };
+}
 
 export type ReviewEditorMode = 'create' | 'edit';
 
@@ -70,12 +100,15 @@ export type ReviewEditorMode = 'create' | 'edit';
   templateUrl: './review-editor-form.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ReviewEditorForm {
+export class ReviewEditorForm implements OnInit {
   private readonly destroyRef = inject(DestroyRef);
   readonly lang = inject(LanguageService);
 
   readonly form = input.required<ReviewEditorFormGroup>();
   readonly mode = input.required<ReviewEditorMode>();
+  /** Saved files of the review being edited; applied once when the form is created. */
+  readonly initialPhoto = input<LocalizedMedia | null>(null);
+  readonly initialVideo = input<LocalizedMedia | null>(null);
   readonly submitted = output<void>();
 
   readonly locale = model<AppLanguage>(this.lang.language());
@@ -83,22 +116,33 @@ export class ReviewEditorForm {
     return this.lang.lookup(key, this.locale()) ?? this.lang.t(key);
   }
 
-  readonly avatar = signal<UploadedImageMeta | null>(null);
-  readonly avatarPreview = signal<string | null>(null);
-  readonly avatarError = signal('');
-  readonly video = signal<UploadedVideoMeta | null>(null);
-  readonly videoError = signal('');
+  /** Photo state is kept per content language so each tab edits its own file. */
+  private readonly photoState = signal<Record<AppLanguage, PhotoSlot>>({
+    ar: emptySlot(),
+    en: emptySlot(),
+  });
+  private patchSlot(lang: AppLanguage, patch: Partial<PhotoSlot>): void {
+    this.photoState.update((all) => ({ ...all, [lang]: { ...all[lang], ...patch } }));
+  }
+  private readonly slot = computed(() => this.photoState()[this.locale()]);
 
-  private readonly avatarFile = signal<File | null>(null);
-  private readonly videoFile = signal<File | null>(null);
-
-  private readonly photoCleared = signal(false);
-  private readonly hadExistingPhoto = signal(false);
+  readonly avatar = computed(() => this.slot().meta);
+  readonly avatarPreview = computed(() => this.slot().preview);
+  readonly avatarError = computed(() => this.slot().error);
+  private readonly videoState = signal<Record<AppLanguage, VideoSlot>>({
+    ar: { file: null, meta: null, error: '', cleared: false, hadExisting: false },
+    en: { file: null, meta: null, error: '', cleared: false, hadExisting: false },
+  });
+  private patchVideo(lang: AppLanguage, patch: Partial<VideoSlot>): void {
+    this.videoState.update((all) => ({ ...all, [lang]: { ...all[lang], ...patch } }));
+  }
+  readonly video = computed(() => this.videoState()[this.locale()].meta);
+  readonly videoError = computed(() => this.videoState()[this.locale()].error);
 
   readonly imageAccept = IMAGE_UPLOAD_ACCEPT;
   readonly videoAccept = VIDEO_UPLOAD_ACCEPT;
 
-  readonly showVideoUpload = computed(() => this.mode() === 'create');
+  readonly showVideoUpload = computed(() => true);
 
   readonly ratingOptions = Array.from({ length: 5 }, (_, index) => {
     const value = index + 1;
@@ -123,38 +167,61 @@ export class ReviewEditorForm {
     return formatIsoDate(iso, this.lang.language());
   }
 
-  constructor() {
-    this.destroyRef.onDestroy(() => this.revokeAvatarPreview());
+  ngOnInit(): void {
+    this.resetMedia({ photo: this.initialPhoto(), video: this.initialVideo() });
   }
 
-  resetMedia(options?: { photo?: ReviewMediaFile | null }): void {
-    this.revokeAvatarPreview();
-    this.avatar.set(null);
-    this.avatarPreview.set(null);
-    this.avatarError.set('');
-    this.avatarFile.set(null);
-    this.video.set(null);
-    this.videoError.set('');
-    this.videoFile.set(null);
-    this.photoCleared.set(false);
-    this.hadExistingPhoto.set(false);
-    this.locale.set(this.lang.language());
+  constructor() {
+    this.destroyRef.onDestroy(() => {
+      for (const l of LANGS) {
+        this.revokePreview(this.photoState()[l].preview);
+      }
+    });
+  }
 
-    const photo = options?.photo ?? null;
-    if (photo) {
-      this.hadExistingPhoto.set(true);
-      this.avatarPreview.set(photo.url);
-      this.avatar.set({
-        name: photo.fileName || photo.name,
-        size: photo.size,
-        uploadedAt: toIsoDate(new Date()),
-      });
+  resetMedia(options?: { photo?: LocalizedMedia | null; video?: LocalizedMedia | null }): void {
+    for (const l of LANGS) {
+      this.revokePreview(this.photoState()[l].preview);
     }
+    const video = { ar: emptyVideoSlot(), en: emptyVideoSlot() };
+    for (const l of LANGS) {
+      const saved = options?.video?.[l] ?? null;
+      if (saved) {
+        video[l] = {
+          ...emptyVideoSlot(),
+          hadExisting: true,
+          meta: {
+            name: saved.fileName || saved.name,
+            size: saved.size,
+            uploadedAt: toIsoDate(new Date()),
+          },
+        };
+      }
+    }
+    this.videoState.set(video);
+    this.locale.set(this.lang.language());
+    const next = { ar: emptySlot(), en: emptySlot() };
+    for (const l of LANGS) {
+      const photo = options?.photo?.[l] ?? null;
+      if (photo) {
+        next[l] = {
+          ...emptySlot(),
+          hadExisting: true,
+          preview: photo.url,
+          meta: {
+            name: photo.fileName || photo.name,
+            size: photo.size,
+            uploadedAt: toIsoDate(new Date()),
+          },
+        };
+      }
+    }
+    this.photoState.set(next);
   }
 
   mediaDraft(): ReviewMediaDraft {
     return {
-      photo: this.photoIntent(),
+      photo: { ar: this.photoIntent('ar'), en: this.photoIntent('en') },
       video: this.videoIntent(),
     };
   }
@@ -175,14 +242,16 @@ export class ReviewEditorForm {
   }
 
   protected removeAvatar(): void {
-    this.revokeAvatarPreview();
-    this.avatar.set(null);
-    this.avatarPreview.set(null);
-    this.avatarError.set('');
-    this.avatarFile.set(null);
-    if (this.hadExistingPhoto()) {
-      this.photoCleared.set(true);
-    }
+    const l = this.locale();
+    const cur = this.photoState()[l];
+    this.revokePreview(cur.preview);
+    this.patchSlot(l, {
+      meta: null,
+      preview: null,
+      error: '',
+      file: null,
+      cleared: cur.hadExisting,
+    });
   }
 
   protected onVideoPick(event: Event): void {
@@ -197,63 +266,73 @@ export class ReviewEditorForm {
   }
 
   protected removeVideo(): void {
-    this.video.set(null);
-    this.videoError.set('');
-    this.videoFile.set(null);
+    const cur = this.videoState()[this.locale()];
+    this.patchVideo(this.locale(), {
+      meta: null,
+      error: '',
+      file: null,
+      cleared: cur.hadExisting,
+    });
   }
 
-  private photoIntent(): ReviewMediaIntent {
-    const file = this.avatarFile();
-    if (file) {
-      return { kind: 'replace', file };
+  private photoIntent(l: AppLanguage): LocalizedMediaIntent {
+    const slot = this.photoState()[l];
+    if (slot.file) {
+      return { kind: 'replace', file: slot.file };
     }
-    if (this.photoCleared()) {
+    if (slot.cleared) {
       return { kind: 'clear' };
     }
     return { kind: 'omit' };
   }
 
-  private videoIntent(): ReviewMediaIntent {
-    const file = this.videoFile();
-    if (file) {
-      return { kind: 'replace', file };
+  private videoIntent(): LocalizedMediaDraft {
+    const out = emptyMediaDraft();
+    for (const l of LANGS) {
+      const slot = this.videoState()[l];
+      if (slot.file) {
+        out[l] = { kind: 'replace', file: slot.file };
+      } else if (slot.cleared) {
+        out[l] = { kind: 'clear' };
+      }
     }
-    return { kind: 'omit' };
+    return out;
   }
 
   private takeAvatar(file: File | undefined): void {
+    const l = this.locale();
     const parsed = parseUploadedImage(file);
     if (!parsed) {
       return;
     }
     if (!parsed.ok) {
-      this.avatarError.set(parsed.errorKey);
+      this.patchSlot(l, { error: parsed.errorKey });
       return;
     }
-    this.revokeAvatarPreview();
-    this.avatarError.set('');
-    this.photoCleared.set(false);
-    this.avatarFile.set(file ?? null);
-    this.avatar.set(parsed.image);
-    this.avatarPreview.set(file ? URL.createObjectURL(file) : null);
+    this.revokePreview(this.photoState()[l].preview);
+    this.patchSlot(l, {
+      error: '',
+      cleared: false,
+      file: file ?? null,
+      meta: parsed.image,
+      preview: file ? URL.createObjectURL(file) : null,
+    });
   }
 
   private takeVideo(file: File | undefined): void {
+    const l = this.locale();
     const parsed = parseUploadedVideo(file);
     if (!parsed) {
       return;
     }
     if (!parsed.ok) {
-      this.videoError.set(parsed.errorKey);
+      this.patchVideo(l, { error: parsed.errorKey });
       return;
     }
-    this.videoError.set('');
-    this.videoFile.set(file ?? null);
-    this.video.set(parsed.video);
+    this.patchVideo(l, { error: '', cleared: false, file: file ?? null, meta: parsed.video });
   }
 
-  private revokeAvatarPreview(): void {
-    const url = this.avatarPreview();
+  private revokePreview(url: string | null): void {
     if (url?.startsWith('blob:')) {
       URL.revokeObjectURL(url);
     }

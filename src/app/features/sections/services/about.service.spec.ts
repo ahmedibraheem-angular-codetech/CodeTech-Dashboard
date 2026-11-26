@@ -40,7 +40,7 @@ describe('AboutService', () => {
     expect(content.partners).toHaveLength(2);
     expect(content.team[0].texts.ar.name).toBe('سارة محمد');
     expect(content.team[0].texts.en.name).toBe('Sara Mohamed');
-    expect(content.ceo.image?.url).toContain('ceo.png');
+    expect(content.ceo.image.ar?.url).toContain('ceo.png');
   });
 
   it('saves the about block with a new image uuid', async () => {
@@ -50,7 +50,10 @@ describe('AboutService', () => {
     const loaded = await content;
     const story = {
       ...loaded.story,
-      image: { name: 'shot.png', size: 1, uploadedAt: '2026-11-01', file },
+      image: {
+        ar: loaded.story.image.ar,
+        en: { name: 'shot.png', size: 1, uploadedAt: '2026-11-01', file },
+      },
     };
     const result = firstValueFrom(service.saveStory(story, loaded.story.image));
     http.expectOne(MEDIA).flush({
@@ -66,11 +69,11 @@ describe('AboutService', () => {
       },
     });
     const put = http.expectOne(`${ABOUT}/about-block`);
-    expect(put.request.body.image).toBe('img-9');
+    expect(put.request.body.image).toEqual({ en: 'img-9' });
     expect(put.request.body.philosophy_points.ar).toContain('الجودة أولاً');
     put.flush({ data: ABOUT_PAGE_DTO });
     await expect(result).resolves.toMatchObject({
-      image: expect.objectContaining({ uuid: 'about-image' }),
+      image: { ar: expect.objectContaining({ uuid: 'about-image' }), en: null },
     });
   });
 

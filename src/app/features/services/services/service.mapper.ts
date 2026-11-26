@@ -39,6 +39,29 @@ function serverId(id: string): number | undefined {
   return /^\d+$/.test(id) ? Number(id) : undefined;
 }
 
+type LocalizedFileInput = { ar?: FileObject | null; en?: FileObject | null };
+
+/** A plain file counts as the Arabic file; {ar, en} keeps each language apart. */
+function localizedFiles(value: FileObject | LocalizedFileInput | null | undefined): {
+  ar: FileObject | null;
+  en: FileObject | null;
+} {
+  if (!value || typeof value !== 'object') {
+    return { ar: null, en: null };
+  }
+  if ('uuid' in value) {
+    return { ar: value, en: null };
+  }
+  return { ar: value.ar ?? null, en: value.en ?? null };
+}
+
+function mapLocalizedServiceMedia(
+  value: FileObject | LocalizedFileInput | null | undefined,
+): LocalizedMedia {
+  const files = localizedFiles(value);
+  return { ar: mapServiceMedia(files.ar), en: mapServiceMedia(files.en) };
+}
+
 export function mapServiceMedia(file: FileObject | null | undefined): ServiceImage {
   if (!file || typeof file.uuid !== 'string' || typeof file.url !== 'string') {
     return emptyServiceImage();
@@ -121,7 +144,9 @@ function mapCore(
   Service,
   'id' | 'code' | 'icon' | 'iconUrl' | 'iconUuid' | 'published' | 'name' | 'description'
 > {
-  const icon = mapServiceMedia(dto.icon);
+  const icon = mapServiceMedia(
+    localizedFiles(dto.icon as FileObject | LocalizedFileInput | null).ar,
+  );
   return {
     id: String(dto.id),
     code: dto.code || String(dto.id).padStart(5, '0'),
@@ -155,7 +180,7 @@ export function mapServiceDetail(dto: ServiceDetailDto): Service {
     ...mapCore(dto),
     whyImage: {
       title: locale(dto.why_image_text),
-      image: sharedMedia(dto.why_image),
+      image: mapLocalizedServiceMedia(dto.why_image),
     },
     whyItems: Array.isArray(dto.needs) ? dto.needs.map(mapWhyItem) : [],
     solutions: Array.isArray(dto.solutions) ? dto.solutions.map(mapPoint) : [],
@@ -236,11 +261,18 @@ export function toServiceWrite(service: Service): ServiceWriteDto {
       !!service.iconUuid,
     ),
   );
-  applyTicket(
-    body as unknown as Record<string, unknown>,
-    'why_image',
-    sharedTicket(service.whyImage.image, true),
-  );
+  const whyAr = ticket(service.whyImage.image.ar, true);
+  const whyEn = ticket(service.whyImage.image.en, true);
+  const whyImage: { ar?: string | null; en?: string | null } = {};
+  if (whyAr !== undefined) {
+    whyImage.ar = whyAr;
+  }
+  if (whyEn !== undefined) {
+    whyImage.en = whyEn;
+  }
+  if (Object.keys(whyImage).length) {
+    body.why_image = whyImage;
+  }
 
   body.needs = service.whyItems
     .filter((item) => filledLocale(item.title) || hasMedia(item.image))

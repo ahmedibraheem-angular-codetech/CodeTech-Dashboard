@@ -57,13 +57,12 @@ import {
 import { KnowledgeActions } from '../../services/knowledge-actions.service';
 import { KnowledgeService } from '../../services/knowledge.service';
 import {
-  EMPTY_ARTICLE_IMAGES,
-  articleImagesFromArticle,
-  existingArticleImageUrl,
-  mediaDraftFromImages,
+  ARTICLE_IMAGE_SLOTS,
   type ArticleImageSlot,
-  type ArticleSlotImage,
+  articleSlotMedia,
 } from '../../utils/article-editor-images';
+import { type SlotImage, LocalizedImageSlots } from '../../../../core/media/localized-slots';
+
 import {
   collectArticleValidationIssues,
   isValidArticleSlug,
@@ -75,14 +74,11 @@ import { categoryName, joinKeywords, splitKeywords } from '../../utils/knowledge
 type LoadStatus = 'loading' | 'ready' | 'missing' | 'error' | 'offline';
 type ImageSlot = ArticleImageSlot;
 type Strictness = ArticleValidationStrictness;
-type SlotImage = ArticleSlotImage;
 
 type FormKey = Exclude<
   keyof ArticleDraft,
   'status' | 'featured' | 'publishedAt' | 'authorAvatarUrl' | 'thumbnailUrl' | 'coverUrl'
 >;
-
-const EMPTY_IMAGES = EMPTY_ARTICLE_IMAGES;
 
 @Component({
   selector: 'app-article-editor',
@@ -132,8 +128,7 @@ export class ArticleEditor {
   readonly locale = signal<AppLanguage>(this.lang.language());
   readonly article = signal<Article | null>(null);
   readonly categories = signal<ArticleCategory[]>([]);
-  readonly images = signal<Record<ImageSlot, SlotImage | null>>({ ...EMPTY_IMAGES });
-  readonly imageErrors = signal<Partial<Record<ImageSlot, string>>>({});
+  readonly slots = new LocalizedImageSlots<ImageSlot>(ARTICLE_IMAGE_SLOTS, () => this.locale());
 
   readonly flagged = signal<ReadonlySet<string>>(new Set());
   readonly quillReady = signal(false);
@@ -389,21 +384,15 @@ export class ArticleEditor {
   }
 
   protected removeImage(slot: ImageSlot): void {
-    const hadExisting = !!this.existingUrl(slot);
-    this.setImage(
-      slot,
-      hadExisting ? { url: '', name: '', size: 0, date: '', cleared: true } : null,
-    );
-    this.imageErrors.update((errors) => ({ ...errors, [slot]: '' }));
+    this.slots.remove(slot);
   }
 
   protected imageOf(slot: ImageSlot): SlotImage | null {
-    const image = this.images()[slot];
-    return image && !image.cleared && image.url ? image : null;
+    return this.slots.imageOf(slot);
   }
 
   protected errorOf(slot: ImageSlot): string {
-    return this.imageErrors()[slot] ?? '';
+    return this.slots.errorOf(slot);
   }
 
   protected size(file: SlotImage): string {
@@ -415,26 +404,7 @@ export class ArticleEditor {
   }
 
   private take(slot: ImageSlot, file: File | undefined): void {
-    const parsed = parseUploadedImage(file);
-    if (!parsed || !file) {
-      return;
-    }
-    if (!parsed.ok) {
-      this.imageErrors.update((errors) => ({ ...errors, [slot]: parsed.errorKey }));
-      return;
-    }
-    this.imageErrors.update((errors) => ({ ...errors, [slot]: '' }));
-    this.setImage(slot, {
-      url: URL.createObjectURL(file),
-      name: parsed.image.name,
-      size: parsed.image.size,
-      date: parsed.image.uploadedAt,
-      file,
-    });
-  }
-
-  private setImage(slot: ImageSlot, image: SlotImage | null): void {
-    this.images.update((current) => ({ ...current, [slot]: image }));
+    this.slots.take(slot, file);
   }
 
   private load(id: string): void {
@@ -458,15 +428,10 @@ export class ArticleEditor {
   private apply(article: Article): void {
     this.article.set(article);
     this.flagged.set(new Set());
-    this.imageErrors.set({});
     this.form.reset(articleFormValueFromArticle(article));
-    this.images.set(articleImagesFromArticle(article));
+    this.slots.reset(articleSlotMedia(article), article.createdAt);
     this.keywordDraft.set('');
     this.keywordRevision.update((n) => n + 1);
-  }
-
-  private existingUrl(slot: ImageSlot): string {
-    return existingArticleImageUrl(this.article(), slot);
   }
 
   private validate(strictness: Strictness): boolean {
@@ -504,7 +469,8 @@ export class ArticleEditor {
       return;
     }
     const fields = this.fieldsFromForm(status);
-    const media = mediaDraftFromImages(this.images());
+    const drafts = this.slots.draft();
+    const media = { cover: drafts.cover, thumbnail: drafts.thumbnail, authorPhoto: drafts.avatar };
     const current = this.article();
     this.saving.set(true);
     const request =

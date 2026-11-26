@@ -78,7 +78,7 @@ export interface ServiceLinkedProjectDto {
 }
 
 export interface ServiceDetailDto extends ServiceListDto {
-  why_image: FileObject | null;
+  why_image: { ar: FileObject | null; en: FileObject | null } | FileObject | null;
   why_image_text: ServiceLocaleDto;
   needs: ServiceNeedDto[];
   solutions: ServiceSolutionDto[];
@@ -137,7 +137,7 @@ export interface ServiceWriteDto {
   name: { ar: string; en: string };
   description?: { ar: string; en: string };
   icon?: string | null;
-  why_image?: string | null;
+  why_image?: { ar?: string | null; en?: string | null } | null;
   why_image_text?: { ar: string; en: string };
   needs?: ServiceNeedWriteDto[];
   solutions?: ServiceSolutionWriteDto[];

@@ -130,7 +130,14 @@
     (cancel)="closeEditor()"
   >
     @if (editor()) {
-      <app-review-editor-form [form]="form" [mode]="editorMode()" [(locale)]="editorLocale" (submitted)="save()" />
+      <app-review-editor-form
+        [form]="form"
+        [mode]="editorMode()"
+        [initialPhoto]="editorPhoto()"
+        [initialVideo]="editorVideo()"
+        [(locale)]="editorLocale"
+        (submitted)="save()"
+      />
     }
   </app-modal>
 

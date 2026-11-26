@@ -1,6 +1,7 @@
+import type { AppLanguage } from '../../../core/i18n/language';
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
-import { type Observable, concat, map, of, switchMap, throwError } from 'rxjs';
+import { type Observable, concat, forkJoin, map, of, switchMap, throwError } from 'rxjs';
 
 import { API_BASE_URL, apiUrl } from '../../../core/config/api';
 import type { ApiEnvelope } from '../../../core/http/api.model';
@@ -94,10 +95,10 @@ export class HomepageService {
   saveBlock(
     kind: 'about' | 'vision',
     block: ContentBlock,
-    previousImage: BlockImage | null,
+    previousImage: Record<AppLanguage, BlockImage | null>,
   ): Observable<ContentBlock> {
     const path = kind === 'about' ? `${HOME_PATH}/about` : `${HOME_PATH}/vision-2030`;
-    return this.resolveImageTicket(previousImage, block.image).pipe(
+    return this.resolveBlockImages(previousImage, block.image).pipe(
       switchMap((image) =>
         this.http.put<ApiEnvelope<HomePageDto>>(
           apiUrl(this.base, path),
@@ -122,6 +123,27 @@ export class HomepageService {
       return of(previous ? null : undefined);
     }
     return of(undefined);
+  }
+
+  private resolveBlockImages(
+    previous: Record<AppLanguage, BlockImage | null>,
+    next: Record<AppLanguage, BlockImage | null>,
+  ): Observable<{ ar?: string | null; en?: string | null } | undefined> {
+    return forkJoin({
+      ar: this.resolveImageTicket(previous.ar, next.ar),
+      en: this.resolveImageTicket(previous.en, next.en),
+    }).pipe(
+      map(({ ar, en }) => {
+        const out: { ar?: string | null; en?: string | null } = {};
+        if (ar !== undefined) {
+          out.ar = ar;
+        }
+        if (en !== undefined) {
+          out.en = en;
+        }
+        return Object.keys(out).length ? out : undefined;
+      }),
+    );
   }
 
   private requireHome(envelope: ApiEnvelope<HomePageDto>): HomePageDto {

@@ -71,10 +71,10 @@ describe('seo.mapper', () => {
     expect(draft.en.keywords).toBe('tech, software');
     expect(draft.ar.description).toBe('وصف');
     expect(draft.en.thumbTitle).toBe('Title');
-    expect(draft.thumbUuid).toBe('thumb-uuid');
+    expect(draft.thumbUuid).toEqual({ ar: 'thumb-uuid', en: null });
     expect(draft.ar.thumbUrl).toBe('https://cdn.test/share.png');
-    expect(draft.en.thumbUrl).toBe('https://cdn.test/share.png');
-    expect(draft.thumbFile).toBeNull();
+    expect(draft.en.thumbUrl).toBe('');
+    expect(draft.thumbFile).toEqual({ ar: null, en: null });
   });
 
   it('maps null locales, null slug, and null thumbnail safely', () => {
@@ -96,7 +96,7 @@ describe('seo.mapper', () => {
     expect(draft.en.slug).toBe('');
     expect(draft.ar.keywords).toBe('');
     expect(draft.en.description).toBe('Only EN');
-    expect(draft.thumbUuid).toBeNull();
+    expect(draft.thumbUuid).toEqual({ ar: null, en: null });
     expect(draft.ar.thumbUrl).toBe('');
   });
 
@@ -106,7 +106,7 @@ describe('seo.mapper', () => {
         thumbnail: { url: 'https://cdn.test/x.png' } as FileObject,
       }),
     );
-    expect(draft.thumbUuid).toBeNull();
+    expect(draft.thumbUuid).toEqual({ ar: null, en: null });
     expect(draft.ar.thumbUrl).toBe('');
   });
 
@@ -128,9 +128,9 @@ describe('seo.mapper', () => {
     const { draft } = mapSeoPage(dto());
     draft.ar.slug = '  ';
     draft.en.slug = '';
-    expect(toSeoWrite(draft, 'new-thumb').thumbnail).toBe('new-thumb');
-    expect(toSeoWrite(draft, 'new-thumb').slug).toBeNull();
-    expect(toSeoWrite(draft, null).thumbnail).toBeNull();
+    expect(toSeoWrite(draft, { en: 'new-thumb' }).thumbnail).toEqual({ en: 'new-thumb' });
+    expect(toSeoWrite(draft, { en: 'new-thumb' }).slug).toBeNull();
+    expect(toSeoWrite(draft, undefined)).not.toHaveProperty('thumbnail');
   });
 
   it('parses and joins keywords without inventing duplicates', () => {
@@ -142,7 +142,7 @@ describe('seo.mapper', () => {
   it('fingerprints drafts so a pending File marks dirty without using the preview URL as id', () => {
     const { draft } = mapSeoPage(dto());
     const before = draftFingerprint(draft);
-    draft.thumbFile = new File(['x'], 'next.png', { type: 'image/png' });
+    draft.thumbFile = { ar: null, en: new File(['x'], 'next.png', { type: 'image/png' }) };
     draft.ar.thumbUrl = 'blob:mock';
     draft.en.thumbUrl = 'blob:mock';
     expect(draftFingerprint(draft)).not.toBe(before);

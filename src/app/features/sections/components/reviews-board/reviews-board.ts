@@ -1,3 +1,4 @@
+import { emptyMediaDraft, pickMedia } from '../../../../core/media/localized-media';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -84,6 +85,8 @@ export class ReviewsBoard {
   readonly saving = signal(false);
   readonly exporting = signal(false);
   readonly editor = signal<EditorMode>(null);
+  protected readonly editorPhoto = signal<Review['photo'] | null>(null);
+  protected readonly editorVideo = signal<Review['video'] | null>(null);
   readonly selected = signal<Review | null>(null);
 
   readonly form = this.fb.nonNullable.group({
@@ -169,15 +172,15 @@ export class ReviewsBoard {
   }
 
   protected avatarUrl(review: Review): string {
-    return review.photo?.url || REVIEW_AVATAR_PLACEHOLDER;
+    return pickMedia(review.photo, this.lang.language())?.url || REVIEW_AVATAR_PLACEHOLDER;
   }
 
   protected mediaUrl(review: Review): string {
-    return review.photo?.url || '';
+    return pickMedia(review.photo, this.lang.language())?.url || '';
   }
 
   protected mediaKind(review: Review): 'video' | 'image' {
-    return review.video ? 'video' : 'image';
+    return pickMedia(review.video, this.lang.language()) ? 'video' : 'image';
   }
 
   protected displayDate(iso: string): string {
@@ -279,8 +282,9 @@ export class ReviewsBoard {
       rating: 5,
       published: false,
     });
+    this.editorPhoto.set(null);
+    this.editorVideo.set(null);
     this.editor.set('create');
-    queueMicrotask(() => this.editorForm()?.resetMedia());
   }
 
   protected editReview(review: Review): void {
@@ -296,8 +300,9 @@ export class ReviewsBoard {
       rating: review.rating,
       published: review.published,
     });
+    this.editorPhoto.set(review.photo);
+    this.editorVideo.set(review.video);
     this.editor.set('edit');
-    queueMicrotask(() => this.editorForm()?.resetMedia({ photo: review.photo }));
   }
 
   protected setEditorVisible(open: boolean): void {
@@ -332,8 +337,8 @@ export class ReviewsBoard {
       },
     };
     const media: ReviewMediaDraft = this.editorForm()?.mediaDraft() ?? {
-      photo: { kind: 'omit' },
-      video: { kind: 'omit' },
+      photo: emptyMediaDraft(),
+      video: emptyMediaDraft(),
     };
 
     this.saving.set(true);

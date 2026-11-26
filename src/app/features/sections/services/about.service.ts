@@ -10,12 +10,14 @@ import type {
   AboutPartnerCreateDto,
   AboutPartnerDto,
   AboutTeamMemberDto,
+  AboutLocalizedFileWrite,
 } from '../models/about.api';
 import type {
   AboutCeo,
   AboutContent,
   AboutGroups,
   AboutImage,
+  AboutImages,
   AboutMember,
   AboutPartner,
 } from '../models/about.model';
@@ -53,8 +55,8 @@ export class AboutService {
     }).pipe(map(({ page, partners }) => mapAboutPage(page, partners)));
   }
 
-  saveStory(story: AboutGroups, previousImage: AboutImage | null): Observable<AboutGroups> {
-    return this.resolveImageTicket(previousImage, story.image).pipe(
+  saveStory(story: AboutGroups, previousImage: AboutImages): Observable<AboutGroups> {
+    return this.resolveImages(previousImage, story.image).pipe(
       switchMap((image) =>
         this.http.put<ApiEnvelope<AboutPageDto>>(
           apiUrl(this.base, `${ABOUT_PATH}/about-block`),
@@ -74,8 +76,8 @@ export class AboutService {
       .pipe(map((envelope) => mapVision(this.requirePage(envelope).vision_mission)));
   }
 
-  saveCeo(ceo: AboutCeo, previousImage: AboutImage | null): Observable<AboutCeo> {
-    return this.resolveImageTicket(previousImage, ceo.image).pipe(
+  saveCeo(ceo: AboutCeo, previousImage: AboutImages): Observable<AboutCeo> {
+    return this.resolveImages(previousImage, ceo.image).pipe(
       switchMap((image) =>
         this.http.put<ApiEnvelope<AboutPageDto>>(
           apiUrl(this.base, `${ABOUT_PATH}/ceo`),
@@ -130,6 +132,27 @@ export class AboutService {
     return this.http
       .delete(apiUrl(this.base, `${TEAM_PATH}/${id}`), { responseType: 'text' })
       .pipe(map(() => undefined));
+  }
+
+  private resolveImages(
+    previous: AboutImages,
+    next: AboutImages,
+  ): Observable<AboutLocalizedFileWrite | undefined> {
+    return forkJoin({
+      ar: this.resolveImageTicket(previous.ar, next.ar),
+      en: this.resolveImageTicket(previous.en, next.en),
+    }).pipe(
+      map(({ ar, en }) => {
+        const out: AboutLocalizedFileWrite = {};
+        if (ar !== undefined) {
+          out.ar = ar;
+        }
+        if (en !== undefined) {
+          out.en = en;
+        }
+        return Object.keys(out).length ? out : undefined;
+      }),
+    );
   }
 
   private resolveImageTicket(

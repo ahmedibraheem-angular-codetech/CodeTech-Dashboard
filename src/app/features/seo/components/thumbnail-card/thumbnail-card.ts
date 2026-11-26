@@ -111,6 +111,6 @@ export class ThumbnailCard {
       return;
     }
     this.errorKey.set('');
-    this.seo.setThumbnail(this.pageId(), file, URL.createObjectURL(file));
+    this.seo.setThumbnail(this.pageId(), this.locale(), file, URL.createObjectURL(file));
   }
 }

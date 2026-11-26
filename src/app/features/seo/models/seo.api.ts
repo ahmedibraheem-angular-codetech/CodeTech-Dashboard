@@ -19,7 +19,7 @@ export interface SeoPageDto {
   slug: string | null;
   meta_keywords: SeoKeywordsDto | null;
   meta_description: SeoLocaleDto | null;
-  thumbnail: FileObject | null;
+  thumbnail: { ar: FileObject | null; en: FileObject | null } | FileObject | null;
   thumbnail_title: SeoLocaleDto | null;
   thumbnail_alt: SeoLocaleDto | null;
   updated_by: { id: number; name: string } | null;
@@ -33,5 +33,5 @@ export interface SeoPageWriteDto {
   meta_description?: { ar: string; en: string } | null;
   thumbnail_title?: { ar: string; en: string } | null;
   thumbnail_alt?: { ar: string; en: string } | null;
-  thumbnail?: string | null;
+  thumbnail?: { ar?: string | null; en?: string | null } | null;
 }

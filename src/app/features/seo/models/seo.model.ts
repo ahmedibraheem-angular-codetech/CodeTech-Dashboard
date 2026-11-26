@@ -26,9 +26,9 @@ export interface SeoPageDraft {
   ar: SeoContent;
   en: SeoContent;
 
-  thumbUuid: string | null;
+  thumbUuid: Record<SeoLocale, string | null>;
 
-  thumbFile: File | null;
+  thumbFile: Record<SeoLocale, File | null>;
 }
 
 export type SeoLocale = AppLanguage;
@@ -84,8 +84,8 @@ export function emptyDraft(): SeoPageDraft {
   return {
     ar: emptyContent(),
     en: emptyContent(),
-    thumbUuid: null,
-    thumbFile: null,
+    thumbUuid: { ar: null, en: null },
+    thumbFile: { ar: null, en: null },
   };
 }
 

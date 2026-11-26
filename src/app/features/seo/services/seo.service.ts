@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject, signal } from '@angular/core';
-import { type Observable, map, of, switchMap, tap } from 'rxjs';
+import { type Observable, forkJoin, map, of, switchMap, tap } from 'rxjs';
 
 import { API_BASE_URL, apiUrl } from '../../../core/config/api';
 import type { ApiEnvelope } from '../../../core/http/api.model';
@@ -76,21 +76,19 @@ export class SeoService {
     });
   }
 
-  setThumbnail(pageId: string, file: File, previewUrl: string): void {
+  setThumbnail(pageId: string, locale: SeoLocale, file: File, previewUrl: string): void {
     if (!isSeoTabId(pageId)) {
       return;
     }
     this.pages.update((all) => {
       const current = all[pageId];
-      this.revokeBlob(current.ar.thumbUrl);
-      const thumb = { thumbName: file.name, thumbUrl: previewUrl };
+      this.revokeBlob(current[locale].thumbUrl);
       return {
         ...all,
         [pageId]: {
           ...current,
-          thumbFile: file,
-          ar: { ...current.ar, ...thumb },
-          en: { ...current.en, ...thumb },
+          thumbFile: { ...current.thumbFile, [locale]: file },
+          [locale]: { ...current[locale], thumbName: file.name, thumbUrl: previewUrl },
         },
       };
     });
@@ -124,18 +122,31 @@ export class SeoService {
     }
     const current = this.pages()[pageId];
     const restored = structuredClone(this.baseline()[pageId]) as SeoPageDraft;
-    restored.thumbFile = null;
+    restored.thumbFile = { ar: null, en: null };
     this.releaseDraftBlobs(current, restored);
     this.pages.update((all) => ({ ...all, [pageId]: restored }));
     this.revision.update((value) => value + 1);
   }
 
-  private resolveThumbnail(draft: SeoPageDraft): Observable<string | null | undefined> {
-    if (draft.thumbFile) {
-      return this.media.upload('image', draft.thumbFile).pipe(map((file) => file.uuid));
-    }
-
-    return of(undefined);
+  private resolveThumbnail(
+    draft: SeoPageDraft,
+  ): Observable<{ ar?: string | null; en?: string | null } | undefined> {
+    const one = (file: File | null): Observable<string | undefined> =>
+      file
+        ? this.media.upload('image', file).pipe(map((uploaded) => uploaded.uuid))
+        : of(undefined);
+    return forkJoin({ ar: one(draft.thumbFile.ar), en: one(draft.thumbFile.en) }).pipe(
+      map(({ ar, en }) => {
+        const out: { ar?: string; en?: string } = {};
+        if (ar) {
+          out.ar = ar;
+        }
+        if (en) {
+          out.en = en;
+        }
+        return Object.keys(out).length ? out : undefined;
+      }),
+    );
   }
 
   private catalogFromList(rows: SeoPageDto[]): Record<SeoTabId, SeoPageDraft> {
@@ -158,7 +169,7 @@ export class SeoService {
     }
     const cloned = structuredClone(catalog) as Record<SeoTabId, SeoPageDraft>;
     for (const id of Object.keys(cloned) as SeoTabId[]) {
-      cloned[id].thumbFile = null;
+      cloned[id].thumbFile = { ar: null, en: null };
     }
     this.pages.set(catalog);
     this.baseline.set(cloned);
@@ -167,7 +178,7 @@ export class SeoService {
 
   private replacePage(tabId: SeoTabId, draft: SeoPageDraft): void {
     const baselineDraft = structuredClone(draft) as SeoPageDraft;
-    baselineDraft.thumbFile = null;
+    baselineDraft.thumbFile = { ar: null, en: null };
     this.pages.update((all) => ({ ...all, [tabId]: draft }));
     this.baseline.update((all) => ({ ...all, [tabId]: baselineDraft }));
     this.revision.update((value) => value + 1);

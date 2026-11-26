@@ -1,3 +1,4 @@
+import { type LocalizedMedia, pickMedia } from '../../../../core/media/localized-media';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -161,6 +162,10 @@ export class ArticleDetail {
   protected seoText(base: 'seoTitle' | 'seoDescription' | 'seoKeywords'): string {
     const article = this.article();
     return article ? pick(article[`${base}Ar`], article[`${base}En`], this.locale()) || '—' : '—';
+  }
+
+  protected urlOf(media: LocalizedMedia): string {
+    return pickMedia(media, this.lang.language())?.url ?? '';
   }
 
   protected imageText(base: 'thumbnailTitle' | 'thumbnailAlt' | 'coverTitle' | 'coverAlt'): string {

@@ -49,13 +49,24 @@ export function mapBlock(dto: HomeBlockDto | null | undefined): ContentBlock {
       ar: mapText(dto, 'ar'),
       en: mapText(dto, 'en'),
     },
-    image: mapFile(asFile(dto.image)),
+    image: mapBlockImages(dto.image),
   };
+}
+
+function mapBlockImages(value: HomeBlockDto['image']): Record<AppLanguage, BlockImage | null> {
+  if (!value || typeof value === 'string' || typeof value !== 'object') {
+    return { ar: null, en: null };
+  }
+  // A plain file counts as the Arabic picture only.
+  if ('uuid' in value) {
+    return { ar: mapFile(value), en: null };
+  }
+  return { ar: mapFile(value.ar), en: mapFile(value.en) };
 }
 
 export function toBlockWrite(
   block: ContentBlock,
-  image: string | null | undefined,
+  image: { ar?: string | null; en?: string | null } | undefined,
 ): HomeBlockWriteDto {
   const body: HomeBlockWriteDto = {
     title: {
@@ -71,7 +82,7 @@ export function toBlockWrite(
       en: block.texts.en.points,
     },
   };
-  if (image !== undefined) {
+  if (image && Object.keys(image).length) {
     body.image = image;
   }
   return body;
@@ -80,7 +91,7 @@ export function toBlockWrite(
 export function emptyBlock(): ContentBlock {
   return {
     texts: { ar: emptyText(), en: emptyText() },
-    image: null,
+    image: { ar: null, en: null },
   };
 }
 
@@ -104,13 +115,6 @@ function mapFile(file: FileObject | null | undefined): BlockImage | null {
     url: file.url,
     downloadUrl: file.download_url,
   };
-}
-
-function asFile(value: FileObject | string | null | undefined): FileObject | null {
-  if (!value || typeof value === 'string') {
-    return null;
-  }
-  return value;
 }
 
 function readLocale(value: LocaleString | null | undefined, locale: AppLanguage): string {

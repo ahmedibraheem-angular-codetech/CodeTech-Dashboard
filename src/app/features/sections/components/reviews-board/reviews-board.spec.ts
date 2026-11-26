@@ -1,3 +1,4 @@
+import { emptyMediaDraft } from '../../../../core/media/localized-media';
 import { type ComponentFixture, TestBed } from '@angular/core/testing';
 import { MessageService } from 'primeng/api';
 import { Subject, of, throwError } from 'rxjs';
@@ -15,18 +16,24 @@ const sample: Review = {
   rating: 5,
   published: true,
   photo: {
-    uuid: 'photo-uuid',
-    url: 'https://cdn.test/portrait.png',
-    name: 'portrait',
-    fileName: 'portrait.png',
-    size: 10,
+    ar: {
+      uuid: 'photo-uuid',
+      url: 'https://cdn.test/portrait.png',
+      name: 'portrait',
+      fileName: 'portrait.png',
+      size: 10,
+    },
+    en: null,
   },
   video: {
-    uuid: 'video-uuid',
-    url: 'https://cdn.test/clip.mp4',
-    name: 'clip',
-    fileName: 'clip.mp4',
-    size: 20,
+    ar: {
+      uuid: 'video-uuid',
+      url: 'https://cdn.test/clip.mp4',
+      name: 'clip',
+      fileName: 'clip.mp4',
+      size: 20,
+    },
+    en: null,
   },
   createdAt: '2026-11-01T12:00:00.000000Z',
   sortOrder: 1,
@@ -77,7 +84,7 @@ describe('ReviewsBoard', () => {
         rating: draft.rating,
         published: draft.published,
         texts: draft.texts,
-        photo: media.photo.kind === 'clear' ? null : sample.photo,
+        photo: media.photo.ar.kind === 'clear' ? { ar: null, en: null } : sample.photo,
       }),
     );
     const update = vi.fn((id: string, draft: ReviewContentDraft) =>
@@ -140,6 +147,15 @@ describe('ReviewsBoard', () => {
     expect(board.mediaUrl(sample)).toBe('https://cdn.test/portrait.png');
   });
 
+  it('shows the saved photo and video when opening the editor', async () => {
+    const { fixture, board } = await render();
+    (board as unknown as { editReview(r: Review): void }).editReview(sample);
+    await settle(fixture);
+    expect(document.body.querySelectorAll('.image-file').length).toBeGreaterThanOrEqual(2);
+    expect(document.body.textContent).toContain('portrait.png');
+    expect(document.body.textContent).toContain('clip.mp4');
+  });
+
   it('shows error state and reloads the list on retry', async () => {
     const list$ = new Subject<Review[]>();
     const list = vi.fn(() => list$.asObservable());
@@ -187,7 +203,7 @@ describe('ReviewsBoard', () => {
           en: { name: 'Sara', role: 'Designer', quote: 'Excellent' },
         },
       },
-      { photo: { kind: 'omit' }, video: { kind: 'omit' } },
+      { photo: emptyMediaDraft(), video: emptyMediaDraft() },
     );
   });
 
@@ -206,7 +222,7 @@ describe('ReviewsBoard', () => {
           en: expect.objectContaining({ quote: 'Updated quote' }),
         }),
       }),
-      { photo: { kind: 'omit' }, video: { kind: 'omit' } },
+      { photo: emptyMediaDraft(), video: emptyMediaDraft() },
     );
   });
 

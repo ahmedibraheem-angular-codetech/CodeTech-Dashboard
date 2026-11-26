@@ -1,3 +1,4 @@
+import { emptyMediaDraft } from '../../../core/media/localized-media';
 import type { FileObject } from '../../../core/http/api.model';
 import { blankArticle } from '../models/knowledge.model';
 import {
@@ -90,8 +91,9 @@ describe('knowledge.mapper', () => {
     expect(article.contentEn).toBe('<p>En</p>');
     expect(article.slug).toBe('my-slug');
     expect(article.seoKeywordsAr).toBe('أ, ب');
-    expect(article.cover?.uuid).toBe('c1');
-    expect(article.coverUrl).toBe('https://cdn.test/c.png');
+    expect(article.cover.ar?.uuid).toBe('c1');
+    expect(article.cover.ar?.url).toBe('https://cdn.test/c.png');
+    expect(article.cover.en).toBeNull();
     expect(article.categoryId).toBe('9');
   });
 
@@ -140,18 +142,18 @@ describe('knowledge.mapper', () => {
         publishedAt: '2026-11-01T12:00:00.000000Z',
       },
       {
-        cover: { kind: 'replace', file: new File(['x'], 'c.png') },
-        thumbnail: { kind: 'clear' },
-        authorPhoto: { kind: 'omit' },
+        cover: { ar: { kind: 'replace', file: new File(['x'], 'c.png') }, en: { kind: 'omit' } },
+        thumbnail: { ar: { kind: 'clear' }, en: { kind: 'omit' } },
+        authorPhoto: emptyMediaDraft(),
       },
-      { cover: 'uuid-cover', thumbnail: null },
+      { cover: { ar: 'uuid-cover' }, thumbnail: { ar: null } },
     );
 
     expect(body.content.ar).toContain('https://cdn.test/editor.png');
     expect(body.slug).toBe('my-slug');
     expect(body.meta_keywords).toEqual({ ar: ['أ', 'ب'], en: ['a', 'b'] });
-    expect(body.cover).toBe('uuid-cover');
-    expect(body.thumbnail).toBeNull();
+    expect(body.cover).toEqual({ ar: 'uuid-cover' });
+    expect(body.thumbnail).toEqual({ ar: null });
     expect(body.author_photo).toBeUndefined();
   });
 

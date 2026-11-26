@@ -2,7 +2,8 @@ import { describe, expect, it } from 'vitest';
 
 import type { FileObject } from '../../../core/http/api.model';
 import type { TestimonialDto } from '../models/review.api';
-import { mapReviewMedia, mapTestimonial, toTestimonialWrite } from './review.mapper';
+import { mapLocalizedMedia } from '../../../core/media/localized-media';
+import { mapTestimonial, toTestimonialWrite } from './review.mapper';
 
 const file = (overrides: Partial<FileObject> = {}): FileObject => ({
   uuid: 'photo-uuid',
@@ -45,18 +46,24 @@ describe('review.mapper', () => {
       rating: 5,
       published: true,
       photo: {
-        uuid: 'photo-uuid',
-        url: 'https://cdn.test/portrait.png',
-        name: 'portrait',
-        fileName: 'portrait.png',
-        size: 1200,
+        ar: {
+          uuid: 'photo-uuid',
+          url: 'https://cdn.test/portrait.png',
+          name: 'portrait',
+          fileName: 'portrait.png',
+          size: 1200,
+        },
+        en: null,
       },
       video: {
-        uuid: 'video-uuid',
-        url: 'https://cdn.test/clip.mp4',
-        name: 'clip',
-        fileName: 'clip.mp4',
-        size: 1200,
+        ar: {
+          uuid: 'video-uuid',
+          url: 'https://cdn.test/clip.mp4',
+          name: 'clip',
+          fileName: 'clip.mp4',
+          size: 1200,
+        },
+        en: null,
       },
       createdAt: '2026-10-29T12:00:00.000000Z',
       sortOrder: 2,
@@ -83,15 +90,26 @@ describe('review.mapper', () => {
       ar: { name: 'علي', role: '', quote: '' },
       en: { name: '', role: '', quote: 'Ok' },
     });
-    expect(mapped.photo).toBeNull();
-    expect(mapped.video).toBeNull();
+    expect(mapped.photo).toEqual({ ar: null, en: null });
+    expect(mapped.video).toEqual({ ar: null, en: null });
     expect(mapped.published).toBe(false);
     expect(mapped.rating).toBe(3);
   });
 
   it('rejects media objects that only have a url (never treat url as uuid)', () => {
-    expect(mapReviewMedia({ url: 'https://cdn.test/x.png' } as FileObject)).toBeNull();
-    expect(mapReviewMedia(file({ uuid: undefined as unknown as string }))).toBeNull();
+    expect(mapLocalizedMedia({ url: 'https://cdn.test/x.png' } as unknown as FileObject)).toEqual({
+      ar: null,
+      en: null,
+    });
+    expect(
+      mapLocalizedMedia({ ar: file({ uuid: undefined as unknown as string }), en: null }),
+    ).toEqual({ ar: null, en: null });
+  });
+
+  it('maps independent ar/en files and writes per-language uuids', () => {
+    const m = mapLocalizedMedia({ ar: file({ uuid: 'a' }), en: file({ uuid: 'e' }) });
+    expect(m.ar?.uuid).toBe('a');
+    expect(m.en?.uuid).toBe('e');
   });
 
   it('writes bilingual body and omits media keys when unresolved', () => {
@@ -127,7 +145,7 @@ describe('review.mapper', () => {
             en: { name: 'A', role: '', quote: 'Q' },
           },
         },
-        { photo: 'new-photo', video: null },
+        { photo: { en: 'new-photo' }, video: null },
       ),
     ).toEqual({
       client_name: { ar: 'أ', en: 'A' },
@@ -135,7 +153,7 @@ describe('review.mapper', () => {
       comment: { ar: 'ق', en: 'Q' },
       rating: 1,
       is_published: true,
-      photo: 'new-photo',
+      photo: { en: 'new-photo' },
       video: null,
     });
   });

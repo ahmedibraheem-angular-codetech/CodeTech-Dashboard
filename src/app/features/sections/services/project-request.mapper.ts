@@ -24,9 +24,7 @@ export function toUiProjectRequestStatus(status: ProjectRequestApiStatus): Inqui
 }
 
 function serviceLabels(dto: ProjectRequestListDto): string[] {
-  const fromList = (dto.services ?? [])
-    .map((item) => item.name?.trim() ?? '')
-    .filter(Boolean);
+  const fromList = (dto.services ?? []).map((item) => item.name?.trim() ?? '').filter(Boolean);
   if (fromList.length) {
     const seen = new Set<string>();
     return fromList.filter((label) => {

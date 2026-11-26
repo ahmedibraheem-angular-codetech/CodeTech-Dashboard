@@ -1,3 +1,4 @@
+import type { LocalizedFileDto, LocalizedFileWriteDto } from '../../../core/media/localized-media';
 import type { FileObject } from '../../../core/http/api.model';
 
 export interface ReviewLocaleDto {
@@ -13,9 +14,8 @@ export interface TestimonialDto {
   comment: ReviewLocaleDto;
   is_published: boolean;
   sort_order: number;
-  photo: FileObject | null;
-
-  video: FileObject | null;
+  photo: LocalizedFileDto | FileObject | null;
+  video: LocalizedFileDto | FileObject | null;
   created_at: string;
   updated_at: string;
 }
@@ -26,8 +26,8 @@ export interface TestimonialWriteDto {
   comment: { ar: string; en: string };
   rating: number;
   is_published: boolean;
-  photo?: string | null;
-  video?: string | null;
+  photo?: LocalizedFileWriteDto | null;
+  video?: LocalizedFileWriteDto | null;
 }
 
 export interface TestimonialPublishWriteDto {

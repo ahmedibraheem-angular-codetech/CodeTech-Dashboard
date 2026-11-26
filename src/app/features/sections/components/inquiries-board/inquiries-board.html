@@ -60,17 +60,6 @@
         <ng-template appDataCell="product" let-row>
           <span class="inquiry-products">
             <span class="inquiry-products__label">{{ row.product }}</span>
-            @if (row.moreCount > 0) {
-              <span
-                class="inquiry-products__more"
-                [pTooltip]="row.moreTooltip"
-                tooltipPosition="top"
-                [escape]="false"
-                (click)="$event.stopPropagation()"
-              >
-                +{{ row.moreCount }}
-              </span>
-            }
           </span>
         </ng-template>
       </app-data-table>
