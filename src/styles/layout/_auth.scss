@@ -178,6 +178,21 @@
   opacity: 0;
 }
 
+// OTP boxes: the direction-based text-align rules above (focus/placeholder states, both RTL and
+// LTR) would push the typed digit to the left. Keep the code centred in every state and language.
+.auth-card[dir='rtl'] .p-inputotp .p-inputtext,
+.auth-card[dir='rtl'] .p-inputotp .p-inputtext:focus,
+.auth-card[dir='rtl'] .p-inputotp .p-inputtext:not(:placeholder-shown),
+.auth-card[dir='rtl'] .p-inputotp .p-inputtext:placeholder-shown:not(:focus),
+.auth-card[dir='ltr'] .p-inputotp .p-inputtext,
+.auth-card[dir='ltr'] .p-inputotp .p-inputtext:focus,
+.auth-card[dir='ltr'] .p-inputotp .p-inputtext:not(:placeholder-shown),
+.auth-card[dir='ltr'] .p-inputotp .p-inputtext:placeholder-shown:not(:focus) {
+  direction: ltr;
+  text-align: center;
+  unicode-bidi: normal;
+}
+
 .auth-card[dir='ltr'] .p-iconfield .p-inputtext,
 .auth-card[dir='ltr'] .p-inputtext {
   direction: ltr;
