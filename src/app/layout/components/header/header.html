@@ -12,21 +12,15 @@
     <app-breadcrumbs />
   </div>
   <div class="topbar__tools">
-    <!-- Directive form: aria-expanded has to sit on the native <button>, not on <p-button>. -->
-    <button
-      pButton
-      type="button"
-      class="topbar__btn"
-      severity="secondary"
-      [outlined]="true"
-      [attr.aria-label]="lang.t('header.search')"
-      [attr.aria-expanded]="searchOpen()"
-      [pTooltip]="lang.t('header.search')"
+    <app-button
+      [icon]="layout.zoomDirection() === 'in' ? 'pi pi-search-plus' : 'pi pi-search-minus'"
+      variant="outlined"
+      styleClass="topbar__btn"
+      [ariaLabel]="zoomLabel()"
+      [pTooltip]="zoomLabel()"
       tooltipPosition="bottom"
-      (click)="searchOpen.set(!searchOpen())"
-    >
-      <span pButtonIcon class="pi pi-search" aria-hidden="true"></span>
-    </button>
+      (clicked)="layout.cycleZoom()"
+    />
     <p-button
       icon="pi pi-bell"
       severity="secondary"
@@ -41,14 +35,21 @@
         <span class="topbar__dot"></span>
       }
     </p-button>
-    <app-button
-      icon="pi pi-globe"
-      variant="outlined"
-      styleClass="topbar__btn topbar__lang"
-      [label]="lang.t('header.languageName')"
-      [ariaLabel]="lang.t('header.language')"
-      (clicked)="lang.toggle()"
-    />
+    <button
+      type="button"
+      class="topbar__lang"
+      [attr.aria-label]="lang.t('header.language')"
+      (click)="lang.toggle()"
+    >
+      <span class="topbar__lang-frame" aria-hidden="true">
+        <img
+          class="topbar__lang-flag"
+          [src]="lang.language() === 'ar' ? 'images/flag-sa.png' : 'images/flag-gb.svg'"
+          alt=""
+        />
+      </span>
+      <span>{{ lang.t('header.languageName') }}</span>
+    </button>
     <a
       class="user-chip"
       routerLink="/profile"
@@ -60,21 +61,6 @@
     </a>
   </div>
 </header>
-
-<!-- @if (searchOpen()) {
-  <form class="search-pop" (ngSubmit)="search()">
-    <label class="visually-hidden" for="global-search">{{ lang.t('header.search') }}</label>
-    <input
-      pInputText
-      id="global-search"
-      [placeholder]="lang.t('header.searchPlaceholder')"
-      [ngModel]="query()"
-      (ngModelChange)="query.set($event)"
-      name="q"
-    />
-    <app-button type="submit" [label]="lang.t('header.search')" />
-  </form>
-} -->
 
 <p-popover #notifications>
   <div class="note-list">

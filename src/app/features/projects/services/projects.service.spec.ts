@@ -137,7 +137,7 @@ describe('ProjectsService (HTTP)', () => {
   it('uploads blob media then PUTs coat-check UUID', async () => {
     vi.stubGlobal(
       'fetch',
-      vi.fn(async () => new Response(new Blob(['x'], { type: 'image/png' }), { status: 200 })),
+      vi.fn(async () => ({ ok: true, blob: async () => new Blob(['x'], { type: 'image/png' }) })),
     );
     const draft = {
       ...blankProject(),
@@ -164,7 +164,7 @@ describe('ProjectsService (HTTP)', () => {
     upload.flush({ data: fileDto({ uuid: 'uploaded-cover' }) });
     const put = await expectRequest(`${LIST}/7`);
     expect(put.request.method).toBe('PUT');
-    expect(put.request.body.cover).toBe('uploaded-cover');
+    expect(put.request.body.cover).toEqual({ ar: 'uploaded-cover', en: null });
     put.flush({ data: projectDetailDto(7) });
     await result;
     vi.unstubAllGlobals();

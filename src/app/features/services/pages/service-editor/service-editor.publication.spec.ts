@@ -22,10 +22,6 @@ describe('ServiceEditor', () => {
   describe('regression review: publication state', () => {
     const stored = async (id: string) => firstValueFrom(TestBed.inject(ServicesService).get(id));
 
-    // Removed duplicate cases already covered by edit describe
-    // (`preserves … published`, `publishes and unpublishes from the header`)
-    // and by `service-editor-persist` publication readiness.
-
     it('never publishes an unpublished service when saving a draft', async () => {
       const { editor, navigate } = await render('edit', 'cyber-security');
       editor.setField('description', inputEvent('مسودة'));
@@ -108,7 +104,7 @@ describe('ServiceEditor', () => {
       clickNext(root);
       fixture.detectChanges();
       expect(root.querySelector('app-field-error')?.textContent).toContain(
-        'This field is required.',
+        'This Field Is Required.',
       );
     });
 

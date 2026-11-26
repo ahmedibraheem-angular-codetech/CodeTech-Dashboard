@@ -75,7 +75,6 @@ export class SeoPage {
     this.reload();
   }
 
-  /** PrimeNG emits `string | number | undefined`; these tabs only use string ids. */
   select(value: string | number | undefined): void {
     if (typeof value === 'string' && this.pages.some((page) => page.id === value)) {
       this.active.set(value as SeoTabId);

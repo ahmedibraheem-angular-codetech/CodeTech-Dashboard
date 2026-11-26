@@ -1,4 +1,3 @@
-/** UI status tokens (labels/tones). Backend `in_progress` maps to `progress`. */
 export type InquiryStatus = 'new' | 'progress' | 'closed';
 
 export type InquiryTimelineStepState = 'done' | 'current' | 'todo';
@@ -43,17 +42,13 @@ export interface InquiryStats {
 }
 
 export interface Inquiry {
-  /** Numeric API id (string) used in routes and HTTP paths. */
   id: string;
-  /** Display reference, e.g. REQ-00042. */
   reference: string;
   customer: string;
   org: string;
   phone: string;
   email: string;
-  /** First product title (inquiries) or service name (project requests). */
   product: string;
-  /** All related product/service titles (first matches `product`). */
   products: string[];
   status: InquiryStatus;
   date: string;
@@ -61,7 +56,6 @@ export interface Inquiry {
   body: string;
   notes: InquiryNote[];
   replies: InquiryReply[];
-  /** First reply for header / legacy single-card UI. */
   reply: InquiryReply | null;
   timeline: InquiryTimelineStep[];
 }

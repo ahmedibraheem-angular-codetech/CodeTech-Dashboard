@@ -5,6 +5,8 @@ import type {
   AboutBlockDto,
   AboutBlockWriteDto,
   AboutCeoDto,
+  AboutLocalizedFile,
+  AboutLocalizedFileWrite,
   AboutCeoWriteDto,
   AboutLocaleString,
   AboutLocaleStringList,
@@ -21,6 +23,7 @@ import type {
   AboutContent,
   AboutGroups,
   AboutImage,
+  AboutImages,
   AboutMember,
   AboutPartner,
   AboutPointGroup,
@@ -60,13 +63,13 @@ export function mapTeamMember(dto: AboutTeamMemberDto): AboutMember {
 
 export function toStoryWrite(
   story: AboutGroups,
-  image: string | null | undefined,
+  image: AboutLocalizedFileWrite | undefined,
 ): AboutBlockWriteDto {
   const body: AboutBlockWriteDto = {
     philosophy_points: pointsOf(story, 'philosophy'),
     target_market_points: pointsOf(story, 'market'),
   };
-  if (image !== undefined) {
+  if (image && Object.keys(image).length) {
     body.image = image;
   }
   return body;
@@ -81,7 +84,10 @@ export function toVisionWrite(vision: AboutGroups): AboutVisionMissionWriteDto {
   };
 }
 
-export function toCeoWrite(ceo: AboutCeo, image: string | null | undefined): AboutCeoWriteDto {
+export function toCeoWrite(
+  ceo: AboutCeo,
+  image: AboutLocalizedFileWrite | undefined,
+): AboutCeoWriteDto {
   const body: AboutCeoWriteDto = {
     name: {
       ar: ceo.texts.ar.name,
@@ -100,7 +106,7 @@ export function toCeoWrite(ceo: AboutCeo, image: string | null | undefined): Abo
       en: emptyToNull(ceo.texts.en.quote),
     },
   };
-  if (image !== undefined) {
+  if (image && Object.keys(image).length) {
     body.image = image;
   }
   return body;
@@ -128,7 +134,7 @@ export function toTeamWrite(
 
 export function emptyStory(): AboutGroups {
   return {
-    image: null,
+    image: noImages(),
     texts: {
       ar: [emptyGroup('philosophy', 'فلسفة الشركة'), emptyGroup('market', 'السوق المستهدف')],
       en: [emptyGroup('philosophy', 'Company philosophy'), emptyGroup('market', 'Target market')],
@@ -138,7 +144,7 @@ export function emptyStory(): AboutGroups {
 
 export function emptyVision(): AboutGroups {
   return {
-    image: null,
+    image: noImages(),
     texts: {
       ar: [emptyGroup('mission', 'رسالتنا'), emptyGroup('vision', 'رؤيتنا')],
       en: [emptyGroup('mission', 'Our mission'), emptyGroup('vision', 'Our vision')],
@@ -148,7 +154,7 @@ export function emptyVision(): AboutGroups {
 
 export function emptyCeo(): AboutCeo {
   return {
-    image: null,
+    image: noImages(),
     texts: { ar: emptyCeoText(), en: emptyCeoText() },
   };
 }
@@ -158,7 +164,7 @@ export function mapStory(dto: AboutBlockDto | null | undefined): AboutGroups {
     return emptyStory();
   }
   return {
-    image: mapFile(dto.image),
+    image: mapImages(dto.image),
     texts: {
       ar: [
         group('philosophy', 'فلسفة الشركة', '', readList(dto.philosophy_points, 'ar')),
@@ -177,7 +183,7 @@ export function mapVision(dto: AboutVisionMissionDto | null | undefined): AboutG
     return emptyVision();
   }
   return {
-    image: null,
+    image: noImages(),
     texts: {
       ar: [
         group(
@@ -216,7 +222,7 @@ export function mapCeo(dto: AboutCeoDto | null | undefined): AboutCeo {
     return emptyCeo();
   }
   return {
-    image: mapFile(dto.image),
+    image: mapImages(dto.image),
     texts: {
       ar: mapCeoText(dto, 'ar'),
       en: mapCeoText(dto, 'en'),
@@ -241,6 +247,21 @@ function mapMemberText(
     name: readLocale(dto.name, locale),
     role: readLocale(dto.job_title, locale),
   };
+}
+
+export function noImages(): AboutImages {
+  return { ar: null, en: null };
+}
+
+/** New {ar, en} files; an old single file counts as the Arabic picture only. */
+function mapImages(value: AboutLocalizedFile | FileObject | null | undefined): AboutImages {
+  if (!value || typeof value !== 'object') {
+    return noImages();
+  }
+  if ('uuid' in value) {
+    return { ar: mapFile(value), en: null };
+  }
+  return { ar: mapFile(value.ar), en: mapFile(value.en) };
 }
 
 function mapFile(file: FileObject | null | undefined): AboutImage | null {

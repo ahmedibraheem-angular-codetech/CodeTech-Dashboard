@@ -10,11 +10,6 @@ import { mapSocialLink, toSocialLinkWrite } from './social-links.mapper';
 
 const PATH = 'admin/social-links';
 
-/**
- * Social channels CRUD + publish.
- * Reorder exists on the API but is not wired — the UI has no drag handle
- * (OpenAPI: "the design draws no drag handle").
- */
 @Injectable({ providedIn: 'root' })
 export class SocialLinksService {
   private readonly http = inject(HttpClient);

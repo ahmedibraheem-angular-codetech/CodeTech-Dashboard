@@ -46,6 +46,7 @@ export const en = {
   'service.uploadHint': 'Click To Upload An Image Or Drag And Drop It Here',
   'service.uploadTypes': 'PNG Or JPG. Maximum Size 5 MB',
   'service.uploadTooLarge': 'This Image Is Larger Than The 5 MB Limit.',
+  'service.uploadInvalidType': 'Only PNG Or JPG Images Are Supported.',
   'service.clearImage': 'Remove Image',
   'service.chooseLibrary': 'Choose From Library',
   'service.whyImage': 'Upload Image',

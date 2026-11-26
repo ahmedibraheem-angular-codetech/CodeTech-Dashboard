@@ -27,11 +27,6 @@ const PAGE_PATH = 'admin/pages/products';
 const FEATURES_PATH = 'admin/products-page/features';
 const SECTORS_PATH = 'admin/products-page/sectors';
 
-/**
- * Products marketing page manager.
- * Section switches: PATCH /admin/pages/products/sections.
- * Features/sectors: CRUD under /admin/products-page/*.
- */
 @Injectable({ providedIn: 'root' })
 export class ProductsPageService {
   private readonly http = inject(HttpClient);

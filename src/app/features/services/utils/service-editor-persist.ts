@@ -7,10 +7,6 @@ import { filterKnownProjectIds } from './service-editor-projects';
 export type ServicePersistEvaluation =
   { kind: 'busy' } | { kind: 'nameError'; step: 0 } | { kind: 'ready'; service: Service };
 
-/**
- * Pre-save gate evaluation matching the previous private `persist` method.
- * HTTP, toasts, ObjectUrls, and signal writes stay in the component.
- */
 export function evaluateServicePersist(
   draft: Service,
   published: boolean,

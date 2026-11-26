@@ -1,4 +1,3 @@
-/** Backend contact-request statuses (OpenAPI). */
 export type InquiryApiStatus = 'new' | 'in_progress' | 'closed';
 
 export interface InquiryRelatedProductDto {
@@ -40,7 +39,6 @@ export interface InquiryTimelineStepDto {
   by: string | null;
 }
 
-/** List row — inquiries include `product`/`products`; project requests include `service`/`services`. */
 export interface InquiryListDto {
   id: number;
   reference: string;
@@ -61,7 +59,6 @@ export interface InquiryListDto {
   updated_at: string;
 }
 
-/** Detail payload — includes notes, replies, timeline; related resource matches type. */
 export interface InquiryDetailDto extends InquiryListDto {
   closed_by?: InquiryAuthorDto | null;
   notes: InquiryNoteDto[];

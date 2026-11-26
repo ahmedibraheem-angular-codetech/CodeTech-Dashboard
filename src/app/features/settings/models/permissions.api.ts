@@ -1,7 +1,6 @@
 export interface PermissionCatalogModuleDto {
   key: string;
   label: string;
-  /** Present only when this module does not support every catalog action. */
   actions?: string[];
 }
 

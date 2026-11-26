@@ -14,6 +14,7 @@ import { MessageService } from 'primeng/api';
 import { DatePickerModule } from 'primeng/datepicker';
 import { catchError, forkJoin, of } from 'rxjs';
 
+import type { AppLanguage } from '../../../../core/i18n/language';
 import { AuthService } from '../../../../core/auth/auth.service';
 import { loadFailureStatus } from '../../../../core/http/api-error';
 import { NetworkStatusService } from '../../../../core/services/network-status.service';
@@ -144,19 +145,21 @@ export class KnowledgeBoard {
     return !!session?.profileLoaded && this.auth.hasPermission('knowledge_center.delete');
   });
 
-  readonly editorTitle = computed(() => {
-    this.lang.language();
-    return this.lang.t(
-      this.editor() === 'edit' ? 'knowledge.editCategoryTitle' : 'knowledge.createCategoryTitle',
-    );
-  });
+  readonly editorLocale = signal<AppLanguage>(this.lang.language());
 
-  readonly editorSaveLabel = computed(() => {
-    this.lang.language();
-    return this.lang.t(
-      this.editor() === 'edit' ? 'knowledge.saveCategory' : 'knowledge.addCategoryAction',
-    );
-  });
+  readonly editorTitle = computed(() =>
+    this.ct(
+      this.editor() === 'edit' ? 'knowledge.editCategoryTitle' : 'knowledge.createCategoryTitle',
+    ),
+  );
+
+  readonly editorSaveLabel = computed(() =>
+    this.ct(this.editor() === 'edit' ? 'knowledge.saveCategory' : 'knowledge.addCategoryAction'),
+  );
+
+  protected ct(key: string): string {
+    return this.lang.lookup(key, this.editorLocale()) ?? this.lang.t(key);
+  }
 
   constructor() {
     this.load();
@@ -247,12 +250,14 @@ export class KnowledgeBoard {
   }
 
   protected openCreateCategory(): void {
+    this.editorLocale.set(this.lang.language());
     this.selectedCategory.set(null);
     this.categoryForm.reset({ nameAr: '', nameEn: '', published: true });
     this.editor.set('create');
   }
 
   protected openEditCategory(category: ArticleCategory): void {
+    this.editorLocale.set(this.lang.language());
     this.selectedCategory.set(category);
     this.categoryForm.reset({
       nameAr: category.nameAr,

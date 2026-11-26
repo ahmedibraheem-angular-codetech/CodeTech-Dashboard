@@ -8,11 +8,9 @@ export interface ProjectEditorLoadState {
   passed: number;
   nameError: boolean;
   status: 'ready';
-  /** Projects clear field errors on create reset and successful edit load. */
   serverErrors: FieldErrors;
 }
 
-/** Create-mode reset values applied when the editor is not in edit+id. */
 export function createModeEditorState(): ProjectEditorLoadState {
   return {
     draft: blankProject(),
@@ -24,7 +22,6 @@ export function createModeEditorState(): ProjectEditorLoadState {
   };
 }
 
-/** Edit-mode success values after `ProjectsService.get` returns a project. */
 export function editLoadSuccessState(project: Project): ProjectEditorLoadState {
   return {
     draft: project,

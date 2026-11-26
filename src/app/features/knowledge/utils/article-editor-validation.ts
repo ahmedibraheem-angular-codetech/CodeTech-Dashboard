@@ -10,7 +10,6 @@ export interface ArticleFormValidationValue {
 
 export interface ArticleValidationResult {
   missing: ReadonlySet<string>;
-  /** Opposite locale when the active suffix has no issues but the other does. */
   switchTo?: 'ar' | 'en';
 }
 
@@ -23,10 +22,6 @@ function hasVisibleHtml(value: string): boolean {
   );
 }
 
-/**
- * Collect missing field keys for publish (strict) or draft (lenient) saves.
- * Side effects (toast / flagged signal) stay in the component.
- */
 export function collectArticleValidationIssues(
   value: ArticleFormValidationValue,
   strictness: ArticleValidationStrictness,
@@ -62,4 +57,11 @@ export function collectArticleValidationIssues(
     missing,
     switchTo: hereHasIssue ? undefined : activeSuffix === 'Ar' ? 'en' : 'ar',
   };
+}
+
+export const ARTICLE_SLUG_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+
+export function isValidArticleSlug(value: string): boolean {
+  const trimmed = value.trim();
+  return trimmed.length === 0 || ARTICLE_SLUG_PATTERN.test(trimmed);
 }

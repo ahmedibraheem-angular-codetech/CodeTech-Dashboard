@@ -15,7 +15,7 @@ export interface HomeBlockDto {
   description: LocaleString;
   points: LocaleStringList;
 
-  image: FileObject | string | null;
+  image: { ar?: FileObject | null; en?: FileObject | null } | FileObject | string | null;
 }
 
 export interface HomeIntroVideoDto {
@@ -44,8 +44,7 @@ export interface HomeBlockWriteDto {
   title: LocaleString;
   description?: LocaleString | null;
   points?: LocaleStringList | null;
-  /** Omit to keep, uuid to replace, null to remove. */
-  image?: string | null;
+  image?: { ar?: string | null; en?: string | null } | null;
 }
 
 export interface PartnerCreateDto {

@@ -29,21 +29,21 @@ export function mapSeoPage(dto: SeoPageDto): { tabId: SeoTabId; draft: SeoPageDr
     throw new Error(`Unknown SEO page key: ${dto.page}`);
   }
   const slug = dto.slug ?? '';
-  const thumb = mapThumb(dto.thumbnail);
+  const thumbs = mapThumbs(dto.thumbnail);
   return {
     tabId,
     draft: {
-      ar: mapLocaleContent(dto, 'ar', slug, thumb),
-      en: mapLocaleContent(dto, 'en', slug, thumb),
-      thumbUuid: thumb?.uuid ?? null,
-      thumbFile: null,
+      ar: mapLocaleContent(dto, 'ar', slug, thumbs.ar),
+      en: mapLocaleContent(dto, 'en', slug, thumbs.en),
+      thumbUuid: { ar: thumbs.ar?.uuid ?? null, en: thumbs.en?.uuid ?? null },
+      thumbFile: { ar: null, en: null },
     },
   };
 }
 
 export function toSeoWrite(
   draft: SeoPageDraft,
-  thumbnail: string | null | undefined,
+  thumbnail: { ar?: string | null; en?: string | null } | undefined,
 ): SeoPageWriteDto {
   const body: SeoPageWriteDto = {
     meta_title: {
@@ -68,7 +68,7 @@ export function toSeoWrite(
       en: draft.en.thumbAlt.trim(),
     },
   };
-  if (thumbnail !== undefined) {
+  if (thumbnail && Object.keys(thumbnail).length) {
     body.thumbnail = thumbnail;
   }
   return body;
@@ -79,9 +79,10 @@ export function draftFingerprint(draft: SeoPageDraft): string {
     ar: contentFingerprint(draft.ar),
     en: contentFingerprint(draft.en),
     thumbUuid: draft.thumbUuid,
-    hasFile: !!draft.thumbFile,
-    fileName: draft.thumbFile?.name ?? null,
-    fileSize: draft.thumbFile?.size ?? null,
+    files: ['ar', 'en'].map((l) => {
+      const f = draft.thumbFile[l as 'ar' | 'en'];
+      return f ? [f.name, f.size] : null;
+    }),
   });
 }
 
@@ -125,6 +126,20 @@ function mapLocaleContent(
     thumbName: thumb?.name ?? '',
     thumbUrl: thumb?.url ?? '',
   };
+}
+
+/** Old single-file payloads count as the Arabic thumbnail only. */
+function mapThumbs(value: SeoPageDto['thumbnail']): {
+  ar: { uuid: string; url: string; name: string } | null;
+  en: { uuid: string; url: string; name: string } | null;
+} {
+  if (!value || typeof value !== 'object') {
+    return { ar: null, en: null };
+  }
+  if ('uuid' in value) {
+    return { ar: mapThumb(value), en: null };
+  }
+  return { ar: mapThumb(value.ar), en: mapThumb(value.en) };
 }
 
 function mapThumb(

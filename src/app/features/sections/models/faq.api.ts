@@ -26,7 +26,7 @@ export interface FaqDto {
   is_published: boolean;
   sort_order: number;
   created_at: string;
-  updated_at: string;
+  updated_at: string | null;
 }
 
 export interface FaqCategoryWriteDto {

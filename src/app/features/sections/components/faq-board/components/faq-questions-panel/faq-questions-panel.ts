@@ -16,7 +16,7 @@ import { LanguageService } from '../../../../../../core/services/language.servic
 import { AppButton } from '../../../../../../shared/components/app-button/app-button';
 import { AppPaginator } from '../../../../../../shared/components/app-paginator/app-paginator';
 import { StateView } from '../../../../../../shared/components/state-view/state-view';
-import { formatIsoDate } from '../../../../../../shared/utils/date';
+import { formatIsoDate, formatIsoTime } from '../../../../../../shared/utils/date';
 import type {
   FaqCategory,
   FaqCategoryId,
@@ -96,8 +96,8 @@ export class FaqQuestionsPanel {
 
   protected stamp(item: FaqItem): string {
     const date = formatIsoDate(item.updatedAt, this.lang.language());
-    const time = this.lang.language() === 'ar' ? '12:00 م' : '12:00 PM';
-    return `${date} - ${time}`;
+    const time = formatIsoTime(item.updatedAt, this.lang.language());
+    return [date, time].filter(Boolean).join(' - ');
   }
 
   protected orderLabel(order: number): string {

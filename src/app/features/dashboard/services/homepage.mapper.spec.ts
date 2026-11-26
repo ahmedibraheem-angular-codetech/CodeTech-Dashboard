@@ -19,9 +19,9 @@ describe('homepage.mapper', () => {
     expect(content.about.texts.ar.title).toBe('عن كود التقنية');
     expect(content.about.texts.ar.body).toContain('شركة سعودية');
     expect(content.about.texts.ar.points).toHaveLength(2);
-    expect(content.about.image?.uuid).toBe('about-image');
+    expect(content.about.image.ar?.uuid).toBe('about-image');
     expect(content.vision.texts.ar.body).toBe('');
-    expect(content.vision.image).toBeNull();
+    expect(content.vision.image.ar).toBeNull();
   });
 
   it('builds an Arabic/English write payload and omits image when undefined', () => {
@@ -32,10 +32,10 @@ describe('homepage.mapper', () => {
     expect(keep.points?.en).toEqual(['10+ years of experience', 'A Saudi team']);
     expect(keep).not.toHaveProperty('image');
 
-    const clear = toBlockWrite(content.about, null);
-    expect(clear.image).toBeNull();
+    const clear = toBlockWrite(content.about, { ar: null });
+    expect(clear.image).toEqual({ ar: null });
 
-    const replace = toBlockWrite(content.about, 'new-uuid');
-    expect(replace.image).toBe('new-uuid');
+    const replace = toBlockWrite(content.about, { ar: 'new-uuid' });
+    expect(replace.image).toEqual({ ar: 'new-uuid' });
   });
 });

@@ -65,6 +65,7 @@ export const ar: { [K in keyof typeof en]: string } = {
   'project.uploadHint': 'اضغط لرفع صورة أو اسحبها وأفلتها هنا',
   'project.uploadTypes': 'صيغة PNG,JPG. الحجم الأقصى 5 ميجابايت',
   'project.uploadTooLarge': 'هذه الصورة تتجاوز الحد الأقصى 5 ميجابايت.',
+  'project.uploadInvalidType': 'الصيغة غير مدعومة. ارفع صورة بصيغة PNG أو JPG فقط.',
   'project.clearImage': 'إزالة الصورة',
   'project.chooseLibrary': 'اختيار من المكتبة',
   'project.pageReport': 'عرض {currentPage} من {totalPages}',

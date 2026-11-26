@@ -55,7 +55,6 @@
             : null
         "
       />
-      <!-- p-password's own toggle is a click-only SVG (no keyboard, no label), so keep a real button. -->
       <app-button
         class="field__toggle"
         type="button"
@@ -102,8 +101,8 @@
   <app-button
     styleClass="auth-submit"
     type="submit"
-    icon="pi pi-angle-double-left"
-    iconPos="right"
+    [icon]="lang.language() === 'ar' ? 'pi pi-angle-double-left' : 'pi pi-angle-double-right'"
+    iconPos="end"
     size="large"
     [fluid]="true"
     [label]="lang.t('auth.submit')"

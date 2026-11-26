@@ -1,5 +1,5 @@
 <app-editor-shell
-  [title]="lang.t(mode() === 'edit' ? 'product.edit' : 'product.add')"
+  [title]="copy(mode() === 'edit' ? 'product.edit' : 'product.add')"
   [mode]="mode()"
   [status]="status()"
   [saving]="saving()"

@@ -44,7 +44,6 @@ export function productWorkflowStepsValid(product: Product): boolean {
   return product.steps.every((step) => isWorkflowStepArabicValid(step));
 }
 
-/** Locale to switch to when SEO leave/save is blocked; null when SEO is valid. */
 export function invalidSeoLocale(product: Product): AppLanguage | null {
   const { slug, keywords } = product.seo;
   if (!isValidProductSlug(slug.ar)) {
@@ -62,10 +61,6 @@ export function invalidSeoLocale(product: Product): AppLanguage | null {
   return null;
 }
 
-/**
- * Whether the wizard may leave `currentStep` for `target`.
- * On block, optionally returns a locale that should become active (same side effects as before).
- */
 export function canLeaveProductEditorStep(
   currentStep: number,
   target: number,

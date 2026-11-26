@@ -13,7 +13,6 @@ const SEO = apiUrl(environment.apiUrl, 'admin/seo');
 const SEO_GRANTS = ['seo.view', 'seo.create', 'seo.update', 'seo.delete'] as const;
 
 describe('SeoPage', () => {
-  // jsdom has no ResizeObserver, which PrimeNG's scrollable tab list uses.
   beforeEach(() => {
     vi.stubGlobal(
       'ResizeObserver',

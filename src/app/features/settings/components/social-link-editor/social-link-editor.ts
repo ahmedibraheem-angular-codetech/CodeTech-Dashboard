@@ -22,11 +22,6 @@ import type {
   SocialPublishStatus,
 } from '../../models/social-links.model';
 
-/**
- * Create/edit a social channel.
- * OpenAPI stores a single URL (not bilingual) and `is_published`
- * (editor "publish status" select maps published/draft ↔ boolean).
- */
 @Component({
   selector: 'app-social-link-editor',
   imports: [ReactiveFormsModule, Select, Modal],

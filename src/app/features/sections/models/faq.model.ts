@@ -26,7 +26,7 @@ export interface FaqItem {
   categoryId: FaqCategoryId;
   order: number;
   published: boolean;
-  updatedAt: string;
+  updatedAt: string | null;
 }
 
 export type FaqDraft = Omit<FaqItem, 'id'>;

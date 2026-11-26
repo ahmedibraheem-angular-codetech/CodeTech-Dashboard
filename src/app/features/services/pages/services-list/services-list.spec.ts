@@ -233,9 +233,9 @@ describe('ServicesPage', () => {
     TestBed.inject(LanguageService).set('en');
     fixture.detectChanges();
     expect(document.documentElement.dir).toBe('ltr');
-    expect(root.querySelector('h1')?.textContent).toBe('Manage services');
+    expect(root.querySelector('h1')?.textContent).toBe('Manage Services');
     expect(root.querySelector('.services-board__title')?.textContent).toBe('Services');
-    expect(root.textContent).toContain('Add a new service');
+    expect(root.textContent).toContain('Add A New Service');
     expect(root.querySelector('app-service-card h2')?.textContent?.trim()).toBe(first.name.en);
     expect(root.querySelector('.service-card__description')?.textContent).toBe(
       first.description.en,

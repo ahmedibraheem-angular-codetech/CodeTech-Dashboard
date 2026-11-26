@@ -351,6 +351,7 @@ export const en = {
   'knowledge.uploadFormats': 'PNG, JPG Up To 5MB',
   'knowledge.removeImage': 'Remove Image',
   'knowledge.required': 'This Field Is Required',
+  'knowledge.slugError': 'Slug May Only Contain Lowercase Letters, Numbers, And Hyphens.',
   'knowledge.detailMeta': 'Article Details',
   'knowledge.detailStatus': 'Status',
   'knowledge.detailNoContent': 'This Article Has No Content In This Language Yet',

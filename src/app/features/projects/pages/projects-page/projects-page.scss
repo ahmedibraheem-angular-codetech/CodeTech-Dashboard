@@ -16,7 +16,6 @@
   background: #fff;
 }
 
-/* White shell that wraps `.projects-numbers` — Figma: #FFFFFF, 16px padding, 12px gap */
 .projects-numbers-panel {
   display: flex;
   flex-direction: column;
@@ -28,7 +27,6 @@
   background: #fff;
 }
 
-/* Gray numbers tray inside the white shell — Figma: #F9FAFB, 12px padding, 8px gap */
 .projects-numbers {
   display: flex;
   flex-direction: column;
@@ -159,7 +157,6 @@
   gap: 12px;
 }
 
-/* Editor point card — Figma: #F9FAFB, 12px padding, 14px gap, 16px radius */
 .projects-numbers-editor__card {
   display: flex;
   flex-direction: column;

@@ -1,3 +1,4 @@
+import type { LocalizedFileDto, LocalizedFileWriteDto } from '../../../core/media/localized-media';
 import type { FileObject } from '../../../core/http/api.model';
 
 export interface KnowledgeLocaleDto {
@@ -31,7 +32,7 @@ export interface ArticleListDto {
   title: KnowledgeLocaleDto;
   excerpt: KnowledgeLocaleDto;
   category: ArticleCategoryRefDto;
-  thumbnail: FileObject | null;
+  thumbnail: LocalizedFileDto | FileObject | null;
   reading_time_minutes: number;
   status: string;
   is_scheduled: boolean;
@@ -44,10 +45,10 @@ export interface ArticleListDto {
 export interface ArticleDetailDto extends ArticleListDto {
   content: KnowledgeLocaleDto;
   author_name: KnowledgeLocaleDto;
-  author_photo: FileObject | null;
+  author_photo: LocalizedFileDto | FileObject | null;
   thumbnail_title: KnowledgeLocaleDto;
   thumbnail_alt: KnowledgeLocaleDto;
-  cover: FileObject | null;
+  cover: LocalizedFileDto | FileObject | null;
   cover_title: KnowledgeLocaleDto;
   cover_alt: KnowledgeLocaleDto;
   meta_title: KnowledgeLocaleDto;
@@ -82,9 +83,9 @@ export interface ArticleWriteDto {
   reading_time_minutes?: number;
   is_featured?: boolean;
   author_name?: { ar: string; en: string };
-  author_photo?: string | null;
-  thumbnail?: string | null;
-  cover?: string | null;
+  author_photo?: LocalizedFileWriteDto | null;
+  thumbnail?: LocalizedFileWriteDto | null;
+  cover?: LocalizedFileWriteDto | null;
   thumbnail_title?: { ar: string; en: string };
   thumbnail_alt?: { ar: string; en: string };
   cover_title?: { ar: string; en: string };

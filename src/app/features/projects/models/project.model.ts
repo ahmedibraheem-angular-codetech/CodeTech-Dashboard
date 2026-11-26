@@ -17,11 +17,9 @@ export function localeText(ar = '', en = ''): LocaleText {
 export interface ProjectImage {
   imageName: string;
   imageUrl: string;
-  /** Media coat-check UUID when known from the API or a fresh upload. */
   imageUuid?: string | null;
 }
 
-/** Per-locale media slots used in the project editor (AR/EN tabs). */
 export type LocalizedMedia = Record<AppLanguage, ProjectImage>;
 
 export function emptyProjectImage(): ProjectImage {
@@ -32,9 +30,6 @@ export function emptyLocalizedMedia(): LocalizedMedia {
   return { ar: emptyProjectImage(), en: emptyProjectImage() };
 }
 
-/**
- * Active-locale media with Arabic fallback (matches website behavior when EN is empty).
- */
 export function readMedia(image: LocalizedMedia, language: AppLanguage): ProjectImage {
   const current = image[language];
   if (current.imageUrl) {
@@ -82,11 +77,9 @@ export interface Project {
   published: boolean;
   name: LocaleText;
   summary: LocaleText;
-  /** Cover image per editor locale. API still stores one shared cover file. */
   cover: LocalizedMedia;
   coverTitle: LocaleText;
   coverAlt: LocaleText;
-  /** Thumbnail per editor locale. API still stores one shared thumbnail file. */
   thumb: LocalizedMedia;
   thumbTitle: LocaleText;
   thumbAlt: LocaleText;

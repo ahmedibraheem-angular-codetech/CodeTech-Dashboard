@@ -114,7 +114,7 @@ describe('ServiceEditor', () => {
         }
       }
       expect(editor.lastStep()).toBe(true);
-      expect(root.textContent).toContain('إنهاء');
+      expect(root.textContent).toContain('Finish');
 
       editor.select(0);
       fixture.detectChanges();

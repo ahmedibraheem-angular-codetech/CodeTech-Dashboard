@@ -17,9 +17,13 @@ const block: ContentBlock = {
     ar: { title: 'عن كود التقنية', body: 'نبذة', points: ['نقطة ١', 'نقطة ٢'] },
     en: { title: 'About', body: 'Summary', points: ['Point 1'] },
   },
-  image: { name: 'about.png', size: 320512, uploadedAt: '2026-08-31', uuid: 'about-image' },
+  image: {
+    ar: { name: 'about.png', size: 320512, uploadedAt: '2026-08-31', uuid: 'about-image' },
+    en: null,
+  },
 };
 
+const NO_IMAGES = { ar: null, en: null };
 const emptyText = { title: '', body: '', points: [] };
 
 describe('ContentBlockCard', () => {
@@ -121,14 +125,22 @@ describe('ContentBlockCard', () => {
   });
 
   it('starts an empty block with one empty point row', async () => {
-    const fixture = await setup({ ...block, texts: { ar: emptyText, en: emptyText }, image: null });
+    const fixture = await setup({
+      ...block,
+      texts: { ar: emptyText, en: emptyText },
+      image: NO_IMAGES,
+    });
     fixture.componentInstance.open();
     expect(fixture.componentInstance.form.controls.ar.controls.points.length).toBe(1);
     expect(fixture.componentInstance.image()).toBeNull();
   });
 
   it('allows saving with no required fields in either language', async () => {
-    const fixture = await setup({ ...block, texts: { ar: emptyText, en: emptyText }, image: null });
+    const fixture = await setup({
+      ...block,
+      texts: { ar: emptyText, en: emptyText },
+      image: NO_IMAGES,
+    });
     const component = fixture.componentInstance;
     component.open();
     expect(component.form.controls.ar.valid).toBe(true);
@@ -136,7 +148,7 @@ describe('ContentBlockCard', () => {
 
     const save = vi
       .spyOn(TestBed.inject(HomepageService), 'saveBlock')
-      .mockReturnValue(of({ texts: { ar: emptyText, en: emptyText }, image: null }));
+      .mockReturnValue(of({ texts: { ar: emptyText, en: emptyText }, image: NO_IMAGES }));
     component.save();
     expect(save).toHaveBeenCalled();
   });
@@ -161,7 +173,7 @@ describe('ContentBlockCard', () => {
     const result: ContentBlock = saved.mock.calls[0][0];
     expect(result.texts.ar.title).toBe('عنوان');
     expect(result.texts.en.points).toEqual(['Point 1']);
-    expect(result.image?.name).toBe('about.png');
+    expect(result.image.ar?.name).toBe('about.png');
   });
 
   it('ignores a second save while the first one is in flight', async () => {

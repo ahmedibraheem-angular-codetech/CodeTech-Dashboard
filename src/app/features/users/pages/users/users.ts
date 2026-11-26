@@ -548,7 +548,7 @@ export class UsersPage {
       icon,
       iconColor,
       iconBackground,
-      caption,
+      caption: trend == null ? '' : caption,
       ...(trend == null
         ? {}
         : {

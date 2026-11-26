@@ -1,5 +1,3 @@
-// Service detail. Encapsulation is off so the shared header and `.detail-*` styles apply;
-// every selector is namespaced under `.service-detail`.
 app-service-detail {
   display: block;
 }
@@ -10,7 +8,6 @@ app-service-detail {
   gap: 8px;
 }
 
-// Published badge matches the reference blue pill (scoped so products stay green).
 .service-detail .detail-status {
   background: #e8f1fb;
   color: #1c81d3;
@@ -91,7 +88,6 @@ app-service-detail {
   list-style: none;
 }
 
-// Why tiles: compact 2–3 column grid as in the reference.
 .service-detail__list.detail-features {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -285,7 +281,6 @@ app-service-detail {
   height: 100%;
 }
 
-// On the detail page the toggle reflects publish state; keep the card border neutral like the design.
 .service-detail__project .service-project {
   gap: 12px;
   padding: 12px;
@@ -306,7 +301,6 @@ app-service-detail {
   gap: 16px;
 }
 
-// Figma sectors sit flush in the white panel — drop the shared tray chrome.
 .service-detail__sectors.app-sector-grid {
   gap: 16px;
   padding: 0;

@@ -79,6 +79,7 @@
     <label class="field">
       <span class="field__label">{{ t('users.userStatus') }}</span>
       <p-select
+        [ariaLabel]="t('users.userStatus')"
         [fluid]="true"
         formControlName="status"
         [options]="formStatuses()"
@@ -90,6 +91,7 @@
     <label class="field">
       <span class="field__label">{{ t('users.role') }}</span>
       <p-select
+        [ariaLabel]="t('users.role')"
         [fluid]="true"
         formControlName="roleId"
         [options]="roles()"

@@ -1,7 +1,3 @@
-// Services editor chrome. The shared `.editor-*`, `.feature-card*`, and `.add-row` rules come
-// from the global product-editor styles; this file adds the host overrides Products and
-// Projects apply, plus the Services-only pieces. Encapsulation is off, and every rule is
-// scoped to `app-service-editor`.
 app-service-editor {
   display: block;
 }

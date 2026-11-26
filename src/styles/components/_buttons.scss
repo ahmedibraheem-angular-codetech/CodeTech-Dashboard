@@ -40,14 +40,12 @@
   opacity: 1;
 }
 
-// Arrow pinned to the physical left edge; the label stays centred.
 .auth-submit .p-button-icon {
   position: absolute;
   left: 18px;
   right: auto;
 }
 
-// Shared “add new …” CTA — matches users “إضافة مستخدم جديد”.
 .app-add-btn.p-button,
 a.app-add-btn {
   --p-button-primary-background: #1c81d3;
@@ -87,7 +85,6 @@ a.app-add-btn .pi {
   font-size: 14px;
 }
 
-// Figma back control: 48×48, radius 16, white fill, #ECEFF3 border; icon flipped −180°.
 .back-btn {
   --p-button-icon-only-width: 48px;
   --p-button-secondary-background: #fff;
@@ -109,5 +106,10 @@ a.app-add-btn .pi {
 }
 
 .back-btn .p-button-icon {
+  transform: none;
+}
+
+.forgot-form[dir='rtl'] .back-btn .p-button-icon,
+.verify-form[dir='rtl'] .back-btn .p-button-icon {
   transform: rotate(-180deg);
 }

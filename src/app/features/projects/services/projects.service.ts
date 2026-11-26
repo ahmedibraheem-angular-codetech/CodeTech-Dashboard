@@ -31,18 +31,12 @@ import {
 const PATH = 'admin/projects';
 const PAGE_PATH = 'admin/pages/projects';
 
-/**
- * Catalog projects. List is paginated (`search`, `filter[status]`, `per_page`).
- * Nested lists are embedded on write; media uses coat-check UUIDs (omit/null/set).
- * `catalogVisible` maps to `projects_visible` on the projects page sections API.
- */
 @Injectable({ providedIn: 'root' })
 export class ProjectsService {
   private readonly http = inject(HttpClient);
   private readonly media = inject(MediaService);
   private readonly base = inject(API_BASE_URL);
 
-  /** Whether project cards show on the public projects page. */
   readonly catalogVisible = signal(false);
 
   list(query: ProjectListQuery = {}): Observable<Project[]> {
@@ -55,7 +49,6 @@ export class ProjectsService {
     });
   }
 
-  /** Loads every page so the board can keep client-side pagination. */
   listAll(query: Omit<ProjectListQuery, 'page'> = {}): Observable<Project[]> {
     return this.fetchAll(query);
   }

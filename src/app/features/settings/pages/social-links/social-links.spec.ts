@@ -276,11 +276,11 @@ describe('SocialLinksPage', () => {
 
     expect(page.locale()).toBe('en');
     expect(section?.getAttribute('dir')).toBe('ltr');
-    expect(page.t('social.siteDetails')).toBe('Site details');
+    expect(page.t('social.siteDetails')).toBe('Site Details');
     expect(page.form.controls.description.value).toMatch(/CodeTech/);
     expect(page.form.controls.locationName.value).toBe('Kingdom of Saudi Arabia');
-    expect(root.querySelector('h1')?.textContent).toContain('Social links');
-    expect(root.textContent).toContain('Site details');
+    expect(root.querySelector('h1')?.textContent).toContain('Social Links');
+    expect(root.textContent).toContain('Site Details');
     expect(root.textContent).toContain('Edit');
   });
 

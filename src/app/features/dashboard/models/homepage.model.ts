@@ -23,12 +23,12 @@ export interface BlockImage extends UploadedImageMeta {
 
 export interface ContentBlock {
   texts: Record<AppLanguage, ContentBlockText>;
-  image: BlockImage | null;
+  /** One picture per content language; English shows Arabic when it has none. */
+  image: Record<AppLanguage, BlockImage | null>;
 }
 
 export const HOME_VIDEO_MAX_BYTES = 35 * 1024 * 1024;
 
-/** Progress stream from {@link HomepageService.setVideo}. Upload 0–90, saving ~92, done 100. */
 export type VideoUploadEvent =
   | { phase: 'upload'; progress: number }
   | { phase: 'saving'; progress: number }

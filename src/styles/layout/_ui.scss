@@ -58,7 +58,7 @@
 .backdrop {
   position: fixed;
   inset: 0;
-  z-index: var(--app-z-overlay);
+  z-index: calc(var(--app-z-drawer) - 1);
   border: 0;
   background: rgba(15, 23, 42, 0.45);
 }
@@ -78,7 +78,6 @@
   width: auto;
 }
 
-// Auth panel logo: the two-tone artwork as designed (blue mark, light wordmark), 244 × 45 at full size.
 .brand__img--light {
   flex: none;
   max-width: none;

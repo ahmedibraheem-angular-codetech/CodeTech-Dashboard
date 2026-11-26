@@ -347,6 +347,7 @@ export const ar: { [K in keyof typeof en]: string } = {
   'knowledge.uploadFormats': 'PNG, JPG بحد أقصى 5 ميجابايت',
   'knowledge.removeImage': 'حذف الصورة',
   'knowledge.required': 'هذا الحقل مطلوب',
+  'knowledge.slugError': 'الرابط المختصر يقبل الأحرف الإنجليزية الصغيرة والأرقام والشرطات فقط.',
   'knowledge.detailMeta': 'بيانات المقال',
   'knowledge.detailStatus': 'الحالة',
   'knowledge.detailNoContent': 'لا يوجد محتوى لهذا المقال بهذه اللغة بعد',

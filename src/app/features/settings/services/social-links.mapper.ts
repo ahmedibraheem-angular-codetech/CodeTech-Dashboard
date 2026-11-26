@@ -10,7 +10,6 @@ import type {
   SocialPublishStatus,
 } from '../models/social-links.model';
 
-/** Confirmed OpenAPI enum: `x` is the Twitter/X platform. */
 export function toApiPlatform(platform: SocialPlatformId): SocialPlatformApiId {
   return platform === 'twitter' ? 'x' : platform;
 }

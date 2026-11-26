@@ -55,17 +55,12 @@ function uniqueLabels(labels: string[]): string[] {
   return out;
 }
 
-/** Prefer `products[]` / `services[]`, fall back to singular `product` / `service`. */
 function relatedLabels(dto: InquiryListDto): string[] {
-  const fromProducts = (dto.products ?? [])
-    .map((item) => item.title?.trim() ?? '')
-    .filter(Boolean);
+  const fromProducts = (dto.products ?? []).map((item) => item.title?.trim() ?? '').filter(Boolean);
   if (fromProducts.length) {
     return uniqueLabels(fromProducts);
   }
-  const fromServices = (dto.services ?? [])
-    .map((item) => item.name?.trim() ?? '')
-    .filter(Boolean);
+  const fromServices = (dto.services ?? []).map((item) => item.name?.trim() ?? '').filter(Boolean);
   if (fromServices.length) {
     return uniqueLabels(fromServices);
   }
@@ -127,7 +122,6 @@ function mapCore(dto: InquiryListDto): Omit<Inquiry, 'notes' | 'replies' | 'repl
   };
 }
 
-/** List rows have no nested notes/replies/timeline. */
 export function mapInquiryListItem(dto: InquiryListDto): Inquiry {
   return {
     ...mapCore(dto),

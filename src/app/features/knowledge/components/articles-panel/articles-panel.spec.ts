@@ -13,9 +13,9 @@ describe('ArticlesPanel statistics cards', () => {
       code: `ART-${id.padStart(4, '0')}`,
       categoryNameAr: '',
       categoryNameEn: '',
-      authorPhoto: null,
-      thumbnail: null,
-      cover: null,
+      authorPhoto: { ar: null, en: null },
+      thumbnail: { ar: null, en: null },
+      cover: { ar: null, en: null },
       status,
       createdAt: '2026-01-01',
       updatedAt: '2026-01-01',
@@ -77,8 +77,8 @@ describe('ArticlesPanel statistics cards', () => {
       icon: 'pi pi-file',
       iconColor: '#e11d48',
       iconBackground: '#ffe4e6',
-      trend: 12.5,
-      caption: 'knowledge.compared',
+      trend: undefined,
+      caption: '',
     });
     expect(published).toMatchObject({
       id: 'published',
@@ -101,6 +101,32 @@ describe('ArticlesPanel statistics cards', () => {
       iconColor: '#16a34a',
       iconBackground: '#dcfce7',
     });
+  });
+
+  it('shows the API change percentage and caption only when the API provides one', () => {
+    const fixture = setup([article('1', 'published')]);
+    fixture.componentRef.setInput('stats', {
+      total: 12,
+      published: 7,
+      featured: 3,
+      unpublished: 4,
+      totalChangePct: -5,
+      publishedChangePct: null,
+      featuredChangePct: null,
+      unpublishedChangePct: null,
+    });
+    fixture.detectChanges();
+    const cards = fixture.componentInstance.cards();
+    expect(cards.find((c) => c.id === 'total')).toMatchObject({
+      value: '12',
+      trend: -5,
+      caption: 'knowledge.compared',
+    });
+    expect(cards.find((c) => c.id === 'published')).toMatchObject({
+      trend: undefined,
+      caption: '',
+    });
+    expect(cards.find((c) => c.id === 'draft')).toMatchObject({ trend: undefined, caption: '' });
   });
 
   it('recomputes card values when the articles input changes', () => {

@@ -6,7 +6,6 @@ import {
 } from '../models/knowledge.model';
 import { nowStamp } from './knowledge-format';
 
-/** Raw bilingual form values used by the article editor (excluding media URLs). */
 export interface ArticleEditorFormValue {
   titleAr: string;
   titleEn: string;
@@ -93,13 +92,10 @@ export function fieldsFromArticleForm(
     publishedAt: `${publishedDate || now.slice(0, 10)}T${time}`,
     authorNameAr: text.authorNameAr.trim(),
     authorNameEn: text.authorNameEn.trim(),
-    authorAvatarUrl: '',
-    thumbnailUrl: '',
     thumbnailTitleAr: text.thumbnailTitleAr.trim(),
     thumbnailTitleEn: text.thumbnailTitleEn.trim(),
     thumbnailAltAr: text.thumbnailAltAr.trim(),
     thumbnailAltEn: text.thumbnailAltEn.trim(),
-    coverUrl: '',
     coverTitleAr: text.coverTitleAr.trim(),
     coverTitleEn: text.coverTitleEn.trim(),
     coverAltAr: text.coverAltAr.trim(),

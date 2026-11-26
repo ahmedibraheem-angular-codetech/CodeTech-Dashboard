@@ -3,7 +3,12 @@
   @for (crumb of crumbs.crumbs(); track crumb.url; let last = $last) {
     @if (!last) {
       <a [routerLink]="crumb.url">{{ lang.t(crumb.key) }}</a>
-      <i class="pi pi-angle-left" aria-hidden="true"></i>
+      <i
+        class="pi"
+        [class.pi-angle-left]="lang.language() === 'ar'"
+        [class.pi-angle-right]="lang.language() !== 'ar'"
+        aria-hidden="true"
+      ></i>
     } @else {
       <span aria-current="page">{{ lang.t(crumb.key) }}</span>
     }

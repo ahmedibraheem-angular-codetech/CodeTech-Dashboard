@@ -24,18 +24,12 @@ import {
 const PATH = 'admin/products';
 const PAGE_PATH = 'admin/pages/products';
 
-/**
- * Catalog products. List is paginated (`search`, `filter[status]`, `per_page`).
- * Nested lists are embedded on write; media uses coat-check UUIDs (omit/null/set).
- * `catalogVisible` maps to `products_visible` on the products page sections API.
- */
 @Injectable({ providedIn: 'root' })
 export class ProductsService {
   private readonly http = inject(HttpClient);
   private readonly media = inject(MediaService);
   private readonly base = inject(API_BASE_URL);
 
-  /** Whether product cards show on the public products page. */
   readonly catalogVisible = signal(false);
 
   list(query: ProductListQuery = {}): Observable<Product[]> {
@@ -48,7 +42,6 @@ export class ProductsService {
     });
   }
 
-  /** Loads every page so the board can keep client-side pagination if needed. */
   listAll(query: Omit<ProductListQuery, 'page'> = {}): Observable<Product[]> {
     return this.fetchAll(query);
   }

@@ -159,16 +159,16 @@ describe('HomepageService', () => {
     });
   });
 
-  it('saves the about block with both languages and a new image uuid', async () => {
+  it('saves the about block with both languages and a new English-only image uuid', async () => {
     const file = new File(['img'], 'shot.png', { type: 'image/png' });
     const block = {
       texts: {
         ar: { title: 'عنوان', body: 'وصف', points: ['نقطة'] },
         en: { title: 'Title', body: 'Body', points: ['Point'] },
       },
-      image: { name: 'shot.png', size: 1, uploadedAt: '2026-11-01', file },
+      image: { ar: null, en: { name: 'shot.png', size: 1, uploadedAt: '2026-11-01', file } },
     };
-    const result = firstValueFrom(service.saveBlock('about', block, null));
+    const result = firstValueFrom(service.saveBlock('about', block, { ar: null, en: null }));
     http.expectOne(MEDIA).flush({
       data: {
         uuid: 'img-1',
@@ -186,7 +186,7 @@ describe('HomepageService', () => {
       title: { ar: 'عنوان', en: 'Title' },
       description: { ar: 'وصف', en: 'Body' },
       points: { ar: ['نقطة'], en: ['Point'] },
-      image: 'img-1',
+      image: { en: 'img-1' },
     });
     put.flush({ data: HOME_PAGE_DTO });
     await expect(result).resolves.toMatchObject({
@@ -195,13 +195,14 @@ describe('HomepageService', () => {
   });
 
   it('omits image when keeping an existing file and clears with null', async () => {
-    const previous = {
+    const prevImage = {
       name: 'about.png',
       size: 1,
       uploadedAt: '2026-10-29',
       uuid: 'about-image',
       url: 'https://example.test/about.png',
     };
+    const previous = { ar: prevImage, en: null };
     const keep = firstValueFrom(
       service.saveBlock(
         'vision',
@@ -228,13 +229,13 @@ describe('HomepageService', () => {
             ar: { title: 'عنوان', body: '', points: [] },
             en: { title: '', body: '', points: [] },
           },
-          image: null,
+          image: { ar: null, en: null },
         },
         previous,
       ),
     );
     const clearReq = http.expectOne(`${HOME}/about`);
-    expect(clearReq.request.body.image).toBeNull();
+    expect(clearReq.request.body.image).toEqual({ ar: null });
     clearReq.flush({ data: HOME_PAGE_DTO });
     await clear;
   });

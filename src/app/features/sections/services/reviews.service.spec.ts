@@ -1,3 +1,4 @@
+import { emptyMediaDraft } from '../../../core/media/localized-media';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
@@ -51,8 +52,8 @@ const draft = (overrides: Partial<ReviewContentDraft> = {}): ReviewContentDraft 
 });
 
 const omitMedia = (): ReviewMediaDraft => ({
-  photo: { kind: 'omit' },
-  video: { kind: 'omit' },
+  photo: emptyMediaDraft(),
+  video: emptyMediaDraft(),
 });
 
 describe('ReviewsService', () => {
@@ -105,7 +106,7 @@ describe('ReviewsService', () => {
     expect(rows[0]?.texts.en.name).toBe('Client 1');
     expect(rows[1]?.rating).toBe(4);
     expect(rows[1]?.published).toBe(false);
-    expect(rows[0]?.photo?.uuid).toBe('photo-1');
+    expect(rows[0]?.photo.ar?.uuid).toBe('photo-1');
   });
 
   it('creates with bilingual fields and omits media when unchanged intents are omit', async () => {
@@ -129,8 +130,8 @@ describe('ReviewsService', () => {
     const image = new File(['img'], 'face.png', { type: 'image/png' });
     const result = firstValueFrom(
       service.create(draft(), {
-        photo: { kind: 'replace', file: image },
-        video: { kind: 'omit' },
+        photo: { ar: { kind: 'replace', file: image }, en: { kind: 'omit' } },
+        video: emptyMediaDraft(),
       }),
     );
     const upload = http.expectOne(MEDIA);
@@ -141,14 +142,13 @@ describe('ReviewsService', () => {
     upload.flush({ data: fileDto({ uuid: 'uploaded-photo' }) });
 
     const post = http.expectOne(LIST);
-    expect(post.request.body.photo).toBe('uploaded-photo');
-    expect(post.request.body.photo).not.toContain('http');
+    expect(post.request.body.photo).toEqual({ ar: 'uploaded-photo' });
     post.flush({
       data: testimonial(3, { photo: fileDto({ uuid: 'uploaded-photo' }) }),
     });
     await expect(result).resolves.toMatchObject({
       id: '3',
-      photo: expect.objectContaining({ uuid: 'uploaded-photo' }),
+      photo: { ar: expect.objectContaining({ uuid: 'uploaded-photo' }), en: null },
     });
   });
 
@@ -156,8 +156,8 @@ describe('ReviewsService', () => {
     const video = new File(['vid'], 'clip.mp4', { type: 'video/mp4' });
     const result = firstValueFrom(
       service.create(draft({ rating: 4 }), {
-        photo: { kind: 'omit' },
-        video: { kind: 'replace', file: video },
+        photo: emptyMediaDraft(),
+        video: { ar: { kind: 'replace', file: video }, en: { kind: 'omit' } },
       }),
     );
     const upload = http.expectOne(MEDIA);
@@ -175,7 +175,7 @@ describe('ReviewsService', () => {
     const post = http.expectOne(LIST);
     expect(post.request.body).toMatchObject({
       rating: 4,
-      video: 'uploaded-video',
+      video: { ar: 'uploaded-video' },
     });
     expect(post.request.body).not.toHaveProperty('photo');
     post.flush({
@@ -186,7 +186,7 @@ describe('ReviewsService', () => {
     });
     await expect(result).resolves.toMatchObject({
       id: '4',
-      video: expect.objectContaining({ uuid: 'uploaded-video' }),
+      video: { ar: expect.objectContaining({ uuid: 'uploaded-video' }), en: null },
     });
   });
 
@@ -204,18 +204,18 @@ describe('ReviewsService', () => {
     const video = new File(['vid'], 'new.mp4', { type: 'video/mp4' });
     const result = firstValueFrom(
       service.update('7', draft(), {
-        photo: { kind: 'clear' },
-        video: { kind: 'replace', file: video },
+        photo: { ar: { kind: 'clear' }, en: { kind: 'omit' } },
+        video: { ar: { kind: 'replace', file: video }, en: { kind: 'omit' } },
       }),
     );
     http.expectOne(MEDIA).flush({ data: fileDto({ uuid: 'vid-2' }) });
     const put = http.expectOne(`${LIST}/7`);
-    expect(put.request.body.photo).toBeNull();
-    expect(put.request.body.video).toBe('vid-2');
+    expect(put.request.body.photo).toEqual({ ar: null });
+    expect(put.request.body.video).toEqual({ ar: 'vid-2' });
     put.flush({ data: testimonial(7, { photo: null, video: fileDto({ uuid: 'vid-2' }) }) });
     await expect(result).resolves.toMatchObject({
-      photo: null,
-      video: expect.objectContaining({ uuid: 'vid-2' }),
+      photo: { ar: null, en: null },
+      video: { ar: expect.objectContaining({ uuid: 'vid-2' }), en: null },
     });
   });
 
@@ -261,8 +261,8 @@ describe('ReviewsService', () => {
     const image = new File(['img'], 'face.png', { type: 'image/png' });
     const result = firstValueFrom(
       service.create(draft(), {
-        photo: { kind: 'replace', file: image },
-        video: { kind: 'omit' },
+        photo: { ar: { kind: 'replace', file: image }, en: { kind: 'omit' } },
+        video: emptyMediaDraft(),
       }),
     ).catch((error: unknown) => error);
     http.expectOne(MEDIA).flush('fail', { status: 422, statusText: 'Unprocessable' });

@@ -34,7 +34,6 @@ export function projectSeoStepValid(project: Project): boolean {
   return projectSlugLocalesValid(project) && projectMetaKeywordsLocalesValid(project);
 }
 
-/** Locale to switch to when SEO leave/save is blocked; null when SEO is valid. */
 export function invalidSeoLocale(project: Project): AppLanguage | null {
   const { slug, keywords } = project.seo;
   if (!isValidProjectSlug(slug.ar)) {
@@ -52,10 +51,6 @@ export function invalidSeoLocale(project: Project): AppLanguage | null {
   return null;
 }
 
-/**
- * Whether the wizard may leave `currentStep` for `target`.
- * Projects only gate the SEO step (no identity workflow leave gate).
- */
 export function canLeaveProjectEditorStep(
   currentStep: number,
   target: number,

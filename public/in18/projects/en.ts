@@ -63,6 +63,7 @@ export const en = {
   'project.uploadHint': 'Click To Upload An Image Or Drag And Drop It Here',
   'project.uploadTypes': 'PNG,JPG. Maximum Size 5 MB',
   'project.uploadTooLarge': 'This Image Exceeds The 5 MB Limit.',
+  'project.uploadInvalidType': 'Only PNG Or JPG Images Are Supported.',
   'project.clearImage': 'Remove Image',
   'project.chooseLibrary': 'Choose From The Library',
   'project.pageReport': 'Showing {currentPage} Of {totalPages}',

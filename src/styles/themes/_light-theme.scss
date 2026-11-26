@@ -1,7 +1,6 @@
 @use 'abstracts/variables' as *;
 
 :root {
-  // Alias of the PrimeNG preset's brand colour (single source: core/theme/app-theme.ts).
   --app-primary: var(--p-primary-500);
   --app-primary-soft: #{$color-primary-soft};
   --app-primary-contrast: #ffffff;

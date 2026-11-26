@@ -89,7 +89,6 @@ export class UserEditorForm {
     return this.lang.lookup(key, this.locale()) ?? key;
   }
 
-  /** Show the current photo, or nothing. Does not mark the avatar for removal. */
   prepare(existing: { url: string; name: string } | null): void {
     this.revokeBlob();
     this.pendingFile.set(null);
@@ -99,7 +98,6 @@ export class UserEditorForm {
     );
   }
 
-  /** `undefined` keeps the photo, `null` removes it, a file replaces it. */
   avatarPayload(): File | null | undefined {
     const file = this.pendingFile();
     if (file) {

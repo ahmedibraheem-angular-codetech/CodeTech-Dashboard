@@ -23,7 +23,6 @@
   }
 }
 
-/* Detail header actions: keep translation strings, tighten chrome to Figma density. */
 .kb-detail .page-header__actions {
   flex-wrap: nowrap;
   gap: 8px;
@@ -89,7 +88,6 @@
   min-width: 0;
 }
 
-/* Detail cards: white shell + tiled fields (no gray inner wrapper). */
 .kb-detail .kb-card {
   gap: 14px;
 }
@@ -221,7 +219,6 @@
   }
 }
 
-// Same colours as the table badges: published → blue, draft → orange, unpublished → red.
 .kb-status {
   display: inline-flex;
   align-items: center;
@@ -310,7 +307,6 @@
     padding-inline-start: 1.2rem;
   }
 
-  /* Numbered stages: -01- style matching the Figma content block. */
   ol {
     margin: 0 0 24px;
     padding: 0;
@@ -401,7 +397,6 @@
     text-align: start;
   }
 
-  /* 1 tall + 2×2 grid gallery. */
   .kb-gallery {
     display: grid;
     grid-template-columns: 1.15fr 1fr;

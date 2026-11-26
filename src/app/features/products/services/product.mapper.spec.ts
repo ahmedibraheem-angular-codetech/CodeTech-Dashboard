@@ -252,8 +252,8 @@ describe('product.mapper', () => {
 
     expect(body.status).toBe('published');
     expect(body.title).toEqual({ ar: 'منتج', en: 'Product' });
-    expect(body.cover).toBe('cover-1');
-    expect(body.solution_image).toBe('sol-1');
+    expect(body.cover).toEqual({ ar: 'cover-1', en: null });
+    expect(body.solution_image).toEqual({ ar: 'sol-1', en: null });
     expect(body.features?.[0]).toEqual(expect.objectContaining({ id: 11, icon: 'feat-1' }));
     expect(body.advantages?.[0]).toEqual(expect.objectContaining({ icon: 'tool-1' }));
     expect(body.advantages?.[0]?.id).toBeUndefined();

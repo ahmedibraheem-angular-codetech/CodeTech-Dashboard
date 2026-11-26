@@ -1,4 +1,4 @@
-import { collectArticleValidationIssues } from './article-editor-validation';
+import { collectArticleValidationIssues, isValidArticleSlug } from './article-editor-validation';
 
 describe('article-editor-validation', () => {
   const empty = {
@@ -34,5 +34,14 @@ describe('article-editor-validation', () => {
     );
     expect(otherLocale.missing.has('titleEn')).toBe(true);
     expect(otherLocale.switchTo).toBe('en');
+  });
+
+  it('accepts empty and lowercase hyphenated slugs and rejects the rest', () => {
+    for (const ok of ['', '  ', 'qa-test', 'a1-b2-c3', 'plain']) {
+      expect(isValidArticleSlug(ok)).toBe(true);
+    }
+    for (const bad of ['QA Test', 'qa_test', 'سلاج', '-lead', 'trail-', 'a--b', 'qa test']) {
+      expect(isValidArticleSlug(bad)).toBe(false);
+    }
   });
 });

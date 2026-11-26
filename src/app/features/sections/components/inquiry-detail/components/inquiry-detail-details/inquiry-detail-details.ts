@@ -1,12 +1,11 @@
 import { ChangeDetectionStrategy, Component, computed, inject, input } from '@angular/core';
-import { Tooltip } from 'primeng/tooltip';
 
 import { LanguageService } from '../../../../../../core/services/language.service';
 import type { Inquiry } from '../../../../models/inquiry.model';
 
 @Component({
   selector: 'app-inquiry-detail-details',
-  imports: [Tooltip],
+  imports: [],
   templateUrl: './inquiry-detail-details.html',
   styles: `
     :host {
@@ -20,12 +19,9 @@ export class InquiryDetailDetails {
 
   readonly inquiry = input.required<Inquiry>();
 
-  readonly moreProducts = computed(() => {
-    const items = this.inquiry().products;
-    return items.length > 1 ? items.slice(1) : [];
+  /** Every related service/product, joined with the Arabic comma. */
+  readonly productsLabel = computed(() => {
+    const { products, product } = this.inquiry();
+    return (products.length ? products : product ? [product] : []).join('، ');
   });
-
-  readonly moreCount = computed(() => this.moreProducts().length);
-
-  readonly moreTooltip = computed(() => this.moreProducts().join('\n'));
 }

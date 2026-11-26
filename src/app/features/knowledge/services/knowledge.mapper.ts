@@ -1,3 +1,4 @@
+import { type LocalizedFileWriteDto, mapLocalizedMedia } from '../../../core/media/localized-media';
 import type { FileObject } from '../../../core/http/api.model';
 import type {
   ArticleCategoryDto,
@@ -95,12 +96,11 @@ function mapArticleBase(
   | 'featured'
   | 'readingMinutes'
   | 'thumbnail'
-  | 'thumbnailUrl'
   | 'publishedAt'
   | 'createdAt'
   | 'updatedAt'
 > {
-  const thumbnail = mapKnowledgeMedia(dto.thumbnail);
+  const thumbnail = mapLocalizedMedia(dto.thumbnail);
   return {
     id: String(dto.id),
     code: dto.code || String(dto.id).padStart(6, '0'),
@@ -115,7 +115,6 @@ function mapArticleBase(
     featured: !!dto.is_featured,
     readingMinutes: typeof dto.reading_time_minutes === 'number' ? dto.reading_time_minutes : 1,
     thumbnail,
-    thumbnailUrl: thumbnail?.url ?? '',
     publishedAt: dto.published_at ?? '',
     createdAt: dto.created_at,
     updatedAt: dto.updated_at,
@@ -129,10 +128,8 @@ export function mapArticleListItem(dto: ArticleListDto): Article {
     contentEn: '',
     authorNameAr: '',
     authorNameEn: '',
-    authorPhoto: null,
-    authorAvatarUrl: '',
-    cover: null,
-    coverUrl: '',
+    authorPhoto: { ar: null, en: null },
+    cover: { ar: null, en: null },
     coverTitleAr: '',
     coverTitleEn: '',
     coverAltAr: '',
@@ -152,8 +149,8 @@ export function mapArticleListItem(dto: ArticleListDto): Article {
 }
 
 export function mapArticleDetail(dto: ArticleDetailDto): Article {
-  const cover = mapKnowledgeMedia(dto.cover);
-  const authorPhoto = mapKnowledgeMedia(dto.author_photo);
+  const cover = mapLocalizedMedia(dto.cover);
+  const authorPhoto = mapLocalizedMedia(dto.author_photo);
   return {
     ...mapArticleBase(dto),
     contentAr: locale(dto.content, 'ar'),
@@ -161,9 +158,7 @@ export function mapArticleDetail(dto: ArticleDetailDto): Article {
     authorNameAr: locale(dto.author_name, 'ar'),
     authorNameEn: locale(dto.author_name, 'en'),
     authorPhoto,
-    authorAvatarUrl: authorPhoto?.url ?? '',
     cover,
-    coverUrl: cover?.url ?? '',
     coverTitleAr: locale(dto.cover_title, 'ar'),
     coverTitleEn: locale(dto.cover_title, 'en'),
     coverAltAr: locale(dto.cover_alt, 'ar'),
@@ -205,28 +200,24 @@ export function toArticleCategoryWrite(draft: ArticleCategoryDraft): ArticleCate
   };
 }
 
-function applyMediaIntent(
+function applyMedia(
   body: ArticleWriteDto,
   key: 'cover' | 'thumbnail' | 'author_photo',
-  intent: KnowledgeMediaIntent,
-  uuid: string | null | undefined,
+  value: LocalizedFileWriteDto | undefined,
 ): void {
-  if (intent.kind === 'omit') {
-    return;
-  }
-  if (intent.kind === 'clear') {
-    body[key] = null;
-    return;
-  }
-  if (typeof uuid === 'string' && uuid) {
-    body[key] = uuid;
+  if (value) {
+    body[key] = value;
   }
 }
 
 export function toArticleWrite(
   draft: ArticleDraft,
   media: ArticleMediaDraft,
-  resolved: { cover?: string | null; thumbnail?: string | null; authorPhoto?: string | null },
+  resolved: {
+    cover?: LocalizedFileWriteDto;
+    thumbnail?: LocalizedFileWriteDto;
+    authorPhoto?: LocalizedFileWriteDto;
+  },
 ): ArticleWriteDto {
   const body: ArticleWriteDto = {
     status: draft.status,
@@ -280,8 +271,8 @@ export function toArticleWrite(
     },
     published_at: draft.publishedAt.trim() || null,
   };
-  applyMediaIntent(body, 'cover', media.cover, resolved.cover);
-  applyMediaIntent(body, 'thumbnail', media.thumbnail, resolved.thumbnail);
-  applyMediaIntent(body, 'author_photo', media.authorPhoto, resolved.authorPhoto);
+  applyMedia(body, 'cover', resolved.cover);
+  applyMedia(body, 'thumbnail', resolved.thumbnail);
+  applyMedia(body, 'author_photo', resolved.authorPhoto);
   return body;
 }

@@ -1,4 +1,3 @@
-/** Barrel re-exports for product editor wizard steps. */
 export { FaqStep } from './faq-step';
 export { IdentityStep } from './identity-step';
 export { InfoStep } from './info-step';

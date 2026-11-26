@@ -1,3 +1,4 @@
+import { pickMedia } from '../../../../core/media/localized-media';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -167,12 +168,12 @@ export class ArticlesPanel {
               : byStatus.draft;
       const trend =
         def.metric === 'total'
-          ? (remote?.totalChangePct ?? 12.5)
+          ? (remote?.totalChangePct ?? undefined)
           : def.metric === 'published'
-            ? (remote?.publishedChangePct ?? 12.5)
+            ? (remote?.publishedChangePct ?? undefined)
             : def.metric === 'unpublished'
-              ? (remote?.unpublishedChangePct ?? 12.5)
-              : 12.5;
+              ? (remote?.unpublishedChangePct ?? undefined)
+              : undefined;
       return this.toStatCard(def, value, caption, trend);
     });
   });
@@ -254,7 +255,7 @@ export class ArticlesPanel {
         article: {
           title: articleTitle(item, locale),
           excerpt: articleExcerpt(item, locale),
-          thumbnailUrl: item.thumbnailUrl,
+          thumbnailUrl: pickMedia(item.thumbnail, locale)?.url ?? '',
           featured: item.featured,
         },
         category:
@@ -345,7 +346,7 @@ export class ArticlesPanel {
     def: ArticleStatDef,
     value: number,
     caption: string,
-    trend: number | null = 12.5,
+    trend?: number | null,
   ): StatisticsCard {
     return {
       id: def.id,
@@ -354,8 +355,8 @@ export class ArticlesPanel {
       icon: def.icon,
       iconColor: def.iconColor,
       iconBackground: def.iconBackground,
-      trend: trend ?? 12.5,
-      caption,
+      trend: trend ?? undefined,
+      caption: trend == null ? '' : caption,
     };
   }
 }

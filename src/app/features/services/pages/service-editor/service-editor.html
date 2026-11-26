@@ -1,5 +1,5 @@
 <app-editor-shell
-  [title]="lang.t(mode() === 'edit' ? 'service.edit' : 'service.add')"
+  [title]="copy(mode() === 'edit' ? 'service.edit' : 'service.add')"
   [mode]="mode()"
   [status]="status()"
   [saving]="saving()"

@@ -1,22 +1,7 @@
-import type { FileObject } from '../../../core/http/api.model';
+import { mapLocalizedMedia } from '../../../core/media/localized-media';
+import type { LocalizedFileWriteDto } from '../../../core/media/localized-media';
 import type { TestimonialDto, TestimonialWriteDto } from '../models/review.api';
-import type { Review, ReviewContentDraft, ReviewMediaFile } from '../models/review.model';
-
-export function mapReviewMedia(value: FileObject | null | undefined): ReviewMediaFile | null {
-  if (!value || typeof value !== 'object') {
-    return null;
-  }
-  if (typeof value.uuid !== 'string' || typeof value.url !== 'string') {
-    return null;
-  }
-  return {
-    uuid: value.uuid,
-    url: value.url,
-    name: value.name || value.file_name || 'file',
-    fileName: value.file_name || value.name || 'file',
-    size: typeof value.size === 'number' ? value.size : 0,
-  };
-}
+import type { Review, ReviewContentDraft } from '../models/review.model';
 
 export function mapTestimonial(dto: TestimonialDto): Review {
   return {
@@ -24,8 +9,8 @@ export function mapTestimonial(dto: TestimonialDto): Review {
     externalId: String(dto.id).padStart(6, '0'),
     rating: dto.rating,
     published: dto.is_published,
-    photo: mapReviewMedia(dto.photo),
-    video: mapReviewMedia(dto.video),
+    photo: mapLocalizedMedia(dto.photo),
+    video: mapLocalizedMedia(dto.video),
     createdAt: dto.created_at,
     sortOrder: dto.sort_order,
     texts: {
@@ -45,7 +30,7 @@ export function mapTestimonial(dto: TestimonialDto): Review {
 
 export function toTestimonialWrite(
   draft: ReviewContentDraft,
-  media: { photo?: string | null; video?: string | null },
+  media: { photo?: LocalizedFileWriteDto | null; video?: LocalizedFileWriteDto | null },
 ): TestimonialWriteDto {
   const jobAr = draft.texts.ar.role.trim();
   const jobEn = draft.texts.en.role.trim();

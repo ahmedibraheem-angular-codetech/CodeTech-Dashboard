@@ -2,7 +2,6 @@ import type { Observable } from 'rxjs';
 
 import type { Inquiry, InquiryStats } from '../models/inquiry.model';
 
-/** Shared inbox operations for inquiries and project-requests. */
 export interface ContactInboxApi {
   list(): Observable<Inquiry[]>;
   stats(): Observable<InquiryStats>;

@@ -16,11 +16,9 @@ export function localeText(ar = '', en = ''): LocaleText {
 export interface ServiceImage {
   imageName: string;
   imageUrl: string;
-  /** Media coat-check UUID when known from the API or a fresh upload. */
   imageUuid?: string | null;
 }
 
-/** Per-locale media slots used in the service editor (AR/EN tabs). */
 export type LocalizedMedia = Record<AppLanguage, ServiceImage>;
 
 export function emptyServiceImage(): ServiceImage {
@@ -31,9 +29,6 @@ export function emptyLocalizedMedia(): LocalizedMedia {
   return { ar: emptyServiceImage(), en: emptyServiceImage() };
 }
 
-/**
- * Active-locale media with Arabic fallback (matches website behavior when EN is empty).
- */
 export function readMedia(image: LocalizedMedia, language: AppLanguage): ServiceImage {
   const current = image[language];
   if (current.imageUrl) {
@@ -60,7 +55,6 @@ export interface ServicePoint {
   image: LocalizedMedia;
 }
 
-/** Sector media is bilingual on the API (`image.ar` / `image.en`). */
 export interface ServiceSector {
   id: string;
   image: LocalizedMedia;
@@ -72,7 +66,6 @@ export interface ServiceFaq {
   answer: LocaleText;
 }
 
-/** Project link returned on service detail (Projects module stays separate). */
 export interface ServiceLinkedProject {
   id: string;
   title: LocaleText;
@@ -86,9 +79,7 @@ export interface Service {
   id: string;
   code: string;
 
-  /** Local PrimeIcon class for the picker (not sent as media). */
   icon: string;
-  /** Display URL when the API icon is a media file. */
   iconUrl: string;
   iconUuid: string | null;
   published: boolean;

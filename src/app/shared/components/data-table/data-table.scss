@@ -141,8 +141,6 @@
   cursor: pointer;
 }
 
-// Every status shares one width so the column reads as a block. Override --dt-badge-width
-// on the table host when a feature has longer labels.
 .app-data-table .dt-badge {
   display: inline-flex;
   align-items: center;

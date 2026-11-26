@@ -14,7 +14,6 @@ export interface CatalogAction {
 export interface CatalogModule {
   key: string;
   label: string;
-  /** Action keys this module supports. Never inferred beyond the catalog. */
   actions: readonly string[];
 }
 
@@ -28,7 +27,6 @@ export interface PermissionRole {
   name: string;
   isProtected: boolean;
   usersCount: number;
-  /** Null on list rows until the detail request fills them. */
   permissions: readonly string[] | null;
 }
 
@@ -100,7 +98,6 @@ export function grantsFromPermissions(
   return grants;
 }
 
-/** Names the matrix can edit. Unsupported pairs are omitted, never invented. */
 export function permissionsFromGrants(
   catalog: PermissionCatalog,
   grants: PermissionGrants,
@@ -122,7 +119,6 @@ export function permissionsFromGrants(
   return [...names].sort();
 }
 
-/** Create-dialog module switch: every action that module supports, and no others. */
 export function permissionsFromModuleToggles(
   catalog: PermissionCatalog,
   toggles: Readonly<Record<string, boolean>>,

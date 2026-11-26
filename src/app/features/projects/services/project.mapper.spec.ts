@@ -189,7 +189,7 @@ describe('project.mapper', () => {
       results: [],
       identityButtons: [],
     });
-    expect(body.cover).toBeNull();
+    expect(body.cover).toEqual({ ar: null, en: null });
     expect(body.tags?.[0]).not.toHaveProperty('icon');
   });
 
@@ -197,5 +197,30 @@ describe('project.mapper', () => {
     expect(isUploadUrl('blob:https://local/x')).toBe(true);
     expect(isUploadUrl('https://cdn.test/x')).toBe(false);
     expect(isUploadUrl('icon:pi-star')).toBe(false);
+  });
+});
+
+describe('project.mapper per-language media', () => {
+  const f = (uuid: string) => ({
+    uuid,
+    name: uuid,
+    file_name: `${uuid}.png`,
+    mime_type: 'image/png',
+    size: 1,
+    url: `https://cdn.test/${uuid}.png`,
+  });
+
+  it('reads {ar,en} cover and gallery images apart and writes each language', () => {
+    const project = mapProjectDetail({
+      ...projectDetailDto(7),
+      cover: { ar: f('c-ar'), en: f('c-en') },
+      gallery: [{ id: 5, image: { ar: f('g-ar'), en: null } }],
+    } as never);
+    expect(project.cover.ar.imageUuid).toBe('c-ar');
+    expect(project.cover.en.imageUuid).toBe('c-en');
+    expect(project.gallery[0]?.image.en.imageUrl).toBe('');
+    const body = toProjectWrite(project);
+    expect(body.cover).toEqual({ ar: 'c-ar', en: 'c-en' });
+    expect(body.gallery?.[0]).toEqual({ id: 5, image: { ar: 'g-ar', en: null } });
   });
 });

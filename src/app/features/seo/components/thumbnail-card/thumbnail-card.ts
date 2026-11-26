@@ -32,6 +32,10 @@ export class ThumbnailCard {
   private readonly destroyRef = inject(DestroyRef);
   readonly lang = inject(LanguageService);
   readonly locale = signal<SeoLocale>('ar');
+
+  protected ct(key: string): string {
+    return this.lang.lookup(key, this.locale()) ?? this.lang.t(key);
+  }
   readonly errorKey = signal('');
   readonly form = inject(FormBuilder).nonNullable.group({
     thumbTitle: '',
@@ -107,7 +111,6 @@ export class ThumbnailCard {
       return;
     }
     this.errorKey.set('');
-    // Service owns blob lifecycle and mirrors the thumbnail across locales.
-    this.seo.setThumbnail(this.pageId(), file, URL.createObjectURL(file));
+    this.seo.setThumbnail(this.pageId(), this.locale(), file, URL.createObjectURL(file));
   }
 }

@@ -139,7 +139,6 @@
 
 .p-dialog.app-modal:has(.users-editor-form) .app-modal__icon {
   position: absolute;
-  // Figma: action icon on the start edge (right in RTL).
   inset-inline-start: 24px;
   inset-block-start: 50%;
   transform: translateY(-50%);
@@ -147,7 +146,6 @@
 
 .p-dialog.app-modal:has(.users-editor-form) .p-dialog-close-button {
   position: absolute;
-  // Figma: close on the end edge (left in RTL).
   inset-inline-end: 24px;
   inset-block-start: 50%;
   z-index: 1;
@@ -321,8 +319,6 @@
     inset-inline-end: 16px;
   }
 }
-
-// User detail page (`/users/:id`).
 
 .user-detail {
   width: 100%;

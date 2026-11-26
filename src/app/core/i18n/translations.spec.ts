@@ -6,7 +6,6 @@ import { TRANSLATIONS } from './translations';
 describe('translations', () => {
   it('keeps every key in Arabic and English', () => {
     const keys = Object.keys(TRANSLATIONS);
-    // Catalog grows with features; assert parity and content, not a brittle absolute count.
     expect(keys.length).toBeGreaterThanOrEqual(1147);
     for (const [key, value] of Object.entries(TRANSLATIONS)) {
       expect(value, key).toBeDefined();
@@ -18,7 +17,7 @@ describe('translations', () => {
     expect(TRANSLATIONS['app.name']?.en).toBeTruthy();
     expect(TRANSLATIONS['nav.home']?.ar).toBeTruthy();
     expect(TRANSLATIONS['nav.home']?.en).toBeTruthy();
-    expect(TRANSLATIONS['seo.title']).toEqual({ ar: 'إعدادات SEO', en: 'SEO settings' });
+    expect(TRANSLATIONS['seo.title']).toEqual({ ar: 'إعدادات SEO', en: 'SEO Settings' });
     expect(TRANSLATIONS['nav.seo']?.ar).toBe('إعدادات SEO');
   });
 

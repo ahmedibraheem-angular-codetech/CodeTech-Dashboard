@@ -41,8 +41,8 @@
   <app-button
     styleClass="auth-submit"
     type="submit"
-    icon="pi pi-angle-double-left"
-    iconPos="right"
+    [icon]="lang.language() === 'ar' ? 'pi pi-angle-double-left' : 'pi pi-angle-double-right'"
+    iconPos="end"
     size="large"
     [fluid]="true"
     [label]="lang.t(submitKey())"

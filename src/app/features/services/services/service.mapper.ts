@@ -39,6 +39,29 @@ function serverId(id: string): number | undefined {
   return /^\d+$/.test(id) ? Number(id) : undefined;
 }
 
+type LocalizedFileInput = { ar?: FileObject | null; en?: FileObject | null };
+
+/** A plain file counts as the Arabic file; {ar, en} keeps each language apart. */
+function localizedFiles(value: FileObject | LocalizedFileInput | null | undefined): {
+  ar: FileObject | null;
+  en: FileObject | null;
+} {
+  if (!value || typeof value !== 'object') {
+    return { ar: null, en: null };
+  }
+  if ('uuid' in value) {
+    return { ar: value, en: null };
+  }
+  return { ar: value.ar ?? null, en: value.en ?? null };
+}
+
+function mapLocalizedServiceMedia(
+  value: FileObject | LocalizedFileInput | null | undefined,
+): LocalizedMedia {
+  const files = localizedFiles(value);
+  return { ar: mapServiceMedia(files.ar), en: mapServiceMedia(files.en) };
+}
+
 export function mapServiceMedia(file: FileObject | null | undefined): ServiceImage {
   if (!file || typeof file.uuid !== 'string' || typeof file.url !== 'string') {
     return emptyServiceImage();
@@ -50,10 +73,6 @@ export function mapServiceMedia(file: FileObject | null | undefined): ServiceIma
   };
 }
 
-/**
- * Shared API file → editor slots. Only Arabic is seeded so the English tab
- * starts empty and can hold an independent preview while editing.
- */
 function sharedMedia(file: FileObject | null | undefined): LocalizedMedia {
   return { ar: mapServiceMedia(file), en: emptyServiceImage() };
 }
@@ -125,7 +144,9 @@ function mapCore(
   Service,
   'id' | 'code' | 'icon' | 'iconUrl' | 'iconUuid' | 'published' | 'name' | 'description'
 > {
-  const icon = mapServiceMedia(dto.icon);
+  const icon = mapServiceMedia(
+    localizedFiles(dto.icon as FileObject | LocalizedFileInput | null).ar,
+  );
   return {
     id: String(dto.id),
     code: dto.code || String(dto.id).padStart(5, '0'),
@@ -159,7 +180,7 @@ export function mapServiceDetail(dto: ServiceDetailDto): Service {
     ...mapCore(dto),
     whyImage: {
       title: locale(dto.why_image_text),
-      image: sharedMedia(dto.why_image),
+      image: mapLocalizedServiceMedia(dto.why_image),
     },
     whyItems: Array.isArray(dto.needs) ? dto.needs.map(mapWhyItem) : [],
     solutions: Array.isArray(dto.solutions) ? dto.solutions.map(mapPoint) : [],
@@ -177,12 +198,6 @@ function withOptionalId<T extends object>(id: string, body: T): T & { id?: numbe
   return numeric === undefined ? body : { ...body, id: numeric };
 }
 
-/**
- * Media write ticket after blobs have been uploaded onto the domain model:
- * - no url → null (clear) when `clear` else omit
- * - icon:pi-* → omit
- * - uuid present → send uuid
- */
 function ticket(image: ServiceImage, clearEmpty: boolean): string | null | undefined {
   const url = image.imageUrl ?? '';
   if (!url) {
@@ -197,7 +212,6 @@ function ticket(image: ServiceImage, clearEmpty: boolean): string | null | undef
   return undefined;
 }
 
-/** API still accepts one UUID for shared media — prefer Arabic, then English. */
 function sharedTicket(image: LocalizedMedia, clearEmpty: boolean): string | null | undefined {
   if (image.ar.imageUrl) {
     return ticket(image.ar, clearEmpty);
@@ -247,11 +261,18 @@ export function toServiceWrite(service: Service): ServiceWriteDto {
       !!service.iconUuid,
     ),
   );
-  applyTicket(
-    body as unknown as Record<string, unknown>,
-    'why_image',
-    sharedTicket(service.whyImage.image, true),
-  );
+  const whyAr = ticket(service.whyImage.image.ar, true);
+  const whyEn = ticket(service.whyImage.image.en, true);
+  const whyImage: { ar?: string | null; en?: string | null } = {};
+  if (whyAr !== undefined) {
+    whyImage.ar = whyAr;
+  }
+  if (whyEn !== undefined) {
+    whyImage.en = whyEn;
+  }
+  if (Object.keys(whyImage).length) {
+    body.why_image = whyImage;
+  }
 
   body.needs = service.whyItems
     .filter((item) => filledLocale(item.title) || hasMedia(item.image))

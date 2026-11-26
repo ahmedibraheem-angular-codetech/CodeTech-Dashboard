@@ -25,6 +25,16 @@ describe('LanguageService', () => {
     expect(primeng.translation.firstDayOfWeek).toBe(6);
   });
 
+  it('translates paginator accessible labels in Arabic and restores English', () => {
+    const { lang, primeng } = create();
+    expect(primeng.translation.aria?.nextPageLabel).toBe('الصفحة التالية');
+    expect(primeng.translation.aria?.prevPageLabel).toBe('الصفحة السابقة');
+    expect(primeng.translation.aria?.trueLabel).toBe('True');
+    lang.set('en');
+    expect(primeng.translation.aria?.nextPageLabel).toBe('Next Page');
+    expect(primeng.translation.aria?.close).toBe('Close');
+  });
+
   it('restores the English PrimeNG defaults when switching back', () => {
     const { lang, primeng } = create();
     lang.set('en');

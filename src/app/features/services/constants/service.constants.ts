@@ -1,8 +1,5 @@
-/** Shared Services feature constants (no behavior — values only). */
-
 export const SERVICE_FALLBACK_ICON = 'pi-cog';
 
-/** PrimeIcons class name used by the list/detail icon tile. */
 export const SERVICE_ICON_CLASS = /^pi-[a-z0-9-]+$/;
 
 export const SERVICE_UPLOAD_PREFIX = 'service';

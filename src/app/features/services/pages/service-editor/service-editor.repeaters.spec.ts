@@ -220,7 +220,7 @@ describe('ServiceEditor', () => {
       expect(editor.stageLabel(1)).toBe('الخطوة الثانية');
       expect(editor.stageLabel(10)).toBe('الخطوة 11');
       editor.useLocale('en');
-      expect(editor.stageLabel(0)).toBe('Step one');
+      expect(editor.stageLabel(0)).toBe('Step One');
     });
   });
 

@@ -24,11 +24,11 @@ const emptyHome: HomepageContent = {
   videoUrl: 'https://example.test/intro.mp4',
   about: {
     texts: { ar: { title: '', body: '', points: [] }, en: { title: '', body: '', points: [] } },
-    image: null,
+    image: { ar: null, en: null },
   },
   vision: {
     texts: { ar: { title: '', body: '', points: [] }, en: { title: '', body: '', points: [] } },
-    image: null,
+    image: { ar: null, en: null },
   },
 };
 

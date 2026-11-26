@@ -23,13 +23,6 @@ import {
 
 const PATH = 'admin/services';
 
-/**
- * Catalog services. List is a non-paginated array in website order.
- * Nested needs/solutions/stages/features/sectors/faqs are embedded on write;
- * FAQs are embedded (not referenced from Help Center).
- * Media uses coat-check UUIDs; omit keeps, null clears. PrimeIcon `icon:pi-*`
- * URLs are UI-only and are never sent as media tickets.
- */
 @Injectable({ providedIn: 'root' })
 export class ServicesService {
   private readonly http = inject(HttpClient);

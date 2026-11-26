@@ -192,10 +192,6 @@ export class AuthService {
     this.clearPending();
   }
 
-  /**
-   * Refresh the hydrated session from a full profile payload without changing the token.
-   * Lean storage stays limited to token/email/name/roleKey/remember.
-   */
   syncFromProfileEnvelope(envelope: ApiEnvelope<ProfileUserDto>): void {
     const session = this.session();
     if (!session) {

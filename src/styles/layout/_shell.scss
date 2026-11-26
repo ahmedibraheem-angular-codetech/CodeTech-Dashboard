@@ -1,22 +1,17 @@
-// App shell: white frame, main panel and content stack.
 @use 'abstracts/functions' as *;
 @use 'abstracts/mixins' as *;
 
-// White frame, 1440px wide on desktop. Narrower screens shrink it instead of scrolling.
 .shell {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
   width: 100%;
-  // max-width: 1440px;
   min-height: 100vh;
   margin-inline: auto;
   padding: 28px;
   background: var(--app-surface);
-  // border-radius: 40px;
 }
 
-// Grey panel beside the sidebar. It carries the padding and radius the content used to own.
 .shell__main {
   display: flex;
   flex-direction: column;
@@ -29,7 +24,6 @@
   border-radius: 28px;
 }
 
-// Holds the header card and the routed page, stacked with an 8px rhythm.
 .shell__content {
   display: flex;
   flex-direction: column;
@@ -39,7 +33,6 @@
   min-width: 0;
 }
 
-// Routed page host only (header/sidebar stay still). Clips the enter translate.
 .shell__page {
   display: flex;
   flex-direction: column;
@@ -72,7 +65,6 @@
   }
 }
 
-// The outlet element is an empty marker; hiding it keeps it from adding a flex gap.
 .shell__page > router-outlet {
   display: none;
 }

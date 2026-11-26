@@ -198,7 +198,6 @@ export interface ProjectListQuery {
   perPage?: number;
 }
 
-/** Projects marketing page (GET /admin/pages/projects). */
 export interface ProjectsPageSectionsDto {
   stats_visible: boolean;
   projects_visible: boolean;

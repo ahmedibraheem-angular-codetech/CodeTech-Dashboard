@@ -54,10 +54,6 @@ export function mapProductMedia(file: FileObject | null | undefined): ProductIma
   };
 }
 
-/**
- * Shared API file → editor slots. Only Arabic is seeded so the English tab
- * starts empty and can hold an independent preview while editing.
- */
 function sharedMedia(file: FileObject | null | undefined): LocalizedMedia {
   return { ar: mapProductMedia(file), en: emptyProductImage() };
 }
@@ -159,10 +155,10 @@ function mapCore(
     published: dto.status === 'published',
     name: locale(dto.title),
     summary: filled(summary) ? summary : description,
-    cover: sharedMedia(dto.cover),
+    cover: localizedMedia(dto.cover),
     coverTitle: localeText(),
     coverAlt: localeText(),
-    thumb: sharedMedia(dto.thumbnail),
+    thumb: localizedMedia(dto.thumbnail),
     thumbTitle: localeText(),
     thumbAlt: localeText(),
     features: (dto.features ?? []).map((item) => mapPoint(item, 'icon')),
@@ -191,10 +187,10 @@ export function mapProductDetail(dto: ProductDetailDto): Product {
     published: dto.status === 'published',
     name: locale(dto.title),
     summary: filled(summary) ? summary : description,
-    cover: sharedMedia(dto.cover),
+    cover: localizedMedia(dto.cover),
     coverTitle: locale(dto.cover_title),
     coverAlt: locale(dto.cover_alt),
-    thumb: sharedMedia(dto.thumbnail),
+    thumb: localizedMedia(dto.thumbnail),
     thumbTitle: locale(dto.thumbnail_title),
     thumbAlt: locale(dto.thumbnail_alt),
     features: (dto.features ?? []).map((item) => mapPoint(item, 'icon')),
@@ -205,7 +201,7 @@ export function mapProductDetail(dto: ProductDetailDto): Product {
       id: 'solution',
       title: locale(dto.solution_title),
       body: locale(dto.solution_description),
-      image: sharedMedia(dto.solution_image),
+      image: localizedMedia(dto.solution_image),
     },
     offer: (dto.offerings ?? []).map((item) => mapPoint(item, 'icon')),
     results: (dto.results ?? []).map((item) => mapPoint(item, 'icon')),
@@ -271,6 +267,19 @@ function blankNested(): Omit<
   };
 }
 
+type LocalizedFileInput = { ar?: FileObject | null; en?: FileObject | null };
+
+/** A plain file counts as the Arabic file; {ar, en} keeps each language apart. */
+function localizedMedia(value: FileObject | LocalizedFileInput | null | undefined): LocalizedMedia {
+  if (!value || typeof value !== 'object') {
+    return { ar: mapProductMedia(null), en: mapProductMedia(null) };
+  }
+  if ('uuid' in value) {
+    return { ar: mapProductMedia(value), en: mapProductMedia(null) };
+  }
+  return { ar: mapProductMedia(value.ar ?? null), en: mapProductMedia(value.en ?? null) };
+}
+
 function withOptionalId<T extends object>(id: string, body: T): T & { id?: number } {
   const numeric = serverId(id);
   return numeric === undefined ? body : { ...body, id: numeric };
@@ -290,7 +299,6 @@ function ticket(image: ProductImage, clearEmpty: boolean): string | null | undef
   return undefined;
 }
 
-/** API still accepts one UUID for shared media — prefer Arabic, then English. */
 function sharedTicket(image: LocalizedMedia, clearEmpty: boolean): string | null | undefined {
   if (image.ar.imageUrl) {
     return ticket(image.ar, clearEmpty);
@@ -301,10 +309,26 @@ function sharedTicket(image: LocalizedMedia, clearEmpty: boolean): string | null
   return clearEmpty ? null : undefined;
 }
 
+/** Per-language write value: a language left without a file is cleared with null. */
+function localizedTicket(
+  image: LocalizedMedia,
+): { ar?: string | null; en?: string | null } | undefined {
+  const ar = ticket(image.ar, true);
+  const en = ticket(image.en, true);
+  const out: { ar?: string | null; en?: string | null } = {};
+  if (ar !== undefined) {
+    out.ar = ar;
+  }
+  if (en !== undefined) {
+    out.en = en;
+  }
+  return Object.keys(out).length ? out : undefined;
+}
+
 function applyTicket(
   target: Record<string, unknown>,
   key: string,
-  value: string | null | undefined,
+  value: string | null | { ar?: string | null; en?: string | null } | undefined,
 ): void {
   if (value !== undefined) {
     target[key] = value;
@@ -360,20 +384,16 @@ export function toProductWrite(product: Product): ProductWriteDto {
   const slug = (product.seo.slug.en || product.seo.slug.ar).trim();
   body.slug = slug || null;
 
-  applyTicket(
-    body as unknown as Record<string, unknown>,
-    'cover',
-    sharedTicket(product.cover, true),
-  );
+  applyTicket(body as unknown as Record<string, unknown>, 'cover', localizedTicket(product.cover));
   applyTicket(
     body as unknown as Record<string, unknown>,
     'thumbnail',
-    sharedTicket(product.thumb, true),
+    localizedTicket(product.thumb),
   );
   applyTicket(
     body as unknown as Record<string, unknown>,
     'solution_image',
-    sharedTicket(product.solution.image, true),
+    localizedTicket(product.solution.image),
   );
 
   body.features = product.features

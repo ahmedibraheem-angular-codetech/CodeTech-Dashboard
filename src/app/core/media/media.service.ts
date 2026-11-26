@@ -10,13 +10,6 @@ export type MediaUploadType = 'image' | 'video';
 export type MediaUploadEvent =
   { type: 'progress'; progress: number } | { type: 'response'; file: FileObject };
 
-/**
- * Coat-check upload: POST /admin/media returns a uuid ticket used by form fields
- * within 24 hours. Omit the field to keep a file, send null to remove it.
- *
- * Rich-text images use {@link uploadEditorImage} (`POST /admin/editor-images`):
- * permanent files whose `url` goes into `<img src>` in HTML.
- */
 @Injectable({ providedIn: 'root' })
 export class MediaService {
   private readonly http = inject(HttpClient);
@@ -32,7 +25,6 @@ export class MediaService {
     );
   }
 
-  /** Multipart upload with {@link HttpEventType.UploadProgress} percent updates. */
   uploadWithProgress(type: MediaUploadType, file: File): Observable<MediaUploadEvent> {
     const body = new FormData();
     body.append('type', type);

@@ -322,7 +322,6 @@ export class SocialLinksPage {
       .subscribe({
         next: (updated) => this.upsertLocalChannel(updated),
         error: () => {
-          // Force card re-bind to previous enabled value.
           this.channels.set([...this.channels()]);
           this.messages.add({ severity: 'error', summary: this.lang.t('common.error') });
         },

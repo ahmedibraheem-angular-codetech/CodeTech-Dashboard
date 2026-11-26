@@ -9,7 +9,6 @@ export interface ProductEditorLoadState {
   status: 'ready';
 }
 
-/** Create-mode reset values applied when the editor is not in edit+id. */
 export function createModeEditorState(): ProductEditorLoadState {
   return {
     draft: blankProduct(),
@@ -20,7 +19,6 @@ export function createModeEditorState(): ProductEditorLoadState {
   };
 }
 
-/** Edit-mode success values after `ProductsService.get` returns a product. */
 export function editLoadSuccessState(product: Product): ProductEditorLoadState {
   return {
     draft: product,

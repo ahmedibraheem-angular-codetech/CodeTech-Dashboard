@@ -5,17 +5,14 @@ import {
 } from '../constants/project-limits';
 import type { LocaleText, Project } from '../models/project.model';
 
-/** True when either locale has non-whitespace text. */
 export function localeFilled(value: LocaleText): boolean {
   return !!(value.ar.trim() || value.en.trim());
 }
 
-/** Publish/create gate: both Arabic and English names required. */
 export function projectNamesValid(project: Project): boolean {
   return project.name.ar.trim().length > 0 && project.name.en.trim().length > 0;
 }
 
-/** True when empty/whitespace (optional) or the trimmed value matches `PROJECT_SLUG_PATTERN`. */
 export function isValidProjectSlug(value: string): boolean {
   const trimmed = value.trim();
   return trimmed.length === 0 || PROJECT_SLUG_PATTERN.test(trimmed);
@@ -25,7 +22,6 @@ export function isValidProjectSummary(value: string): boolean {
   return value.length <= PROJECT_SUMMARY_MAX;
 }
 
-/** Same split rules as `toProjectWrite` (`/[,،]/`, trim, drop empties). */
 export function splitProjectKeywords(value: string): string[] {
   return value
     .split(/[,،]/)

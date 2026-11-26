@@ -11,10 +11,6 @@ import { mapSiteSettings, resolveLogoUuid, toSiteSettingsWrite } from './site-se
 
 const PATH = 'admin/site-settings';
 
-/**
- * Singleton site details (description, contact, location, logo).
- * Logo uses coat-check media UUID: omit to keep, null to remove, UUID to replace.
- */
 @Injectable({ providedIn: 'root' })
 export class SiteSettingsService {
   private readonly http = inject(HttpClient);

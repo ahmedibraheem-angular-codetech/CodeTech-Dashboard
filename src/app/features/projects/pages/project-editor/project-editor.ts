@@ -172,21 +172,21 @@ export class ProjectEditor {
   readonly wizardSteps = computed(() =>
     this.steps.map((item) => ({
       id: item.id,
-      label: this.lang.t(item.labelKey),
+      label: this.copy(item.labelKey),
       labelKey: item.labelKey,
     })),
   );
   readonly shellLabels = computed<EditorShellLabels>(() => ({
-    saveDraft: this.lang.t('project.saveDraft'),
-    publish: this.lang.t('project.publish'),
-    unpublish: this.lang.t('project.unpublish'),
-    save: this.lang.t('common.save'),
-    next: this.lang.t('project.next'),
-    previous: this.lang.t('project.previous'),
-    finish: this.lang.t('project.finish'),
-    loading: this.lang.t('common.loading'),
-    missing: this.lang.t('project.notFound'),
-    error: this.lang.t('common.error'),
+    saveDraft: this.copy('project.saveDraft'),
+    publish: this.copy('project.publish'),
+    unpublish: this.copy('project.unpublish'),
+    save: this.copy('common.save'),
+    next: this.copy('project.next'),
+    previous: this.copy('project.previous'),
+    finish: this.copy('project.finish'),
+    loading: this.copy('common.loading'),
+    missing: this.copy('project.notFound'),
+    error: this.copy('common.error'),
   }));
   readonly lastStep = computed(() => this.step() === PROJECT_STEPS.length - 1);
 

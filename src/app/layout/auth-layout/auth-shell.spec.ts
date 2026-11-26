@@ -46,4 +46,16 @@ describe('AuthShell brand panel', () => {
     expect(shell?.getAttribute('dir')).toBe('ltr');
     expect(card?.getAttribute('dir')).toBe('ltr');
   });
+
+  it('offers a language switch inside the form panel for widths where the brand panel is hidden', () => {
+    const { fixture, root } = render();
+    const compact = root.querySelector<HTMLButtonElement>('.auth-panel .lang-pill--compact');
+    expect(compact).not.toBeNull();
+
+    compact?.click();
+    fixture.detectChanges();
+
+    expect(TestBed.inject(LanguageService).language()).toBe('en');
+    expect(compact?.textContent).toContain('English');
+  });
 });

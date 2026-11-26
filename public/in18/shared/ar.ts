@@ -9,6 +9,7 @@ export const ar: { [K in keyof typeof en]: string } = {
   'status.active': 'نشط',
   'status.suspended': 'موقوف',
   'common.loading': 'جار التحميل',
+  'common.pageReport': 'عرض {currentPage} من {totalPages}',
   'common.empty': 'لا توجد بيانات',
   'common.error': 'حدث خطأ',
   'common.offlineTitle': 'لا يوجد اتصال بالإنترنت',

@@ -5,7 +5,8 @@ describe('about.mapper', () => {
   it('maps the about page and partners into the UI model', () => {
     const content = mapAboutPage(ABOUT_PAGE_DTO, ABOUT_PARTNERS_DTO);
     expect(content.story.texts.ar[0].points).toEqual(['الجودة أولاً', 'فريق سعودي']);
-    expect(content.story.image?.uuid).toBe('about-image');
+    expect(content.story.image.ar?.uuid).toBe('about-image');
+    expect(content.story.image.en).toBeNull();
     expect(content.vision.texts.ar.find((g) => g.id === 'vision')?.highlight).toBe(
       'نحو مستقبل رقمي',
     );
@@ -24,10 +25,10 @@ describe('about.mapper', () => {
 
   it('builds story and vision write payloads with Arabic/English lists', () => {
     const content = mapAboutPage(ABOUT_PAGE_DTO, []);
-    const story = toStoryWrite(content.story, 'img-1');
+    const story = toStoryWrite(content.story, { en: 'img-1' });
     expect(story.philosophy_points?.ar).toContain('الجودة أولاً');
     expect(story.target_market_points?.en).toEqual(['Government entities']);
-    expect(story.image).toBe('img-1');
+    expect(story.image).toEqual({ en: 'img-1' });
 
     const keep = toStoryWrite(content.story, undefined);
     expect(keep).not.toHaveProperty('image');
@@ -39,10 +40,10 @@ describe('about.mapper', () => {
 
   it('builds CEO and bilingual team write payloads', () => {
     const content = mapAboutPage(ABOUT_PAGE_DTO, []);
-    const ceo = toCeoWrite(content.ceo, null);
+    const ceo = toCeoWrite(content.ceo, { ar: null });
     expect(ceo.name.ar).toBe('م. رامي حسن');
     expect(ceo.job_title?.en).toBe('Chief executive of CodeTech');
-    expect(ceo.image).toBeNull();
+    expect(ceo.image).toEqual({ ar: null });
 
     const team = toTeamWrite(content.team[0], 'photo-1');
     expect(team).toEqual({

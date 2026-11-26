@@ -129,7 +129,7 @@ describe('ServiceEditor', () => {
       }
       await settle(fixture);
       expect(root.querySelector('app-service-project-card')).toBeNull();
-      expect(root.textContent).toContain('No projects available to choose from.');
+      expect(root.textContent).toContain('No Projects Available To Choose From.');
     });
   });
 
@@ -138,10 +138,6 @@ describe('ServiceEditor', () => {
       ...seed('web-development'),
       projectIds: ['wasly', 'deleted-project'],
     });
-
-    // Empty/error/loading prune rules are covered by `service-editor-persist` /
-    // `service-editor-projects` and the earlier `related projects` describe
-    // (`drops references…`, `keeps every reference when the project list cannot be loaded`).
 
     it('recovers pruning after a retry succeeds', async () => {
       let attempts = 0;

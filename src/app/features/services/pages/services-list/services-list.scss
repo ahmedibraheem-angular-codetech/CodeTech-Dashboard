@@ -1,10 +1,7 @@
-// Services list. Encapsulation is off so the page-header and PrimeNG button overrides apply;
-// every selector is namespaced under `.services-board` or `.services-*`.
 app-services-page {
   display: block;
 }
 
-// Header card: the add button is vertically centred against the title block.
 .services-board app-page-header .page-header {
   min-height: 0;
   align-items: center;
@@ -42,7 +39,6 @@ app-services-page {
   width: 100%;
 }
 
-// Soft bordered tray the white cards sit on, as in the design.
 .services-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));

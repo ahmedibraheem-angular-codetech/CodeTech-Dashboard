@@ -1,7 +1,5 @@
 import type { FileObject } from '../../../core/http/api.model';
 
-/** Wire DTOs for `/admin/site-settings` (OpenAPI Settings › site details). */
-
 export interface SiteLocaleDto {
   ar: string | null;
   en: string | null;
@@ -25,12 +23,6 @@ export interface SiteSettingsDto {
   updated_at: string | null;
 }
 
-/**
- * PUT body. `logo` is the media UUID:
- * - omit → keep current logo
- * - `null` → remove logo
- * - string UUID → replace
- */
 export interface SiteSettingsWriteDto {
   site_description?: SiteLocaleDto | null;
   company_name?: SiteLocaleDto | null;

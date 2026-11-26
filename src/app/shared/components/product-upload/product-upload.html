@@ -1,6 +1,5 @@
 @if (actions()) {
   <div class="uploader__actions" role="tablist">
-    <!-- Upload first so it sits on the inline-start edge in RTL (Figma). -->
     <button
       type="button"
       class="uploader__action"
@@ -74,6 +73,9 @@
       <small>{{ name() || copy('uploadTypes') }}</small>
       @if (sizeError()) {
         <small class="uploader__error">{{ copy('uploadTooLarge') }}</small>
+      }
+      @if (typeError()) {
+        <small class="uploader__error">{{ copy('uploadInvalidType') }}</small>
       }
       <input #file type="file" accept="image/png,image/jpeg" (change)="choose($event)" />
     </label>

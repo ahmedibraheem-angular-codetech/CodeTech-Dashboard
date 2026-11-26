@@ -422,7 +422,7 @@ describe('ProjectsList (HTTP)', () => {
     lang.set('en');
     fixture.detectChanges();
     expect(root.textContent).toContain('Waslny');
-    expect(root.textContent).toContain('Manage projects');
+    expect(root.textContent).toContain('Manage Projects');
     lang.set('ar');
   });
 });

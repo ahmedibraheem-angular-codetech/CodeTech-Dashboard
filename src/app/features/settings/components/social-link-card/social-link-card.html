@@ -10,7 +10,6 @@
     }
   </header>
 
-  <!-- URL bar is LTR: external (left) → text → copy (right) = matches RTL visual. -->
   <div class="social-card__field" dir="ltr">
     <button
       type="button"
@@ -20,10 +19,6 @@
     >
       <i class="pi pi-external-link" aria-hidden="true"></i>
     </button>
-    <!--
-      Readonly but focusable (no tabindex=-1) so keyboard users can select/copy the URL.
-      Opening and clipboard copy remain available via the labeled icon buttons.
-    -->
     <input
       class="social-card__input"
       type="text"

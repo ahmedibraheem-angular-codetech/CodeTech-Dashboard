@@ -54,7 +54,6 @@ describe('PermissionsPage', () => {
       ],
     });
     fixture.detectChanges();
-    // Prefers the first editable (non-protected) role.
     http.expectOne(`${base}/admin/roles/2`).flush({
       data: {
         id: 2,

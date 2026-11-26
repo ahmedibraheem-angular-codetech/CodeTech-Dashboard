@@ -1,7 +1,3 @@
-/**
- * jsdom often omits matchMedia or ships a MediaQueryList without
- * addEventListener/removeEventListener. LayoutService and others need both.
- */
 function createMediaQueryList(query: string): MediaQueryList {
   const listeners = new Set<(event: MediaQueryListEvent) => void>();
 

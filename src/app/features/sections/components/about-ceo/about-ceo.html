@@ -67,10 +67,12 @@
 
 <app-modal
   [(visible)]="editorOpen"
-  [title]="lang.t('about.ceo')"
+  [title]="ct('about.ceo')"
   icon="pi pi-user"
   [saving]="saving()"
   [saveDisabled]="form.controls.ar.invalid"
+  [saveLabel]="ct('common.saveChanges')"
+  [cancelLabel]="ct('common.cancel')"
   (save)="save()"
 >
   <div class="block-form">
@@ -132,7 +134,7 @@
       }
     }
     <div class="field">
-      <span class="field__label" id="ceo-image-label">{{ lang.t('home.image') }}</span>
+      <span class="field__label" id="ceo-image-label">{{ ct('home.image') }}</span>
       <label class="image-drop" (dragover)="$event.preventDefault()" (drop)="onDrop($event)">
         <input
           type="file"
@@ -142,11 +144,11 @@
           (change)="onPick($event)"
         />
         <span class="image-drop__icon"><i class="pi pi-download" aria-hidden="true"></i></span>
-        <strong>{{ lang.t('home.imageUpload') }}</strong>
-        <small>{{ lang.t('home.imageHint') }}</small>
+        <strong>{{ ct('home.imageUpload') }}</strong>
+        <small>{{ ct('home.imageHint') }}</small>
       </label>
       @if (imageError()) {
-        <p class="field__error" role="alert">{{ lang.t(imageError()) }}</p>
+        <p class="field__error" role="alert">{{ ct(imageError()) }}</p>
       }
       @if (image(); as file) {
         <div class="image-file">
@@ -162,7 +164,7 @@
             styleClass="block-form__delete"
             icon="pi pi-trash"
             size="small"
-            [ariaLabel]="lang.t('home.deleteImage')"
+            [ariaLabel]="ct('home.deleteImage')"
             (clicked)="removeImage()"
           />
         </div>

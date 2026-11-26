@@ -24,9 +24,7 @@ export function toUiProjectRequestStatus(status: ProjectRequestApiStatus): Inqui
 }
 
 function serviceLabels(dto: ProjectRequestListDto): string[] {
-  const fromList = (dto.services ?? [])
-    .map((item) => item.name?.trim() ?? '')
-    .filter(Boolean);
+  const fromList = (dto.services ?? []).map((item) => item.name?.trim() ?? '').filter(Boolean);
   if (fromList.length) {
     const seen = new Set<string>();
     return fromList.filter((label) => {
@@ -83,7 +81,6 @@ function mapCore(
     org: dto.organization,
     phone: dto.phone,
     email: dto.email ?? '',
-    /** Shared inbox UI field — filled from `services[]` / `service.name`. */
     product: products[0] ?? '',
     products,
     status: toUiProjectRequestStatus(dto.status),
@@ -93,7 +90,6 @@ function mapCore(
   };
 }
 
-/** List rows have no nested notes/replies/timeline. */
 export function mapProjectRequestListItem(dto: ProjectRequestListDto): Inquiry {
   return {
     ...mapCore(dto),

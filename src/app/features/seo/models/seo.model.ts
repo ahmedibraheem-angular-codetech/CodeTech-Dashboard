@@ -12,7 +12,6 @@ export interface SeoPageDef {
 
 export interface SeoContent {
   metaTitle: string;
-  /** Shared across locales in the UI; API stores a single slug. */
   slug: string;
 
   keywords: string;
@@ -23,17 +22,13 @@ export interface SeoContent {
   thumbUrl: string;
 }
 
-/**
- * In-editor page draft. Thumbnail is one file for both languages
- * (coat-check: File on replace, uuid for display, omit/null on write).
- */
 export interface SeoPageDraft {
   ar: SeoContent;
   en: SeoContent;
 
-  thumbUuid: string | null;
+  thumbUuid: Record<SeoLocale, string | null>;
 
-  thumbFile: File | null;
+  thumbFile: Record<SeoLocale, File | null>;
 }
 
 export type SeoLocale = AppLanguage;
@@ -89,8 +84,8 @@ export function emptyDraft(): SeoPageDraft {
   return {
     ar: emptyContent(),
     en: emptyContent(),
-    thumbUuid: null,
-    thumbFile: null,
+    thumbUuid: { ar: null, en: null },
+    thumbFile: { ar: null, en: null },
   };
 }
 

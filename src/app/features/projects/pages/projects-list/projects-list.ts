@@ -58,7 +58,6 @@ export class ProjectsList {
   readonly status = signal<LoadState>('loading');
   readonly first = signal(0);
   readonly rows = signal(10);
-  /** Bumps on every load so a slower, older response cannot overwrite a newer one. */
   private loadSeq = 0;
 
   constructor() {

@@ -41,7 +41,6 @@ describe('Services routes', () => {
   const servicesRoute = findRoute(routes, 'services');
 
   beforeEach(() => {
-    // PrimeNG components in the lazy pages use ResizeObserver; jsdom does not provide it.
     globalThis.ResizeObserver ??= class {
       observe(): void {}
       unobserve(): void {}

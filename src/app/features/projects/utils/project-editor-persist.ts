@@ -27,7 +27,6 @@ export function projectSummaryLocalesValid(project: Project): boolean {
   return isValidProjectSummary(summary.ar) && isValidProjectSummary(summary.en);
 }
 
-/** Locale to switch to when summary validation fails; undefined when both locales are valid. */
 export function invalidSummaryLocale(project: Project): AppLanguage | undefined {
   const { summary } = project;
   if (!isValidProjectSummary(summary.ar)) {
@@ -39,10 +38,6 @@ export function invalidSummaryLocale(project: Project): AppLanguage | undefined 
   return undefined;
 }
 
-/**
- * Pre-save gate evaluation in the same order as the previous private `persist` method.
- * HTTP, toasts, ObjectUrls, and signal writes stay in the component.
- */
 export function evaluateProjectPersist(
   draft: Project,
   published: boolean,

@@ -1,4 +1,3 @@
-/** Barrel re-exports for project editor wizard steps. */
 export { InfoStep } from './info-step';
 export { ChallengesStep } from './challenges-step';
 export { FeaturesStep } from './features-step';

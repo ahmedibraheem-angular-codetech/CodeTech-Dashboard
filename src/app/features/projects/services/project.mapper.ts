@@ -50,12 +50,21 @@ export function mapProjectMedia(file: FileObject | null | undefined): ProjectIma
   };
 }
 
-/**
- * Shared API file → editor slots. Only Arabic is seeded so the English tab
- * starts empty and can hold an independent preview while editing.
- */
 function sharedMedia(file: FileObject | null | undefined): LocalizedMedia {
   return { ar: mapProjectMedia(file), en: emptyProjectImage() };
+}
+
+type LocalizedFileInput = { ar?: FileObject | null; en?: FileObject | null };
+
+/** A plain file counts as the Arabic file; {ar, en} keeps each language apart. */
+function localizedMedia(value: FileObject | LocalizedFileInput | null | undefined): LocalizedMedia {
+  if (!value || typeof value !== 'object') {
+    return { ar: mapProjectMedia(null), en: mapProjectMedia(null) };
+  }
+  if ('uuid' in value) {
+    return { ar: mapProjectMedia(value), en: mapProjectMedia(null) };
+  }
+  return { ar: mapProjectMedia(value.ar ?? null), en: mapProjectMedia(value.en ?? null) };
 }
 
 function mapPoint(
@@ -76,7 +85,17 @@ function mapPoint(
   };
 }
 
-function mapGallery(dto: { id: number; image: FileObject | null }): ProjectGalleryImage {
+function mapGallery(dto: {
+  id: number;
+  image: FileObject | LocalizedFileInput | null;
+}): ProjectGalleryImage {
+  return {
+    id: String(dto.id),
+    image: localizedMedia(dto.image),
+  };
+}
+
+function mapIdentityImage(dto: { id: number; image: FileObject | null }): ProjectGalleryImage {
   return {
     id: String(dto.id),
     image: sharedMedia(dto.image),
@@ -96,7 +115,7 @@ function mapIdentity(dto: ProjectDetailDto['identity_items'][number]): ProjectId
     id: String(dto.id),
     title: locale(dto.title),
     body: locale(dto.short_description),
-    images: padIdentityImages((dto.images ?? []).map(mapGallery)),
+    images: padIdentityImages((dto.images ?? []).map(mapIdentityImage)),
   };
 }
 
@@ -149,10 +168,10 @@ function mapCore(
     published: dto.status === 'published',
     name: locale(dto.title),
     summary: locale(dto.description),
-    cover: sharedMedia(dto.cover),
+    cover: localizedMedia(dto.cover),
     coverTitle: localeText(),
     coverAlt: localeText(),
-    thumb: sharedMedia(dto.thumbnail),
+    thumb: localizedMedia(dto.thumbnail),
     thumbTitle: localeText(),
     thumbAlt: localeText(),
     categories: (dto.tags ?? []).map((item) => mapPoint(item, 'icon')),
@@ -205,10 +224,10 @@ export function mapProjectDetail(dto: ProjectDetailDto): Project {
     published: dto.status === 'published',
     name: locale(dto.title),
     summary: locale(dto.description),
-    cover: sharedMedia(dto.cover),
+    cover: localizedMedia(dto.cover),
     coverTitle: locale(dto.cover_title),
     coverAlt: locale(dto.cover_alt),
-    thumb: sharedMedia(dto.thumbnail),
+    thumb: localizedMedia(dto.thumbnail),
     thumbTitle: locale(dto.thumbnail_title),
     thumbAlt: locale(dto.thumbnail_alt),
     categories: (dto.tags ?? []).map((item) => mapPoint(item, 'icon')),
@@ -225,7 +244,7 @@ export function mapProjectDetail(dto: ProjectDetailDto): Project {
       id: 'solutions-image',
       title: locale(dto.solutions_image_title),
       body: locale(dto.solutions_image_alt),
-      image: sharedMedia(dto.solutions_image),
+      image: localizedMedia(dto.solutions_image),
     },
     gallery: (dto.gallery ?? []).map(mapGallery),
     features: (dto.features ?? []).map((item) => mapPoint(item, 'image')),
@@ -253,12 +272,6 @@ function withOptionalId<T extends object>(id: string, body: T): T & { id?: numbe
   return numeric === undefined ? body : { ...body, id: numeric };
 }
 
-/**
- * Media write ticket after blobs have been uploaded onto the domain model:
- * - no url → null (clear) when `clearEmpty` else omit
- * - icon:pi-* → omit
- * - uuid present → send uuid
- */
 function ticket(
   image: { imageUrl?: string; imageUuid?: string | null },
   clearEmpty: boolean,
@@ -276,7 +289,6 @@ function ticket(
   return undefined;
 }
 
-/** API still accepts one UUID for shared media — prefer Arabic, then English. */
 function sharedTicket(image: LocalizedMedia, clearEmpty: boolean): string | null | undefined {
   if (image.ar.imageUrl) {
     return ticket(image.ar, clearEmpty);
@@ -287,10 +299,26 @@ function sharedTicket(image: LocalizedMedia, clearEmpty: boolean): string | null
   return clearEmpty ? null : undefined;
 }
 
+/** Per-language write value: a language left without a file is cleared with null. */
+function localizedTicket(
+  image: LocalizedMedia,
+): { ar?: string | null; en?: string | null } | undefined {
+  const ar = ticket(image.ar, true);
+  const en = ticket(image.en, true);
+  const out: { ar?: string | null; en?: string | null } = {};
+  if (ar !== undefined) {
+    out.ar = ar;
+  }
+  if (en !== undefined) {
+    out.en = en;
+  }
+  return Object.keys(out).length ? out : undefined;
+}
+
 function applyTicket(
   target: Record<string, unknown>,
   key: string,
-  value: string | null | undefined,
+  value: string | null | { ar?: string | null; en?: string | null } | undefined,
 ): void {
   if (value !== undefined) {
     target[key] = value;
@@ -341,20 +369,16 @@ export function toProjectWrite(project: Project): ProjectWriteDto {
   const slug = (project.seo.slug.en || project.seo.slug.ar).trim();
   body.slug = slug || null;
 
-  applyTicket(
-    body as unknown as Record<string, unknown>,
-    'cover',
-    sharedTicket(project.cover, true),
-  );
+  applyTicket(body as unknown as Record<string, unknown>, 'cover', localizedTicket(project.cover));
   applyTicket(
     body as unknown as Record<string, unknown>,
     'thumbnail',
-    sharedTicket(project.thumb, true),
+    localizedTicket(project.thumb),
   );
   applyTicket(
     body as unknown as Record<string, unknown>,
     'solutions_image',
-    sharedTicket(project.solutionsImage.image, true),
+    localizedTicket(project.solutionsImage.image),
   );
 
   body.tags = project.categories
@@ -402,11 +426,7 @@ export function toProjectWrite(project: Project): ProjectWriteDto {
     .filter((item) => hasMedia(item.image))
     .map((item): ProjectGalleryWriteDto => {
       const row: ProjectGalleryWriteDto = withOptionalId(item.id, {});
-      applyTicket(
-        row as unknown as Record<string, unknown>,
-        'image',
-        sharedTicket(item.image, true),
-      );
+      applyTicket(row as unknown as Record<string, unknown>, 'image', localizedTicket(item.image));
       return row;
     });
 

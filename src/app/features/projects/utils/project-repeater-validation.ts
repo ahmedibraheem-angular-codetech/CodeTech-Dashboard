@@ -11,7 +11,6 @@ function arFilled(value: LocaleText): boolean {
   return value.ar.trim().length > 0;
 }
 
-/** Server-persisted nested row ids are numeric strings. Client placeholders are not. */
 export function isServerItemId(id: string): boolean {
   return /^\d+$/.test(id);
 }
@@ -32,7 +31,6 @@ function hasMedia(image: LocalizedMedia): boolean {
   return slotHasMedia(image.ar) || slotHasMedia(image.en);
 }
 
-/** Matches `toProjectWrite` inclusion for point-like rows. */
 export function pointHasContent(item: ProjectPoint): boolean {
   return localeFilled(item.title) || localeFilled(item.body) || hasMedia(item.image);
 }
@@ -64,7 +62,6 @@ function identityHasContent(item: ProjectIdentityButton): boolean {
   );
 }
 
-/** Backend requires Arabic title + short_description when the identity row is sent. */
 function newIdentityNeedsArTitleBody(item: ProjectIdentityButton): boolean {
   return isNewRepeaterItem(item.id) && identityHasContent(item);
 }
@@ -91,10 +88,6 @@ export interface ProjectRepeaterIssue {
   preferAr: boolean;
 }
 
-/**
- * First failing repeater rule, in wizard order:
- * about(0) → challenges(1) → solutions(2) → features(3) → results(4) → identity(5).
- */
 export function firstRepeaterValidationIssue(project: Project): ProjectRepeaterIssue | null {
   if (
     project.categories.some((item) => !isNewPointTitleBodyValid(item)) ||

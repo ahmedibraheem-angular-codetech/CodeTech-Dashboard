@@ -1,5 +1,3 @@
-// Auth screens: split layout, brand panel, form card, OTP helpers.
-
 .auth-shell {
   display: grid;
   box-sizing: border-box;
@@ -12,10 +10,6 @@
   background: #fff;
 }
 
-// Fluid layout: the design sizes (brand 810×870, panel 586×806, gap/padding 52)
-// are the upper bounds of the clamps below, the columns keep the 810:586 ratio
-// and both cards stretch to the full height of the viewport.
-// Direction comes from `[dir]` on `.auth-shell` so brand/panel swap with the language.
 .auth-frame {
   display: grid;
   grid-template-columns: minmax(0, 810fr) minmax(0, 586fr);
@@ -36,7 +30,6 @@
   border-radius: clamp(20px, 2.2vw, 32px);
 }
 
-// Named view-transition targets — swapped sides animate when language toggles.
 .auth-brand {
   view-transition-name: auth-brand;
 }
@@ -64,19 +57,17 @@
 
 .auth-brand {
   gap: 10px;
-  // Logical padding so insets stay correct after the brand/panel side swap.
   padding-block: clamp(20px, 2.4vw, 35px) clamp(20px, 2.2vw, 32px);
   padding-inline: clamp(20px, 2.4vw, 35px) clamp(8px, 0.85vw, 12px);
 }
 
 .auth-panel {
+  position: relative;
   display: flex;
   flex-direction: column;
-  // Center the form so left/right inset matches Figma’s equal 52px padding.
   align-items: center;
   justify-content: center;
   gap: clamp(24px, 3.6vw, 52px);
-  // Figma: 52px top / right / bottom / left — clamp only shrinks on small viewports.
   padding: clamp(24px, 3.6vw, 52px);
   overflow-y: auto;
   border: 1px solid #e3e8f2;
@@ -85,7 +76,6 @@
 
 .auth-card,
 .auth-card form {
-  // 586 panel − 52×2 padding = 482 content width at the design size.
   width: min(482px, 100%);
   display: flex;
   flex-direction: column;
@@ -101,7 +91,6 @@
   text-align: start;
 }
 
-// Forgot / reset / verify: Figma uses a wider vertical rhythm than the login form.
 .auth-card .forgot-form,
 .auth-card .reset-form,
 .auth-card .verify-form {
@@ -115,10 +104,9 @@
 .auth-card .reset-form h1,
 .auth-card .verify-form h1 {
   margin: 12px 0 0;
-  text-align: right;
+  text-align: start;
 }
 
-// Figma "هل نسيت كلمة المرور؟": Milan Display Black → Thmanyah Sans 900 (no Milan files in repo).
 .auth-card .forgot-form h1 {
   color: #002951;
   font-family: var(--app-font);
@@ -126,11 +114,9 @@
   font-size: 30px;
   line-height: 150%;
   letter-spacing: 0;
-  text-align: right;
+  text-align: start;
 }
 
-// The auth panel is designed to spec, so its fields use fixed design tokens instead of the
-// shared ones.
 .auth-card {
   --p-inputtext-background: #fff;
   --p-inputtext-color: #16324f;
@@ -142,7 +128,6 @@
   --p-inputtext-focus-ring-shadow: 0 0 0 3px rgb(28 129 211 / 25%);
   --p-inputtext-padding-x: 20px;
   --p-inputtext-padding-y: 12px;
-  // Also drives the icon offset and the icon-field padding.
   --p-form-field-padding-x: 20px;
   --p-inputtext-placeholder-color: #94a3b8;
   --p-iconfield-icon-color: #94a3b8;
@@ -155,19 +140,14 @@
   --p-toggleswitch-checked-hover-background: #7fb4f5;
 }
 
-// Auth fields: 482 × 56 at full size (the card is 482 wide), 20px radius, 12px / 20px padding.
-// Scoped to icon fields so the OTP boxes keep their own size.
 .auth-card .p-iconfield .p-inputtext {
   height: 56px;
 }
 
-// Cancels PrimeNG's `.p-iconfield .p-inputtext:not(:last-child)` end padding (icon room), so the
-// inline-end padding stays the spec's 20px. Same selector plus `.auth-card` to win on specificity.
 .auth-card .p-iconfield .p-inputtext:not(:last-child) {
   padding-inline-end: var(--p-inputtext-padding-x);
 }
 
-// Arabic inputs: typing from the left (same for email + password); icons on the right.
 .auth-card[dir='rtl'] .p-iconfield .p-inputtext,
 .auth-card[dir='rtl'] .p-inputtext {
   direction: ltr;
@@ -175,7 +155,6 @@
   unicode-bidi: plaintext;
 }
 
-// Placeholder on the right only while empty and unfocused — focus keeps caret on the left.
 .auth-card[dir='rtl'] .p-inputtext:placeholder-shown:not(:focus) {
   direction: rtl;
   text-align: right;
@@ -193,11 +172,25 @@
   unicode-bidi: plaintext;
 }
 
-// Drop the placeholder as soon as the user focuses or types.
 .auth-card .p-inputtext:focus::placeholder,
 .auth-card .p-inputtext:not(:placeholder-shown)::placeholder {
   color: transparent;
   opacity: 0;
+}
+
+// OTP boxes: the direction-based text-align rules above (focus/placeholder states, both RTL and
+// LTR) would push the typed digit to the left. Keep the code centred in every state and language.
+.auth-card[dir='rtl'] .p-inputotp .p-inputtext,
+.auth-card[dir='rtl'] .p-inputotp .p-inputtext:focus,
+.auth-card[dir='rtl'] .p-inputotp .p-inputtext:not(:placeholder-shown),
+.auth-card[dir='rtl'] .p-inputotp .p-inputtext:placeholder-shown:not(:focus),
+.auth-card[dir='ltr'] .p-inputotp .p-inputtext,
+.auth-card[dir='ltr'] .p-inputotp .p-inputtext:focus,
+.auth-card[dir='ltr'] .p-inputotp .p-inputtext:not(:placeholder-shown),
+.auth-card[dir='ltr'] .p-inputotp .p-inputtext:placeholder-shown:not(:focus) {
+  direction: ltr;
+  text-align: center;
+  unicode-bidi: normal;
 }
 
 .auth-card[dir='ltr'] .p-iconfield .p-inputtext,
@@ -211,8 +204,6 @@
   text-align: left;
 }
 
-// Icons on the physical right. Use physical inset/padding — inputs are direction:ltr,
-// so padding-inline-* / inset-inline-* resolve against LTR and break the caret/icons.
 .auth-card[dir='rtl'] .p-iconfield {
   position: relative;
   overflow: visible;
@@ -228,13 +219,9 @@
 
 .auth-card[dir='rtl'] .p-iconfield .p-inputtext:not(:last-child) {
   padding-left: var(--p-inputtext-padding-x, 20px);
-  // Extra room on the right so placeholder/text clear the trailing icon (envelope / eye).
   padding-right: 44px;
 }
 
-// Pin the eye toggle inside the field on the physical right.
-// Base `.field__toggle { inset-inline-end }` resolves to the LEFT in RTL and can leave
-// the control outside the input — reset all insets, then set physical `right` only.
 .auth-card[dir='rtl'] .p-iconfield .field__toggle,
 .auth-card[dir='rtl'] .p-iconfield app-button.field__toggle,
 .auth-card form[dir='rtl'] .p-iconfield .field__toggle,
@@ -272,9 +259,6 @@
   text-align: left;
 }
 
-// Brand panel, matched to the design: the dark-blue streaked artwork (a diagonal gradient plus a
-// bottom shade, the design's image with its 20% navy overlay already blended in), the language
-// pill, the logo and the translucent mark flush with the bottom edge.
 .auth-brand {
   position: relative;
   display: flex;
@@ -313,7 +297,6 @@
   align-items: center;
 }
 
-// The logo sits further in from the edge than the pill does, as in the design.
 .auth-brand__top app-brand-logo {
   display: flex;
 }
@@ -354,8 +337,6 @@
   font-weight: 700;
 }
 
-// 70% of the panel wide, centred, flush with the bottom edge (the artwork is cropped by its own
-// viewBox, like in the design). `brand.svg` already carries its own 0.1 white opacity.
 .auth-mark {
   position: absolute;
   inset-inline-start: 15%;
@@ -446,4 +427,14 @@
 .auth-success__action {
   margin-top: 10px;
   width: 100%;
+}
+
+.lang-pill--compact {
+  display: none;
+  position: absolute;
+  top: 16px;
+  inset-inline-end: 16px;
+  z-index: 2;
+  background: #fff;
+  box-shadow: 0 2px 10px rgb(15 36 66 / 12%);
 }

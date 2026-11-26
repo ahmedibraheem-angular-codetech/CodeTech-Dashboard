@@ -17,8 +17,6 @@ import {
   type ProjectImage,
 } from '../models/project.model';
 
-/** UI/test fixtures — not used by the HTTP ProjectsService. */
-
 const COVER = '/images/project-cover.jpg';
 const DESK = '/images/product-cover-desk.jpg';
 const FLAT = '/images/product-cover-flat.jpg';
@@ -387,10 +385,6 @@ export function paginated<T>(data: T[], path: string, page = 1, perPage = 100) {
   };
 }
 
-/**
- * In-memory ProjectsService stand-in for component specs that need persistence
- * (editor upload lifecycle, list mutations) without HTTP.
- */
 @Injectable()
 export class ProjectsMemoryService {
   private readonly objectUrls = inject(ObjectUrls);

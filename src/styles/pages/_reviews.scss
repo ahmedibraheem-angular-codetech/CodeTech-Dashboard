@@ -52,7 +52,6 @@
   --p-toggleswitch-handle-size: 16px;
 }
 
-// Filter popover — Figma: blue box + white check on the selected status.
 .reviews-board-menu.p-popover {
   --p-checkbox-width: 18px;
   --p-checkbox-height: 18px;
@@ -93,7 +92,6 @@
   background: #f8fafc;
 }
 
-// PrimeNG CheckIcon SVG often fails to paint in this popover; draw a white check instead.
 .reviews-board-menu .p-checkbox-box {
   position: relative;
   color: #ffffff;
@@ -123,7 +121,6 @@
   }
 }
 
-// Add / edit review modal — mirrors FAQ editor chrome, reuses shared `.image-drop`.
 .p-dialog.app-modal:has(.review-editor-form) {
   width: min(640px, calc(100vw - 32px));
   max-height: calc(100vh - 32px);
@@ -243,7 +240,6 @@
   width: 100%;
 }
 
-// Rating select — Figma gold gradient stars.
 .review-rating-stars {
   display: inline-flex;
   align-items: center;

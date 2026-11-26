@@ -1,3 +1,7 @@
+import {
+  type LocalizedFileWriteDto,
+  resolveLocalizedMediaMap,
+} from '../../../core/media/localized-media';
 import { HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { type Observable, catchError, forkJoin, map, of, switchMap, throwError } from 'rxjs';
@@ -42,13 +46,6 @@ const CATEGORIES_PATH = 'admin/article-categories';
 const ARTICLES_PATH = 'admin/articles';
 const PAGE_SIZE = 100;
 
-/**
- * Knowledge Center articles & categories.
- * Article list is fetched across pages so the board can keep client-side
- * search/status/date filtering. Category reorder is unused — the UI has no handle.
- * Media uses coat-check: omit to keep, null to remove, UUID to set.
- * Rich-text images use MediaService.uploadEditorImage (URL into HTML, not UUID).
- */
 @Injectable({ providedIn: 'root' })
 export class KnowledgeService {
   private readonly http = inject(HttpClient);
@@ -221,42 +218,12 @@ export class KnowledgeService {
     );
   }
 
-  private resolveMedia(
-    media: ArticleMediaDraft,
-  ): Observable<{ cover?: string | null; thumbnail?: string | null; authorPhoto?: string | null }> {
-    return forkJoin({
-      cover: this.resolveField(media.cover),
-      thumbnail: this.resolveField(media.thumbnail),
-      authorPhoto: this.resolveField(media.authorPhoto),
-    }).pipe(
-      map(({ cover, thumbnail, authorPhoto }) => {
-        const resolved: {
-          cover?: string | null;
-          thumbnail?: string | null;
-          authorPhoto?: string | null;
-        } = {};
-        if (cover !== undefined) {
-          resolved.cover = cover;
-        }
-        if (thumbnail !== undefined) {
-          resolved.thumbnail = thumbnail;
-        }
-        if (authorPhoto !== undefined) {
-          resolved.authorPhoto = authorPhoto;
-        }
-        return resolved;
-      }),
-    );
-  }
-
-  private resolveField(intent: KnowledgeMediaIntent): Observable<string | null | undefined> {
-    if (intent.kind === 'omit') {
-      return of(undefined);
-    }
-    if (intent.kind === 'clear') {
-      return of(null);
-    }
-    return this.media.upload('image', intent.file).pipe(map((file) => file.uuid));
+  private resolveMedia(media: ArticleMediaDraft): Observable<{
+    cover?: LocalizedFileWriteDto;
+    thumbnail?: LocalizedFileWriteDto;
+    authorPhoto?: LocalizedFileWriteDto;
+  }> {
+    return resolveLocalizedMediaMap(this.media, 'image', media);
   }
 
   private articleParams(query: ArticleListQuery): HttpParams {
