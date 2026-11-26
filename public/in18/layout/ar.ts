@@ -32,6 +32,8 @@ export const ar: { [K in keyof typeof en]: string } = {
   'header.language': 'تغيير اللغة',
   'header.languageName': 'عربي',
   'header.search': 'بحث',
+  'header.zoomIn': 'تكبير',
+  'header.zoomOut': 'تصغير',
   'header.searchPlaceholder': 'ابحث عن مستخدم',
   'header.notifications': 'التنبيهات',
   'header.noNotifications': 'لا توجد تنبيهات',

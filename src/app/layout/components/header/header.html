@@ -12,20 +12,15 @@
     <app-breadcrumbs />
   </div>
   <div class="topbar__tools">
-    <button
-      pButton
-      type="button"
-      class="topbar__btn"
-      severity="secondary"
-      [outlined]="true"
-      [attr.aria-label]="lang.t('header.search')"
-      [attr.aria-expanded]="searchOpen()"
-      [pTooltip]="lang.t('header.search')"
+    <app-button
+      [icon]="layout.zoomDirection() === 'in' ? 'pi pi-search-plus' : 'pi pi-search-minus'"
+      variant="outlined"
+      styleClass="topbar__btn"
+      [ariaLabel]="zoomLabel()"
+      [pTooltip]="zoomLabel()"
       tooltipPosition="bottom"
-      (click)="searchOpen.set(!searchOpen())"
-    >
-      <span pButtonIcon class="pi pi-search" aria-hidden="true"></span>
-    </button>
+      (clicked)="layout.cycleZoom()"
+    />
     <p-button
       icon="pi pi-bell"
       severity="secondary"

@@ -30,6 +30,8 @@ export const en = {
   'header.language': 'Change Language',
   'header.languageName': 'English',
   'header.search': 'Search',
+  'header.zoomIn': 'Zoom in',
+  'header.zoomOut': 'Zoom out',
   'header.searchPlaceholder': 'Search Users',
   'header.notifications': 'Notifications',
   'header.noNotifications': 'No Notifications',
