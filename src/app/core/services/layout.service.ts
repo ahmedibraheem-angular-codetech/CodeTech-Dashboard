@@ -6,7 +6,6 @@ const COLLAPSED_KEY = 'codetech.sidebar';
 const DENSITY_KEY = 'codetech.density';
 const ZOOM_KEY = 'codetech.zoom';
 
-/** Page zoom levels (1 = 100%). Stepped so zoom in/out always lands on a known value. */
 export const ZOOM_LEVELS = [0.8, 0.9, 1, 1.1, 1.25, 1.5] as const;
 const DEFAULT_ZOOM_INDEX = ZOOM_LEVELS.indexOf(1);
 

@@ -203,6 +203,8 @@ export class Login {
     if (this.otpRemaining() > 0) {
       return;
     }
+    this.otpForm.reset({ code: '' });
+    this.otpInvalid.set(false);
     this.auth
       .requestPasswordReset(this.resetForm.controls.email.value)
       .pipe(takeUntilDestroyed(this.destroyRef))

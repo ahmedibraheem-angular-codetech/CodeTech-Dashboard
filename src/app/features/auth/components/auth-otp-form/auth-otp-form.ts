@@ -36,4 +36,10 @@ export class AuthOtpForm {
   protected onSubmit(): void {
     this.submitted.emit();
   }
+
+  protected onResend(): void {
+    this.form().reset({ code: '' });
+    this.cleared.emit();
+    this.resend.emit();
+  }
 }
