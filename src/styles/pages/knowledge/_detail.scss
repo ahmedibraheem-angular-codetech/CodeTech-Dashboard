@@ -350,7 +350,7 @@
     border: 0;
     border-radius: 16px;
     background: #f7f7f7;
-    text-align: center;
+    text-align: start;
   }
 
   blockquote::before,
@@ -372,18 +372,35 @@
   blockquote::after {
     content: '“';
     inset-block-end: 4px;
-    inset-inline-end: 50%;
-    transform: translateX(50%);
+    inset-inline-end: 24px;
+  }
+
+  blockquote {
+    padding-block-end: 44px;
+  }
+
+  .ql-align-center {
+    text-align: center;
+  }
+
+  .ql-align-right {
+    text-align: right;
+  }
+
+  .ql-align-left {
+    text-align: left;
+  }
+
+  .ql-align-justify {
+    text-align: justify;
   }
 
   blockquote p {
-    margin: 0 auto;
-    max-width: 36em;
+    margin: 0;
     color: $kb-navy;
     font-size: 18px;
     font-weight: 700;
     line-height: 1.65;
-    text-align: center;
   }
 
   blockquote footer,

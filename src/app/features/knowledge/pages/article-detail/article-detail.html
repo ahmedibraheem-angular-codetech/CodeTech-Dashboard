@@ -217,7 +217,7 @@
         <h2>{{ lang.t('knowledge.contentCard') }}</h2>
       </header>
       @if (content(); as html) {
-        <div class="kb-detail__content" [innerHTML]="html"></div>
+        <div class="kb-detail__content" [innerHTML]="contentHtml()"></div>
       } @else {
         <app-state-view mode="empty" [message]="lang.t('knowledge.detailNoContent')" />
       }

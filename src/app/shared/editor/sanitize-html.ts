@@ -33,7 +33,8 @@ const TAG_ATTRS: Record<string, ReadonlySet<string>> = {
   IMG: new Set(['src', 'alt', 'title']),
 };
 
-const SAFE_STYLE_PROP = /^(color|background-color)$/i;
+const SAFE_STYLE_PROP = /^(color|background-color|text-align)$/i;
+const SAFE_TEXT_ALIGN = /^(left|right|center|justify)$/i;
 const SAFE_COLOR_VALUE =
   /^(transparent|currentcolor|#[0-9a-f]{3,8}|rgba?\(\s*[\d.]+\s*(,\s*[\d.]+\s*){2,3}\)|[a-z]+)$/i;
 
@@ -131,7 +132,10 @@ function sanitizeStyleAttribute(style: string): string | null {
     }
     const prop = declaration.slice(0, colon).trim();
     const value = declaration.slice(colon + 1).trim();
-    if (!SAFE_STYLE_PROP.test(prop) || !SAFE_COLOR_VALUE.test(value)) {
+    const safeValue = /^text-align$/i.test(prop)
+      ? SAFE_TEXT_ALIGN.test(value)
+      : SAFE_COLOR_VALUE.test(value);
+    if (!SAFE_STYLE_PROP.test(prop) || !safeValue) {
       continue;
     }
     kept.push(`${prop}: ${value}`);

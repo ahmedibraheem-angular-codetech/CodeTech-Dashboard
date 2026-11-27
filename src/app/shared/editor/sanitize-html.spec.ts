@@ -45,4 +45,11 @@ describe('sanitizeRichTextHtml', () => {
     expect(result).toContain('mailto:legal@code-tech.sa');
     expect(result).toContain('rel="noreferrer noopener"');
   });
+
+  it('keeps text-align on paragraphs and drops unsafe values', () => {
+    const ok = sanitizeRichTextHtml('<p style="text-align: center">x</p>');
+    expect(ok).toMatch(/style="text-align: center"/);
+    const bad = sanitizeRichTextHtml('<p style="text-align: url(x)">x</p>');
+    expect(bad).not.toContain('text-align');
+  });
 });

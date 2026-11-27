@@ -52,6 +52,7 @@ export function ensureQuillFontRegistered(): Promise<QuillFontRegistration> {
         const Font = Quill.import('attributors/class/font');
         Font.whitelist = [QUILL_FONT];
         Quill.register(Font, true);
+        registerStyleAlign(Quill);
         registerDividerBlot(Quill);
         registerPlainLinkBlot(Quill);
         return { status: 'ready' as const };
@@ -59,6 +60,14 @@ export function ensureQuillFontRegistered(): Promise<QuillFontRegistration> {
       .catch((error: unknown): QuillFontRegistration => ({ status: 'failed', error }));
   }
   return fontRegistration;
+}
+
+/**
+ * The API keeps style="text-align:..." on paragraphs but strips class attributes,
+ * so alignment must be stored as an inline style instead of Quill's ql-align-* class.
+ */
+function registerStyleAlign(Quill: QuillConstructor): void {
+  Quill.register(Quill.import('attributors/style/align'), true);
 }
 
 /**

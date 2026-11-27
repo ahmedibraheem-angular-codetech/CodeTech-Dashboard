@@ -132,6 +132,7 @@ export class ArticleEditor {
 
   readonly flagged = signal<ReadonlySet<string>>(new Set());
   readonly quillReady = signal(false);
+  readonly justSaved = signal(false);
 
   readonly keywordDraft = signal('');
 
@@ -211,6 +212,10 @@ export class ArticleEditor {
       () => this.quillReady.set(true),
       () => this.quillReady.set(true),
     );
+
+    this.form.valueChanges
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => this.justSaved.set(false));
 
     this.api
       .listCategories()
@@ -341,10 +346,31 @@ export class ArticleEditor {
   }
 
   protected save(): void {
+    if (this.justSaved()) {
+      this.openEdit();
+      return;
+    }
     const status = this.article()?.status ?? 'draft';
     if (this.validate(status === 'published' ? 'strict' : 'lenient')) {
       this.persist(status);
     }
+  }
+
+  /** After a save the button reads "Edit article": go to the edit page of this article. */
+  private openEdit(): void {
+    const id = this.article()?.id ?? this.id();
+    if (!id) {
+      return;
+    }
+    const target = ['/knowledge', id, 'edit'];
+    if (this.router.url.split('?')[0] === this.router.createUrlTree(target).toString()) {
+      // Already on this edit page: reload the saved article so the form starts clean.
+      this.justSaved.set(false);
+      this.load(String(id));
+      window.scrollTo({ top: 0 });
+      return;
+    }
+    void this.router.navigate(target);
   }
 
   protected undo(): void {
@@ -482,6 +508,7 @@ export class ArticleEditor {
         this.saving.set(false);
         if (this.mode === 'edit') {
           this.apply(saved);
+          this.justSaved.set(true);
           this.messages.add({ severity: 'success', summary: this.lang.t('knowledge.saved') });
           return;
         }

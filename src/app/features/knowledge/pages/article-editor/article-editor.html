@@ -33,9 +33,9 @@
       />
       <app-button
         styleClass="kb-editor__primary"
-        icon="pi pi-save"
+        [icon]="justSaved() ? 'pi pi-pencil' : 'pi pi-save'"
         iconPos="end"
-        [label]="ct('common.saveChanges')"
+        [label]="justSaved() ? ct('knowledge.edit') : ct('common.saveChanges')"
         [loading]="saving()"
         [disabled]="status() !== 'ready'"
         (clicked)="save()"

@@ -1,3 +1,5 @@
+import { DomSanitizer, type SafeHtml } from '@angular/platform-browser';
+import { sanitizeRichTextHtml } from '../../../../shared/editor/sanitize-html';
 import { type LocalizedMedia, pickMedia } from '../../../../core/media/localized-media';
 import {
   ChangeDetectionStrategy,
@@ -62,6 +64,7 @@ type LoadStatus = 'loading' | 'ready' | 'missing' | 'error' | 'offline';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ArticleDetail {
+  private readonly sanitizer = inject(DomSanitizer);
   private readonly api = inject(KnowledgeService);
   private readonly actions = inject(KnowledgeActions);
   private readonly messages = inject(MessageService);
@@ -98,6 +101,10 @@ export class ArticleDetail {
     const html = this.locale() === 'ar' ? article.contentAr : article.contentEn;
     return hasVisibleHtml(html) ? html : '';
   });
+
+  readonly contentHtml = computed<SafeHtml>(() =>
+    this.sanitizer.bypassSecurityTrustHtml(sanitizeRichTextHtml(this.content())),
+  );
 
   readonly published = computed(() => {
     const stamp = this.article()?.publishedAt ?? '';
