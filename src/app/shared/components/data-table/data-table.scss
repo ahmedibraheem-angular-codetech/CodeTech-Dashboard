@@ -137,6 +137,11 @@
   background: #fbfdff;
 }
 
+.app-data-table__grid .p-datatable-tbody > tr.app-data-table__row--highlighted > td,
+.app-data-table__grid .p-datatable-tbody > tr.app-data-table__row--highlighted:hover > td {
+  background: #eef6ff;
+}
+
 .app-data-table__grid .p-datatable-tbody > tr.app-data-table__row--clickable {
   cursor: pointer;
 }

@@ -11,6 +11,7 @@
   [searchLabel]="lang.t('knowledge.search')"
   [emptyMessage]="lang.t('knowledge.empty')"
   [rowClickable]="true"
+  [highlightedId]="highlightedId()"
   [query]="query()"
   [selectedFilters]="selectedFilters()"
   (queryChange)="setQuery($event)"

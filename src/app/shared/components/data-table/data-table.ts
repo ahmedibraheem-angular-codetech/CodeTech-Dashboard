@@ -68,6 +68,8 @@ export class DataTable<T extends object = Record<string, unknown>> {
   readonly selectionMode = input<'single' | 'multiple' | null>(null);
 
   readonly rowClickable = input(false);
+  /** Row id, matched against `dataKey`, that stays in the hover color after an edit. */
+  readonly highlightedId = input('');
 
   readonly query = model('');
   readonly selectedFilters = model<readonly string[]>([]);
@@ -161,6 +163,16 @@ export class DataTable<T extends object = Record<string, unknown>> {
 
   protected exportRows(): void {
     this.export.emit(this.rows());
+  }
+
+  protected rowId(row: T): string {
+    const value = (row as Record<string, unknown>)[this.dataKey()];
+    return value == null ? '' : String(value);
+  }
+
+  protected isHighlighted(row: T): boolean {
+    const id = this.highlightedId();
+    return id !== '' && this.rowId(row) === id;
   }
 
   protected onRowClick(event: Event, row: T): void {

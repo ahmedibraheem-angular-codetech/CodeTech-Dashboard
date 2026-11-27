@@ -3,10 +3,12 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
+  effect,
   inject,
   input,
   output,
   signal,
+  untracked,
   viewChild,
 } from '@angular/core';
 import { Popover } from 'primeng/popover';
@@ -137,6 +139,7 @@ export class ArticlesPanel {
   readonly stats = input<ArticleStats | null>(null);
   readonly showEdit = input(true);
   readonly showDelete = input(true);
+  readonly highlightedId = input('');
 
   readonly view = output<Article>();
   readonly edit = output<Article>();
@@ -150,6 +153,26 @@ export class ArticlesPanel {
   readonly first = signal(0);
   readonly pageSize = signal(10);
   readonly menuArticle = signal<Article | null>(null);
+
+  constructor() {
+    effect(() => {
+      const id = this.highlightedId();
+      const list = this.filtered();
+      if (!id) {
+        return;
+      }
+      const index = list.findIndex((item) => item.id === id);
+      if (index < 0) {
+        return;
+      }
+      const start = Math.floor(index / this.pageSize()) * this.pageSize();
+      untracked(() => {
+        if (this.first() !== start) {
+          this.first.set(start);
+        }
+      });
+    });
+  }
 
   readonly cards = computed<StatisticsCard[]>(() => {
     this.lang.language();

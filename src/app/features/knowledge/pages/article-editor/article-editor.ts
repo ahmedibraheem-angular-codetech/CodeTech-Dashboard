@@ -507,9 +507,10 @@ export class ArticleEditor {
       next: (saved) => {
         this.saving.set(false);
         if (this.mode === 'edit') {
-          this.apply(saved);
-          this.justSaved.set(true);
           this.messages.add({ severity: 'success', summary: this.lang.t('knowledge.saved') });
+          void this.router.navigate(['/knowledge'], {
+            state: { highlightedArticleId: saved.id },
+          });
           return;
         }
         this.messages.add({

@@ -46,6 +46,7 @@
         [stats]="stats()"
         [showEdit]="canUpdate()"
         [showDelete]="canDelete()"
+        [highlightedId]="highlightedArticleId()"
         (view)="view($event)"
         (edit)="openEditor($event)"
         (remove)="removeArticle($event)"

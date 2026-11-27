@@ -139,6 +139,21 @@ describe('ArticleEditor', () => {
     expect(update).toHaveBeenCalledTimes(1);
   });
 
+  it('returns to the article list and marks the saved row', async () => {
+    const update = vi.fn((_id: string, draft: unknown) =>
+      of({ ...article('9'), ...(draft as object) }),
+    );
+    const fixture = await render('edit', '9', { update });
+    const navigate = vi.mocked(TestBed.inject(Router).navigate);
+
+    (fixture.componentInstance as unknown as { save(): void }).save();
+
+    expect(update).toHaveBeenCalledTimes(1);
+    expect(navigate).toHaveBeenCalledWith(['/knowledge'], {
+      state: { highlightedArticleId: '9' },
+    });
+  });
+
   it('allows an empty slug', async () => {
     const update = vi.fn((_id: string, draft: unknown) =>
       of({ ...article('9'), ...(draft as object) }),

@@ -44,6 +44,22 @@ describe('ArticlesPanel statistics cards', () => {
     return fixture;
   }
 
+  it('keeps the edited article on its page and marks that row', () => {
+    const articles = Array.from({ length: 12 }, (_, index) =>
+      article(String(index + 1), 'published'),
+    );
+    const fixture = setup(articles);
+    fixture.componentRef.setInput('highlightedId', '12');
+    fixture.detectChanges();
+
+    const panel = fixture.componentInstance;
+    expect(panel.first()).toBe(10);
+    expect(panel.rows().map((row) => row.id)).toContain('12');
+    expect(
+      fixture.nativeElement.querySelector('[data-highlight-row="12"]'),
+    ).not.toBeNull();
+  });
+
   it('shows zeros for every card when the article list is empty', () => {
     const cards = setup([]).componentInstance.cards();
     expect(cards.map((card) => card.id)).toEqual(['total', 'published', 'draft', 'unpublished']);

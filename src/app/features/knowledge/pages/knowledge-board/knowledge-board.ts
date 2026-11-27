@@ -84,6 +84,7 @@ export class KnowledgeBoard {
   readonly stats = signal<ArticleStats | null>(null);
 
   readonly dateFilter = signal<string | null>(null);
+  readonly highlightedArticleId = signal(readHighlightedArticleId());
   private readonly rawCategories = signal<ArticleCategory[]>([]);
   readonly editor = signal<CategoryEditor>(null);
   readonly selectedCategory = signal<ArticleCategory | null>(null);
@@ -382,4 +383,9 @@ export class KnowledgeBoard {
     this.saving.set(false);
     this.messages.add({ severity: 'error', summary: this.lang.t('common.error') });
   }
+}
+
+function readHighlightedArticleId(): string {
+  const state = history.state as { highlightedArticleId?: unknown } | null;
+  return typeof state?.highlightedArticleId === 'string' ? state.highlightedArticleId : '';
 }

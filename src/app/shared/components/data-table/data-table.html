@@ -127,6 +127,8 @@
       <ng-template #body let-row>
         <tr
           [class.app-data-table__row--clickable]="rowClickable()"
+          [class.app-data-table__row--highlighted]="isHighlighted(row)"
+          [attr.data-highlight-row]="isHighlighted(row) ? rowId(row) : null"
           [attr.tabindex]="rowClickable() ? 0 : null"
           (click)="onRowClick($event, row)"
           (keydown.enter)="onRowClick($event, row)"
