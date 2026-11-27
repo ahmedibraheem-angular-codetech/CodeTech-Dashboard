@@ -1,4 +1,12 @@
-import { ChangeDetectionStrategy, Component, inject, input, output } from '@angular/core';
+import {
+  afterNextRender,
+  ChangeDetectionStrategy,
+  Component,
+  ElementRef,
+  inject,
+  input,
+  output,
+} from '@angular/core';
 import { type FormControl, type FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { Button } from 'primeng/button';
 import { InputOtp } from 'primeng/inputotp';
@@ -18,6 +26,7 @@ export type AuthOtpFormGroup = FormGroup<{
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AuthOtpForm {
+  private readonly host = inject(ElementRef<HTMLElement>);
   readonly lang = inject(LanguageService);
 
   readonly form = input.required<AuthOtpFormGroup>();
@@ -33,6 +42,10 @@ export class AuthOtpForm {
   readonly resend = output<void>();
   readonly cleared = output<void>();
 
+  constructor() {
+    afterNextRender(() => this.focusLeftmost());
+  }
+
   protected onSubmit(): void {
     this.submitted.emit();
   }
@@ -41,5 +54,17 @@ export class AuthOtpForm {
     this.form().reset({ code: '' });
     this.cleared.emit();
     this.resend.emit();
+    this.focusLeftmost();
+  }
+
+  private focusLeftmost(): void {
+    const inputs = [...this.host.nativeElement.querySelectorAll('input')];
+    const leftmost = inputs.reduce<HTMLInputElement | null>((best, input) => {
+      if (!best || input.getBoundingClientRect().left < best.getBoundingClientRect().left) {
+        return input;
+      }
+      return best;
+    }, null);
+    leftmost?.focus();
   }
 }

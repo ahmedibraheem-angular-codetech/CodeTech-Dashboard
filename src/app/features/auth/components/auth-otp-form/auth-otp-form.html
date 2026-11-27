@@ -16,7 +16,9 @@
   <div class="field">
     <span class="field__label">{{ lang.t('auth.verifyLabel') }}</span>
     <p-inputotp
+      dir="ltr"
       formControlName="code"
+      [autofocus]="true"
       [length]="4"
       [integerOnly]="true"
       [styleClass]="invalid() ? 'otp-invalid' : ''"

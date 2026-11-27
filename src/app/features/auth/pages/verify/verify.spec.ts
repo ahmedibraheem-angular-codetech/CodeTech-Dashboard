@@ -152,6 +152,16 @@ describe('Verify', () => {
     rendered.http.verify();
   });
 
+  it('focuses the leftmost OTP box in Arabic', async () => {
+    const rendered = await render();
+    const boxes = [...rendered.root.querySelectorAll('p-inputotp input')];
+
+    expect(rendered.root.querySelector('p-inputotp')?.getAttribute('dir')).toBe('ltr');
+    expect(boxes).toHaveLength(4);
+    expect(document.activeElement).toBe(boxes[0]);
+    rendered.http.verify();
+  });
+
   it('starts a 60 second resend countdown after the login OTP was requested', async () => {
     const rendered = await render();
 
